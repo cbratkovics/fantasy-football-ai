@@ -23,7 +23,8 @@ from .storage.models import (
     Team, Player, WeeklyStats, CollectionTask, CollectionStatus, 
     CollectionProgress, DataQualityMetric, calculate_fantasy_priority_score
 )
-from .storage.database import get_db_session, ensure_database_exists
+# FIXED: Use simple database instead of complex one with proper error handling
+from .storage.simple_database import get_simple_session
 
 logger = logging.getLogger(__name__)
 
@@ -90,14 +91,15 @@ class FantasyFootballETL:
         self.quality_issues = []
 
     async def initialize_pipeline(self) -> bool:
-        """Initialize all pipeline components."""
+        """Initialize all pipeline components with proper error handling."""
         
         logger.info("Initializing Fantasy Football ETL Pipeline")
         self.metrics.current_phase = ETLPhase.INITIALIZATION
         
         try:
-            # Ensure database exists
-            await ensure_database_exists()
+            # FIXED: Test database connection first with proper error handling
+            await self._test_database_connection()
+            logger.info("Database connection validated")
             
             # Initialize NFL API client
             self.nfl_client = await create_nfl_client()
@@ -107,9 +109,14 @@ class FantasyFootballETL:
             self.quality_validator = DataQualityValidator()
             logger.info("Data quality validator initialized")
             
-            # Initialize priority queue
-            self.priority_queue = await create_intelligent_queue()
-            logger.info("Intelligent priority queue initialized")
+            # Initialize priority queue with error handling
+            try:
+                self.priority_queue = await create_intelligent_queue()
+                logger.info("Intelligent priority queue initialized")
+            except Exception as queue_error:
+                logger.error(f"Priority queue initialization failed: {queue_error}")
+                # Continue without priority queue - use simple processing
+                logger.info("Continuing without priority queue - using simple processing")
             
             # Initialize orchestrator
             self.orchestrator = CollectionOrchestrator(self.config)
@@ -128,73 +135,116 @@ class FantasyFootballETL:
             
         except Exception as e:
             logger.error(f"Failed to initialize ETL pipeline: {e}")
+            logger.error(f"Error type: {type(e).__name__}")
             self.metrics.status = PipelineStatus.FAILED
             return False
 
+    async def _test_database_connection(self) -> None:
+        """Test database connection and handle configuration issues."""
+        
+        try:
+            async with get_simple_session() as session:
+                # Simple test query
+                from sqlalchemy import text
+                result = await session.execute(text("SELECT 1"))
+                test_value = result.scalar()
+                
+                if test_value != 1:
+                    raise RuntimeError("Database connection test failed")
+                    
+                logger.info("Database connection test successful")
+                
+        except Exception as db_error:
+            logger.error(f"Database connection failed: {db_error}")
+            
+            # Check if it's the pool_size error we're trying to fix
+            if "pool_size" in str(db_error) or "max_overflow" in str(db_error):
+                logger.error("SQLite pooling configuration error detected")
+                logger.error("Please check your simple_database.py configuration")
+                logger.error("SQLite databases should not use pool_size or max_overflow parameters")
+            
+            raise RuntimeError(f"Database initialization failed: {db_error}")
+
     async def _initialize_players(self) -> None:
-        """Initialize player data for priority positions."""
+        """Initialize player data for priority positions with better error handling."""
         
         logger.info("Initializing player data for priority positions")
         
-        async with get_db_session() as session:
-            # Get all teams
-            teams = session.query(Team).all()
-            
-            total_players = 0
-            
-            for team in teams:
-                try:
-                    # Get players for recent season (2023)
-                    players_data = await self.nfl_client.get_players_by_team(team.api_id, 2023)
-                    
-                    for player_data in players_data:
-                        player_info = player_data.get('player', {})
+        try:
+            async with get_simple_session() as session:
+                from sqlalchemy import select
+                
+                # Get all teams
+                result = await session.execute(select(Team))
+                teams = result.scalars().all()
+                
+                if not teams:
+                    logger.warning("No teams found in database - may need to sync teams first")
+                    return
+                
+                total_players = 0
+                
+                for team in teams:
+                    try:
+                        # Get players for recent season (2023)
+                        players_data = await self.nfl_client.get_players_by_team(team.api_id, 2023)
                         
-                        # Only process priority positions
-                        position = player_info.get('position', 'OTHER')
-                        if position not in self.config.priority_positions:
-                            continue
-                        
-                        # Check if player exists
-                        existing_player = session.query(Player).filter(
-                            Player.api_id == player_info.get('id')
-                        ).first()
-                        
-                        if existing_player:
-                            # Update existing player
-                            existing_player.name = player_info.get('name', '')
-                            existing_player.position = position
-                            existing_player.team_id = team.id
-                            existing_player.updated_at = datetime.now(timezone.utc)
-                        else:
-                            # Create new player
-                            new_player = Player(
-                                api_id=player_info.get('id'),
-                                team_id=team.id,
-                                name=player_info.get('name', ''),
-                                firstname=player_info.get('firstname', ''),
-                                lastname=player_info.get('lastname', ''),
-                                position=position,
-                                number=player_info.get('number'),
-                                age=player_info.get('age'),
-                                height=player_info.get('height'),
-                                weight=player_info.get('weight'),
-                                college=player_info.get('college'),
-                                collection_priority=self._calculate_collection_priority(position),
-                                fantasy_priority_score=0.5  # Will be updated later
+                        for player_data in players_data:
+                            player_info = player_data.get('player', {})
+                            
+                            # Only process priority positions
+                            position = player_info.get('position', 'OTHER')
+                            if position not in self.config.priority_positions:
+                                continue
+                            
+                            # Check if player exists
+                            existing_result = await session.execute(
+                                select(Player).where(Player.api_id == player_info.get('id'))
                             )
-                            session.add(new_player)
+                            existing_player = existing_result.scalar_one_or_none()
+                            
+                            if existing_player:
+                                # Update existing player
+                                existing_player.name = player_info.get('name', '')
+                                existing_player.position = position
+                                existing_player.team_id = team.id
+                                existing_player.updated_at = datetime.now(timezone.utc)
+                            else:
+                                # Create new player
+                                new_player = Player(
+                                    api_id=player_info.get('id'),
+                                    team_id=team.id,
+                                    name=player_info.get('name', ''),
+                                    firstname=player_info.get('firstname', ''),
+                                    lastname=player_info.get('lastname', ''),
+                                    position=position,
+                                    number=player_info.get('number'),
+                                    age=player_info.get('age'),
+                                    height=player_info.get('height'),
+                                    weight=player_info.get('weight'),
+                                    college=player_info.get('college'),
+                                    collection_priority=self._calculate_collection_priority(position),
+                                    fantasy_priority_score=0.5  # Will be updated later
+                                )
+                                session.add(new_player)
+                            
+                            total_players += 1
                         
-                        total_players += 1
-                    
-                    # Brief pause between teams
-                    await asyncio.sleep(1)
-                    
-                except Exception as e:
-                    logger.error(f"Error initializing players for team {team.name}: {e}")
-            
-            session.commit()
-            logger.info(f"Initialized {total_players} priority position players")
+                        # Brief pause between teams
+                        await asyncio.sleep(1)
+                        
+                    except Exception as e:
+                        logger.error(f"Error initializing players for team {team.name}: {e}")
+                        # Continue with next team
+                        continue
+                
+                await session.commit()
+                logger.info(f"Initialized {total_players} priority position players")
+                
+        except Exception as e:
+            logger.error(f"Player initialization failed: {e}")
+            # Don't fail the entire pipeline for player initialization issues
+            logger.warning("Continuing pipeline without player initialization")
 
     def _calculate_collection_priority(self, position: str) -> int:
         """Calculate collection priority for player position."""
@@ -211,7 +261,7 @@ class FantasyFootballETL:
         return priority_map.get(position, 10)
 
     async def run_full_pipeline(self) -> ETLMetrics:
-        """Execute complete ETL pipeline."""
+        """Execute complete ETL pipeline with comprehensive error handling."""
         
         logger.info("Starting full ETL pipeline execution")
         self.is_running = True
@@ -240,6 +290,7 @@ class FantasyFootballETL:
             
         except Exception as e:
             logger.error(f"ETL Pipeline failed: {e}")
+            logger.error(f"Error occurred in phase: {self.metrics.current_phase.value}")
             self.metrics.status = PipelineStatus.FAILED
             self.metrics.errors_encountered += 1
         
@@ -255,45 +306,62 @@ class FantasyFootballETL:
         logger.info("Starting extraction phase")
         self.metrics.current_phase = ETLPhase.EXTRACTION
         
-        # Start orchestrator in background
-        orchestrator_task = asyncio.create_task(
-            self.orchestrator.start_collection()
-        )
-        
-        # Monitor progress
-        await self._monitor_extraction_progress(orchestrator_task)
+        try:
+            # Start orchestrator in background
+            orchestrator_task = asyncio.create_task(
+                self.orchestrator.start_collection()
+            )
+            
+            # Monitor progress
+            await self._monitor_extraction_progress(orchestrator_task)
+            
+        except Exception as e:
+            logger.error(f"Extraction phase failed: {e}")
+            raise
 
     async def _monitor_extraction_progress(self, orchestrator_task: asyncio.Task) -> None:
         """Monitor extraction progress and handle completion."""
         
         logger.info("Monitoring extraction progress")
         
-        while not orchestrator_task.done():
-            # Get orchestrator stats
-            stats = self.orchestrator.get_collection_stats()
-            
-            self.metrics.total_api_calls = stats.get('api_calls_made', 0)
-            
-            # Log progress periodically
-            if self.metrics.total_api_calls % 50 == 0 and self.metrics.total_api_calls > 0:
-                logger.info(f"Extraction progress: {self.metrics.total_api_calls} API calls made")
-            
-            # Check if we should stop (rate limit reached or sufficient data)
-            async with get_db_session() as session:
-                total_stats = session.query(WeeklyStats).count()
-                
-                if total_stats >= 5000:  # Sufficient data threshold
-                    logger.info(f"Sufficient data collected ({total_stats} stats), stopping extraction")
-                    await self.orchestrator.stop_collection()
-                    break
-            
-            await asyncio.sleep(30)  # Check every 30 seconds
-        
-        # Wait for orchestrator to complete
         try:
-            await orchestrator_task
+            while not orchestrator_task.done():
+                # Get orchestrator stats
+                stats = self.orchestrator.get_collection_stats()
+                
+                self.metrics.total_api_calls = stats.get('api_calls_made', 0)
+                
+                # Log progress periodically
+                if self.metrics.total_api_calls % 50 == 0 and self.metrics.total_api_calls > 0:
+                    logger.info(f"Extraction progress: {self.metrics.total_api_calls} API calls made")
+                
+                # Check if we should stop (rate limit reached or sufficient data)
+                try:
+                    async with get_simple_session() as session:
+                        from sqlalchemy import select, func
+                        
+                        result = await session.execute(select(func.count()).select_from(WeeklyStats))
+                        total_stats = result.scalar()
+                        
+                        if total_stats >= 5000:  # Sufficient data threshold
+                            logger.info(f"Sufficient data collected ({total_stats} stats), stopping extraction")
+                            await self.orchestrator.stop_collection()
+                            break
+                            
+                except Exception as db_check_error:
+                    logger.warning(f"Error checking database stats: {db_check_error}")
+                    # Continue monitoring
+                
+                await asyncio.sleep(30)  # Check every 30 seconds
+            
+            # Wait for orchestrator to complete
+            try:
+                await orchestrator_task
+            except Exception as e:
+                logger.error(f"Orchestrator error: {e}")
+                
         except Exception as e:
-            logger.error(f"Orchestrator error: {e}")
+            logger.error(f"Error monitoring extraction progress: {e}")
 
     async def run_transformation_phase(self) -> None:
         """Execute data transformation and enhancement phase."""
@@ -301,47 +369,64 @@ class FantasyFootballETL:
         logger.info("Starting transformation phase")
         self.metrics.current_phase = ETLPhase.TRANSFORMATION
         
-        async with get_db_session() as session:
-            # Get all players with collected stats
-            players_with_stats = session.query(Player).join(WeeklyStats).distinct().all()
-            
-            total_players = len(players_with_stats)
-            processed = 0
-            
-            for player in players_with_stats:
-                try:
-                    # Transform and enhance player data
-                    await self._transform_player_data(session, player)
-                    
-                    processed += 1
-                    self.processed_players.add(player.id)
-                    
-                    # Periodic progress logging
-                    if processed % 50 == 0:
-                        logger.info(f"Transformation progress: {processed}/{total_players} players")
-                    
-                    # Checkpoint saving
-                    if processed % self.checkpoint_interval == 0:
-                        session.commit()
-                        logger.info(f"Checkpoint saved at {processed} players")
+        try:
+            async with get_simple_session() as session:
+                from sqlalchemy import select
                 
-                except Exception as e:
-                    logger.error(f"Error transforming player {player.id}: {e}")
-                    self.failed_players.add(player.id)
-                    self.metrics.errors_encountered += 1
-            
-            session.commit()
-            self.metrics.total_players_processed = processed
-            
-            logger.info(f"Transformation phase completed: {processed} players processed")
+                # Get all players with collected stats
+                result = await session.execute(
+                    select(Player).join(WeeklyStats).distinct()
+                )
+                players_with_stats = result.scalars().all()
+                
+                total_players = len(players_with_stats)
+                processed = 0
+                
+                logger.info(f"Found {total_players} players with stats to transform")
+                
+                for player in players_with_stats:
+                    try:
+                        # Transform and enhance player data
+                        await self._transform_player_data(session, player)
+                        
+                        processed += 1
+                        self.processed_players.add(player.id)
+                        
+                        # Periodic progress logging
+                        if processed % 50 == 0:
+                            logger.info(f"Transformation progress: {processed}/{total_players} players")
+                        
+                        # Checkpoint saving
+                        if processed % self.checkpoint_interval == 0:
+                            await session.commit()
+                            logger.info(f"Checkpoint saved at {processed} players")
+                    
+                    except Exception as e:
+                        logger.error(f"Error transforming player {player.id}: {e}")
+                        self.failed_players.add(player.id)
+                        self.metrics.errors_encountered += 1
+                        # Continue with next player
+                        continue
+                
+                await session.commit()
+                self.metrics.total_players_processed = processed
+                
+                logger.info(f"Transformation phase completed: {processed} players processed")
+                
+        except Exception as e:
+            logger.error(f"Transformation phase failed: {e}")
+            raise
 
-    async def _transform_player_data(self, session: Session, player: Player) -> None:
+    async def _transform_player_data(self, session, player: Player) -> None:
         """Transform and enhance individual player data."""
         
+        from sqlalchemy import select
+        
         # Get player's stats
-        stats = session.query(WeeklyStats).filter(
-            WeeklyStats.player_id == player.id
-        ).all()
+        result = await session.execute(
+            select(WeeklyStats).where(WeeklyStats.player_id == player.id)
+        )
+        stats = result.scalars().all()
         
         if not stats:
             return
@@ -418,56 +503,70 @@ class FantasyFootballETL:
         logger.info("Starting validation phase")
         self.metrics.current_phase = ETLPhase.VALIDATION
         
-        async with get_db_session() as session:
-            # Get all players to validate
-            players = session.query(Player).filter(
-                Player.position.in_(self.config.priority_positions)
-            ).all()
-            
-            total_players = len(players)
-            validated = 0
-            total_quality_score = 0.0
-            
-            # Batch validation for efficiency
-            batch_size = 10
-            
-            for i in range(0, total_players, batch_size):
-                batch = players[i:i + batch_size]
-                player_ids = [p.id for p in batch]
+        try:
+            async with get_simple_session() as session:
+                from sqlalchemy import select
                 
-                try:
-                    # Validate batch
-                    validation_results = await batch_validate_players(
-                        player_ids, 2023  # Validate most recent season
-                    )
+                # Get all players to validate
+                result = await session.execute(
+                    select(Player).where(Player.position.in_(self.config.priority_positions))
+                )
+                players = result.scalars().all()
+                
+                total_players = len(players)
+                validated = 0
+                total_quality_score = 0.0
+                
+                logger.info(f"Validating {total_players} players")
+                
+                # Batch validation for efficiency
+                batch_size = 10
+                
+                for i in range(0, total_players, batch_size):
+                    batch = players[i:i + batch_size]
+                    player_ids = [p.id for p in batch]
                     
-                    for player_id, quality_metrics in validation_results.items():
-                        total_quality_score += quality_metrics.overall_score
-                        validated += 1
+                    try:
+                        # Validate batch
+                        validation_results = await batch_validate_players(
+                            player_ids, 2023  # Validate most recent season
+                        )
                         
-                        # Track quality issues
-                        if quality_metrics.overall_score < 0.7:
-                            self.quality_issues.append({
-                                'player_id': player_id,
-                                'quality_score': quality_metrics.overall_score,
-                                'anomalies': len(quality_metrics.anomalies)
-                            })
+                        for player_id, quality_metrics in validation_results.items():
+                            total_quality_score += quality_metrics.overall_score
+                            validated += 1
+                            
+                            # Track quality issues
+                            if quality_metrics.overall_score < 0.7:
+                                self.quality_issues.append({
+                                    'player_id': player_id,
+                                    'quality_score': quality_metrics.overall_score,
+                                    'anomalies': len(quality_metrics.anomalies)
+                                })
+                        
+                        if validated % 100 == 0:
+                            logger.info(f"Validation progress: {validated}/{total_players} players")
+                        
+                    except Exception as e:
+                        logger.error(f"Error validating player batch: {e}")
+                        self.metrics.errors_encountered += 1
+                        # Continue with next batch
+                        continue
                     
-                    logger.info(f"Validation progress: {validated}/{total_players} players")
-                    
-                except Exception as e:
-                    logger.error(f"Error validating player batch: {e}")
-                    self.metrics.errors_encountered += 1
+                    # Brief pause between batches
+                    await asyncio.sleep(1)
                 
-                # Brief pause between batches
-                await asyncio.sleep(1)
-            
-            # Calculate overall validation score
-            if validated > 0:
-                self.metrics.validation_score = total_quality_score / validated
-            
-            logger.info(f"Validation completed: {validated} players validated, "
-                       f"overall quality score: {self.metrics.validation_score:.3f}")
+                # Calculate overall validation score
+                if validated > 0:
+                    self.metrics.validation_score = total_quality_score / validated
+                
+                logger.info(f"Validation completed: {validated} players validated, "
+                           f"overall quality score: {self.metrics.validation_score:.3f}")
+                           
+        except Exception as e:
+            logger.error(f"Validation phase failed: {e}")
+            # Don't fail the entire pipeline for validation issues
+            logger.warning("Continuing pipeline without validation")
 
     async def run_optimization_phase(self) -> None:
         """Execute optimization and finalization phase."""
@@ -475,65 +574,98 @@ class FantasyFootballETL:
         logger.info("Starting optimization phase")
         self.metrics.current_phase = ETLPhase.OPTIMIZATION
         
-        async with get_db_session() as session:
-            # Update collection priorities based on results
-            await self._optimize_collection_priorities(session)
+        try:
+            async with get_simple_session() as session:
+                # Update collection priorities based on results
+                await self._optimize_collection_priorities(session)
+                
+                # Generate final statistics
+                await self._generate_final_statistics(session)
+                
+                # Clean up failed tasks
+                await self._cleanup_failed_tasks(session)
+                
+                await session.commit()
             
-            # Generate final statistics
-            await self._generate_final_statistics(session)
+            logger.info("Optimization phase completed")
             
-            # Clean up failed tasks
-            await self._cleanup_failed_tasks(session)
-            
-            session.commit()
-        
-        logger.info("Optimization phase completed")
+        except Exception as e:
+            logger.error(f"Optimization phase failed: {e}")
+            # Don't fail the entire pipeline
+            logger.warning("Pipeline completed with optimization errors")
 
-    async def _optimize_collection_priorities(self, session: Session) -> None:
+    async def _optimize_collection_priorities(self, session) -> None:
         """Optimize collection priorities based on current data."""
         
-        players = session.query(Player).filter(
-            Player.position.in_(self.config.priority_positions)
-        ).all()
-        
-        for player in players:
-            # Get latest quality metrics
-            quality_metric = session.query(DataQualityMetric).filter(
-                DataQualityMetric.player_id == player.id,
-                DataQualityMetric.season == 2023
-            ).first()
+        try:
+            from sqlalchemy import select
             
-            if quality_metric:
-                # Adjust priority based on data quality
-                if quality_metric.overall_quality_score < 0.5:
-                    player.collection_priority = max(1, player.collection_priority - 1)
-                elif quality_metric.overall_quality_score > 0.9:
-                    player.collection_priority = min(10, player.collection_priority + 1)
+            result = await session.execute(
+                select(Player).where(Player.position.in_(self.config.priority_positions))
+            )
+            players = result.scalars().all()
+            
+            for player in players:
+                # Get latest quality metrics
+                quality_result = await session.execute(
+                    select(DataQualityMetric).where(
+                        DataQualityMetric.player_id == player.id,
+                        DataQualityMetric.season == 2023
+                    )
+                )
+                quality_metric = quality_result.scalar_one_or_none()
+                
+                if quality_metric:
+                    # Adjust priority based on data quality
+                    if quality_metric.overall_quality_score < 0.5:
+                        player.collection_priority = max(1, player.collection_priority - 1)
+                    elif quality_metric.overall_quality_score > 0.9:
+                        player.collection_priority = min(10, player.collection_priority + 1)
+                        
+        except Exception as e:
+            logger.error(f"Error optimizing collection priorities: {e}")
 
-    async def _generate_final_statistics(self, session: Session) -> None:
+    async def _generate_final_statistics(self, session) -> None:
         """Generate final pipeline statistics."""
         
-        # Update collection progress
-        progress = session.query(CollectionProgress).first()
-        if progress:
-            progress.players_completed = len(self.processed_players)
-            progress.total_api_calls = self.metrics.total_api_calls
-            progress.last_updated = datetime.now(timezone.utc)
+        try:
+            from sqlalchemy import select
+            
+            # Update collection progress
+            result = await session.execute(select(CollectionProgress))
+            progress = result.scalar_one_or_none()
+            
+            if progress:
+                progress.players_completed = len(self.processed_players)
+                progress.total_api_calls = self.metrics.total_api_calls
+                progress.last_updated = datetime.now(timezone.utc)
+                
+        except Exception as e:
+            logger.error(f"Error generating final statistics: {e}")
 
-    async def _cleanup_failed_tasks(self, session: Session) -> None:
+    async def _cleanup_failed_tasks(self, session) -> None:
         """Clean up failed collection tasks."""
         
-        # Mark old failed tasks for retry
-        old_failed_tasks = session.query(CollectionTask).filter(
-            CollectionTask.status == CollectionStatus.FAILED.value,
-            CollectionTask.updated_at < datetime.now(timezone.utc) - timedelta(hours=24)
-        ).all()
-        
-        for task in old_failed_tasks:
-            if task.retry_count < task.max_retries:
-                task.status = CollectionStatus.PENDING.value
-                task.retry_count += 1
-                task.scheduled_at = datetime.now(timezone.utc) + timedelta(hours=1)
+        try:
+            from sqlalchemy import select
+            
+            # Mark old failed tasks for retry
+            result = await session.execute(
+                select(CollectionTask).where(
+                    CollectionTask.status == CollectionStatus.FAILED.value,
+                    CollectionTask.updated_at < datetime.now(timezone.utc) - timedelta(hours=24)
+                )
+            )
+            old_failed_tasks = result.scalars().all()
+            
+            for task in old_failed_tasks:
+                if task.retry_count < task.max_retries:
+                    task.status = CollectionStatus.PENDING.value
+                    task.retry_count += 1
+                    task.scheduled_at = datetime.now(timezone.utc) + timedelta(hours=1)
+                    
+        except Exception as e:
+            logger.error(f"Error cleaning up failed tasks: {e}")
 
     async def pause_pipeline(self) -> None:
         """Pause pipeline execution."""
@@ -561,11 +693,15 @@ class FantasyFootballETL:
         
         logger.info("Cleaning up ETL pipeline resources")
         
-        if self.nfl_client:
-            await self.nfl_client.close()
-        
-        if self.orchestrator:
-            await self.orchestrator.stop_collection()
+        try:
+            if self.nfl_client:
+                await self.nfl_client.close()
+            
+            if self.orchestrator:
+                await self.orchestrator.stop_collection()
+                
+        except Exception as e:
+            logger.error(f"Error during cleanup: {e}")
 
     def get_pipeline_status(self) -> Dict[str, Any]:
         """Get comprehensive pipeline status."""
@@ -592,13 +728,22 @@ class FantasyFootballETL:
         
         # Add component status if available
         if self.orchestrator:
-            status['orchestrator'] = self.orchestrator.get_collection_stats()
+            try:
+                status['orchestrator'] = self.orchestrator.get_collection_stats()
+            except Exception as e:
+                logger.error(f"Error getting orchestrator stats: {e}")
         
         if self.priority_queue:
-            status['priority_queue'] = self.priority_queue.get_queue_stats()
+            try:
+                status['priority_queue'] = self.priority_queue.get_queue_stats()
+            except Exception as e:
+                logger.error(f"Error getting priority queue stats: {e}")
         
         if self.nfl_client:
-            status['nfl_client'] = self.nfl_client.get_stats()
+            try:
+                status['nfl_client'] = self.nfl_client.get_stats()
+            except Exception as e:
+                logger.error(f"Error getting NFL client stats: {e}")
         
         return status
 
@@ -631,25 +776,51 @@ class FantasyFootballETL:
             }
         }
         
-        # Add database statistics
-        async with get_db_session() as session:
-            db_stats = {
-                'total_teams': session.query(Team).count(),
-                'total_players': session.query(Player).count(),
-                'total_weekly_stats': session.query(WeeklyStats).count(),
-                'completed_tasks': session.query(CollectionTask).filter(
-                    CollectionTask.status == CollectionStatus.COMPLETED.value
-                ).count(),
-                'pending_tasks': session.query(CollectionTask).filter(
-                    CollectionTask.status == CollectionStatus.PENDING.value
-                ).count()
-            }
-            
-            report['database_state'] = db_stats
+        # Add database statistics with error handling
+        try:
+            async with get_simple_session() as session:
+                from sqlalchemy import select, func
+                
+                db_stats = {}
+                
+                # Get table counts
+                for table_name, model in [
+                    ('total_teams', Team),
+                    ('total_players', Player), 
+                    ('total_weekly_stats', WeeklyStats)
+                ]:
+                    try:
+                        result = await session.execute(select(func.count()).select_from(model))
+                        db_stats[table_name] = result.scalar()
+                    except Exception as e:
+                        logger.error(f"Error counting {table_name}: {e}")
+                        db_stats[table_name] = 0
+                
+                # Get task counts
+                for status_name, status_value in [
+                    ('completed_tasks', CollectionStatus.COMPLETED.value),
+                    ('pending_tasks', CollectionStatus.PENDING.value)
+                ]:
+                    try:
+                        result = await session.execute(
+                            select(func.count()).select_from(CollectionTask).where(
+                                CollectionTask.status == status_value
+                            )
+                        )
+                        db_stats[status_name] = result.scalar()
+                    except Exception as e:
+                        logger.error(f"Error counting {status_name}: {e}")
+                        db_stats[status_name] = 0
+                
+                report['database_state'] = db_stats
+                
+        except Exception as e:
+            logger.error(f"Error generating database statistics: {e}")
+            report['database_state'] = {'error': str(e)}
         
         return report
 
-# Utility functions
+# Utility functions with better error handling
 async def run_quick_etl(max_api_calls: int = 50) -> ETLMetrics:
     """Run a quick ETL pipeline for testing or limited data collection."""
     
@@ -685,12 +856,18 @@ async def resume_etl_from_checkpoint() -> ETLMetrics:
     
     etl = FantasyFootballETL(config)
     
-    # Initialize without full data collection
-    await etl.initialize_pipeline()
-    
-    # Resume from transformation phase
-    await etl.run_transformation_phase()
-    await etl.run_validation_phase()
-    await etl.run_optimization_phase()
+    try:
+        # Initialize without full data collection
+        if not await etl.initialize_pipeline():
+            raise RuntimeError("Failed to initialize pipeline for resume")
+        
+        # Resume from transformation phase
+        await etl.run_transformation_phase()
+        await etl.run_validation_phase()
+        await etl.run_optimization_phase()
+        
+    except Exception as e:
+        logger.error(f"Error resuming ETL from checkpoint: {e}")
+        etl.metrics.status = PipelineStatus.FAILED
     
     return etl.metrics

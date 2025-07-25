@@ -1,4 +1,9 @@
 """
+Script to fix the main.py file
+Run this to replace your corrupted main.py
+"""
+
+main_py_content = '''"""
 Command Line Interface for Fantasy Football AI Data Collection System.
 Location: src/fantasy_ai/cli/main.py
 """
@@ -138,7 +143,7 @@ async def stats():
             result = await session.execute(select(func.count()).select_from(WeeklyStats))
             stats_count = result.scalar()
             
-            click.echo("\nTable Counts:")
+            click.echo("\\nTable Counts:")
             click.echo(f"  Teams: {team_count}")
             click.echo(f"  Players: {player_count}")
             click.echo(f"  Weekly Stats: {stats_count}")
@@ -233,7 +238,7 @@ async def quick(max_calls, positions, seasons, train_models):
             bar.update(100)
         
         # Show results
-        click.echo("\nQuick collection completed!")
+        click.echo("\\nQuick collection completed!")
         click.echo(f"Players processed: {metrics.total_players_processed}")
         click.echo(f"Stats collected: {metrics.total_stats_collected}")
         click.echo(f"API calls made: {metrics.total_api_calls}")
@@ -241,7 +246,7 @@ async def quick(max_calls, positions, seasons, train_models):
         
         # Optionally train ML models
         if train_models:
-            click.echo("\nTraining ML models on collected data...")
+            click.echo("\\nTraining ML models on collected data...")
             
             try:
                 # Import ML functions
@@ -310,7 +315,7 @@ async def status():
             click.echo(f"  Players: {player_count}")
             click.echo(f"  Weekly Stats: {stats_count}")
         
-        click.echo(f"\nLast updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        click.echo(f"\\nLast updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         
     except Exception as e:
         click.echo(f"Failed to get collection status: {e}")
@@ -326,3 +331,12 @@ def version():
 
 if __name__ == '__main__':
     cli()
+'''
+
+# Write the fixed content to main.py
+with open('src/fantasy_ai/cli/main.py', 'w') as f:
+    f.write(main_py_content)
+
+print("Fixed main.py file has been written!")
+print("You can now run:")
+print("  python src/fantasy_ai/cli/main.py collect quick --max-calls 30 --seasons 2023")

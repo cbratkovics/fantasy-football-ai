@@ -1,0 +1,424 @@
+{
+  "model_version": "1.0.0",
+  "training_date": "20250725_155432",
+  "training_metrics": {
+    "feature_engineering": {
+      "input_samples": 340,
+      "output_features": 280,
+      "feature_names": [
+        "ppg",
+        "consistency_score",
+        "efficiency_ratio",
+        "momentum_score",
+        "boom_bust_ratio",
+        "recent_trend"
+      ]
+    },
+    "gmm_clustering": {
+      "QB": {
+        "n_components": 3,
+        "bic_score": 644.8765477608754,
+        "n_samples": 70,
+        "pca_variance": 0.9671935257132482,
+        "tier_mapping": {
+          "0": {
+            "mean_value": 22.72222222222222,
+            "std_value": 7.137154393699647,
+            "size": 27,
+            "risk_level": "High",
+            "draft_tier": 1,
+            "tier_name": "Elite (Round 1-2)"
+          },
+          "1": {
+            "mean_value": 20.306666666666665,
+            "std_value": 6.993412773619346,
+            "size": 9,
+            "risk_level": "Medium",
+            "draft_tier": 3,
+            "tier_name": "Solid RB1/WR1 (Round 3-4)"
+          },
+          "2": {
+            "mean_value": 22.118823529411767,
+            "std_value": 6.684272922186069,
+            "size": 34,
+            "risk_level": "Low",
+            "draft_tier": 2,
+            "tier_name": "High-End RB1/WR1 (Round 2-3)"
+          }
+        }
+      },
+      "RB": {
+        "n_components": 7,
+        "bic_score": 483.3133891148412,
+        "n_samples": 70,
+        "pca_variance": 0.9541458530733321,
+        "tier_mapping": {
+          "0": {
+            "mean_value": 17.800000000000004,
+            "std_value": 4.765051341351349,
+            "size": 7,
+            "risk_level": "Low",
+            "draft_tier": 5,
+            "tier_name": "Reliable RB2/WR2 (Round 5-6)"
+          },
+          "1": {
+            "mean_value": 16.733333333333334,
+            "std_value": 4.227949332188781,
+            "size": 3,
+            "risk_level": "Low",
+            "draft_tier": 6,
+            "tier_name": "Flex/Bench Depth (Round 6-8)"
+          },
+          "2": {
+            "mean_value": 24.633333333333336,
+            "std_value": 9.810651807545147,
+            "size": 3,
+            "risk_level": "High",
+            "draft_tier": 1,
+            "tier_name": "Elite (Round 1-2)"
+          },
+          "3": {
+            "mean_value": 14.325000000000001,
+            "std_value": 5.432483317967944,
+            "size": 4,
+            "risk_level": "Medium",
+            "draft_tier": 7,
+            "tier_name": "Handcuff/Lottery (Round 8-10)"
+          },
+          "4": {
+            "mean_value": 19.900000000000002,
+            "std_value": 7.876449805493687,
+            "size": 13,
+            "risk_level": "High",
+            "draft_tier": 4,
+            "tier_name": "RB2/WR2 Upside (Round 4-5)"
+          },
+          "5": {
+            "mean_value": 24.6,
+            "std_value": 5.217039390305578,
+            "size": 8,
+            "risk_level": "Medium",
+            "draft_tier": 2,
+            "tier_name": "High-End RB1/WR1 (Round 2-3)"
+          },
+          "6": {
+            "mean_value": 22.65625,
+            "std_value": 7.127058364956751,
+            "size": 32,
+            "risk_level": "Medium",
+            "draft_tier": 3,
+            "tier_name": "Solid RB1/WR1 (Round 3-4)"
+          }
+        }
+      },
+      "WR": {
+        "n_components": 3,
+        "bic_score": 790.9990292917928,
+        "n_samples": 70,
+        "pca_variance": 0.9778270472163955,
+        "tier_mapping": {
+          "0": {
+            "mean_value": 20.166666666666668,
+            "std_value": 6.622268829067909,
+            "size": 36,
+            "risk_level": "High",
+            "draft_tier": 2,
+            "tier_name": "High-End RB1/WR1 (Round 2-3)"
+          },
+          "1": {
+            "mean_value": 20.206666666666663,
+            "std_value": 4.618292132620263,
+            "size": 15,
+            "risk_level": "Low",
+            "draft_tier": 1,
+            "tier_name": "Elite (Round 1-2)"
+          },
+          "2": {
+            "mean_value": 18.963157894736845,
+            "std_value": 6.478564698605442,
+            "size": 19,
+            "risk_level": "Medium",
+            "draft_tier": 3,
+            "tier_name": "Solid RB1/WR1 (Round 3-4)"
+          }
+        }
+      },
+      "TE": {
+        "n_components": 8,
+        "bic_score": 631.496359336743,
+        "n_samples": 70,
+        "pca_variance": 0.9635156577701132,
+        "tier_mapping": {
+          "0": {
+            "mean_value": 6.6,
+            "std_value": 4.117766384825638,
+            "size": 5,
+            "risk_level": "Low",
+            "draft_tier": 6,
+            "tier_name": "Flex/Bench Depth (Round 6-8)"
+          },
+          "1": {
+            "mean_value": 6.425,
+            "std_value": 4.428529665701698,
+            "size": 4,
+            "risk_level": "Medium",
+            "draft_tier": 7,
+            "tier_name": "Handcuff/Lottery (Round 8-10)"
+          },
+          "2": {
+            "mean_value": 9.01,
+            "std_value": 4.627191372744378,
+            "size": 10,
+            "risk_level": "High",
+            "draft_tier": 2,
+            "tier_name": "High-End RB1/WR1 (Round 2-3)"
+          },
+          "3": {
+            "mean_value": 7.861538461538463,
+            "std_value": 3.465775185025147,
+            "size": 13,
+            "risk_level": "Low",
+            "draft_tier": 3,
+            "tier_name": "Solid RB1/WR1 (Round 3-4)"
+          },
+          "4": {
+            "mean_value": 7.833333333333333,
+            "std_value": 5.709251750935104,
+            "size": 3,
+            "risk_level": "High",
+            "draft_tier": 4,
+            "tier_name": "RB2/WR2 Upside (Round 4-5)"
+          },
+          "5": {
+            "mean_value": 5.325000000000001,
+            "std_value": 2.77972570589258,
+            "size": 4,
+            "risk_level": "Low",
+            "draft_tier": 8,
+            "tier_name": "Deep Sleeper (Round 10+)"
+          },
+          "6": {
+            "mean_value": 6.880000000000001,
+            "std_value": 4.778870159357754,
+            "size": 5,
+            "risk_level": "High",
+            "draft_tier": 5,
+            "tier_name": "Reliable RB2/WR2 (Round 5-6)"
+          },
+          "7": {
+            "mean_value": 9.657692307692308,
+            "std_value": 4.494883679244751,
+            "size": 26,
+            "risk_level": "Medium",
+            "draft_tier": 1,
+            "tier_name": "Elite (Round 1-2)"
+          }
+        }
+      }
+    },
+    "neural_network": {
+      "history": {
+        "loss": [
+          378.4234313964844,
+          355.4126281738281,
+          325.2460021972656,
+          282.0705871582031,
+          223.11227416992188,
+          157.67056274414062,
+          106.24632263183594,
+          90.41029357910156,
+          87.91145324707031,
+          73.05537414550781,
+          75.29422760009766,
+          64.85084533691406,
+          67.28717041015625,
+          78.3425521850586,
+          69.07787322998047,
+          64.0569076538086,
+          69.03943634033203,
+          72.37213897705078,
+          61.401885986328125,
+          62.83447265625
+        ],
+        "mean_absolute_error": [
+          17.422191619873047,
+          16.775659561157227,
+          15.81153392791748,
+          14.47853946685791,
+          12.556441307067871,
+          10.186164855957031,
+          8.190051078796387,
+          7.580222129821777,
+          7.221354007720947,
+          6.909703731536865,
+          6.97727632522583,
+          6.498624324798584,
+          6.453437328338623,
+          7.10805606842041,
+          6.6416120529174805,
+          6.584559917449951,
+          6.515620708465576,
+          6.928362846374512,
+          6.2497758865356445,
+          6.316239356994629
+        ],
+        "mean_squared_error": [
+          378.2746276855469,
+          355.2630920410156,
+          325.09515380859375,
+          281.917724609375,
+          222.95677185058594,
+          157.51185607910156,
+          106.08403015136719,
+          90.24504852294922,
+          87.7450942993164,
+          72.88941192626953,
+          75.12911224365234,
+          64.68604278564453,
+          67.12226867675781,
+          78.17731475830078,
+          68.91252899169922,
+          63.89168167114258,
+          68.87418365478516,
+          72.20674133300781,
+          61.23639678955078,
+          62.66881561279297
+        ],
+        "val_loss": [
+          351.7080078125,
+          324.4001770019531,
+          285.4381408691406,
+          232.12315368652344,
+          166.7423095703125,
+          99.71939849853516,
+          55.96802520751953,
+          47.982666015625,
+          46.312442779541016,
+          45.66209030151367,
+          47.355064392089844,
+          47.24605941772461,
+          46.48263931274414,
+          45.36418914794922,
+          44.77614974975586,
+          44.61629867553711,
+          43.59832000732422,
+          43.22132110595703,
+          42.88433074951172,
+          43.09408950805664
+        ],
+        "val_mean_absolute_error": [
+          16.964237213134766,
+          16.14130973815918,
+          14.981671333312988,
+          13.225736618041992,
+          11.00605297088623,
+          8.193374633789062,
+          5.8963141441345215,
+          5.724522113800049,
+          5.736025333404541,
+          5.670134544372559,
+          5.707143306732178,
+          5.7056732177734375,
+          5.677573204040527,
+          5.576952934265137,
+          5.541273593902588,
+          5.536772727966309,
+          5.460299015045166,
+          5.428287029266357,
+          5.37972354888916,
+          5.396729469299316
+        ],
+        "val_mean_squared_error": [
+          351.5588684082031,
+          324.25,
+          285.2862548828125,
+          231.96890258789062,
+          166.58506774902344,
+          99.55866241455078,
+          55.80381393432617,
+          47.81642532348633,
+          46.146240234375,
+          45.49658203125,
+          47.190277099609375,
+          47.081207275390625,
+          46.31755828857422,
+          45.198848724365234,
+          44.6108283996582,
+          44.45112991333008,
+          43.432979583740234,
+          43.05594253540039,
+          42.71868133544922,
+          42.92850875854492
+        ],
+        "lr": [
+          "0.001",
+          "0.001",
+          "0.001",
+          "0.001",
+          "0.001",
+          "0.001",
+          "0.001",
+          "0.001",
+          "0.001",
+          "0.001",
+          "0.001",
+          "0.001",
+          "0.001",
+          "0.001",
+          "0.001",
+          "0.001",
+          "0.001",
+          "0.001",
+          "0.001",
+          "0.001"
+        ]
+      },
+      "validation_metrics": {
+        "mae": 5.396729725428989,
+        "rmse": 6.551985497180782,
+        "r2": 0.31169130489789554,
+        "n_samples": 56
+      },
+      "model_summary": {
+        "total_params": 11777,
+        "trainable_params": "11777",
+        "layers": 8,
+        "hidden_layers": [
+          128,
+          64,
+          32
+        ],
+        "dropout_rate": 0.3,
+        "learning_rate": 0.001
+      }
+    },
+    "system_performance": {
+      "accuracy_percentage": 40.0,
+      "prediction_mae": 5.672490060329437,
+      "prediction_rmse": 8.035730859462731,
+      "n_samples": 10,
+      "target_mae": 0.45
+    }
+  },
+  "feature_names": [
+    "ppg",
+    "consistency_score",
+    "efficiency_ratio",
+    "momentum_score",
+    "boom_bust_ratio",
+    "recent_trend"
+  ],
+  "system_config": {
+    "lookback_weeks": 10,
+    "gmm_components_range": [
+      3,
+      8
+    ],
+    "nn_hidden_layers": [
+      128,
+      64,
+      32
+    ],
+    "nn_dropout_rate": 0.3
+  }
+}

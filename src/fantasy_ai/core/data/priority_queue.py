@@ -15,7 +15,7 @@ import statistics
 from collections import defaultdict, deque
 
 from sqlalchemy.orm import Session
-from sqlalchemy import and_, or_, desc, asc, func
+from sqlalchemy import and_, or_, desc, asc, func, select
 
 from .storage.models import (
     CollectionTask, CollectionStatus, Player, Team, WeeklyStats,
@@ -95,6 +95,50 @@ class TaskPriorityScore:
             self.category = TaskCategory.ENHANCEMENT
         else:
             self.category = TaskCategory.MAINTENANCE
+    
+    # FIXED: Add comparison methods for priority queue
+    def __lt__(self, other):
+        """Less than comparison for priority queue."""
+        if not isinstance(other, TaskPriorityScore):
+            return NotImplemented
+        
+        # Primary: urgency level (lower number = higher priority)
+        if self.urgency != other.urgency:
+            return self.urgency.value < other.urgency.value
+        
+        # Secondary: total score (higher score = higher priority)
+        return self.total_score > other.total_score
+    
+    def __le__(self, other):
+        """Less than or equal comparison."""
+        if not isinstance(other, TaskPriorityScore):
+            return NotImplemented
+        return self < other or self == other
+    
+    def __gt__(self, other):
+        """Greater than comparison."""
+        if not isinstance(other, TaskPriorityScore):
+            return NotImplemented
+        return not self <= other
+    
+    def __ge__(self, other):
+        """Greater than or equal comparison."""
+        if not isinstance(other, TaskPriorityScore):
+            return NotImplemented
+        return not self < other
+    
+    def __eq__(self, other):
+        """Equality comparison."""
+        if not isinstance(other, TaskPriorityScore):
+            return NotImplemented
+        return (self.urgency == other.urgency and 
+                abs(self.total_score - other.total_score) < 0.001)
+    
+    def __ne__(self, other):
+        """Not equal comparison."""
+        if not isinstance(other, TaskPriorityScore):
+            return NotImplemented
+        return not self == other
 
 @dataclass
 class PriorityTask:
@@ -192,16 +236,20 @@ class IntelligentPriorityQueue:
             logger.info(f"Queued {queued_count} intelligently prioritized tasks")
             return queued_count
 
-    async def _gather_analysis_data(self, session: Session) -> Dict[str, Any]:
+    async def _gather_analysis_data(self, session) -> Dict[str, Any]:
         """Gather comprehensive data for intelligent task prioritization."""
         
         # Priority players (QB, RB, WR, TE)
         priority_positions = ['QB', 'RB', 'WR', 'TE']
         
-        priority_players = session.query(Player).filter(
-            Player.position.in_(priority_positions),
-            Player.is_active == True
-        ).all()
+        # FIXED: Use SQLAlchemy 2.0 syntax
+        result = await session.execute(
+            select(Player).where(
+                Player.position.in_(priority_positions),
+                Player.is_active == True
+            )
+        )
+        priority_players = result.scalars().all()
         
         # Current data coverage analysis
         data_coverage = {}
@@ -213,13 +261,16 @@ class IntelligentPriorityQueue:
             quality_by_season = {}
             
             for season in [2021, 2022, 2023]:
-                # Get existing weeks
-                existing_weeks = session.query(WeeklyStats.week).filter(
-                    WeeklyStats.player_id == player.id,
-                    WeeklyStats.season == season
-                ).all()
+                # Get existing weeks - FIXED: Use SQLAlchemy 2.0 syntax
+                result = await session.execute(
+                    select(WeeklyStats.week).where(
+                        WeeklyStats.player_id == player.id,
+                        WeeklyStats.season == season
+                    )
+                )
+                existing_weeks = result.scalars().all()
                 
-                existing_week_numbers = {week[0] for week in existing_weeks}
+                existing_week_numbers = set(existing_weeks)
                 expected_weeks = set(range(1, 18))  # Weeks 1-17
                 missing_weeks = expected_weeks - existing_week_numbers
                 
@@ -229,11 +280,14 @@ class IntelligentPriorityQueue:
                     'coverage_ratio': len(existing_week_numbers) / 17
                 }
                 
-                # Get quality metrics
-                quality_metric = session.query(DataQualityMetric).filter(
-                    DataQualityMetric.player_id == player.id,
-                    DataQualityMetric.season == season
-                ).first()
+                # Get quality metrics - FIXED: Use SQLAlchemy 2.0 syntax
+                result = await session.execute(
+                    select(DataQualityMetric).where(
+                        DataQualityMetric.player_id == player.id,
+                        DataQualityMetric.season == season
+                    )
+                )
+                quality_metric = result.scalar_one_or_none()
                 
                 if quality_metric:
                     quality_by_season[season] = {
@@ -253,10 +307,13 @@ class IntelligentPriorityQueue:
             data_coverage[player.id] = coverage_by_season
             quality_issues[player.id] = quality_by_season
         
-        # API and performance context
-        recent_tasks = session.query(CollectionTask).filter(
-            CollectionTask.created_at >= datetime.now(timezone.utc) - timedelta(days=7)
-        ).all()
+        # API and performance context - FIXED: Use SQLAlchemy 2.0 syntax
+        result = await session.execute(
+            select(CollectionTask).where(
+                CollectionTask.created_at >= datetime.now(timezone.utc) - timedelta(days=7)
+            )
+        )
+        recent_tasks = result.scalars().all()
         
         api_performance = self._analyze_recent_performance(recent_tasks)
         
@@ -268,7 +325,7 @@ class IntelligentPriorityQueue:
             'current_time': datetime.now(timezone.utc)
         }
 
-    async def _generate_priority_tasks(self, session: Session, analysis_data: Dict[str, Any]) -> List[Tuple[CollectionTask, TaskPriorityScore]]:
+    async def _generate_priority_tasks(self, session, analysis_data: Dict[str, Any]) -> List[Tuple[CollectionTask, TaskPriorityScore]]:
         """Generate prioritized collection tasks based on analysis."""
         
         priority_tasks = []
@@ -407,7 +464,7 @@ class IntelligentPriorityQueue:
         else:  # BACKGROUND
             return base_time + timedelta(days=1)
 
-    async def _optimize_and_queue(self, session: Session, 
+    async def _optimize_and_queue(self, session, 
                                 priority_tasks: List[Tuple[CollectionTask, TaskPriorityScore]],
                                 limit: Optional[int] = None) -> int:
         """Optimize task order and add to queue with dependency management."""
@@ -425,7 +482,7 @@ class IntelligentPriorityQueue:
             try:
                 # Add task to database
                 session.add(task)
-                session.flush()  # Get task ID
+                await session.flush()  # Get task ID
                 
                 # Create priority task for queue
                 priority_task = PriorityTask(
@@ -443,7 +500,7 @@ class IntelligentPriorityQueue:
                 logger.error(f"Error queuing task for player {task.player_id}: {e}")
                 continue
         
-        session.commit()
+        await session.commit()
         
         # Optimize queue order
         await self._optimize_queue_order()
@@ -579,14 +636,17 @@ class IntelligentPriorityQueue:
         
         # Check dependencies
         if priority_task.dependencies:
-            # Check if all dependencies are completed
+            # Check if all dependencies are completed - FIXED: Use SQLAlchemy 2.0 syntax
             async with get_db_session() as session:
-                completed_deps = session.query(CollectionTask.id).filter(
-                    CollectionTask.id.in_(priority_task.dependencies),
-                    CollectionTask.status == CollectionStatus.COMPLETED.value
-                ).all()
+                result = await session.execute(
+                    select(CollectionTask.id).where(
+                        CollectionTask.id.in_(priority_task.dependencies),
+                        CollectionTask.status == CollectionStatus.COMPLETED.value
+                    )
+                )
+                completed_deps = result.scalars().all()
                 
-                completed_dep_ids = {dep[0] for dep in completed_deps}
+                completed_dep_ids = set(completed_deps)
                 
                 if not priority_task.dependencies.issubset(completed_dep_ids):
                     return False
@@ -747,13 +807,17 @@ async def optimize_collection_schedule() -> Dict[str, Any]:
     logger.info("Optimizing collection schedule")
     
     async with get_db_session() as session:
-        # Get pending tasks
-        pending_tasks = session.query(CollectionTask).filter(
-            CollectionTask.status == CollectionStatus.PENDING.value
-        ).all()
+        # Get pending tasks - FIXED: Use SQLAlchemy 2.0 syntax
+        result = await session.execute(
+            select(CollectionTask).where(
+                CollectionTask.status == CollectionStatus.PENDING.value
+            )
+        )
+        pending_tasks = result.scalars().all()
         
-        # Get collection progress
-        progress = session.query(CollectionProgress).first()
+        # Get collection progress - FIXED: Use SQLAlchemy 2.0 syntax
+        result = await session.execute(select(CollectionProgress))
+        progress = result.scalar_one_or_none()
         
         # Calculate optimization recommendations
         recommendations = {

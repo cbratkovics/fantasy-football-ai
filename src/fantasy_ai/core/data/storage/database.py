@@ -50,24 +50,27 @@ class DatabaseManager:
         self._sync_session_factory = None
         self._async_session_factory = None
         
-        # Connection pool settings
-        self.pool_settings = {
-            'pool_size': 10,
-            'max_overflow': 20,
-            'pool_pre_ping': True,
-            'pool_recycle': 3600
-        }
+        # FIXED: Configure pool settings based on database type
+        self.is_sqlite = 'sqlite' in self.database_url.lower()
         
-        # SQLite specific settings
-        if 'sqlite' in self.database_url:
-            self.pool_settings.update({
+        if self.is_sqlite:
+            # SQLite-specific settings (no pooling parameters)
+            self.pool_settings = {
                 'poolclass': StaticPool,
                 'connect_args': {
                     'check_same_thread': False,
                     'timeout': 30,
                     'isolation_level': None  # Enable autocommit mode
                 }
-            })
+            }
+        else:
+            # PostgreSQL/MySQL settings (with pooling)
+            self.pool_settings = {
+                'pool_size': 10,
+                'max_overflow': 20,
+                'pool_pre_ping': True,
+                'pool_recycle': 3600
+            }
 
     def get_sync_engine(self):
         """Get or create synchronous database engine."""
@@ -79,7 +82,7 @@ class DatabaseManager:
             )
             
             # Configure SQLite specific settings
-            if 'sqlite' in self.database_url:
+            if self.is_sqlite:
                 @event.listens_for(self._sync_engine, "connect")
                 def set_sqlite_pragma(dbapi_connection, connection_record):
                     cursor = dbapi_connection.cursor()
@@ -98,12 +101,23 @@ class DatabaseManager:
     def get_async_engine(self):
         """Get or create asynchronous database engine."""
         if self._async_engine is None:
-            # Adjust pool settings for async
-            async_pool_settings = self.pool_settings.copy()
-            if 'sqlite' in self.async_database_url:
-                async_pool_settings['connect_args'] = {
-                    'timeout': 30,
-                    'check_same_thread': False
+            # FIXED: Use appropriate settings for each database type
+            if self.is_sqlite:
+                # SQLite async settings (no pooling)
+                async_pool_settings = {
+                    'poolclass': StaticPool,
+                    'connect_args': {
+                        'timeout': 30,
+                        'check_same_thread': False
+                    }
+                }
+            else:
+                # PostgreSQL/MySQL async settings (with pooling)
+                async_pool_settings = {
+                    'pool_size': 10,
+                    'max_overflow': 20,
+                    'pool_pre_ping': True,
+                    'pool_recycle': 3600
                 }
             
             self._async_engine = create_async_engine(
@@ -166,7 +180,8 @@ class DatabaseManager:
         try:
             async with self.get_async_session() as session:
                 # Simple query to test connection
-                result = await session.execute("SELECT 1")
+                from sqlalchemy import text
+                result = await session.execute(text("SELECT 1"))
                 await session.commit()
                 logger.info("Database connection test successful")
                 return True
@@ -277,20 +292,22 @@ async def optimize_database():
     """Optimize database performance (SQLite specific)."""
     db_manager = get_database_manager()
     
-    if 'sqlite' not in db_manager.database_url:
+    if not db_manager.is_sqlite:
         logger.info("Database optimization only supported for SQLite")
         return
     
     async with get_db_session() as session:
         try:
+            from sqlalchemy import text
             # SQLite optimization commands
-            await session.execute("PRAGMA optimize")
-            await session.execute("VACUUM")
-            await session.execute("ANALYZE")
+            await session.execute(text("PRAGMA optimize"))
+            await session.execute(text("VACUUM"))
+            await session.execute(text("ANALYZE"))
             await session.commit()
             logger.info("Database optimization completed")
         except Exception as e:
             logger.error(f"Database optimization failed: {e}")
+
 
 async def get_database_stats() -> dict:
     """Get database statistics and health metrics."""
@@ -298,15 +315,17 @@ async def get_database_stats() -> dict:
     
     stats = {
         'database_url': db_manager.database_url,
+        'database_type': 'sqlite' if db_manager.is_sqlite else 'other',
         'engine_type': 'async' if db_manager._async_engine else 'sync',
-        'connection_pool_size': db_manager.pool_settings.get('pool_size', 'N/A'),
+        'connection_pool_size': 'N/A (SQLite)' if db_manager.is_sqlite else db_manager.pool_settings.get('pool_size', 'N/A'),
         'tables': {}
     }
     
     try:
         async with get_db_session() as session:
-            # Get table row counts
+            # Get table row counts - FIXED: Use SQLAlchemy 2.0 syntax
             from .models import Team, Player, WeeklyStats, CollectionTask, DataQualityMetric
+            from sqlalchemy import select, func
             
             table_models = {
                 'teams': Team,
@@ -318,7 +337,9 @@ async def get_database_stats() -> dict:
             
             for table_name, model in table_models.items():
                 try:
-                    count = await session.query(model).count()
+                    # FIXED: Use modern SQLAlchemy 2.0 syntax
+                    result = await session.execute(select(func.count()).select_from(model))
+                    count = result.scalar()
                     stats['tables'][table_name] = count
                 except Exception as e:
                     stats['tables'][table_name] = f"Error: {e}"
@@ -335,7 +356,7 @@ async def backup_database(backup_path: Optional[str] = None):
     """Create database backup (SQLite specific)."""
     db_manager = get_database_manager()
     
-    if 'sqlite' not in db_manager.database_url:
+    if not db_manager.is_sqlite:
         logger.error("Database backup only supported for SQLite")
         return False
     
@@ -383,6 +404,7 @@ class DatabaseHealthMonitor:
     async def health_check(self) -> dict:
         """Perform comprehensive database health check."""
         import time
+        from datetime import datetime
         
         start_time = time.time()
         health_report = {
@@ -396,15 +418,16 @@ class DatabaseHealthMonitor:
         try:
             # Test basic connectivity
             async with self.db_manager.get_async_session() as session:
-                await session.execute("SELECT 1")
+                from sqlalchemy import text
+                await session.execute(text("SELECT 1"))
                 await session.commit()
             
             response_time = time.time() - start_time
             health_report['response_time'] = round(response_time, 3)
             health_report['status'] = 'healthy'
             
-            # Check connection pool if available
-            if hasattr(self.db_manager.get_async_engine(), 'pool'):
+            # Check connection pool if available (not for SQLite)
+            if not self.db_manager.is_sqlite and hasattr(self.db_manager.get_async_engine(), 'pool'):
                 pool = self.db_manager.get_async_engine().pool
                 health_report['connection_pool'] = {
                     'size': getattr(pool, 'size', 'N/A'),
@@ -412,6 +435,8 @@ class DatabaseHealthMonitor:
                     'checked_out': getattr(pool, 'checkedout', 'N/A'),
                     'overflow': getattr(pool, 'overflow', 'N/A')
                 }
+            else:
+                health_report['connection_pool'] = {'type': 'SQLite (no pooling)'}
             
             # Update stats
             self.health_stats['total_queries'] += 1

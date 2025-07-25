@@ -13,10 +13,6 @@ from enum import Enum
 import statistics
 import json
 
-from sqlalchemy.orm import Session
-from .storage.models import ApiRateLimit
-from .storage.database import get_db_session
-
 logger = logging.getLogger(__name__)
 
 class RateLimitTier(Enum):
@@ -206,7 +202,7 @@ class AdaptiveRateLimiter:
                 await self._adjust_performance_tier()
                 self.last_tier_adjustment = time.time()
             
-            # Persist to database
+            # Persist to database (with error handling)
             await self._update_database_metrics()
 
     async def _adapt_request_interval(self, metrics: RequestMetrics) -> None:
@@ -325,15 +321,21 @@ class AdaptiveRateLimiter:
         self.minute_requests += 1
 
     async def _update_database_metrics(self) -> None:
-        """Update rate limit metrics in database."""
-        
+        """Update rate limit metrics in database - FIXED for SQLite."""
         try:
-            async with get_db_session() as session:
+            # FIXED: Use simple database session instead of the problematic get_db_session
+            from .storage.simple_database import get_simple_session
+            from .storage.models import ApiRateLimit
+            from sqlalchemy import select
+            
+            async with get_simple_session() as session:
                 # Get or create rate limit record
-                rate_limit = session.query(ApiRateLimit).filter(
+                stmt = select(ApiRateLimit).where(
                     ApiRateLimit.api_name == 'nfl_api',
                     ApiRateLimit.endpoint == 'default'
-                ).first()
+                )
+                result = await session.execute(stmt)
+                rate_limit = result.scalar_one_or_none()
                 
                 if not rate_limit:
                     rate_limit = ApiRateLimit(
@@ -358,10 +360,12 @@ class AdaptiveRateLimiter:
                         r.response_time for r in recent_requests
                     )
                 
-                session.commit()
+                await session.commit()
                 
         except Exception as e:
+            # FIXED: Don't fail the rate limiter due to database issues
             logger.error(f"Error updating database metrics: {e}")
+            # Continue operation without database persistence
 
     def get_status(self) -> Dict[str, any]:
         """Get current rate limiter status and performance metrics."""
