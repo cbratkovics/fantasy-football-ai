@@ -1,591 +1,614 @@
 """
-Comprehensive NFL API integration for Fantasy Football AI Assistant.
-
-This module integrates with API-Sports NFL API to get comprehensive 
-player and team data for all NFL players, not just those in your ESPN league.
+Enhanced NFL API Client with Integrated Rate Limiting and Advanced Error Handling.
+Location: src/fantasy_ai/core/data/sources/nfl_comprehensive.py
 """
 
+import aiohttp
+import asyncio
 import logging
-import requests
 import time
-from typing import Dict, List, Optional, Any, Tuple
-from datetime import datetime, timedelta
+from datetime import datetime, timezone
+from typing import Dict, List, Optional, Any, Union
 from dataclasses import dataclass
-import pandas as pd
+import json
 import os
-from dotenv import load_dotenv
+from pathlib import Path
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
+from ..rate_limiter import AdaptiveRateLimiter, RateLimitedContext, create_nfl_api_rate_limiter
+from ..storage.models import Team, Player, WeeklyStats
+from ..storage.database import get_db_session
+
 logger = logging.getLogger(__name__)
 
-# Load environment variables
-load_dotenv()
-
-
-@dataclass
-class NFLPlayerStats:
-    """NFL player statistics from comprehensive API."""
-    player_id: str
-    name: str
-    position: str
-    team: str
-    season: int
-    week: int
-    games_played: int
-    passing_yards: Optional[int] = None
-    passing_tds: Optional[int] = None
-    rushing_yards: Optional[int] = None
-    rushing_tds: Optional[int] = None
-    receiving_yards: Optional[int] = None
-    receiving_tds: Optional[int] = None
-    receptions: Optional[int] = None
-    fantasy_points: Optional[float] = None
-
-
 @dataclass 
-class NFLTeam:
-    """NFL team information."""
-    team_id: str
-    name: str
-    code: str
-    city: str
-    conference: str
-    division: str
+class APIResponse:
+    """Structured API response with metadata."""
+    data: Any
+    status_code: int
+    response_time: float
+    success: bool
+    error_message: Optional[str] = None
+    cached: bool = False
 
+class NFLAPIError(Exception):
+    """Custom exception for NFL API errors."""
+    pass
 
 class NFLAPIClient:
     """
-    Client for comprehensive NFL data from API-Sports.
-    
-    Provides access to all NFL players, teams, and statistics
-    beyond what's available in your ESPN league.
+    Enhanced NFL API client with intelligent rate limiting, caching,
+    error handling, and performance monitoring.
     """
     
-    def __init__(self, api_key: Optional[str] = None):
-        """
-        Initialize NFL API client.
+    def __init__(self, api_key: Optional[str] = None, rate_limiter: Optional[AdaptiveRateLimiter] = None):
+        """Initialize NFL API client with configuration."""
         
-        Args:
-            api_key: API-Sports API key (gets from env if not provided)
-        """
+        # API Configuration
         self.api_key = api_key or os.getenv('NFL_API_KEY')
         if not self.api_key:
-            raise ValueError("NFL_API_KEY is required. Get one from https://api-sports.io/")
+            raise ValueError("NFL_API_KEY environment variable is required")
         
         self.base_url = "https://v1.american-football.api-sports.io"
+        self.league_id = 1  # NFL League ID
+        self.available_seasons = [2021, 2022, 2023]  # Free tier seasons
+        
+        # Rate limiting
+        self.rate_limiter = rate_limiter or create_nfl_api_rate_limiter()
+        
+        # HTTP client configuration
+        self.timeout = aiohttp.ClientTimeout(total=30, connect=10)
         self.headers = {
             'X-RapidAPI-Key': self.api_key,
-            'X-RapidAPI-Host': 'v1.american-football.api-sports.io'
+            'X-RapidAPI-Host': 'v1.american-football.api-sports.io',
+            'User-Agent': 'FantasyFootballAI/1.0'
         }
         
-        # Rate limiting
-        self.last_request_time = 0
-        self.min_request_interval = 1.0  # Minimum 1 second between requests
+        # Session management
+        self._session: Optional[aiohttp.ClientSession] = None
         
-        # Get the correct league IDs
-        self.nfl_league_id = None
-        self._initialize_league_ids()
+        # Caching
+        self._cache: Dict[str, Dict[str, Any]] = {}
+        self.cache_ttl = 3600  # 1 hour cache TTL
         
-        logger.info("NFL API Client initialized")
-    
-    def _initialize_league_ids(self):
-        """Get the correct league ID for NFL."""
-        try:
-            leagues = self.get_leagues()
-            for league_data in leagues:
-                league = league_data.get('league', {})
-                if league.get('name', '').upper() == 'NFL':
-                    self.nfl_league_id = league.get('id')
-                    logger.info(f"Found NFL league with ID: {self.nfl_league_id}")
-                    break
+        # Performance tracking
+        self.stats = {
+            'total_requests': 0,
+            'successful_requests': 0,
+            'cached_responses': 0,
+            'avg_response_time': 0.0,
+            'last_request_time': None
+        }
+
+    async def __aenter__(self):
+        """Async context manager entry."""
+        await self._ensure_session()
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Async context manager exit."""
+        await self.close()
+
+    async def _ensure_session(self):
+        """Ensure HTTP session exists."""
+        if self._session is None or self._session.closed:
+            connector = aiohttp.TCPConnector(
+                limit=10,
+                limit_per_host=5,
+                ttl_dns_cache=300,
+                use_dns_cache=True
+            )
+            self._session = aiohttp.ClientSession(
+                timeout=self.timeout,
+                headers=self.headers,
+                connector=connector
+            )
+
+    async def close(self):
+        """Close HTTP session and cleanup resources."""
+        if self._session and not self._session.closed:
+            await self._session.close()
             
-            if not self.nfl_league_id:
-                logger.warning("Could not find NFL league ID, defaulting to 2")
-                self.nfl_league_id = 2  # Based on debug output
-        except Exception as e:
-            logger.warning(f"Could not initialize league IDs: {e}, defaulting to 2")
-            self.nfl_league_id = 2
-    
-    def _make_request(self, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
-        """
-        Make API request with rate limiting and error handling.
+        # Log final statistics
+        logger.info(f"NFL API Client Statistics: {self.get_stats()}")
+
+    def _get_cache_key(self, endpoint: str, params: Dict[str, Any]) -> str:
+        """Generate cache key for request."""
+        sorted_params = sorted(params.items())
+        param_str = "&".join(f"{k}={v}" for k, v in sorted_params)
+        return f"{endpoint}?{param_str}"
+
+    def _is_cache_valid(self, cache_entry: Dict[str, Any]) -> bool:
+        """Check if cache entry is still valid."""
+        if 'timestamp' not in cache_entry:
+            return False
         
-        Args:
-            endpoint: API endpoint
-            params: Query parameters
+        age = time.time() - cache_entry['timestamp']
+        return age < self.cache_ttl
+
+    async def _make_request(self, endpoint: str, params: Dict[str, Any]) -> APIResponse:
+        """Make HTTP request with rate limiting and error handling."""
+        
+        await self._ensure_session()
+        
+        # Check cache first
+        cache_key = self._get_cache_key(endpoint, params)
+        if cache_key in self._cache and self._is_cache_valid(self._cache[cache_key]):
+            logger.debug(f"Cache hit for {endpoint}")
+            self.stats['cached_responses'] += 1
+            cached_data = self._cache[cache_key]['data']
+            return APIResponse(
+                data=cached_data,
+                status_code=200,
+                response_time=0.0,
+                success=True,
+                cached=True
+            )
+        
+        # Use rate-limited context for the request
+        async with RateLimitedContext(self.rate_limiter, f"NFL API {endpoint}"):
+            start_time = time.time()
             
-        Returns:
-            API response data
-        """
-        # Rate limiting
-        current_time = time.time()
-        time_since_last = current_time - self.last_request_time
-        if time_since_last < self.min_request_interval:
-            sleep_time = self.min_request_interval - time_since_last
-            time.sleep(sleep_time)
-        
-        url = f"{self.base_url}/{endpoint}"
-        
-        try:
-            response = requests.get(url, headers=self.headers, params=params or {})
-            self.last_request_time = time.time()
-            
-            if response.status_code == 200:
-                return response.json()
-            elif response.status_code == 429:
-                logger.warning("Rate limit hit, waiting 60 seconds...")
-                time.sleep(60)
-                return self._make_request(endpoint, params)  # Retry
-            else:
-                logger.error(f"API request failed: {response.status_code} - {response.text}")
-                return {}
+            try:
+                url = f"{self.base_url}/{endpoint}"
                 
-        except Exception as e:
-            logger.error(f"API request error: {e}")
-            return {}
-    
-    def get_leagues(self) -> List[Dict[str, Any]]:
-        """Get available NFL leagues/seasons."""
-        response = self._make_request("leagues")
-        return response.get('response', [])
-    
-    def get_teams(self, season: int = 2024) -> List[NFLTeam]:
-        """
-        Get all NFL teams.
-        
-        Args:
-            season: Season year
+                # Add league parameter if not present
+                if 'league' not in params:
+                    params['league'] = self.league_id
+                
+                logger.debug(f"Making request to {endpoint} with params: {params}")
+                
+                async with self._session.get(url, params=params) as response:
+                    response_time = time.time() - start_time
+                    response_text = await response.text()
+                    
+                    # Update statistics
+                    self.stats['total_requests'] += 1
+                    self.stats['last_request_time'] = datetime.now(timezone.utc)
+                    
+                    # Calculate rolling average response time
+                    total_requests = self.stats['total_requests']
+                    current_avg = self.stats['avg_response_time']
+                    self.stats['avg_response_time'] = (
+                        (current_avg * (total_requests - 1) + response_time) / total_requests
+                    )
+                    
+                    if response.status == 200:
+                        try:
+                            data = json.loads(response_text)
+                            
+                            # Validate API response structure
+                            if not self._validate_api_response(data):
+                                raise NFLAPIError(f"Invalid API response structure: {data}")
+                            
+                            # Cache successful response
+                            self._cache[cache_key] = {
+                                'data': data,
+                                'timestamp': time.time()
+                            }
+                            
+                            self.stats['successful_requests'] += 1
+                            
+                            return APIResponse(
+                                data=data,
+                                status_code=response.status,
+                                response_time=response_time,
+                                success=True
+                            )
+                            
+                        except json.JSONDecodeError as e:
+                            error_msg = f"JSON decode error: {e}"
+                            logger.error(f"{error_msg}. Response: {response_text[:500]}")
+                            raise NFLAPIError(error_msg)
+                    
+                    else:
+                        error_msg = f"HTTP {response.status}: {response_text}"
+                        logger.error(f"API request failed: {error_msg}")
+                        
+                        return APIResponse(
+                            data=None,
+                            status_code=response.status,
+                            response_time=response_time,
+                            success=False,
+                            error_message=error_msg
+                        )
             
-        Returns:
-            List of NFL teams
-        """
-        if not self.nfl_league_id:
-            logger.error("NFL league ID not found")
+            except asyncio.TimeoutError:
+                error_msg = "Request timeout"
+                logger.error(error_msg)
+                return APIResponse(
+                    data=None,
+                    status_code=408,
+                    response_time=time.time() - start_time,
+                    success=False,
+                    error_message=error_msg
+                )
+            
+            except aiohttp.ClientError as e:
+                error_msg = f"HTTP client error: {e}"
+                logger.error(error_msg)
+                return APIResponse(
+                    data=None,
+                    status_code=0,
+                    response_time=time.time() - start_time,
+                    success=False,
+                    error_message=error_msg
+                )
+
+    def _validate_api_response(self, data: Dict[str, Any]) -> bool:
+        """Validate API response has expected structure."""
+        
+        # Check for required fields
+        if not isinstance(data, dict):
+            return False
+        
+        # API-Sports standard response structure
+        required_fields = ['get', 'response']
+        for field in required_fields:
+            if field not in data:
+                logger.warning(f"Missing required field in API response: {field}")
+                return False
+        
+        return True
+
+    async def get_teams(self) -> List[Dict[str, Any]]:
+        """Get all NFL teams."""
+        
+        logger.info("Fetching NFL teams")
+        
+        response = await self._make_request('teams', {})
+        
+        if not response.success:
+            raise NFLAPIError(f"Failed to fetch teams: {response.error_message}")
+        
+        teams_data = response.data.get('response', [])
+        logger.info(f"Retrieved {len(teams_data)} NFL teams")
+        
+        return teams_data
+
+    async def get_team_info(self, team_id: int) -> Optional[Dict[str, Any]]:
+        """Get detailed information for a specific team."""
+        
+        logger.debug(f"Fetching team info for team ID: {team_id}")
+        
+        response = await self._make_request('teams', {'id': team_id})
+        
+        if not response.success:
+            logger.error(f"Failed to fetch team info for {team_id}: {response.error_message}")
+            return None
+        
+        teams_data = response.data.get('response', [])
+        return teams_data[0] if teams_data else None
+
+    async def get_players_by_team(self, team_id: int, season: int) -> List[Dict[str, Any]]:
+        """Get all players for a specific team and season."""
+        
+        if season not in self.available_seasons:
+            logger.warning(f"Season {season} not available on free tier. Available: {self.available_seasons}")
             return []
         
-        params = {'league': self.nfl_league_id, 'season': season}
-        logger.info(f"Getting teams with params: {params}")
-        response = self._make_request("teams", params)
+        logger.info(f"Fetching players for team {team_id}, season {season}")
         
-        teams = []
-        if response and 'response' in response:
-            for team_data in response.get('response', []):
-                team = team_data.get('team', {})
-                teams.append(NFLTeam(
-                    team_id=str(team.get('id', '')),
-                    name=team.get('name', ''),
-                    code=team.get('code', ''),
-                    city=team.get('city', ''),
-                    conference=team_data.get('conference', ''),
-                    division=team_data.get('division', '')
-                ))
+        response = await self._make_request('players', {
+            'team': team_id,
+            'season': season
+        })
         
-        logger.info(f"Retrieved {len(teams)} NFL teams")
-        return teams
-    
-    def get_players(self, team_id: Optional[str] = None, season: int = 2024) -> List[Dict[str, Any]]:
-        """
-        Get NFL players, optionally filtered by team.
-        
-        Args:
-            team_id: Team ID to filter by (None for all teams)
-            season: Season year
-            
-        Returns:
-            List of player data
-        """
-        if not self.nfl_league_id:
-            logger.error("NFL league ID not found")
+        if not response.success:
+            logger.error(f"Failed to fetch players for team {team_id}, season {season}: {response.error_message}")
             return []
         
-        params = {'league': self.nfl_league_id, 'season': season}
-        if team_id:
-            params['team'] = team_id
+        players_data = response.data.get('response', [])
+        logger.info(f"Retrieved {len(players_data)} players for team {team_id}, season {season}")
         
-        response = self._make_request("players", params)
-        players = response.get('response', []) if response else []
+        return players_data
+
+    async def get_player_info(self, player_id: int) -> Optional[Dict[str, Any]]:
+        """Get detailed information for a specific player."""
         
-        logger.info(f"Retrieved {len(players)} players" + (f" for team {team_id}" if team_id else ""))
-        return players
-    
-    def get_all_players(self, season: int = 2024) -> pd.DataFrame:
-        """
-        Get all NFL players from all teams.
+        logger.debug(f"Fetching player info for player ID: {player_id}")
         
-        Args:
-            season: Season year
-            
-        Returns:
-            DataFrame with all player information
-        """
-        logger.info(f"Collecting all NFL players for {season} season...")
+        response = await self._make_request('players', {'id': player_id})
         
-        # Get all teams first
-        teams = self.get_teams(season=season)
-        if not teams:
-            logger.error("No teams found, cannot get players")
-            return pd.DataFrame()
+        if not response.success:
+            logger.error(f"Failed to fetch player info for {player_id}: {response.error_message}")
+            return None
         
-        all_players = []
+        players_data = response.data.get('response', [])
+        return players_data[0] if players_data else None
+
+    async def get_player_stats(self, player_id: int, season: int, week: Optional[int] = None) -> Optional[Dict[str, Any]]:
+        """Get player statistics for a specific season/week."""
         
-        for team in teams:
-            logger.info(f"Getting players for {team.name}...")
-            team_players = self.get_players(team.team_id, season)
-            
-            for player_data in team_players:
-                player = player_data.get('player', {})
-                all_players.append({
-                    'player_id': str(player.get('id', '')),
-                    'name': player.get('name', ''),
-                    'position': player.get('position', ''),
-                    'team_id': team.team_id,
-                    'team_name': team.name,
-                    'team_code': team.code,
-                    'age': player.get('age'),
-                    'height': player.get('height'),
-                    'weight': player.get('weight'),
-                    'season': season
-                })
-            
-            # Small delay to respect rate limits
-            time.sleep(0.5)
+        if season not in self.available_seasons:
+            logger.warning(f"Season {season} not available on free tier")
+            return None
         
-        df = pd.DataFrame(all_players)
-        logger.info(f"Collected {len(df)} total players from {len(teams)} teams")
-        return df
-    
-    def get_player_statistics(self, player_id: str, season: int = 2024) -> Dict[str, Any]:
-        """
-        Get detailed statistics for a specific player.
+        params = {
+            'player': player_id,
+            'season': season
+        }
         
-        Args:
-            player_id: Player ID
-            season: Season year
-            
-        Returns:
-            Player statistics
-        """
-        if not self.nfl_league_id:
-            logger.error("NFL league ID not found")
-            return {}
-        
-        params = {'league': self.nfl_league_id, 'season': season, 'player': player_id}
-        response = self._make_request("players/statistics", params)
-        
-        stats = response.get('response', []) if response else []
-        return stats[0] if stats else {}
-    
-    def get_games(self, season: int = 2024, week: Optional[int] = None) -> List[Dict[str, Any]]:
-        """
-        Get NFL games for a season/week.
-        
-        Args:
-            season: Season year
-            week: Specific week (None for all weeks)
-            
-        Returns:
-            List of game data
-        """
-        if not self.nfl_league_id:
-            logger.error("NFL league ID not found")
-            return []
-        
-        params = {'league': self.nfl_league_id, 'season': season}
         if week:
             params['week'] = week
         
-        response = self._make_request("games", params)
-        games = response.get('response', []) if response else []
+        logger.debug(f"Fetching player stats for player {player_id}, season {season}, week {week}")
         
-        logger.info(f"Retrieved {len(games)} games" + (f" for week {week}" if week else f" for {season}"))
-        return games
-    
-    def get_comprehensive_player_stats(self, season: int = 2024) -> pd.DataFrame:
-        """
-        Get comprehensive statistics for all players in a season.
+        response = await self._make_request('players/statistics', params)
         
-        Args:
-            season: Season year
+        if not response.success:
+            logger.error(f"Failed to fetch player stats: {response.error_message}")
+            return None
+        
+        stats_data = response.data.get('response', [])
+        
+        if not stats_data:
+            logger.debug(f"No stats found for player {player_id}, season {season}, week {week}")
+            return None
+        
+        # Return the first (and usually only) result
+        return stats_data[0]
+
+    async def get_games_by_week(self, season: int, week: int) -> List[Dict[str, Any]]:
+        """Get all games for a specific season and week."""
+        
+        if season not in self.available_seasons:
+            logger.warning(f"Season {season} not available on free tier")
+            return []
+        
+        logger.info(f"Fetching games for season {season}, week {week}")
+        
+        response = await self._make_request('games', {
+            'season': season,
+            'week': week
+        })
+        
+        if not response.success:
+            logger.error(f"Failed to fetch games for season {season}, week {week}: {response.error_message}")
+            return []
+        
+        games_data = response.data.get('response', [])
+        logger.info(f"Retrieved {len(games_data)} games for season {season}, week {week}")
+        
+        return games_data
+
+    async def get_standings(self, season: int) -> List[Dict[str, Any]]:
+        """Get league standings for a season."""
+        
+        if season not in self.available_seasons:
+            logger.warning(f"Season {season} not available on free tier")
+            return []
+        
+        logger.info(f"Fetching standings for season {season}")
+        
+        response = await self._make_request('standings', {'season': season})
+        
+        if not response.success:
+            logger.error(f"Failed to fetch standings for season {season}: {response.error_message}")
+            return []
+        
+        standings_data = response.data.get('response', [])
+        logger.info(f"Retrieved standings for season {season}")
+        
+        return standings_data
+
+    async def validate_api_access(self) -> bool:
+        """Validate API access and check rate limits."""
+        
+        logger.info("Validating NFL API access")
+        
+        try:
+            # Test with a simple request
+            response = await self._make_request('leagues', {})
             
-        Returns:
-            DataFrame with detailed player statistics
-        """
-        logger.info(f"Collecting comprehensive player statistics for {season}...")
+            if response.success:
+                # Check if NFL league is available
+                leagues = response.data.get('response', [])
+                nfl_league = next((league for league in leagues if league.get('id') == self.league_id), None)
+                
+                if nfl_league:
+                    logger.info("NFL API access validated successfully")
+                    logger.info(f"Available seasons: {self.available_seasons}")
+                    return True
+                else:
+                    logger.error("NFL league not found in API response")
+                    return False
+            else:
+                logger.error(f"API validation failed: {response.error_message}")
+                return False
+                
+        except Exception as e:
+            logger.error(f"Error validating API access: {e}")
+            return False
+
+    async def bulk_collect_team_players(self, team_ids: List[int], season: int) -> Dict[int, List[Dict[str, Any]]]:
+        """Efficiently collect players for multiple teams."""
         
-        # First get all players
-        players_df = self.get_all_players(season)
+        logger.info(f"Bulk collecting players for {len(team_ids)} teams, season {season}")
         
-        # Then get detailed stats for each player
-        all_stats = []
+        results = {}
         
-        for _, player in players_df.iterrows():
-            player_id = player['player_id']
-            logger.info(f"Getting stats for {player['name']} ({player_id})...")
+        # Process teams in small batches to respect rate limits
+        batch_size = 3  # Conservative batch size
+        
+        for i in range(0, len(team_ids), batch_size):
+            batch = team_ids[i:i + batch_size]
             
-            try:
-                stats = self.get_player_statistics(player_id, season)
-                
-                if stats:
-                    # Parse statistics based on position
-                    parsed_stats = self._parse_player_stats(stats, player)
-                    all_stats.append(parsed_stats)
-                
-                # Rate limiting
-                time.sleep(0.1)
-                
-            except Exception as e:
-                logger.warning(f"Failed to get stats for {player['name']}: {e}")
-                continue
-        
-        stats_df = pd.DataFrame(all_stats)
-        logger.info(f"Collected statistics for {len(stats_df)} players")
-        return stats_df
-    
-    def _parse_player_stats(self, stats_data: Dict[str, Any], player_info: pd.Series) -> Dict[str, Any]:
-        """
-        Parse player statistics from API response.
-        
-        Args:
-            stats_data: Raw statistics from API
-            player_info: Player information
+            # Process batch concurrently
+            tasks = [self.get_players_by_team(team_id, season) for team_id in batch]
+            batch_results = await asyncio.gather(*tasks, return_exceptions=True)
             
-        Returns:
-            Parsed statistics dictionary
-        """
-        statistics = stats_data.get('statistics', [{}])[0] if stats_data.get('statistics') else {}
+            # Process results
+            for team_id, result in zip(batch, batch_results):
+                if isinstance(result, Exception):
+                    logger.error(f"Error collecting players for team {team_id}: {result}")
+                    results[team_id] = []
+                else:
+                    results[team_id] = result
+            
+            # Brief pause between batches
+            if i + batch_size < len(team_ids):
+                await asyncio.sleep(1)
         
-        parsed = {
-            'player_id': player_info['player_id'],
-            'name': player_info['name'],
-            'position': player_info['position'],
-            'team_name': player_info['team_name'],
-            'season': player_info['season'],
-            'games_played': statistics.get('games', {}).get('played', 0)
+        total_players = sum(len(players) for players in results.values())
+        logger.info(f"Bulk collection completed: {total_players} players from {len(team_ids)} teams")
+        
+        return results
+
+    async def collect_weekly_stats_batch(self, player_ids: List[int], season: int, week: int) -> Dict[int, Optional[Dict[str, Any]]]:
+        """Efficiently collect weekly stats for multiple players."""
+        
+        logger.info(f"Collecting weekly stats for {len(player_ids)} players, season {season}, week {week}")
+        
+        results = {}
+        
+        # Process in small batches to respect rate limits
+        batch_size = 2  # Very conservative for stats collection
+        
+        for i in range(0, len(player_ids), batch_size):
+            batch = player_ids[i:i + batch_size]
+            
+            # Process batch with delay between requests
+            for player_id in batch:
+                try:
+                    stats = await self.get_player_stats(player_id, season, week)
+                    results[player_id] = stats
+                    
+                    # Small delay between individual requests in batch
+                    await asyncio.sleep(0.5)
+                    
+                except Exception as e:
+                    logger.error(f"Error collecting stats for player {player_id}: {e}")
+                    results[player_id] = None
+            
+            # Longer pause between batches
+            if i + batch_size < len(player_ids):
+                logger.debug(f"Completed batch {i//batch_size + 1}/{(len(player_ids) + batch_size - 1)//batch_size}")
+                await asyncio.sleep(2)
+        
+        successful_collections = sum(1 for result in results.values() if result is not None)
+        logger.info(f"Weekly stats collection completed: {successful_collections}/{len(player_ids)} successful")
+        
+        return results
+
+    def get_stats(self) -> Dict[str, Any]:
+        """Get client performance statistics."""
+        
+        stats = self.stats.copy()
+        
+        # Add rate limiter stats
+        stats['rate_limiter'] = self.rate_limiter.get_status()
+        
+        # Calculate success rate
+        if stats['total_requests'] > 0:
+            stats['success_rate'] = stats['successful_requests'] / stats['total_requests']
+            stats['cache_hit_rate'] = stats['cached_responses'] / stats['total_requests']
+        else:
+            stats['success_rate'] = 0.0
+            stats['cache_hit_rate'] = 0.0
+        
+        return stats
+
+    def clear_cache(self):
+        """Clear response cache."""
+        self._cache.clear()
+        logger.info("API response cache cleared")
+
+    async def health_check(self) -> Dict[str, Any]:
+        """Perform comprehensive health check."""
+        
+        start_time = time.time()
+        
+        health_status = {
+            'api_accessible': False,
+            'response_time': 0.0,
+            'rate_limit_status': self.rate_limiter.get_status(),
+            'cache_size': len(self._cache),
+            'session_status': 'unknown',
+            'last_error': None,
+            'timestamp': datetime.now(timezone.utc).isoformat()
         }
         
-        # Position-specific stats
-        if player_info['position'] == 'QB':
-            passing = statistics.get('passing', {})
-            parsed.update({
-                'passing_attempts': passing.get('attempts', 0),
-                'passing_completions': passing.get('completions', 0),
-                'passing_yards': passing.get('yards', 0),
-                'passing_tds': passing.get('touchdowns', 0),
-                'passing_interceptions': passing.get('interceptions', 0)
-            })
-        
-        # Rushing stats (RB, some QB, WR)
-        rushing = statistics.get('rushing', {})
-        if rushing:
-            parsed.update({
-                'rushing_attempts': rushing.get('attempts', 0),
-                'rushing_yards': rushing.get('yards', 0),
-                'rushing_tds': rushing.get('touchdowns', 0)
-            })
-        
-        # Receiving stats (WR, TE, RB)
-        receiving = statistics.get('receiving', {})
-        if receiving:
-            parsed.update({
-                'receptions': receiving.get('receptions', 0),
-                'receiving_yards': receiving.get('yards', 0),
-                'receiving_tds': receiving.get('touchdowns', 0),
-                'targets': receiving.get('targets', 0)
-            })
-        
-        # Calculate fantasy points (standard scoring)
-        parsed['fantasy_points'] = self._calculate_fantasy_points(parsed)
-        
-        return parsed
-    
-    def _calculate_fantasy_points(self, stats: Dict[str, Any]) -> float:
-        """
-        Calculate standard fantasy points from statistics.
-        
-        Args:
-            stats: Player statistics
+        try:
+            # Test API accessibility
+            health_status['api_accessible'] = await self.validate_api_access()
+            health_status['response_time'] = time.time() - start_time
             
-        Returns:
-            Fantasy points
-        """
-        points = 0.0
-        
-        # Passing points (4 points per TD, 1 point per 25 yards, -2 per INT)
-        points += stats.get('passing_tds', 0) * 4
-        points += stats.get('passing_yards', 0) * 0.04  # 1 point per 25 yards
-        points -= stats.get('passing_interceptions', 0) * 2
-        
-        # Rushing points (6 points per TD, 1 point per 10 yards)
-        points += stats.get('rushing_tds', 0) * 6
-        points += stats.get('rushing_yards', 0) * 0.1  # 1 point per 10 yards
-        
-        # Receiving points (6 points per TD, 1 point per 10 yards, 1 per reception)
-        points += stats.get('receiving_tds', 0) * 6
-        points += stats.get('receiving_yards', 0) * 0.1  # 1 point per 10 yards
-        points += stats.get('receptions', 0) * 1  # PPR scoring
-        
-        return round(points, 2)
-
-
-class ComprehensiveNFLData:
-    """
-    Combines ESPN league data with comprehensive NFL API data.
-    
-    This class merges your specific league data with comprehensive 
-    NFL player data to provide complete coverage for ML training.
-    """
-    
-    def __init__(self, nfl_api_client: NFLAPIClient):
-        """
-        Initialize comprehensive data manager.
-        
-        Args:
-            nfl_api_client: NFL API client instance
-        """
-        self.nfl_client = nfl_api_client
-        logger.info("Comprehensive NFL Data manager initialized")
-    
-    def merge_espn_with_comprehensive_data(
-        self, 
-        espn_data: pd.DataFrame, 
-        season: int = 2024
-    ) -> pd.DataFrame:
-        """
-        Merge ESPN league data with comprehensive NFL data.
-        
-        Args:
-            espn_data: DataFrame from ESPN API
-            season: Season year
+            # Check session status
+            if self._session and not self._session.closed:
+                health_status['session_status'] = 'active'
+            else:
+                health_status['session_status'] = 'inactive'
             
-        Returns:
-            Combined DataFrame with comprehensive player coverage
-        """
-        logger.info("Merging ESPN data with comprehensive NFL data...")
+        except Exception as e:
+            health_status['last_error'] = str(e)
+            logger.error(f"Health check failed: {e}")
         
-        # Get comprehensive NFL data
-        comprehensive_data = self.nfl_client.get_comprehensive_player_stats(season)
-        
-        # Merge based on player name and position (ESPN doesn't have same player IDs)
-        merged_data = pd.merge(
-            espn_data,
-            comprehensive_data,
-            on=['name', 'position'],
-            how='outer',
-            suffixes=('_espn', '_nfl')
-        )
-        
-        # Fill missing values and combine data
-        merged_data = self._combine_data_sources(merged_data)
-        
-        logger.info(f"Merged data contains {len(merged_data)} players")
-        return merged_data
+        return health_status
+
+# Utility functions
+async def create_nfl_client(api_key: Optional[str] = None) -> NFLAPIClient:
+    """Create and initialize NFL API client."""
     
-    def _combine_data_sources(self, merged_df: pd.DataFrame) -> pd.DataFrame:
-        """
-        Intelligently combine data from ESPN and NFL API sources.
-        
-        Args:
-            merged_df: Merged DataFrame
+    client = NFLAPIClient(api_key)
+    await client._ensure_session()
+    
+    # Validate access
+    if not await client.validate_api_access():
+        await client.close()
+        raise NFLAPIError("Failed to validate NFL API access")
+    
+    return client
+
+async def sync_teams_to_database(client: NFLAPIClient) -> int:
+    """Sync NFL teams from API to database."""
+    
+    logger.info("Syncing NFL teams to database")
+    
+    teams_data = await client.get_teams()
+    teams_synced = 0
+    
+    async with get_db_session() as session:
+        for team_data in teams_data:
+            team_info = team_data.get('team', {})
             
-        Returns:
-            Combined DataFrame with best data from both sources
-        """
-        # Use ESPN data for fantasy points when available (more accurate for fantasy)
-        merged_df['fantasy_points'] = merged_df['fantasy_points_espn'].fillna(
-            merged_df['fantasy_points_nfl']
-        )
-        
-        # Use NFL API data for comprehensive stats
-        stat_columns = [
-            'passing_yards', 'passing_tds', 'rushing_yards', 'rushing_tds',
-            'receiving_yards', 'receiving_tds', 'receptions', 'games_played'
-        ]
-        
-        for col in stat_columns:
-            if f'{col}_nfl' in merged_df.columns:
-                merged_df[col] = merged_df[f'{col}_nfl'].fillna(0)
-        
-        # Clean up duplicate columns
-        columns_to_keep = [
-            'player_id', 'name', 'position', 'team_name', 'season', 'week',
-            'fantasy_points'
-        ] + stat_columns
-        
-        return merged_df[columns_to_keep + [col for col in merged_df.columns if col not in columns_to_keep]]
-    
-    def get_missing_players_analysis(self, espn_data: pd.DataFrame, season: int = 2024) -> Dict[str, Any]:
-        """
-        Analyze what players are missing from ESPN data vs comprehensive data.
-        
-        Args:
-            espn_data: ESPN league data
-            season: Season year
+            # Check if team exists
+            existing_team = await session.get(Team, team_info.get('id'))
             
-        Returns:
-            Analysis of missing players and coverage gaps
-        """
-        comprehensive_data = self.nfl_client.get_all_players(season)
+            if existing_team:
+                # Update existing team
+                existing_team.name = team_info.get('name')
+                existing_team.code = team_info.get('code')
+                existing_team.city = team_info.get('city')
+                existing_team.logo = team_info.get('logo')
+                existing_team.updated_at = datetime.now(timezone.utc)
+            else:
+                # Create new team
+                new_team = Team(
+                    api_id=team_info.get('id'),
+                    name=team_info.get('name'),
+                    code=team_info.get('code'),
+                    city=team_info.get('city'),
+                    logo=team_info.get('logo'),
+                    conference=None,  # Will be populated later
+                    division=None     # Will be populated later
+                )
+                session.add(new_team)
+            
+            teams_synced += 1
         
-        espn_players = set(espn_data['name'].unique())
-        all_nfl_players = set(comprehensive_data['name'].unique())
-        
-        missing_from_espn = all_nfl_players - espn_players
-        only_in_espn = espn_players - all_nfl_players
-        
-        analysis = {
-            'total_nfl_players': len(all_nfl_players),
-            'espn_league_players': len(espn_players),
-            'missing_from_espn': len(missing_from_espn),
-            'only_in_espn': len(only_in_espn),
-            'coverage_percentage': len(espn_players) / len(all_nfl_players) * 100,
-            'missing_players_sample': list(missing_from_espn)[:20],  # First 20
-            'positions_missing': comprehensive_data[
-                comprehensive_data['name'].isin(missing_from_espn)
-            ]['position'].value_counts().to_dict()
-        }
-        
-        logger.info(f"ESPN league covers {analysis['coverage_percentage']:.1f}% of NFL players")
-        return analysis
-
-
-def create_comprehensive_nfl_client(api_key: Optional[str] = None) -> ComprehensiveNFLData:
-    """
-    Factory function to create comprehensive NFL data client.
+        await session.commit()
     
-    Args:
-        api_key: NFL API key (optional, gets from env)
-        
-    Returns:
-        Configured comprehensive NFL data client
-    """
-    nfl_client = NFLAPIClient(api_key)
-    return ComprehensiveNFLData(nfl_client)
+    logger.info(f"Synced {teams_synced} teams to database")
+    return teams_synced
 
-
-if __name__ == "__main__":
-    # Example usage
-    try:
-        # Create comprehensive NFL data client
-        comprehensive_client = create_comprehensive_nfl_client()
-        
-        # Get comprehensive player data
-        logger.info("Testing comprehensive NFL data collection...")
-        
-        # Get all teams
-        teams = comprehensive_client.nfl_client.get_teams(season=2024)
-        print(f"Found {len(teams)} NFL teams")
-        
-        # Get sample of players from one team
-        if teams:
-            sample_team = teams[0]
-            players = comprehensive_client.nfl_client.get_players(sample_team.team_id, 2024)
-            print(f"Found {len(players)} players for {sample_team.name}")
-        
-        # Note: Getting all player stats would use many API calls
-        # In production, you'd want to cache this data
-        
-    except Exception as e:
-        logger.error(f"Example failed: {e}")
-        print("Make sure to set NFL_API_KEY in your .env file")
-        print("Get a free API key from https://api-sports.io/")
+# Configuration helper
+def get_api_config() -> Dict[str, Any]:
+    """Get NFL API configuration from environment."""
+    
+    return {
+        'api_key': os.getenv('NFL_API_KEY'),
+        'rate_limit_requests_per_day': int(os.getenv('NFL_API_RATE_LIMIT', '100')),
+        'cache_ttl': int(os.getenv('NFL_API_CACHE_TTL', '3600')),
+        'timeout_seconds': int(os.getenv('NFL_API_TIMEOUT', '30')),
+        'available_seasons': [2021, 2022, 2023]  # Free tier limitation
+    }

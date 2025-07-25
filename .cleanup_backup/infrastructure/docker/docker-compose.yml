@@ -1,0 +1,704 @@
+# docker-compose.yml - Production-ready Fantasy Football AI Assistant
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: fantasy_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: fantasy_football
+      POSTGRES_USER: fantasy_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fantasy_secure_password_2024}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+      - ./database/backups:/backups
+    ports:
+      - "5432:5432"
+    networks:
+      - fantasy_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fantasy_user -d fantasy_football"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: fantasy_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_secure_password_2024}
+    volumes:
+      - redis_data:/data
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - "6379:6379"
+    networks:
+      - fantasy_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # Main Application
+  fantasy_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: fantasy_streamlit
+    restart: unless-stopped
+    environment:
+      # Database
+      DATABASE_URL: postgresql://fantasy_user:${POSTGRES_PASSWORD:-fantasy_secure_password_2024}@postgres:5432/fantasy_football
+      
+      # Redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis_secure_password_2024}
+      
+      # Application
+      APP_ENV: ${APP_ENV:-production}
+      SECRET_KEY: ${SECRET_KEY:-your_super_secret_key_change_in_production}
+      DEBUG: ${DEBUG:-false}
+      
+      # API Keys (set in .env file)
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      SLEEPER_API_KEY: ${SLEEPER_API_KEY}
+      ESPN_API_KEY: ${ESPN_API_KEY}
+      
+      # Model Configuration
+      MODEL_VERSION: v1.0
+      PREDICTION_CACHE_TTL: 1800
+      
+      # Monitoring
+      ENABLE_MONITORING: ${ENABLE_MONITORING:-true}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    
+    volumes:
+      - ./models:/app/models:ro
+      - ./logs:/app/logs
+      - app_cache:/app/cache
+    
+    ports:
+      - "8501:8501"
+    
+    networks:
+      - fantasy_network
+    
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Background Data Processor
+  data_processor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: worker
+    container_name: fantasy_worker
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://fantasy_user:${POSTGRES_PASSWORD:-fantasy_secure_password_2024}@postgres:5432/fantasy_football
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis_secure_password_2024}
+      WORKER_TYPE: data_processor
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    
+    volumes:
+      - ./logs:/app/logs
+      - app_cache:/app/cache
+    
+    networks:
+      - fantasy_network
+    
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # Nginx Reverse Proxy (Production)
+  nginx:
+    image: nginx:alpine
+    container_name: fantasy_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./logs/nginx:/var/log/nginx
+    networks:
+      - fantasy_network
+    depends_on:
+      - fantasy_app
+    profiles:
+      - production
+
+  # Monitoring with Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: fantasy_grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin_password_change_me}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    ports:
+      - "3000:3000"
+    networks:
+      - fantasy_network
+    profiles:
+      - monitoring
+
+  # Prometheus for Metrics
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: fantasy_prometheus
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    volumes:
+      - ./monitoring/prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - fantasy_network
+    profiles:
+      - monitoring
+
+# Named Volumes
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  grafana_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  app_cache:
+    driver: local
+
+# Networks
+networks:
+  fantasy_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+---
+
+# Dockerfile - Multi-stage build for production optimization
+FROM python:3.11-slim as base
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONHASHSEED=random \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    git \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create app directory
+WORKDIR /app
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Development stage
+FROM base as development
+
+# Install development dependencies
+COPY requirements-dev.txt .
+RUN pip install --no-cache-dir -r requirements-dev.txt
+
+# Copy source code
+COPY . .
+
+# Create non-root user
+RUN useradd --create-home --shell /bin/bash fantasy_user && \
+    chown -R fantasy_user:fantasy_user /app
+USER fantasy_user
+
+CMD ["streamlit", "run", "src/app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+
+# Production stage
+FROM base as production
+
+# Copy only necessary files
+COPY src/ ./src/
+COPY models/ ./models/
+COPY config/ ./config/
+COPY requirements.txt .
+
+# Create directories for logs and cache
+RUN mkdir -p /app/logs /app/cache && \
+    useradd --create-home --shell /bin/bash fantasy_user && \
+    chown -R fantasy_user:fantasy_user /app
+
+USER fantasy_user
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8501/_stcore/health || exit 1
+
+# Default command
+CMD ["streamlit", "run", "src/app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+
+# Worker stage for background processing
+FROM base as worker
+
+COPY src/ ./src/
+COPY models/ ./models/
+COPY config/ ./config/
+COPY requirements.txt .
+
+RUN mkdir -p /app/logs /app/cache && \
+    useradd --create-home --shell /bin/bash fantasy_user && \
+    chown -R fantasy_user:fantasy_user /app
+
+USER fantasy_user
+
+CMD ["python", "src/workers/data_processor.py"]
+
+---
+
+# requirements.txt - Production dependencies
+streamlit==1.28.1
+pandas==2.1.3
+numpy==1.24.3
+tensorflow==2.14.0
+scikit-learn==1.3.2
+redis==5.0.1
+psycopg2-binary==2.9.7
+sqlalchemy==2.0.23
+alembic==1.12.1
+
+# Data processing
+aiohttp==3.8.6
+requests==2.31.0
+asyncio==3.4.3
+
+# Visualization
+plotly==5.17.0
+matplotlib==3.8.1
+seaborn==0.12.2
+
+# API and web
+fastapi==0.104.1
+uvicorn==0.24.0
+pydantic==2.5.0
+
+# Utilities
+python-dotenv==1.0.0
+click==8.1.7
+python-dateutil==2.8.2
+pytz==2023.3
+
+# Monitoring and logging
+prometheus-client==0.19.0
+structlog==23.2.0
+
+# Security
+cryptography==41.0.7
+
+---
+
+# requirements-dev.txt - Development dependencies
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+black==23.10.1
+flake8==6.1.0
+mypy==1.7.0
+pre-commit==3.5.0
+jupyter==1.0.0
+ipython==8.17.2
+
+---
+
+# .env.example - Environment variables template
+# Copy to .env and fill in your values
+
+# Database
+POSTGRES_PASSWORD=your_secure_postgres_password_here
+DATABASE_URL=postgresql://fantasy_user:your_secure_postgres_password_here@postgres:5432/fantasy_football
+
+# Redis
+REDIS_PASSWORD=your_secure_redis_password_here
+
+# Application
+APP_ENV=production
+SECRET_KEY=your_super_secret_key_change_in_production
+DEBUG=false
+
+# API Keys
+OPENAI_API_KEY=your_openai_api_key_here
+SLEEPER_API_KEY=your_sleeper_api_key_here
+ESPN_API_KEY=your_espn_api_key_here
+
+# Monitoring
+ENABLE_MONITORING=true
+LOG_LEVEL=INFO
+GRAFANA_PASSWORD=your_grafana_admin_password_here
+
+---
+
+# docker-compose.override.yml - Development overrides
+version: '3.8'
+
+services:
+  fantasy_app:
+    build:
+      target: development
+    environment:
+      DEBUG: "true"
+      LOG_LEVEL: DEBUG
+    volumes:
+      - .:/app
+      - /app/venv
+    command: >
+      sh -c "
+        pip install -r requirements-dev.txt &&
+        streamlit run src/app.py --server.port=8501 --server.address=0.0.0.0 --server.runOnSave=true
+      "
+
+  postgres:
+    ports:
+      - "5433:5432"  # Different port for development
+
+---
+
+# nginx/nginx.conf - Nginx configuration
+events {
+    worker_connections 1024;
+}
+
+http {
+    upstream fantasy_app {
+        server fantasy_app:8501;
+    }
+
+    server {
+        listen 80;
+        server_name localhost;
+
+        client_max_body_size 10M;
+
+        location / {
+            proxy_pass http://fantasy_app;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            
+            # WebSocket support for Streamlit
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_read_timeout 86400;
+        }
+
+        location /_stcore/stream {
+            proxy_pass http://fantasy_app;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_read_timeout 86400;
+        }
+
+        location /health {
+            access_log off;
+            return 200 "healthy\n";
+            add_header Content-Type text/plain;
+        }
+    }
+}
+
+---
+
+# database/init/01_create_tables.sql - Database schema
+-- Fantasy Football AI Assistant Database Schema
+
+-- Enable extensions
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pg_trgm";
+
+-- Players table
+CREATE TABLE IF NOT EXISTS players (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    sleeper_id VARCHAR(50) UNIQUE NOT NULL,
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    position VARCHAR(10) NOT NULL,
+    team VARCHAR(10),
+    jersey_number INTEGER,
+    active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Player statistics table
+CREATE TABLE IF NOT EXISTS player_stats (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    player_id UUID REFERENCES players(id) ON DELETE CASCADE,
+    week INTEGER NOT NULL,
+    season INTEGER NOT NULL,
+    fantasy_points DECIMAL(6,2) DEFAULT 0,
+    fantasy_points_ppr DECIMAL(6,2) DEFAULT 0,
+    passing_yards INTEGER DEFAULT 0,
+    passing_tds INTEGER DEFAULT 0,
+    rushing_yards INTEGER DEFAULT 0,
+    rushing_tds INTEGER DEFAULT 0,
+    receiving_yards INTEGER DEFAULT 0,
+    receiving_tds INTEGER DEFAULT 0,
+    receptions INTEGER DEFAULT 0,
+    targets INTEGER DEFAULT 0,
+    snap_count INTEGER,
+    snap_percentage DECIMAL(5,2),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE(player_id, week, season)
+);
+
+-- Predictions table
+CREATE TABLE IF NOT EXISTS predictions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    player_id UUID REFERENCES players(id) ON DELETE CASCADE,
+    week INTEGER NOT NULL,
+    season INTEGER NOT NULL,
+    predicted_points DECIMAL(6,2) NOT NULL,
+    confidence_low DECIMAL(6,2),
+    confidence_high DECIMAL(6,2),
+    tier INTEGER,
+    tier_confidence DECIMAL(5,4),
+    model_version VARCHAR(20) NOT NULL,
+    prediction_timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    actual_points DECIMAL(6,2),
+    error_abs DECIMAL(6,2),
+    UNIQUE(player_id, week, season, model_version)
+);
+
+-- Model performance metrics
+CREATE TABLE IF NOT EXISTS model_metrics (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    model_version VARCHAR(20) NOT NULL,
+    week INTEGER NOT NULL,
+    season INTEGER NOT NULL,
+    mae DECIMAL(6,4),
+    rmse DECIMAL(6,4),
+    accuracy DECIMAL(5,4),
+    predictions_count INTEGER DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE(model_version, week, season)
+);
+
+-- User interactions (for analytics)
+CREATE TABLE IF NOT EXISTS user_interactions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    session_id VARCHAR(100),
+    interaction_type VARCHAR(50) NOT NULL,
+    player_id UUID REFERENCES players(id),
+    page VARCHAR(100),
+    timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    metadata JSONB
+);
+
+-- Indexes for performance
+CREATE INDEX IF NOT EXISTS idx_players_sleeper_id ON players(sleeper_id);
+CREATE INDEX IF NOT EXISTS idx_players_position ON players(position);
+CREATE INDEX IF NOT EXISTS idx_players_team ON players(team);
+
+CREATE INDEX IF NOT EXISTS idx_player_stats_player_week ON player_stats(player_id, week, season);
+CREATE INDEX IF NOT EXISTS idx_player_stats_week_season ON player_stats(week, season);
+
+CREATE INDEX IF NOT EXISTS idx_predictions_player_week ON predictions(player_id, week, season);
+CREATE INDEX IF NOT EXISTS idx_predictions_timestamp ON predictions(prediction_timestamp);
+
+CREATE INDEX IF NOT EXISTS idx_model_metrics_version_week ON model_metrics(model_version, week, season);
+
+CREATE INDEX IF NOT EXISTS idx_user_interactions_session ON user_interactions(session_id);
+CREATE INDEX IF NOT EXISTS idx_user_interactions_timestamp ON user_interactions(timestamp);
+
+-- Triggers for updated_at
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+CREATE TRIGGER update_players_updated_at BEFORE UPDATE ON players
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+---
+
+# redis/redis.conf - Redis configuration
+# Redis configuration for Fantasy Football AI Assistant
+
+# Memory settings
+maxmemory 512mb
+maxmemory-policy allkeys-lru
+
+# Persistence
+save 900 1
+save 300 10
+save 60 10000
+
+# Security
+requirepass redis_secure_password_2024
+
+# Networking
+bind 0.0.0.0
+port 6379
+tcp-keepalive 300
+
+# Logging
+loglevel notice
+logfile ""
+
+# Performance
+tcp-backlog 511
+databases 16
+
+---
+
+# scripts/setup.sh - Setup script
+#!/bin/bash
+
+# Fantasy Football AI Assistant Setup Script
+
+set -e
+
+echo "🏈 Setting up Fantasy Football AI Assistant..."
+
+# Check if Docker is installed
+if ! command -v docker &> /dev/null; then
+    echo "❌ Docker is not installed. Please install Docker first."
+    exit 1
+fi
+
+# Check if Docker Compose is installed
+if ! command -v docker-compose &> /dev/null; then
+    echo "❌ Docker Compose is not installed. Please install Docker Compose first."
+    exit 1
+fi
+
+# Create necessary directories
+echo "📁 Creating directories..."
+mkdir -p {logs,models,database/backups,monitoring/{grafana,prometheus}}
+
+# Copy environment file
+if [ ! -f .env ]; then
+    echo "📝 Creating .env file..."
+    cp .env.example .env
+    echo "⚠️  Please edit .env file with your actual values before running the application"
+fi
+
+# Build and start services
+echo "🐳 Building Docker containers..."
+docker-compose build
+
+echo "🚀 Starting services..."
+docker-compose up -d postgres redis
+
+# Wait for database to be ready
+echo "⏳ Waiting for database to be ready..."
+sleep 10
+
+# Run database migrations
+echo "📊 Setting up database..."
+docker-compose exec -T postgres psql -U fantasy_user -d fantasy_football -f /docker-entrypoint-initdb.d/01_create_tables.sql
+
+# Start application
+echo "🎯 Starting Fantasy Football AI Assistant..."
+docker-compose up -d
+
+echo "✅ Setup complete!"
+echo ""
+echo "🌐 Application will be available at: http://localhost:8501"
+echo "📊 Grafana (monitoring) at: http://localhost:3000 (admin/admin)"
+echo "🔍 Prometheus at: http://localhost:9090"
+echo ""
+echo "📝 Next steps:"
+echo "1. Edit .env file with your API keys"
+echo "2. Place your trained models in the models/ directory"
+echo "3. Restart with: docker-compose restart fantasy_app"
+
+---
+
+# scripts/deploy.sh - Deployment script
+#!/bin/bash
+
+# Production deployment script
+
+set -e
+
+echo "🚀 Deploying Fantasy Football AI Assistant to production..."
+
+# Backup database
+echo "💾 Creating database backup..."
+docker-compose exec postgres pg_dump -U fantasy_user fantasy_football > database/backups/backup_$(date +%Y%m%d_%H%M%S).sql
+
+# Pull latest images
+echo "📥 Pulling latest images..."
+docker-compose pull
+
+# Build with production profile
+echo "🏗️ Building production containers..."
+docker-compose -f docker-compose.yml --profile production build
+
+# Deploy with zero downtime
+echo "🔄 Deploying with rolling update..."
+docker-compose -f docker-compose.yml --profile production up -d --no-deps fantasy_app
+docker-compose -f docker-compose.yml --profile production up -d --no-deps nginx
+
+# Health check
+echo "🏥 Running health checks..."
+sleep 30
+
+if curl -f http://localhost/_stcore/health; then
+    echo "✅ Deployment successful!"
+else
+    echo "❌ Health check failed. Rolling back..."
+    docker-compose -f docker-compose.yml --profile production restart fantasy_app
+    exit 1
+fi
+
+echo "🎉 Production deployment complete!"

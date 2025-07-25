@@ -1,356 +1,326 @@
 """
-SQLite database models for Fantasy Football AI Assistant.
-
-This module defines the database schema and provides ORM-like functionality
-for storing and retrieving fantasy football data.
+Enhanced database models with collection tracking and data quality metrics.
+Location: src/fantasy_ai/core/data/storage/models.py
 """
 
-import sqlite3
-import logging
-from contextlib import contextmanager
-from dataclasses import dataclass
-from datetime import datetime
-from pathlib import Path
-from typing import List, Optional, Dict, Any, Generator
-import pandas as pd
+from datetime import datetime, timezone
+from enum import Enum
+from typing import Optional, Dict, Any
+from sqlalchemy import (
+    Column, Integer, String, DateTime, Float, Boolean, Text, 
+    ForeignKey, JSON, Index, UniqueConstraint
+)
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+Base = declarative_base()
 
+class CollectionStatus(Enum):
+    PENDING = "pending"
+    IN_PROGRESS = "in_progress" 
+    COMPLETED = "completed"
+    FAILED = "failed"
+    SKIPPED = "skipped"
 
-@dataclass
-class Player:
-    """Player model representing an NFL player."""
-    player_id: int
-    name: str
-    position: str
-    team: str
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
+class DataQualityStatus(Enum):
+    UNKNOWN = "unknown"
+    VALID = "valid"
+    ANOMALY = "anomaly"
+    INVALID = "invalid"
 
+class PlayerPosition(Enum):
+    QB = "QB"
+    RB = "RB"
+    WR = "WR"
+    TE = "TE"
+    K = "K"
+    DEF = "DEF"
+    OTHER = "OTHER"
 
-@dataclass
-class WeeklyStats:
-    """Weekly statistics for a player in a specific season/week."""
-    id: Optional[int] = None
-    player_id: int = 0
-    season: int = 0
-    week: int = 0
-    fantasy_points: float = 0.0
-    projected_points: float = 0.0
-    created_at: Optional[datetime] = None
-
-
-@dataclass
-class Team:
-    """NFL team information."""
-    team_code: str
-    team_name: str
-    conference: Optional[str] = None
-    division: Optional[str] = None
-
-
-class DatabaseManager:
-    """Manages SQLite database operations for fantasy football data."""
+# Core Data Models
+class Team(Base):
+    __tablename__ = 'teams'
     
-    def __init__(self, db_path: str = "data/fantasy_football.db"):
-        """
-        Initialize database manager.
+    id = Column(Integer, primary_key=True)
+    api_id = Column(Integer, unique=True, nullable=False, index=True)
+    name = Column(String(100), nullable=False)
+    code = Column(String(10), nullable=False)
+    city = Column(String(100))
+    logo = Column(String(255))
+    conference = Column(String(50))
+    division = Column(String(50))
+    stadium = Column(String(100))
+    coach = Column(String(100))
+    
+    # Metadata
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    # Relationships
+    players = relationship("Player", back_populates="team")
+    collection_tasks = relationship("CollectionTask", back_populates="team")
+
+class Player(Base):
+    __tablename__ = 'players'
+    
+    id = Column(Integer, primary_key=True)
+    api_id = Column(Integer, unique=True, nullable=False, index=True)
+    team_id = Column(Integer, ForeignKey('teams.id'), nullable=False)
+    
+    # Player Info
+    name = Column(String(100), nullable=False)
+    firstname = Column(String(50))
+    lastname = Column(String(50)) 
+    position = Column(String(10), nullable=False, index=True)
+    number = Column(Integer)
+    age = Column(Integer)
+    height = Column(String(20))
+    weight = Column(String(20))
+    experience = Column(Integer)
+    college = Column(String(100))
+    
+    # Fantasy Metrics
+    fantasy_priority_score = Column(Float, default=0.0, index=True)
+    collection_priority = Column(Integer, default=5, index=True)  # 1=highest, 10=lowest
+    is_active = Column(Boolean, default=True)
+    
+    # Metadata
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    last_stats_update = Column(DateTime(timezone=True))
+    
+    # Relationships
+    team = relationship("Team", back_populates="players")
+    weekly_stats = relationship("WeeklyStats", back_populates="player")
+    collection_tasks = relationship("CollectionTask", back_populates="player")
+    quality_metrics = relationship("DataQualityMetric", back_populates="player")
+    
+    # Indexes
+    __table_args__ = (
+        Index('idx_player_position_priority', 'position', 'collection_priority'),
+        Index('idx_player_team_position', 'team_id', 'position'),
+    )
+
+class WeeklyStats(Base):
+    __tablename__ = 'weekly_stats'
+    
+    id = Column(Integer, primary_key=True)
+    player_id = Column(Integer, ForeignKey('players.id'), nullable=False)
+    season = Column(Integer, nullable=False, index=True)
+    week = Column(Integer, nullable=False, index=True)
+    game_id = Column(String(50), index=True)
+    
+    # Game Context
+    opponent_team = Column(String(10))
+    is_home = Column(Boolean)
+    game_date = Column(DateTime(timezone=True))
+    
+    # Offensive Stats
+    passing_attempts = Column(Integer, default=0)
+    passing_completions = Column(Integer, default=0)
+    passing_yards = Column(Integer, default=0)
+    passing_touchdowns = Column(Integer, default=0)
+    interceptions = Column(Integer, default=0)
+    rushing_attempts = Column(Integer, default=0)
+    rushing_yards = Column(Integer, default=0)
+    rushing_touchdowns = Column(Integer, default=0)
+    receiving_targets = Column(Integer, default=0)
+    receptions = Column(Integer, default=0)
+    receiving_yards = Column(Integer, default=0)
+    receiving_touchdowns = Column(Integer, default=0)
+    fumbles = Column(Integer, default=0)
+    fumbles_lost = Column(Integer, default=0)
+    
+    # Fantasy Points
+    fantasy_points_standard = Column(Float, default=0.0)
+    fantasy_points_ppr = Column(Float, default=0.0)
+    fantasy_points_half_ppr = Column(Float, default=0.0)
+    
+    # Data Quality
+    data_quality_score = Column(Float, default=1.0)
+    is_validated = Column(Boolean, default=False)
+    
+    # Raw API Data
+    raw_api_data = Column(JSON)
+    
+    # Metadata
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    # Relationships
+    player = relationship("Player", back_populates="weekly_stats")
+    
+    # Constraints
+    __table_args__ = (
+        UniqueConstraint('player_id', 'season', 'week', name='uq_player_season_week'),
+        Index('idx_stats_season_week', 'season', 'week'),
+        Index('idx_stats_fantasy_points', 'fantasy_points_ppr'),
+    )
+
+# Collection Tracking Models
+class CollectionTask(Base):
+    __tablename__ = 'collection_tasks'
+    
+    id = Column(Integer, primary_key=True)
+    task_type = Column(String(50), nullable=False)  # 'player_stats', 'player_info', 'team_info'
+    
+    # Target Information
+    team_id = Column(Integer, ForeignKey('teams.id'), nullable=True)
+    player_id = Column(Integer, ForeignKey('players.id'), nullable=True)
+    season = Column(Integer, nullable=True)
+    week = Column(Integer, nullable=True)
+    
+    # Collection Status
+    status = Column(String(20), default=CollectionStatus.PENDING.value, index=True)
+    priority = Column(Integer, default=5, index=True)  # 1=highest
+    retry_count = Column(Integer, default=0)
+    max_retries = Column(Integer, default=3)
+    
+    # Timing
+    scheduled_at = Column(DateTime(timezone=True), default=func.now())
+    started_at = Column(DateTime(timezone=True))
+    completed_at = Column(DateTime(timezone=True))
+    next_retry_at = Column(DateTime(timezone=True))
+    
+    # Results
+    api_calls_made = Column(Integer, default=0)
+    records_collected = Column(Integer, default=0)
+    error_message = Column(Text)
+    api_response_time = Column(Float)  # seconds
+    
+    # Metadata
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    # Relationships
+    team = relationship("Team", back_populates="collection_tasks")
+    player = relationship("Player", back_populates="collection_tasks")
+    
+    # Indexes
+    __table_args__ = (
+        Index('idx_task_status_priority', 'status', 'priority'),
+        Index('idx_task_scheduled', 'scheduled_at'),
+        Index('idx_task_type_status', 'task_type', 'status'),
+    )
+
+class ApiRateLimit(Base):
+    __tablename__ = 'api_rate_limits'
+    
+    id = Column(Integer, primary_key=True)
+    api_name = Column(String(50), nullable=False, index=True)  # 'nfl_api'
+    endpoint = Column(String(100), nullable=False)
+    
+    # Rate Limiting
+    requests_made = Column(Integer, default=0)
+    requests_limit = Column(Integer, nullable=False)
+    reset_time = Column(DateTime(timezone=True), nullable=False)
+    
+    # Performance Tracking
+    avg_response_time = Column(Float, default=0.0)
+    last_request_time = Column(DateTime(timezone=True))
+    consecutive_errors = Column(Integer, default=0)
+    
+    # Metadata
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    __table_args__ = (
+        UniqueConstraint('api_name', 'endpoint', name='uq_api_endpoint'),
+    )
+
+class DataQualityMetric(Base):
+    __tablename__ = 'data_quality_metrics'
+    
+    id = Column(Integer, primary_key=True)
+    player_id = Column(Integer, ForeignKey('players.id'), nullable=False)
+    season = Column(Integer, nullable=False)
+    
+    # Quality Metrics
+    completeness_score = Column(Float, default=0.0)  # 0-1
+    consistency_score = Column(Float, default=0.0)   # 0-1
+    anomaly_score = Column(Float, default=0.0)       # 0-1 (higher = more anomalous)
+    overall_quality_score = Column(Float, default=0.0) # 0-1
+    
+    # Specific Checks
+    missing_weeks_count = Column(Integer, default=0)
+    zero_stat_weeks = Column(Integer, default=0)
+    outlier_weeks = Column(Integer, default=0)
+    
+    # Status
+    quality_status = Column(String(20), default=DataQualityStatus.UNKNOWN.value)
+    last_validation = Column(DateTime(timezone=True))
+    validation_details = Column(JSON)
+    
+    # Metadata
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    # Relationships
+    player = relationship("Player", back_populates="quality_metrics")
+    
+    __table_args__ = (
+        UniqueConstraint('player_id', 'season', name='uq_player_season_quality'),
+        Index('idx_quality_score', 'overall_quality_score'),
+        Index('idx_quality_status', 'quality_status'),
+    )
+
+class CollectionProgress(Base):
+    __tablename__ = 'collection_progress'
+    
+    id = Column(Integer, primary_key=True)
+    
+    # Progress Tracking
+    total_players = Column(Integer, default=0)
+    players_completed = Column(Integer, default=0)
+    total_seasons = Column(Integer, default=0)
+    seasons_completed = Column(Integer, default=0)
+    total_weeks = Column(Integer, default=0)
+    weeks_completed = Column(Integer, default=0)
+    
+    # API Usage
+    total_api_calls = Column(Integer, default=0)
+    api_calls_today = Column(Integer, default=0)
+    api_calls_remaining = Column(Integer, default=100)
+    
+    # Performance
+    avg_collection_time = Column(Float, default=0.0)
+    estimated_completion = Column(DateTime(timezone=True))
+    
+    # Current State
+    current_priority_position = Column(String(10))  # QB, RB, WR, TE
+    current_team_id = Column(Integer)
+    current_season = Column(Integer, default=2023)
+    
+    # Metadata
+    last_updated = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    collection_start_date = Column(DateTime(timezone=True))
+
+# Utility function for priority scoring
+def calculate_fantasy_priority_score(position: str, stats_data: Dict[str, Any]) -> float:
+    """Calculate fantasy priority score based on position and historical performance."""
+    
+    position_weights = {
+        'QB': 1.0,
+        'RB': 1.0, 
+        'WR': 1.0,
+        'TE': 1.0,
+        'K': 0.3,
+        'DEF': 0.2,
+        'OTHER': 0.1
+    }
+    
+    base_score = position_weights.get(position, 0.1)
+    
+    # Add performance-based scoring if stats available
+    if stats_data:
+        fantasy_points = stats_data.get('fantasy_points_ppr', 0)
+        games_played = stats_data.get('games_played', 1)
         
-        Args:
-            db_path: Path to SQLite database file
-        """
-        self.db_path = Path(db_path)
-        self.db_path.parent.mkdir(parents=True, exist_ok=True)
-        self._initialize_database()
-        logger.info(f"Database initialized at {self.db_path}")
+        if games_played > 0:
+            ppg = fantasy_points / games_played
+            # Normalize to 0-1 scale (assuming 30+ PPG is elite)
+            performance_score = min(ppg / 30.0, 1.0)
+            base_score = base_score * (0.5 + 0.5 * performance_score)
     
-    @contextmanager
-    def get_connection(self) -> Generator[sqlite3.Connection, None, None]:
-        """Context manager for database connections."""
-        conn = sqlite3.connect(self.db_path)
-        conn.row_factory = sqlite3.Row  # Enable dict-like access
-        try:
-            yield conn
-        except Exception as e:
-            conn.rollback()
-            logger.error(f"Database error: {e}")
-            raise
-        finally:
-            conn.close()
-    
-    def _initialize_database(self) -> None:
-        """Create database tables if they don't exist."""
-        with self.get_connection() as conn:
-            cursor = conn.cursor()
-            
-            # Teams table
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS teams (
-                    team_code TEXT PRIMARY KEY,
-                    team_name TEXT NOT NULL,
-                    conference TEXT,
-                    division TEXT,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-            """)
-            
-            # Players table
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS players (
-                    player_id INTEGER PRIMARY KEY,
-                    name TEXT NOT NULL,
-                    position TEXT NOT NULL,
-                    team TEXT,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY (team) REFERENCES teams (team_code)
-                )
-            """)
-            
-            # Weekly stats table
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS weekly_stats (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    player_id INTEGER NOT NULL,
-                    season INTEGER NOT NULL,
-                    week INTEGER NOT NULL,
-                    fantasy_points REAL DEFAULT 0.0,
-                    projected_points REAL DEFAULT 0.0,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY (player_id) REFERENCES players (player_id),
-                    UNIQUE(player_id, season, week)
-                )
-            """)
-            
-            # Seasons tracking table
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS seasons (
-                    season INTEGER PRIMARY KEY,
-                    status TEXT DEFAULT 'active',
-                    weeks_completed INTEGER DEFAULT 0,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-            """)
-            
-            # Create indexes for performance
-            cursor.execute("CREATE INDEX IF NOT EXISTS idx_player_season_week ON weekly_stats(player_id, season, week)")
-            cursor.execute("CREATE INDEX IF NOT EXISTS idx_season_week ON weekly_stats(season, week)")
-            cursor.execute("CREATE INDEX IF NOT EXISTS idx_player_position ON players(position)")
-            
-            conn.commit()
-            logger.info("Database schema initialized successfully")
-    
-    def insert_player(self, player: Player) -> bool:
-        """Insert or update a player record."""
-        try:
-            with self.get_connection() as conn:
-                cursor = conn.cursor()
-                cursor.execute("""
-                    INSERT OR REPLACE INTO players 
-                    (player_id, name, position, team, updated_at)
-                    VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
-                """, (player.player_id, player.name, player.position, player.team))
-                conn.commit()
-                return True
-        except Exception as e:
-            logger.error(f"Error inserting player {player.name}: {e}")
-            return False
-    
-    def insert_weekly_stats(self, stats: WeeklyStats) -> bool:
-        """Insert or update weekly statistics."""
-        try:
-            with self.get_connection() as conn:
-                cursor = conn.cursor()
-                cursor.execute("""
-                    INSERT OR REPLACE INTO weekly_stats 
-                    (player_id, season, week, fantasy_points, projected_points)
-                    VALUES (?, ?, ?, ?, ?)
-                """, (stats.player_id, stats.season, stats.week, 
-                     stats.fantasy_points, stats.projected_points))
-                conn.commit()
-                return True
-        except Exception as e:
-            logger.error(f"Error inserting weekly stats: {e}")
-            return False
-    
-    def bulk_insert_weekly_stats(self, stats_list: List[WeeklyStats]) -> int:
-        """Bulk insert weekly statistics for better performance."""
-        success_count = 0
-        try:
-            with self.get_connection() as conn:
-                cursor = conn.cursor()
-                data = [(s.player_id, s.season, s.week, s.fantasy_points, s.projected_points) 
-                       for s in stats_list]
-                
-                cursor.executemany("""
-                    INSERT OR REPLACE INTO weekly_stats 
-                    (player_id, season, week, fantasy_points, projected_points)
-                    VALUES (?, ?, ?, ?, ?)
-                """, data)
-                
-                success_count = cursor.rowcount
-                conn.commit()
-                logger.info(f"Bulk inserted {success_count} weekly stats records")
-                
-        except Exception as e:
-            logger.error(f"Error in bulk insert: {e}")
-            
-        return success_count
-    
-    def get_player_stats(self, player_id: int, season: Optional[int] = None) -> pd.DataFrame:
-        """Get historical stats for a specific player."""
-        query = """
-            SELECT ws.*, p.name, p.position, p.team
-            FROM weekly_stats ws
-            JOIN players p ON ws.player_id = p.player_id
-            WHERE ws.player_id = ?
-        """
-        params = [player_id]
-        
-        if season:
-            query += " AND ws.season = ?"
-            params.append(season)
-            
-        query += " ORDER BY ws.season, ws.week"
-        
-        with self.get_connection() as conn:
-            return pd.read_sql_query(query, conn, params=params)
-    
-    def get_season_stats(self, season: int, position: Optional[str] = None) -> pd.DataFrame:
-        """Get all stats for a specific season, optionally filtered by position."""
-        query = """
-            SELECT ws.*, p.name, p.position, p.team
-            FROM weekly_stats ws
-            JOIN players p ON ws.player_id = p.player_id
-            WHERE ws.season = ?
-        """
-        params = [season]
-        
-        if position:
-            query += " AND p.position = ?"
-            params.append(position)
-            
-        query += " ORDER BY p.position, ws.week"
-        
-        with self.get_connection() as conn:
-            return pd.read_sql_query(query, conn, params=params)
-    
-    def get_training_data(self, seasons: List[int], positions: Optional[List[str]] = None) -> pd.DataFrame:
-        """Get formatted training data for ML models."""
-        query = """
-            SELECT 
-                ws.player_id,
-                p.name,
-                p.position,
-                p.team,
-                ws.season,
-                ws.week,
-                ws.fantasy_points,
-                ws.projected_points,
-                ws.fantasy_points - ws.projected_points as points_vs_projection
-            FROM weekly_stats ws
-            JOIN players p ON ws.player_id = p.player_id
-            WHERE ws.season IN ({})
-        """.format(','.join('?' * len(seasons)))
-        
-        params = seasons
-        
-        if positions:
-            query += " AND p.position IN ({})".format(','.join('?' * len(positions)))
-            params.extend(positions)
-        
-        query += " ORDER BY ws.season, ws.week, p.position"
-        
-        with self.get_connection() as conn:
-            return pd.read_sql_query(query, conn, params=params)
-    
-    def get_database_stats(self) -> Dict[str, Any]:
-        """Get summary statistics about the database."""
-        with self.get_connection() as conn:
-            cursor = conn.cursor()
-            
-            # Count records in each table
-            stats = {}
-            
-            cursor.execute("SELECT COUNT(*) FROM players")
-            stats['total_players'] = cursor.fetchone()[0]
-            
-            cursor.execute("SELECT COUNT(*) FROM weekly_stats")
-            stats['total_weekly_records'] = cursor.fetchone()[0]
-            
-            cursor.execute("SELECT COUNT(DISTINCT season) FROM weekly_stats")
-            stats['seasons_count'] = cursor.fetchone()[0]
-            
-            cursor.execute("SELECT MIN(season), MAX(season) FROM weekly_stats")
-            min_season, max_season = cursor.fetchone()
-            stats['season_range'] = f"{min_season}-{max_season}" if min_season else "No data"
-            
-            cursor.execute("""
-                SELECT position, COUNT(*) 
-                FROM players 
-                GROUP BY position 
-                ORDER BY COUNT(*) DESC
-            """)
-            stats['players_by_position'] = dict(cursor.fetchall())
-            
-            return stats
-    
-    def validate_data_integrity(self) -> Dict[str, Any]:
-        """Validate database integrity and return issues found."""
-        issues = {}
-        
-        with self.get_connection() as conn:
-            cursor = conn.cursor()
-            
-            # Check for orphaned weekly stats
-            cursor.execute("""
-                SELECT COUNT(*) FROM weekly_stats ws
-                LEFT JOIN players p ON ws.player_id = p.player_id
-                WHERE p.player_id IS NULL
-            """)
-            issues['orphaned_stats'] = cursor.fetchone()[0]
-            
-            # Check for missing projected points
-            cursor.execute("""
-                SELECT COUNT(*) FROM weekly_stats 
-                WHERE projected_points IS NULL OR projected_points = 0
-            """)
-            issues['missing_projections'] = cursor.fetchone()[0]
-            
-            # Check for duplicate records
-            cursor.execute("""
-                SELECT player_id, season, week, COUNT(*) as count
-                FROM weekly_stats 
-                GROUP BY player_id, season, week
-                HAVING count > 1
-            """)
-            duplicates = cursor.fetchall()
-            issues['duplicate_records'] = len(duplicates)
-            
-            return issues
-
-
-# Convenience function for easy database access
-def get_database(db_path: str = "data/fantasy_football.db") -> DatabaseManager:
-    """Get a database manager instance."""
-    return DatabaseManager(db_path)
-
-
-if __name__ == "__main__":
-    # Example usage and testing
-    db = get_database()
-    
-    # Print database statistics
-    stats = db.get_database_stats()
-    print("Database Statistics:")
-    for key, value in stats.items():
-        print(f"  {key}: {value}")
-    
-    # Check data integrity
-    issues = db.validate_data_integrity()
-    print("\nData Integrity Check:")
-    for key, value in issues.items():
-        print(f"  {key}: {value}")
+    return round(base_score, 3)

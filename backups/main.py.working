@@ -1,0 +1,658 @@
+"""
+Command Line Interface for Fantasy Football AI Data Collection System.
+Location: src/fantasy_ai/cli/main.py
+"""
+
+import asyncio
+import click
+import logging
+import json
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Optional, Dict, Any
+import os
+
+# Set up import path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
+# Add dotenv support
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # dotenv is optional
+
+from fantasy_ai.core.data.etl import (
+    FantasyFootballETL, CollectionConfig, run_quick_etl, 
+    run_comprehensive_etl, resume_etl_from_checkpoint
+)
+from fantasy_ai.core.data.sources.nfl_comprehensive import create_nfl_client, get_api_config
+from fantasy_ai.core.data.storage.simple_database import (
+    get_simple_db_manager, get_simple_session
+)
+from fantasy_ai.core.data.priority_queue import optimize_collection_schedule
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler('fantasy_ai.log')
+    ]
+)
+
+logger = logging.getLogger(__name__)
+
+def async_command(f):
+    """Decorator to make Click commands async-compatible."""
+    import functools
+    
+    @functools.wraps(f)
+    def wrapper(*args, **kwargs):
+        return asyncio.run(f(*args, **kwargs))
+    return wrapper
+
+# CLI Group
+@click.group()
+@click.option('--verbose', '-v', is_flag=True, help='Enable verbose logging')
+@click.option('--config-file', type=click.Path(exists=True), help='Configuration file path')
+@click.pass_context
+def cli(ctx, verbose, config_file):
+    """Fantasy Football AI Data Collection CLI."""
+    
+    if verbose:
+        logging.getLogger().setLevel(logging.DEBUG)
+    
+    # Ensure context object exists
+    ctx.ensure_object(dict)
+    ctx.obj['config_file'] = config_file
+    
+    click.echo("Fantasy Football AI Data Collection System")
+    click.echo("=" * 50)
+
+# Database Commands
+@cli.group()
+def database():
+    """Database management commands."""
+    pass
+
+@database.command()
+@click.option('--drop-existing', is_flag=True, help='Drop existing tables before creating')
+@async_command
+async def init(drop_existing):
+    """Initialize database and create tables."""
+    
+    click.echo("Initializing database...")
+    
+    try:
+        db_manager = get_simple_db_manager()
+        await db_manager.create_tables(drop_existing=drop_existing)
+        
+        click.echo("Database initialized successfully")
+        
+        # Show database statistics
+        if await db_manager.test_connection():
+            click.echo(f"Database location: {db_manager.db_path}")
+        
+    except Exception as e:
+        click.echo(f"Database initialization failed: {e}")
+        sys.exit(1)
+
+@database.command()
+@async_command
+async def stats():
+    """Show database statistics."""
+    
+    click.echo("Database Statistics")
+    click.echo("-" * 30)
+    
+    try:
+        db_manager = get_simple_db_manager()
+        
+        click.echo(f"Database URL: {db_manager.db_path}")
+        click.echo(f"Engine Type: SQLite")
+        
+        if await db_manager.test_connection():
+            async with db_manager.get_session() as session:
+                from fantasy_ai.core.data.storage.models import Team, Player, WeeklyStats
+                from sqlalchemy import select, func
+                
+                # Get table counts
+                result = await session.execute(select(func.count()).select_from(Team))
+                team_count = result.scalar()
+                
+                result = await session.execute(select(func.count()).select_from(Player))
+                player_count = result.scalar()
+                
+                result = await session.execute(select(func.count()).select_from(WeeklyStats))
+                stats_count = result.scalar()
+                
+                click.echo("\nTable Counts:")
+                click.echo(f"  Teams: {team_count}")
+                click.echo(f"  Players: {player_count}")
+                click.echo(f"  Weekly Stats: {stats_count}")
+        else:
+            click.echo("Error: Database connection failed")
+            
+    except Exception as e:
+        click.echo(f"Failed to get database stats: {e}")
+
+@database.command()
+@click.option('--backup-path', type=click.Path(), help='Backup file path')
+@async_command
+async def backup(backup_path):
+    """Create database backup."""
+    
+    click.echo("Creating database backup...")
+    
+    try:
+        db_manager = get_simple_db_manager()
+        
+        if not backup_path:
+            backup_path = f"backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}.db"
+        
+        # Simple file copy for SQLite
+        import shutil
+        shutil.copy2(db_manager.db_path, backup_path)
+        
+        click.echo(f"Database backup completed: {backup_path}")
+        
+    except Exception as e:
+        click.echo(f"Backup error: {e}")
+
+@database.command()
+@async_command
+async def optimize():
+    """Optimize database performance."""
+    
+    click.echo("Optimizing database...")
+    
+    try:
+        db_manager = get_simple_db_manager()
+        
+        if await db_manager.test_connection():
+            async with db_manager.get_session() as session:
+                await session.execute("PRAGMA optimize")
+                await session.execute("VACUUM")
+                await session.commit()
+            
+            click.echo("Database optimization completed")
+        else:
+            click.echo("Database connection failed")
+        
+    except Exception as e:
+        click.echo(f"Optimization failed: {e}")
+
+# API Commands
+@cli.group()
+def api():
+    """NFL API management commands."""
+    pass
+
+@api.command()
+@async_command
+async def test():
+    """Test NFL API connectivity."""
+    
+    click.echo("Testing NFL API connectivity...")
+    
+    # Check if API key is set
+    if not os.getenv('NFL_API_KEY'):
+        click.echo("NFL_API_KEY environment variable not set")
+        click.echo("Please set your API key: export NFL_API_KEY='your_key_here'")
+        return
+    
+    try:
+        client = await create_nfl_client()
+        
+        try:
+            health_status = await client.health_check()
+            
+            if health_status['api_accessible']:
+                click.echo("NFL API connection successful")
+                click.echo(f"Response time: {health_status['response_time']:.2f}s")
+            else:
+                click.echo("NFL API connection failed")
+                if health_status.get('last_error'):
+                    click.echo(f"Error: {health_status['last_error']}")
+        finally:
+            await client.close()
+                    
+    except Exception as e:
+        click.echo(f"API test failed: {e}")
+        if "NFL_API_KEY" in str(e):
+            click.echo("Please ensure your NFL_API_KEY environment variable is set correctly")
+
+@api.command()
+def config():
+    """Show API configuration."""
+    
+    click.echo("NFL API Configuration")
+    click.echo("-" * 30)
+    
+    config = get_api_config()
+    
+    for key, value in config.items():
+        if 'key' in key.lower():
+            # Mask API key
+            masked_value = f"{str(value)[:8]}..." if value else "Not set"
+            click.echo(f"{key}: {masked_value}")
+        else:
+            click.echo(f"{key}: {value}")
+
+@api.command()
+@async_command
+async def status():
+    """Show API usage status."""
+    
+    click.echo("NFL API Usage Status")
+    click.echo("-" * 30)
+    
+    try:
+        client = await create_nfl_client()
+        
+        try:
+            stats = client.get_stats()
+            
+            click.echo(f"Total Requests: {stats.get('total_requests', 0)}")
+            click.echo(f"Successful Requests: {stats.get('successful_requests', 0)}")
+            click.echo(f"Success Rate: {stats.get('success_rate', 0):.1%}")
+            click.echo(f"Cache Hit Rate: {stats.get('cache_hit_rate', 0):.1%}")
+            click.echo(f"Avg Response Time: {stats.get('avg_response_time', 0):.2f}s")
+            
+            rate_limit = stats.get('rate_limiter', {})
+            if rate_limit:
+                click.echo(f"\nRate Limiting:")
+                click.echo(f"  Daily Remaining: {rate_limit.get('daily_remaining', 'N/A')}")
+                click.echo(f"  Current Tier: {rate_limit.get('current_tier', 'N/A')}")
+        finally:
+            await client.close()
+                
+    except Exception as e:
+        click.echo(f"Failed to get API status: {e}")
+
+@api.command()
+@async_command
+async def debug():
+    """Debug API response structure."""
+    
+    click.echo("Debugging NFL API response structure...")
+    
+    # Check if API key is set
+    if not os.getenv('NFL_API_KEY'):
+        click.echo("NFL_API_KEY environment variable not set")
+        return
+    
+    try:
+        from fantasy_ai.core.data.sources.nfl_comprehensive import NFLAPIClient
+        
+        client = NFLAPIClient()
+        await client._ensure_session()
+        
+        try:
+            # Test leagues endpoint
+            click.echo("Testing /leagues endpoint...")
+            response = await client._make_request('leagues', {})
+            
+            if response.success:
+                click.echo("Leagues endpoint working")
+                leagues = response.data.get('response', [])
+                click.echo(f"Found {len(leagues)} leagues")
+                
+                for league in leagues[:3]:  # Show first 3
+                    click.echo(f"  League: {league.get('name', 'Unknown')} (ID: {league.get('id', 'Unknown')})")
+            else:
+                click.echo(f"Leagues endpoint failed: {response.error_message}")
+            
+            # Test teams endpoint  
+            click.echo("\nTesting /teams endpoint...")
+            response = await client._make_request('teams', {})
+            
+            if response.success:
+                click.echo("Teams endpoint working")
+                teams = response.data.get('response', [])
+                click.echo(f"Found {len(teams)} teams")
+                
+                for team in teams[:3]:  # Show first 3
+                    team_info = team.get('team', {})
+                    click.echo(f"  Team: {team_info.get('name', 'Unknown')} (ID: {team_info.get('id', 'Unknown')})")
+            else:
+                click.echo(f"Teams endpoint failed: {response.error_message}")
+                
+        finally:
+            await client.close()
+            
+    except Exception as e:
+        click.echo(f"Debug failed: {e}")
+        import traceback
+        click.echo(f"Details: {traceback.format_exc()}")
+
+# Collection Commands
+@cli.group()
+def collect():
+    """Data collection commands."""
+    pass
+
+@collect.command()
+@click.option('--max-calls', default=50, help='Maximum API calls to make')
+@click.option('--positions', default='QB,RB,WR,TE', help='Positions to collect (comma-separated)')
+@click.option('--seasons', default='2023', help='Seasons to collect (comma-separated)')
+@async_command
+async def quick(max_calls, positions, seasons):
+    """Run quick data collection for testing."""
+    
+    click.echo(f"Starting quick data collection (max {max_calls} API calls)")
+    
+    try:
+        # Parse positions and seasons
+        position_list = [p.strip().upper() for p in positions.split(',')]
+        season_list = [int(s.strip()) for s in seasons.split(',')]
+        
+        click.echo(f"Positions: {', '.join(position_list)}")
+        click.echo(f"Seasons: {', '.join(map(str, season_list))}")
+        
+        # Run quick ETL
+        config = CollectionConfig(
+            api_calls_per_day=max_calls,
+            priority_positions=position_list,
+            target_seasons=season_list,
+            max_concurrent_tasks=2
+        )
+        
+        etl = FantasyFootballETL(config)
+        
+        with click.progressbar(length=100, label='Collecting data') as bar:
+            # Run ETL and update progress
+            metrics = await etl.run_full_pipeline()
+            bar.update(100)
+        
+        # Show results
+        click.echo("\nQuick collection completed!")
+        click.echo(f"Players processed: {metrics.total_players_processed}")
+        click.echo(f"Stats collected: {metrics.total_stats_collected}")
+        click.echo(f"API calls made: {metrics.total_api_calls}")
+        click.echo(f"Quality score: {metrics.validation_score:.3f}")
+        
+    except Exception as e:
+        click.echo(f"Quick collection failed: {e}")
+        logger.exception("Quick collection error")
+
+@collect.command()
+@click.option('--max-calls', default=100, help='Maximum API calls per day')
+@click.option('--concurrent', default=3, help='Maximum concurrent tasks')
+@async_command
+async def full(max_calls, concurrent):
+    """Run comprehensive data collection."""
+    
+    click.echo(f"Starting comprehensive data collection")
+    click.echo(f"Max API calls per day: {max_calls}")
+    click.echo(f"Concurrent tasks: {concurrent}")
+    
+    # Confirm before proceeding
+    if not click.confirm("This will collect data for all priority positions and seasons. Continue?"):
+        click.echo("Collection cancelled.")
+        return
+    
+    try:
+        config = CollectionConfig(
+            api_calls_per_day=max_calls,
+            priority_positions=['QB', 'RB', 'WR', 'TE'],
+            target_seasons=[2021, 2022, 2023],
+            max_concurrent_tasks=concurrent,
+            enable_quality_validation=True
+        )
+        
+        etl = FantasyFootballETL(config)
+        
+        click.echo("Initializing collection system...")
+        if not await etl.initialize_pipeline():
+            click.echo("Failed to initialize pipeline")
+            return
+        
+        click.echo("Starting intelligent data collection...")
+        
+        # Start collection with progress monitoring
+        metrics = await etl.run_full_pipeline()
+        
+        # Show comprehensive results
+        click.echo("\nComprehensive collection completed!")
+        click.echo("=" * 50)
+        click.echo(f"Duration: {metrics.end_time - metrics.start_time}")
+        click.echo(f"Players processed: {metrics.total_players_processed}")
+        click.echo(f"Stats collected: {metrics.total_stats_collected}")
+        click.echo(f"API calls made: {metrics.total_api_calls}")
+        click.echo(f"Overall quality score: {metrics.validation_score:.3f}")
+        click.echo(f"Errors encountered: {metrics.errors_encountered}")
+        
+        # Generate and save report
+        report = await etl.generate_pipeline_report()
+        report_path = f"collection_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        
+        with open(report_path, 'w') as f:
+            json.dump(report, f, indent=2, default=str)
+        
+        click.echo(f"Detailed report saved to: {report_path}")
+        
+    except Exception as e:
+        click.echo(f"Comprehensive collection failed: {e}")
+        logger.exception("Comprehensive collection error")
+
+@collect.command()
+@async_command
+async def status():
+    """Show current collection status."""
+    
+    click.echo("Collection Status")
+    click.echo("-" * 30)
+    
+    try:
+        db_manager = get_simple_db_manager()
+        
+        if await db_manager.test_connection():
+            async with db_manager.get_session() as session:
+                from fantasy_ai.core.data.storage.models import Team, Player, WeeklyStats
+                from sqlalchemy import select, func
+                
+                # Get basic counts
+                result = await session.execute(select(func.count()).select_from(Team))
+                team_count = result.scalar()
+                
+                result = await session.execute(select(func.count()).select_from(Player))
+                player_count = result.scalar()
+                
+                result = await session.execute(select(func.count()).select_from(WeeklyStats))
+                stats_count = result.scalar()
+                
+                click.echo("Database Contents:")
+                click.echo(f"  Teams: {team_count}")
+                click.echo(f"  Players: {player_count}")
+                click.echo(f"  Weekly Stats: {stats_count}")
+        else:
+            click.echo("Database connection failed")
+        
+        click.echo(f"\nLast updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        
+    except Exception as e:
+        click.echo(f"Failed to get collection status: {e}")
+
+@collect.command()
+@async_command
+async def optimize():
+    """Optimize collection schedule and priorities."""
+    
+    click.echo("Optimizing collection schedule...")
+    
+    try:
+        recommendations = await optimize_collection_schedule()
+        
+        click.echo("Optimization completed!")
+        click.echo(f"Total pending tasks: {recommendations['total_pending_tasks']}")
+        click.echo(f"Estimated completion: {recommendations['estimated_completion_days']:.1f} days")
+        click.echo(f"Batch opportunities: {len(recommendations['batch_opportunities'])}")
+        
+        if recommendations['batch_opportunities']:
+            click.echo("\nTop batch opportunities:")
+            for i, batch in enumerate(recommendations['batch_opportunities'][:5], 1):
+                click.echo(f"  {i}. {batch['group']}: {batch['task_count']} tasks")
+                
+    except Exception as e:
+        click.echo(f"Optimization failed: {e}")
+
+# Quality Commands
+@cli.group()
+def quality():
+    """Data quality management commands."""
+    pass
+
+@quality.command()
+@click.argument('player_id', type=int)
+@click.option('--season', default=2023, help='Season to validate')
+@async_command
+async def validate(player_id, season):
+    """Validate data quality for a specific player."""
+    
+    click.echo(f"Validating player {player_id} for season {season}")
+    
+    try:
+        # Lazy import of heavy ML libraries
+        from fantasy_ai.core.data.quality.anomaly_detector import validate_player_data
+        
+        quality_metrics = await validate_player_data(player_id, season)
+        
+        click.echo("Validation completed!")
+        click.echo(f"Overall Score: {quality_metrics.overall_score:.3f}")
+        click.echo(f"Completeness: {quality_metrics.completeness_score:.3f}")
+        click.echo(f"Consistency: {quality_metrics.consistency_score:.3f}")
+        click.echo(f"Anomaly Score: {quality_metrics.anomaly_score:.3f}")
+        click.echo(f"Anomalies Found: {len(quality_metrics.anomalies)}")
+        
+        if quality_metrics.anomalies:
+            click.echo("\nTop Anomalies:")
+            for i, anomaly in enumerate(quality_metrics.anomalies[:3], 1):
+                click.echo(f"  {i}. {anomaly.description} (confidence: {anomaly.confidence:.2f})")
+                
+    except Exception as e:
+        click.echo(f"Validation failed: {e}")
+
+@quality.command()
+@async_command
+async def report():
+    """Generate comprehensive data quality report."""
+    
+    click.echo("Generating data quality report...")
+    
+    try:
+        db_manager = get_simple_db_manager()
+        
+        if not await db_manager.test_connection():
+            click.echo("Database not accessible. Run data collection first.")
+            return
+        
+        async with db_manager.get_session() as session:
+            from fantasy_ai.core.data.storage.models import DataQualityMetric, Player
+            from sqlalchemy import select
+            
+            # Get quality metrics
+            result = await session.execute(select(DataQualityMetric))
+            quality_metrics = result.scalars().all()
+            
+            if not quality_metrics:
+                click.echo("No quality metrics found. Run data collection first.")
+                return
+            
+            # Calculate summary statistics
+            total_players = len(quality_metrics)
+            avg_quality = sum(m.overall_quality_score for m in quality_metrics) / total_players
+            high_quality = len([m for m in quality_metrics if m.overall_quality_score >= 0.8])
+            low_quality = len([m for m in quality_metrics if m.overall_quality_score < 0.6])
+            
+            click.echo("Data Quality Report")
+            click.echo("=" * 30)
+            click.echo(f"Total Players Analyzed: {total_players}")
+            click.echo(f"Average Quality Score: {avg_quality:.3f}")
+            click.echo(f"High Quality (>=0.8): {high_quality} ({high_quality/total_players:.1%})")
+            click.echo(f"Low Quality (<0.6): {low_quality} ({low_quality/total_players:.1%})")
+            
+            # Generate detailed report file
+            report_data = {
+                'summary': {
+                    'total_players': total_players,
+                    'average_quality_score': avg_quality,
+                    'high_quality_count': high_quality,
+                    'low_quality_count': low_quality
+                },
+                'details': []
+            }
+            
+            for metric in quality_metrics:
+                result = await session.execute(select(Player).where(Player.id == metric.player_id))
+                player = result.scalar_one_or_none()
+                
+                report_data['details'].append({
+                    'player_id': metric.player_id,
+                    'player_name': player.name if player else 'Unknown',
+                    'position': player.position if player else 'Unknown',
+                    'overall_score': metric.overall_quality_score,
+                    'completeness_score': metric.completeness_score,
+                    'consistency_score': metric.consistency_score,
+                    'anomaly_score': metric.anomaly_score
+                })
+            
+            # Save report
+            report_path = f"quality_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+            with open(report_path, 'w') as f:
+                json.dump(report_data, f, indent=2)
+            
+            click.echo(f"Detailed report saved to: {report_path}")
+        
+    except Exception as e:
+        click.echo(f"Failed to generate quality report: {e}")
+
+# Utility Commands
+@cli.command()
+@async_command
+async def cleanup():
+    """Clean up temporary files and optimize system."""
+    
+    click.echo("Cleaning up system...")
+    
+    try:
+        # Optimize database
+        db_manager = get_simple_db_manager()
+        
+        if await db_manager.test_connection():
+            async with db_manager.get_session() as session:
+                await session.execute("PRAGMA optimize")
+                await session.execute("VACUUM")
+                await session.commit()
+            click.echo("Database optimized")
+        else:
+            click.echo("Database not accessible for optimization")
+        
+        # Clean up log files older than 30 days
+        log_files = Path('.').glob('*.log')
+        cleaned_files = 0
+        
+        for log_file in log_files:
+            if log_file.stat().st_mtime < (datetime.now().timestamp() - 30 * 24 * 3600):
+                log_file.unlink()
+                cleaned_files += 1
+        
+        click.echo(f"Cleanup completed! Removed {cleaned_files} old log files")
+        
+    except Exception as e:
+        click.echo(f"Cleanup failed: {e}")
+
+@cli.command()
+def version():
+    """Show version information."""
+    
+    click.echo("Fantasy Football AI Data Collection System")
+    click.echo("Version: 1.0.0")
+    click.echo("Author: Christopher Bratkovics")
+    click.echo("https://github.com/cbratkovics/fantasy-football-ai")
+
+if __name__ == '__main__':
+    cli()

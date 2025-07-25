@@ -1,492 +1,696 @@
 """
-ETL Pipeline for Fantasy Football AI Assistant.
-
-This module orchestrates data collection, transformation, and loading
-for machine learning model training and prediction.
+Integrated ETL Pipeline with Intelligent Orchestration and Quality Management.
+Location: src/fantasy_ai/core/data/etl.py
 """
 
+import asyncio
 import logging
-import pandas as pd
-import numpy as np
-from typing import List, Dict, Optional, Tuple, Any
-from datetime import datetime, timedelta
-from pathlib import Path
+from datetime import datetime, timezone, timedelta
+from typing import Dict, List, Optional, Any, Tuple
+from dataclasses import dataclass
+from enum import Enum
 import json
+from pathlib import Path
 
-from .sources.nfl import ESPNDataCollector, create_espn_collector
-from .storage.models import DatabaseManager, get_database
+from sqlalchemy.orm import Session
+from sqlalchemy import and_, or_, desc, func
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
+from .orchestrator import CollectionOrchestrator, CollectionConfig
+from .sources.nfl_comprehensive import NFLAPIClient, create_nfl_client, sync_teams_to_database
+from .priority_queue import IntelligentPriorityQueue, create_intelligent_queue
+from .quality.anomaly_detector import DataQualityValidator, batch_validate_players
+from .storage.models import (
+    Team, Player, WeeklyStats, CollectionTask, CollectionStatus, 
+    CollectionProgress, DataQualityMetric, calculate_fantasy_priority_score
+)
+from .storage.database import get_db_session, ensure_database_exists
+
 logger = logging.getLogger(__name__)
 
+class ETLPhase(Enum):
+    """ETL Pipeline phases."""
+    INITIALIZATION = "initialization"
+    EXTRACTION = "extraction"
+    TRANSFORMATION = "transformation"
+    LOADING = "loading"
+    VALIDATION = "validation"
+    OPTIMIZATION = "optimization"
 
-class FantasyDataETL:
+class PipelineStatus(Enum):
+    """Pipeline execution status."""
+    NOT_STARTED = "not_started"
+    RUNNING = "running"
+    PAUSED = "paused"
+    COMPLETED = "completed"
+    FAILED = "failed"
+
+@dataclass
+class ETLMetrics:
+    """ETL pipeline execution metrics."""
+    start_time: datetime
+    end_time: Optional[datetime] = None
+    total_players_processed: int = 0
+    total_stats_collected: int = 0
+    total_api_calls: int = 0
+    validation_score: float = 0.0
+    errors_encountered: int = 0
+    current_phase: ETLPhase = ETLPhase.INITIALIZATION
+    status: PipelineStatus = PipelineStatus.NOT_STARTED
+
+class FantasyFootballETL:
     """
-    Complete ETL pipeline for fantasy football data processing.
-    
-    Handles data extraction from ESPN API, transformation for ML features,
-    and loading into structured formats for model training.
+    Comprehensive ETL pipeline for Fantasy Football data with intelligent orchestration,
+    quality management, and adaptive optimization.
     """
     
-    def __init__(self, db_manager: Optional[DatabaseManager] = None):
-        """
-        Initialize ETL pipeline.
+    def __init__(self, config: CollectionConfig = None):
+        """Initialize ETL pipeline with configuration."""
         
-        Args:
-            db_manager: Database manager instance
-        """
-        self.db_manager = db_manager or get_database()
-        self.espn_collector = create_espn_collector(db_path=self.db_manager.db_path)
+        self.config = config or CollectionConfig()
         
-        # Feature engineering configuration
-        self.feature_config = {
-            'rolling_windows': [3, 4, 6],  # Windows for rolling averages
-            'min_games_threshold': 4,      # Minimum games for valid stats
-            'positions': ['QB', 'RB', 'WR', 'TE'],  # Positions to process
-            'outlier_threshold': 3.0       # Standard deviations for outlier detection
-        }
+        # Core components
+        self.orchestrator: Optional[CollectionOrchestrator] = None
+        self.nfl_client: Optional[NFLAPIClient] = None
+        self.priority_queue: Optional[IntelligentPriorityQueue] = None
+        self.quality_validator: Optional[DataQualityValidator] = None
         
-        logger.info("Fantasy Data ETL Pipeline initialized")
-    
-    def run_full_pipeline(
-        self, 
-        collect_fresh_data: bool = True,
-        process_features: bool = True,
-        save_training_data: bool = True
-    ) -> Dict[str, Any]:
-        """
-        Execute complete ETL pipeline.
+        # Pipeline state
+        self.metrics = ETLMetrics(start_time=datetime.now(timezone.utc))
+        self.is_running = False
+        self.current_batch = []
         
-        Args:
-            collect_fresh_data: Whether to collect new data from API
-            process_features: Whether to generate ML features
-            save_training_data: Whether to save processed data for training
-            
-        Returns:
-            Pipeline execution summary
-        """
-        pipeline_start = datetime.now()
-        logger.info("Starting Full ETL Pipeline")
+        # Configuration
+        self.batch_size = 20
+        self.validation_interval = 50  # Validate every 50 processed items
+        self.checkpoint_interval = 100  # Save progress every 100 items
         
-        summary = {
-            'start_time': pipeline_start,
-            'steps_completed': [],
-            'data_stats': {},
-            'errors': []
-        }
+        # Progress tracking
+        self.processed_players = set()
+        self.failed_players = set()
+        self.quality_issues = []
+
+    async def initialize_pipeline(self) -> bool:
+        """Initialize all pipeline components."""
+        
+        logger.info("Initializing Fantasy Football ETL Pipeline")
+        self.metrics.current_phase = ETLPhase.INITIALIZATION
         
         try:
-            # Step 1: Data Collection
-            if collect_fresh_data:
-                logger.info("Step 1: Collecting fresh data from ESPN API")
-                collection_result = self._collect_data()
-                summary['steps_completed'].append('data_collection')
-                summary['data_stats']['raw_records'] = len(collection_result) if not collection_result.empty else 0
-            else:
-                logger.info("Step 1: Skipping data collection (using existing data)")
-                summary['steps_completed'].append('data_collection_skipped')
+            # Ensure database exists
+            await ensure_database_exists()
             
-            # Step 2: Data Validation and Cleaning
-            logger.info("Step 2: Validating and cleaning data")
-            validation_result = self._validate_and_clean_data()
-            summary['steps_completed'].append('data_validation')
-            summary['data_stats'].update(validation_result)
+            # Initialize NFL API client
+            self.nfl_client = await create_nfl_client()
+            logger.info("NFL API client initialized")
             
-            # Step 3: Feature Engineering
-            if process_features:
-                logger.info("Step 3: Engineering ML features")
-                feature_result = self._engineer_features()
-                summary['steps_completed'].append('feature_engineering')
-                summary['data_stats'].update(feature_result)
-            else:
-                logger.info("Step 3: Skipping feature engineering")
-                summary['steps_completed'].append('feature_engineering_skipped')
+            # Initialize data quality validator
+            self.quality_validator = DataQualityValidator()
+            logger.info("Data quality validator initialized")
             
-            # Step 4: Training Data Preparation
-            if save_training_data:
-                logger.info("Step 4: Preparing and saving training datasets")
-                training_result = self._prepare_training_data()
-                summary['steps_completed'].append('training_data_prep')
-                summary['data_stats'].update(training_result)
-            else:
-                logger.info("Step 4: Skipping training data preparation")
-                summary['steps_completed'].append('training_data_prep_skipped')
+            # Initialize priority queue
+            self.priority_queue = await create_intelligent_queue()
+            logger.info("Intelligent priority queue initialized")
             
-            # Pipeline completion
-            pipeline_end = datetime.now()
-            summary['end_time'] = pipeline_end
-            summary['duration'] = (pipeline_end - pipeline_start).total_seconds()
-            summary['status'] = 'SUCCESS'
+            # Initialize orchestrator
+            self.orchestrator = CollectionOrchestrator(self.config)
+            logger.info("Collection orchestrator initialized")
             
-            logger.info(f"ETL Pipeline completed successfully in {summary['duration']:.2f} seconds")
-            self._log_pipeline_summary(summary)
+            # Sync teams to database
+            teams_synced = await sync_teams_to_database(self.nfl_client)
+            logger.info(f"Synced {teams_synced} teams to database")
             
-            return summary
+            # Initialize players
+            await self._initialize_players()
+            
+            self.metrics.status = PipelineStatus.RUNNING
+            logger.info("ETL Pipeline initialization completed successfully")
+            return True
             
         except Exception as e:
-            summary['status'] = 'FAILED'
-            summary['errors'].append(str(e))
+            logger.error(f"Failed to initialize ETL pipeline: {e}")
+            self.metrics.status = PipelineStatus.FAILED
+            return False
+
+    async def _initialize_players(self) -> None:
+        """Initialize player data for priority positions."""
+        
+        logger.info("Initializing player data for priority positions")
+        
+        async with get_db_session() as session:
+            # Get all teams
+            teams = session.query(Team).all()
+            
+            total_players = 0
+            
+            for team in teams:
+                try:
+                    # Get players for recent season (2023)
+                    players_data = await self.nfl_client.get_players_by_team(team.api_id, 2023)
+                    
+                    for player_data in players_data:
+                        player_info = player_data.get('player', {})
+                        
+                        # Only process priority positions
+                        position = player_info.get('position', 'OTHER')
+                        if position not in self.config.priority_positions:
+                            continue
+                        
+                        # Check if player exists
+                        existing_player = session.query(Player).filter(
+                            Player.api_id == player_info.get('id')
+                        ).first()
+                        
+                        if existing_player:
+                            # Update existing player
+                            existing_player.name = player_info.get('name', '')
+                            existing_player.position = position
+                            existing_player.team_id = team.id
+                            existing_player.updated_at = datetime.now(timezone.utc)
+                        else:
+                            # Create new player
+                            new_player = Player(
+                                api_id=player_info.get('id'),
+                                team_id=team.id,
+                                name=player_info.get('name', ''),
+                                firstname=player_info.get('firstname', ''),
+                                lastname=player_info.get('lastname', ''),
+                                position=position,
+                                number=player_info.get('number'),
+                                age=player_info.get('age'),
+                                height=player_info.get('height'),
+                                weight=player_info.get('weight'),
+                                college=player_info.get('college'),
+                                collection_priority=self._calculate_collection_priority(position),
+                                fantasy_priority_score=0.5  # Will be updated later
+                            )
+                            session.add(new_player)
+                        
+                        total_players += 1
+                    
+                    # Brief pause between teams
+                    await asyncio.sleep(1)
+                    
+                except Exception as e:
+                    logger.error(f"Error initializing players for team {team.name}: {e}")
+            
+            session.commit()
+            logger.info(f"Initialized {total_players} priority position players")
+
+    def _calculate_collection_priority(self, position: str) -> int:
+        """Calculate collection priority for player position."""
+        
+        priority_map = {
+            'QB': 1,
+            'RB': 2,
+            'WR': 3,
+            'TE': 4,
+            'K': 8,
+            'DEF': 9
+        }
+        
+        return priority_map.get(position, 10)
+
+    async def run_full_pipeline(self) -> ETLMetrics:
+        """Execute complete ETL pipeline."""
+        
+        logger.info("Starting full ETL pipeline execution")
+        self.is_running = True
+        
+        try:
+            # Phase 1: Initialization
+            if not await self.initialize_pipeline():
+                raise RuntimeError("Pipeline initialization failed")
+            
+            # Phase 2: Extraction (via orchestrator)
+            await self.run_extraction_phase()
+            
+            # Phase 3: Transformation & Loading (integrated)
+            await self.run_transformation_phase()
+            
+            # Phase 4: Validation
+            await self.run_validation_phase()
+            
+            # Phase 5: Optimization
+            await self.run_optimization_phase()
+            
+            self.metrics.end_time = datetime.now(timezone.utc)
+            self.metrics.status = PipelineStatus.COMPLETED
+            
+            logger.info("ETL Pipeline completed successfully")
+            
+        except Exception as e:
             logger.error(f"ETL Pipeline failed: {e}")
-            raise
-    
-    def _collect_data(self) -> pd.DataFrame:
-        """Collect fresh data from ESPN API."""
-        try:
-            data = self.espn_collector.collect_all_seasons(
-                save_to_db=True,
-                save_to_csv=True
-            )
-            logger.info(f"Collected {len(data)} records from ESPN API")
-            return data
-        except Exception as e:
-            logger.error(f"Data collection failed: {e}")
-            raise
-    
-    def _validate_and_clean_data(self) -> Dict[str, Any]:
-        """Validate data integrity and clean issues."""
-        validation_stats = {}
+            self.metrics.status = PipelineStatus.FAILED
+            self.metrics.errors_encountered += 1
         
-        # Check database integrity
-        integrity_issues = self.db_manager.validate_data_integrity()
-        validation_stats['integrity_issues'] = integrity_issues
+        finally:
+            self.is_running = False
+            await self.cleanup()
         
-        # Get overall database statistics
-        db_stats = self.db_manager.get_database_stats()
-        validation_stats.update(db_stats)
-        
-        # Log any significant issues
-        for issue_type, count in integrity_issues.items():
-            if count > 0:
-                logger.warning(f"Found {count} {issue_type}")
-        
-        logger.info("Data validation completed")
-        return validation_stats
-    
-    def _engineer_features(self) -> Dict[str, Any]:
-        """Engineer ML features from raw data."""
-        feature_stats = {}
-        
-        try:
-            # Get training seasons data
-            seasons = [2022, 2023, 2024]
-            raw_data = self.db_manager.get_training_data(seasons)
-            
-            if raw_data.empty:
-                logger.warning("No data available for feature engineering")
-                return {'features_created': 0}
-            
-            logger.info(f"Engineering features for {len(raw_data)} records")
-            
-            # Create features by position
-            all_features = []
-            for position in self.feature_config['positions']:
-                position_data = raw_data[raw_data['position'] == position].copy()
-                if len(position_data) > 0:
-                    position_features = self._create_player_features(position_data)
-                    all_features.append(position_features)
-                    logger.info(f"Created features for {len(position_features)} {position} records")
-            
-            if all_features:
-                # Combine all position features
-                feature_df = pd.concat(all_features, ignore_index=True)
-                feature_stats['features_created'] = len(feature_df)
-                feature_stats['unique_players'] = feature_df['player_id'].nunique()
-                feature_stats['feature_columns'] = len([col for col in feature_df.columns if col.startswith('feat_')])
-                
-                # Save engineered features
-                self._save_features(feature_df)
-                
-                logger.info(f"Feature engineering completed: {feature_stats['features_created']} records with {feature_stats['feature_columns']} features")
-            else:
-                logger.warning("No features could be created")
-                feature_stats['features_created'] = 0
-            
-            return feature_stats
-            
-        except Exception as e:
-            logger.error(f"Feature engineering failed: {e}")
-            raise
-    
-    def _create_player_features(self, player_data: pd.DataFrame) -> pd.DataFrame:
-        """
-        Create ML features for players in the dataset.
-        
-        Args:
-            player_data: DataFrame with player statistics
-            
-        Returns:
-            DataFrame with engineered features
-        """
-        # Sort by player and time
-        player_data = player_data.sort_values(['player_id', 'season', 'week'])
-        
-        features_list = []
-        
-        # Group by player for feature creation
-        for player_id, player_df in player_data.groupby('player_id'):
-            if len(player_df) < self.feature_config['min_games_threshold']:
-                continue  # Skip players with insufficient data
-            
-            player_features = self._calculate_player_features(player_df)
-            features_list.append(player_features)
-        
-        return pd.concat(features_list, ignore_index=True) if features_list else pd.DataFrame()
-    
-    def _calculate_player_features(self, player_df: pd.DataFrame) -> pd.DataFrame:
-        """Calculate features for a single player."""
-        player_df = player_df.copy().reset_index(drop=True)
-        
-        # Basic information
-        player_df['feat_games_played'] = len(player_df)
-        
-        # Basic statistics
-        player_df['feat_avg_points'] = player_df['fantasy_points'].mean()
-        player_df['feat_std_points'] = player_df['fantasy_points'].std()
-        player_df['feat_consistency'] = player_df['feat_avg_points'] / (player_df['feat_std_points'] + 0.01)  # Avoid division by zero
-        
-        # Projection accuracy
-        player_df['feat_avg_projection_error'] = (player_df['fantasy_points'] - player_df['projected_points']).mean()
-        player_df['feat_projection_accuracy'] = 1.0 - abs(player_df['feat_avg_projection_error']) / (player_df['feat_avg_points'] + 0.01)
-        
-        # Performance trends (rolling averages)
-        for window in self.feature_config['rolling_windows']:
-            if len(player_df) >= window:
-                rolling_avg = player_df['fantasy_points'].rolling(window=window, min_periods=1).mean()
-                player_df[f'feat_rolling_avg_{window}'] = rolling_avg
-                
-                # Momentum (recent vs overall average)
-                recent_avg = rolling_avg.iloc[-min(window, len(player_df)):].mean()
-                player_df[f'feat_momentum_{window}'] = recent_avg - player_df['feat_avg_points']
-        
-        # Boom/Bust analysis
-        boom_threshold = player_df['feat_avg_points'] + player_df['feat_std_points']
-        bust_threshold = player_df['feat_avg_points'] - player_df['feat_std_points']
-        
-        player_df['feat_boom_rate'] = (player_df['fantasy_points'] > boom_threshold).mean()
-        player_df['feat_bust_rate'] = (player_df['fantasy_points'] < bust_threshold).mean()
-        
-        # Recent performance (last 25% of games)
-        recent_games = max(1, len(player_df) // 4)
-        recent_data = player_df.tail(recent_games)
-        player_df['feat_recent_avg'] = recent_data['fantasy_points'].mean()
-        player_df['feat_recent_trend'] = player_df['feat_recent_avg'] - player_df['feat_avg_points']
-        
-        # Efficiency metrics
-        player_df['feat_points_per_projection'] = player_df['fantasy_points'] / (player_df['projected_points'] + 0.01)
-        player_df['feat_avg_efficiency'] = player_df['feat_points_per_projection'].mean()
-        
-        # Season-based features
-        for season, season_df in player_df.groupby('season'):
-            if len(season_df) >= 2:  # Minimum games in season
-                season_avg = season_df['fantasy_points'].mean()
-                player_df.loc[player_df['season'] == season, f'feat_season_{season}_avg'] = season_avg
-        
-        # Target variable (next game performance)
-        player_df['target_next_game_points'] = player_df['fantasy_points'].shift(-1)
-        
-        return player_df
-    
-    def _save_features(self, feature_df: pd.DataFrame) -> None:
-        """Save engineered features to file."""
-        try:
-            # Create data directory
-            Path("data/processed").mkdir(parents=True, exist_ok=True)
-            
-            # Save as CSV
-            feature_file = "data/processed/engineered_features.csv"
-            feature_df.to_csv(feature_file, index=False)
-            logger.info(f"Features saved to {feature_file}")
-            
-            # Save feature metadata
-            feature_columns = [col for col in feature_df.columns if col.startswith('feat_')]
-            metadata = {
-                'total_features': len(feature_columns),
-                'feature_columns': feature_columns,
-                'created_at': datetime.now().isoformat(),
-                'total_records': len(feature_df),
-                'unique_players': feature_df['player_id'].nunique()
-            }
-            
-            metadata_file = "data/processed/feature_metadata.json"
-            with open(metadata_file, 'w') as f:
-                json.dump(metadata, f, indent=2)
-            logger.info(f"Feature metadata saved to {metadata_file}")
-            
-        except Exception as e:
-            logger.error(f"Failed to save features: {e}")
-            raise
-    
-    def _prepare_training_data(self) -> Dict[str, Any]:
-        """Prepare datasets for ML model training."""
-        training_stats = {}
-        
-        try:
-            # Load engineered features
-            feature_file = "data/processed/engineered_features.csv"
-            if not Path(feature_file).exists():
-                logger.warning("No engineered features found, skipping training data preparation")
-                return {'training_datasets': 0}
-            
-            features_df = pd.read_csv(feature_file)
-            logger.info(f"Loaded {len(features_df)} feature records")
-            
-            # Create training datasets by position
-            datasets_created = 0
-            
-            for position in self.feature_config['positions']:
-                position_data = features_df[features_df['position'] == position].copy()
-                
-                if len(position_data) > 50:  # Minimum threshold for training
-                    # Prepare training/validation split
-                    train_data, val_data = self._split_training_data(position_data)
-                    
-                    # Save position-specific datasets
-                    train_file = f"data/processed/train_{position.lower()}.csv"
-                    val_file = f"data/processed/val_{position.lower()}.csv"
-                    
-                    train_data.to_csv(train_file, index=False)
-                    val_data.to_csv(val_file, index=False)
-                    
-                    datasets_created += 1
-                    logger.info(f"Created {position} training dataset: {len(train_data)} train, {len(val_data)} validation")
-            
-            training_stats['training_datasets'] = datasets_created
-            
-            # Create combined dataset for multi-position models
-            if datasets_created > 0:
-                combined_file = "data/processed/train_combined.csv"
-                features_df.to_csv(combined_file, index=False)
-                training_stats['combined_dataset_size'] = len(features_df)
-                logger.info(f"Created combined training dataset with {len(features_df)} records")
-            
-            return training_stats
-            
-        except Exception as e:
-            logger.error(f"Training data preparation failed: {e}")
-            raise
-    
-    def _split_training_data(self, data: pd.DataFrame, val_ratio: float = 0.2) -> Tuple[pd.DataFrame, pd.DataFrame]:
-        """
-        Split data into training and validation sets.
-        
-        Args:
-            data: DataFrame to split
-            val_ratio: Ratio of data to use for validation
-            
-        Returns:
-            Tuple of (training_data, validation_data)
-        """
-        # Sort by season and week for temporal split
-        data = data.sort_values(['season', 'week'])
-        
-        # Use temporal split (most recent data for validation)
-        split_idx = int(len(data) * (1 - val_ratio))
-        train_data = data.iloc[:split_idx].copy()
-        val_data = data.iloc[split_idx:].copy()
-        
-        return train_data, val_data
-    
-    def _log_pipeline_summary(self, summary: Dict[str, Any]) -> None:
-        """Log pipeline execution summary."""
-        logger.info("=" * 50)
-        logger.info("ETL PIPELINE EXECUTION SUMMARY")
-        logger.info("=" * 50)
-        logger.info(f"Status: {summary.get('status', 'UNKNOWN')}")
-        logger.info(f"Duration: {summary.get('duration', 0):.2f} seconds")
-        logger.info(f"Steps completed: {', '.join(summary.get('steps_completed', []))}")
-        
-        if summary.get('data_stats'):
-            logger.info("\nData Statistics:")
-            for key, value in summary['data_stats'].items():
-                logger.info(f"  {key}: {value}")
-        
-        if summary.get('errors'):
-            logger.error("\nErrors encountered:")
-            for error in summary['errors']:
-                logger.error(f"  {error}")
-    
-    def get_pipeline_status(self) -> Dict[str, Any]:
-        """Get current status of data pipeline."""
-        status = {
-            'database_stats': self.db_manager.get_database_stats(),
-            'integrity_check': self.db_manager.validate_data_integrity(),
-            'data_files': self._check_data_files(),
-            'last_update': self._get_last_update_time()
-        }
-        return status
-    
-    def _check_data_files(self) -> Dict[str, bool]:
-        """Check existence of key data files."""
-        files_to_check = {
-            'raw_combined_csv': Path("data/fantasy_weekly_stats_combined.csv").exists(),
-            'engineered_features': Path("data/processed/engineered_features.csv").exists(),
-            'feature_metadata': Path("data/processed/feature_metadata.json").exists(),
-            'training_combined': Path("data/processed/train_combined.csv").exists()
-        }
-        return files_to_check
-    
-    def _get_last_update_time(self) -> Optional[str]:
-        """Get timestamp of last data update."""
-        try:
-            metadata_file = Path("data/processed/feature_metadata.json")
-            if metadata_file.exists():
-                with open(metadata_file, 'r') as f:
-                    metadata = json.load(f)
-                    return metadata.get('created_at')
-        except Exception:
-            pass
-        return None
+        return self.metrics
 
-
-def run_etl_pipeline(
-    collect_data: bool = True,
-    process_features: bool = True,
-    save_training: bool = True
-) -> Dict[str, Any]:
-    """
-    Convenience function to run the ETL pipeline.
-    
-    Args:
-        collect_data: Whether to collect fresh data
-        process_features: Whether to engineer features
-        save_training: Whether to prepare training datasets
+    async def run_extraction_phase(self) -> None:
+        """Execute data extraction phase using intelligent orchestration."""
         
-    Returns:
-        Pipeline execution summary
-    """
-    etl = FantasyDataETL()
-    return etl.run_full_pipeline(
-        collect_fresh_data=collect_data,
-        process_features=process_features,
-        save_training_data=save_training
-    )
-
-
-if __name__ == "__main__":
-    # Example usage
-    try:
-        # Run full pipeline
-        result = run_etl_pipeline(
-            collect_data=True,
-            process_features=True,
-            save_training=True
+        logger.info("Starting extraction phase")
+        self.metrics.current_phase = ETLPhase.EXTRACTION
+        
+        # Start orchestrator in background
+        orchestrator_task = asyncio.create_task(
+            self.orchestrator.start_collection()
         )
         
-        print("\nETL Pipeline completed successfully!")
-        print(f"Execution time: {result.get('duration', 0):.2f} seconds")
+        # Monitor progress
+        await self._monitor_extraction_progress(orchestrator_task)
+
+    async def _monitor_extraction_progress(self, orchestrator_task: asyncio.Task) -> None:
+        """Monitor extraction progress and handle completion."""
         
-        # Print key statistics
-        if result.get('data_stats'):
-            print("\nKey Statistics:")
-            stats = result['data_stats']
-            if 'total_players' in stats:
-                print(f"  Total players in database: {stats['total_players']}")
-            if 'features_created' in stats:
-                print(f"  ML features created: {stats['features_created']}")
-            if 'training_datasets' in stats:
-                print(f"  Training datasets prepared: {stats['training_datasets']}")
+        logger.info("Monitoring extraction progress")
         
-    except Exception as e:
-        print(f"ETL Pipeline failed: {e}")
-        raise
+        while not orchestrator_task.done():
+            # Get orchestrator stats
+            stats = self.orchestrator.get_collection_stats()
+            
+            self.metrics.total_api_calls = stats.get('api_calls_made', 0)
+            
+            # Log progress periodically
+            if self.metrics.total_api_calls % 50 == 0 and self.metrics.total_api_calls > 0:
+                logger.info(f"Extraction progress: {self.metrics.total_api_calls} API calls made")
+            
+            # Check if we should stop (rate limit reached or sufficient data)
+            async with get_db_session() as session:
+                total_stats = session.query(WeeklyStats).count()
+                
+                if total_stats >= 5000:  # Sufficient data threshold
+                    logger.info(f"Sufficient data collected ({total_stats} stats), stopping extraction")
+                    await self.orchestrator.stop_collection()
+                    break
+            
+            await asyncio.sleep(30)  # Check every 30 seconds
+        
+        # Wait for orchestrator to complete
+        try:
+            await orchestrator_task
+        except Exception as e:
+            logger.error(f"Orchestrator error: {e}")
+
+    async def run_transformation_phase(self) -> None:
+        """Execute data transformation and enhancement phase."""
+        
+        logger.info("Starting transformation phase")
+        self.metrics.current_phase = ETLPhase.TRANSFORMATION
+        
+        async with get_db_session() as session:
+            # Get all players with collected stats
+            players_with_stats = session.query(Player).join(WeeklyStats).distinct().all()
+            
+            total_players = len(players_with_stats)
+            processed = 0
+            
+            for player in players_with_stats:
+                try:
+                    # Transform and enhance player data
+                    await self._transform_player_data(session, player)
+                    
+                    processed += 1
+                    self.processed_players.add(player.id)
+                    
+                    # Periodic progress logging
+                    if processed % 50 == 0:
+                        logger.info(f"Transformation progress: {processed}/{total_players} players")
+                    
+                    # Checkpoint saving
+                    if processed % self.checkpoint_interval == 0:
+                        session.commit()
+                        logger.info(f"Checkpoint saved at {processed} players")
+                
+                except Exception as e:
+                    logger.error(f"Error transforming player {player.id}: {e}")
+                    self.failed_players.add(player.id)
+                    self.metrics.errors_encountered += 1
+            
+            session.commit()
+            self.metrics.total_players_processed = processed
+            
+            logger.info(f"Transformation phase completed: {processed} players processed")
+
+    async def _transform_player_data(self, session: Session, player: Player) -> None:
+        """Transform and enhance individual player data."""
+        
+        # Get player's stats
+        stats = session.query(WeeklyStats).filter(
+            WeeklyStats.player_id == player.id
+        ).all()
+        
+        if not stats:
+            return
+        
+        # Calculate fantasy priority score
+        stats_summary = self._calculate_stats_summary(stats)
+        player.fantasy_priority_score = calculate_fantasy_priority_score(
+            player.position, stats_summary
+        )
+        
+        # Update last stats update
+        latest_stat = max(stats, key=lambda s: (s.season, s.week))
+        player.last_stats_update = datetime.now(timezone.utc)
+        
+        # Calculate enhanced metrics for each stat
+        for stat in stats:
+            if stat.fantasy_points_ppr is None:
+                stat.fantasy_points_ppr = self._calculate_fantasy_points(stat, 'ppr')
+            if stat.fantasy_points_standard is None:
+                stat.fantasy_points_standard = self._calculate_fantasy_points(stat, 'standard')
+            if stat.fantasy_points_half_ppr is None:
+                stat.fantasy_points_half_ppr = self._calculate_fantasy_points(stat, 'half_ppr')
+        
+        self.metrics.total_stats_collected += len(stats)
+
+    def _calculate_stats_summary(self, stats: List[WeeklyStats]) -> Dict[str, Any]:
+        """Calculate summary statistics for fantasy priority calculation."""
+        
+        if not stats:
+            return {}
+        
+        total_fantasy_points = sum(s.fantasy_points_ppr or 0 for s in stats)
+        games_with_points = len([s for s in stats if (s.fantasy_points_ppr or 0) > 0])
+        
+        return {
+            'fantasy_points_ppr': total_fantasy_points,
+            'games_played': games_with_points,
+            'avg_fantasy_points': total_fantasy_points / max(games_with_points, 1),
+            'total_games': len(stats)
+        }
+
+    def _calculate_fantasy_points(self, stat: WeeklyStats, scoring_type: str) -> float:
+        """Calculate fantasy points for a stat entry."""
+        
+        points = 0.0
+        
+        # Passing (1 point per 25 yards, 4 points per TD, -2 per INT)
+        points += (stat.passing_yards or 0) * 0.04
+        points += (stat.passing_touchdowns or 0) * 4
+        points -= (stat.interceptions or 0) * 2
+        
+        # Rushing (1 point per 10 yards, 6 points per TD)
+        points += (stat.rushing_yards or 0) * 0.1
+        points += (stat.rushing_touchdowns or 0) * 6
+        
+        # Receiving (1 point per 10 yards, 6 points per TD)
+        points += (stat.receiving_yards or 0) * 0.1
+        points += (stat.receiving_touchdowns or 0) * 6
+        
+        # PPR bonuses
+        if scoring_type == 'ppr':
+            points += (stat.receptions or 0) * 1.0
+        elif scoring_type == 'half_ppr':
+            points += (stat.receptions or 0) * 0.5
+        
+        # Fumbles (-2 points per lost fumble)
+        points -= (stat.fumbles_lost or 0) * 2
+        
+        return round(points, 2)
+
+    async def run_validation_phase(self) -> None:
+        """Execute comprehensive data validation phase."""
+        
+        logger.info("Starting validation phase")
+        self.metrics.current_phase = ETLPhase.VALIDATION
+        
+        async with get_db_session() as session:
+            # Get all players to validate
+            players = session.query(Player).filter(
+                Player.position.in_(self.config.priority_positions)
+            ).all()
+            
+            total_players = len(players)
+            validated = 0
+            total_quality_score = 0.0
+            
+            # Batch validation for efficiency
+            batch_size = 10
+            
+            for i in range(0, total_players, batch_size):
+                batch = players[i:i + batch_size]
+                player_ids = [p.id for p in batch]
+                
+                try:
+                    # Validate batch
+                    validation_results = await batch_validate_players(
+                        player_ids, 2023  # Validate most recent season
+                    )
+                    
+                    for player_id, quality_metrics in validation_results.items():
+                        total_quality_score += quality_metrics.overall_score
+                        validated += 1
+                        
+                        # Track quality issues
+                        if quality_metrics.overall_score < 0.7:
+                            self.quality_issues.append({
+                                'player_id': player_id,
+                                'quality_score': quality_metrics.overall_score,
+                                'anomalies': len(quality_metrics.anomalies)
+                            })
+                    
+                    logger.info(f"Validation progress: {validated}/{total_players} players")
+                    
+                except Exception as e:
+                    logger.error(f"Error validating player batch: {e}")
+                    self.metrics.errors_encountered += 1
+                
+                # Brief pause between batches
+                await asyncio.sleep(1)
+            
+            # Calculate overall validation score
+            if validated > 0:
+                self.metrics.validation_score = total_quality_score / validated
+            
+            logger.info(f"Validation completed: {validated} players validated, "
+                       f"overall quality score: {self.metrics.validation_score:.3f}")
+
+    async def run_optimization_phase(self) -> None:
+        """Execute optimization and finalization phase."""
+        
+        logger.info("Starting optimization phase")
+        self.metrics.current_phase = ETLPhase.OPTIMIZATION
+        
+        async with get_db_session() as session:
+            # Update collection priorities based on results
+            await self._optimize_collection_priorities(session)
+            
+            # Generate final statistics
+            await self._generate_final_statistics(session)
+            
+            # Clean up failed tasks
+            await self._cleanup_failed_tasks(session)
+            
+            session.commit()
+        
+        logger.info("Optimization phase completed")
+
+    async def _optimize_collection_priorities(self, session: Session) -> None:
+        """Optimize collection priorities based on current data."""
+        
+        players = session.query(Player).filter(
+            Player.position.in_(self.config.priority_positions)
+        ).all()
+        
+        for player in players:
+            # Get latest quality metrics
+            quality_metric = session.query(DataQualityMetric).filter(
+                DataQualityMetric.player_id == player.id,
+                DataQualityMetric.season == 2023
+            ).first()
+            
+            if quality_metric:
+                # Adjust priority based on data quality
+                if quality_metric.overall_quality_score < 0.5:
+                    player.collection_priority = max(1, player.collection_priority - 1)
+                elif quality_metric.overall_quality_score > 0.9:
+                    player.collection_priority = min(10, player.collection_priority + 1)
+
+    async def _generate_final_statistics(self, session: Session) -> None:
+        """Generate final pipeline statistics."""
+        
+        # Update collection progress
+        progress = session.query(CollectionProgress).first()
+        if progress:
+            progress.players_completed = len(self.processed_players)
+            progress.total_api_calls = self.metrics.total_api_calls
+            progress.last_updated = datetime.now(timezone.utc)
+
+    async def _cleanup_failed_tasks(self, session: Session) -> None:
+        """Clean up failed collection tasks."""
+        
+        # Mark old failed tasks for retry
+        old_failed_tasks = session.query(CollectionTask).filter(
+            CollectionTask.status == CollectionStatus.FAILED.value,
+            CollectionTask.updated_at < datetime.now(timezone.utc) - timedelta(hours=24)
+        ).all()
+        
+        for task in old_failed_tasks:
+            if task.retry_count < task.max_retries:
+                task.status = CollectionStatus.PENDING.value
+                task.retry_count += 1
+                task.scheduled_at = datetime.now(timezone.utc) + timedelta(hours=1)
+
+    async def pause_pipeline(self) -> None:
+        """Pause pipeline execution."""
+        
+        logger.info("Pausing ETL pipeline")
+        self.metrics.status = PipelineStatus.PAUSED
+        
+        if self.orchestrator:
+            await self.orchestrator.stop_collection()
+
+    async def resume_pipeline(self) -> None:
+        """Resume pipeline execution."""
+        
+        logger.info("Resuming ETL pipeline")
+        self.metrics.status = PipelineStatus.RUNNING
+        
+        if self.orchestrator:
+            orchestrator_task = asyncio.create_task(
+                self.orchestrator.start_collection()
+            )
+            await self._monitor_extraction_progress(orchestrator_task)
+
+    async def cleanup(self) -> None:
+        """Clean up pipeline resources."""
+        
+        logger.info("Cleaning up ETL pipeline resources")
+        
+        if self.nfl_client:
+            await self.nfl_client.close()
+        
+        if self.orchestrator:
+            await self.orchestrator.stop_collection()
+
+    def get_pipeline_status(self) -> Dict[str, Any]:
+        """Get comprehensive pipeline status."""
+        
+        status = {
+            'metrics': {
+                'status': self.metrics.status.value,
+                'current_phase': self.metrics.current_phase.value,
+                'start_time': self.metrics.start_time.isoformat(),
+                'end_time': self.metrics.end_time.isoformat() if self.metrics.end_time else None,
+                'total_players_processed': self.metrics.total_players_processed,
+                'total_stats_collected': self.metrics.total_stats_collected,
+                'total_api_calls': self.metrics.total_api_calls,
+                'validation_score': self.metrics.validation_score,
+                'errors_encountered': self.metrics.errors_encountered
+            },
+            'progress': {
+                'processed_players': len(self.processed_players),
+                'failed_players': len(self.failed_players),
+                'quality_issues': len(self.quality_issues)
+            },
+            'is_running': self.is_running
+        }
+        
+        # Add component status if available
+        if self.orchestrator:
+            status['orchestrator'] = self.orchestrator.get_collection_stats()
+        
+        if self.priority_queue:
+            status['priority_queue'] = self.priority_queue.get_queue_stats()
+        
+        if self.nfl_client:
+            status['nfl_client'] = self.nfl_client.get_stats()
+        
+        return status
+
+    async def generate_pipeline_report(self) -> Dict[str, Any]:
+        """Generate comprehensive pipeline execution report."""
+        
+        report = {
+            'execution_summary': {
+                'start_time': self.metrics.start_time.isoformat(),
+                'end_time': self.metrics.end_time.isoformat() if self.metrics.end_time else None,
+                'total_duration': str(datetime.now(timezone.utc) - self.metrics.start_time),
+                'status': self.metrics.status.value,
+                'final_phase': self.metrics.current_phase.value
+            },
+            'data_collection': {
+                'total_api_calls': self.metrics.total_api_calls,
+                'total_players_processed': self.metrics.total_players_processed,
+                'total_stats_collected': self.metrics.total_stats_collected,
+                'successful_players': len(self.processed_players),
+                'failed_players': len(self.failed_players)
+            },
+            'quality_assessment': {
+                'overall_validation_score': self.metrics.validation_score,
+                'quality_issues_found': len(self.quality_issues),
+                'quality_issues_details': self.quality_issues
+            },
+            'errors_and_issues': {
+                'total_errors': self.metrics.errors_encountered,
+                'failed_player_ids': list(self.failed_players)
+            }
+        }
+        
+        # Add database statistics
+        async with get_db_session() as session:
+            db_stats = {
+                'total_teams': session.query(Team).count(),
+                'total_players': session.query(Player).count(),
+                'total_weekly_stats': session.query(WeeklyStats).count(),
+                'completed_tasks': session.query(CollectionTask).filter(
+                    CollectionTask.status == CollectionStatus.COMPLETED.value
+                ).count(),
+                'pending_tasks': session.query(CollectionTask).filter(
+                    CollectionTask.status == CollectionStatus.PENDING.value
+                ).count()
+            }
+            
+            report['database_state'] = db_stats
+        
+        return report
+
+# Utility functions
+async def run_quick_etl(max_api_calls: int = 50) -> ETLMetrics:
+    """Run a quick ETL pipeline for testing or limited data collection."""
+    
+    config = CollectionConfig(
+        api_calls_per_day=max_api_calls,
+        priority_positions=['QB', 'RB'],  # Limited positions
+        target_seasons=[2023],  # Recent season only
+        max_concurrent_tasks=2
+    )
+    
+    etl = FantasyFootballETL(config)
+    return await etl.run_full_pipeline()
+
+async def run_comprehensive_etl() -> ETLMetrics:
+    """Run comprehensive ETL pipeline with all data."""
+    
+    config = CollectionConfig(
+        api_calls_per_day=100,
+        priority_positions=['QB', 'RB', 'WR', 'TE'],
+        target_seasons=[2021, 2022, 2023],
+        max_concurrent_tasks=3,
+        enable_quality_validation=True
+    )
+    
+    etl = FantasyFootballETL(config)
+    return await etl.run_full_pipeline()
+
+async def resume_etl_from_checkpoint() -> ETLMetrics:
+    """Resume ETL pipeline from last checkpoint."""
+    
+    # Load configuration from database or config file
+    config = CollectionConfig()
+    
+    etl = FantasyFootballETL(config)
+    
+    # Initialize without full data collection
+    await etl.initialize_pipeline()
+    
+    # Resume from transformation phase
+    await etl.run_transformation_phase()
+    await etl.run_validation_phase()
+    await etl.run_optimization_phase()
+    
+    return etl.metrics
