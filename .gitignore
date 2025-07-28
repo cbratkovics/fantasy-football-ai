@@ -1,0 +1,62 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+agentic_ai_env/
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Project specific
+.env
+.env.local
+*.log
+logs/
+*.db
+*.sqlite
+models/saved/
+models/trained/
+data/raw/
+data/processed/
+
+# Backups
+.cleanup_backup/
+.git_backup_*/
+
+# SSL
+ssl/
+*.pem
+*.crt
+*.key
+
+# Streamlit
+.streamlit/secrets.toml
