@@ -48,7 +48,7 @@ class Player(Base):
     age = Column(Integer)
     years_exp = Column(Integer)
     status = Column(String)  # Active, Injured, etc.
-    metadata = Column(JSONB)  # Full API response for flexibility
+    meta_data = Column(JSONB)  # Full API response for flexibility
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
     
     # Relationships

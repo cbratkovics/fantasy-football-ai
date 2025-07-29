@@ -13,11 +13,13 @@ import aiohttp
 import redis
 import json
 import logging
+import os
 from typing import Dict, List, Optional, Any
 from datetime import datetime, timedelta
 from dataclasses import dataclass
 from ratelimit import limits, sleep_and_retry
 import backoff
+from urllib.parse import urlparse
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -73,8 +75,19 @@ class SleeperAPIClient:
     BASE_URL = "https://api.sleeper.app/v1"
     RATE_LIMIT = 900  # Stay under 1000/minute limit
     
-    def __init__(self, redis_host: str = 'localhost', redis_port: int = 6379):
+    def __init__(self, redis_host: Optional[str] = None, redis_port: Optional[int] = None):
         """Initialize API client with Redis connection"""
+        # Get Redis connection from environment variable or use defaults
+        redis_url = os.getenv('REDIS_URL', 'redis://localhost:6379')
+        
+        if redis_host is None or redis_port is None:
+            # Parse the Redis URL
+            parsed_url = urlparse(redis_url)
+            redis_host = redis_host or parsed_url.hostname or 'localhost'
+            redis_port = redis_port or parsed_url.port or 6379
+        
+        logger.info(f"Connecting to Redis at {redis_host}:{redis_port}")
+        
         self.redis_client = redis.Redis(
             host=redis_host, 
             port=redis_port, 

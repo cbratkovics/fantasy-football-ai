@@ -39,6 +39,7 @@ Thumbs.db
 # Project specific
 .env
 .env.local
+.env.*
 *.log
 logs/
 *.db
@@ -58,5 +59,30 @@ ssl/
 *.crt
 *.key
 
-# Streamlit
+# Streamlit - Updated to catch secrets.toml anywhere
+**/.streamlit/secrets.toml
 .streamlit/secrets.toml
+frontend/.streamlit/secrets.toml
+
+# Docker volumes (if you have any local data)
+postgres-data/
+redis-data/
+
+# ML model artifacts
+*.pkl
+*.h5
+*.joblib
+*.pt
+*.pth
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# API keys and credentials
+**/credentials.json
+**/service-account.json
+api_keys.py
+secrets.py
