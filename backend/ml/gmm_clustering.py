@@ -80,7 +80,7 @@ class GMMDraftOptimizer:
         
         # Initialize models
         self.scaler = StandardScaler()
-        self.pca = PCA(n_components=n_pca_components, random_state=random_state)
+        self.pca = None  # Will be initialized in fit() with proper dimensions
         self.gmm = None
         
         # Storage for fitted data
@@ -148,8 +148,14 @@ class GMMDraftOptimizer:
         # Standardize features
         features_scaled = self.scaler.fit_transform(features)
         
+        # Initialize PCA with appropriate number of components
+        n_features = features_scaled.shape[1]
+        actual_pca_components = min(self.n_pca_components, n_features)
+        self.pca = PCA(n_components=actual_pca_components, random_state=self.random_state)
+        
         # Apply PCA for dimensionality reduction
         features_pca = self.pca.fit_transform(features_scaled)
+        logger.info(f"PCA using {actual_pca_components} components (original: {n_features} features)")
         logger.info(f"PCA explained variance: {self.pca.explained_variance_ratio_.sum():.2%}")
         
         # Optimize components if requested

@@ -318,6 +318,88 @@ class SleeperAPIClient:
             ttl=300  # 5 minute cache for trending
         )
     
+    async def get_stats(
+        self,
+        sport: str = 'nfl',
+        season_type: str = 'regular',
+        season: str = '2023',
+        week: Optional[int] = None
+    ) -> Dict[str, Dict[str, Any]]:
+        """
+        Get player stats for a specific season/week
+        
+        Args:
+            sport: Sport type (default 'nfl')
+            season_type: 'regular', 'post', or 'pre'
+            season: Year as string (e.g., '2023')
+            week: Week number (optional, returns all weeks if not specified)
+            
+        Returns:
+            Dict of player stats keyed by player_id
+        """
+        if week:
+            endpoint = f"stats/{sport}/{season_type}/{season}/{week}"
+        else:
+            endpoint = f"stats/{sport}/{season_type}/{season}"
+            
+        cache_key = self._get_cache_key('stats', f"{sport}_{season_type}_{season}_{week or 'all'}")
+        return await self._get_cached_or_fetch(
+            cache_key,
+            endpoint,
+            ttl=86400  # 24 hour cache for historical stats
+        )
+    
+    async def get_projections(
+        self,
+        sport: str = 'nfl',
+        season_type: str = 'regular',
+        season: str = '2023',
+        week: int = 1
+    ) -> Dict[str, Dict[str, Any]]:
+        """
+        Get player projections for a specific week
+        
+        Args:
+            sport: Sport type
+            season_type: Season type
+            season: Year as string
+            week: Week number
+            
+        Returns:
+            Dict of player projections
+        """
+        endpoint = f"projections/{sport}/{season_type}/{season}/{week}"
+        cache_key = self._get_cache_key('projections', f"{sport}_{season_type}_{season}_{week}")
+        return await self._get_cached_or_fetch(
+            cache_key,
+            endpoint,
+            ttl=3600  # 1 hour cache for projections
+        )
+    
+    async def get_week_stats(
+        self,
+        season: str = '2023',
+        week: int = 1,
+        season_type: str = 'regular'
+    ) -> Dict[str, Dict[str, Any]]:
+        """
+        Alias for get_stats with week parameter for compatibility
+        
+        Args:
+            season: Year as string
+            week: Week number
+            season_type: Season type
+            
+        Returns:
+            Dict of player stats for the specified week
+        """
+        return await self.get_stats(
+            sport='nfl',
+            season_type=season_type,
+            season=season,
+            week=week
+        )
+
     async def invalidate_cache(self, pattern: str = '*'):
         """
         Invalidate cache entries matching pattern

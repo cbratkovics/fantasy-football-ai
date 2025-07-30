@@ -501,6 +501,46 @@ class FeatureEngineer:
         
         feature_matrix = np.array([f.to_vector() for f in features_list])
         return self.scaler.transform(feature_matrix)
+    
+    def get_position_features(self, position: str) -> List[str]:
+        """Get relevant features for a specific position"""
+        # Base features for all positions
+        base_features = [
+            'season', 'week', 'age', 'years_exp',
+            'fantasy_points_ppr_lag1', 'fantasy_points_ppr_lag2',
+            'fantasy_points_ppr_rolling_avg'
+        ]
+        
+        # Position-specific features from Sleeper stats
+        position_features = {
+            'QB': base_features + [
+                'pass_att', 'pass_cmp', 'pass_yd', 'pass_td', 'pass_int',
+                'rush_att', 'rush_yd', 'rush_td', 'pass_cmp_pct',
+                'pts_ppr_lag1', 'pts_ppr_rolling_avg'
+            ],
+            'RB': base_features + [
+                'rush_att', 'rush_yd', 'rush_td', 'rec', 'rec_yd', 'rec_td',
+                'fum_lost', 'rush_ypc', 'rec_tgt',
+                'pts_ppr_lag1', 'pts_ppr_rolling_avg'
+            ],
+            'WR': base_features + [
+                'rec', 'rec_yd', 'rec_td', 'rec_tgt', 'rush_att', 'rush_yd',
+                'rec_ypr', 'rec_yac', 'st_snp',
+                'pts_ppr_lag1', 'pts_ppr_rolling_avg'
+            ],
+            'TE': base_features + [
+                'rec', 'rec_yd', 'rec_td', 'rec_tgt', 'rec_ypr',
+                'st_snp', 'off_snp',
+                'pts_ppr_lag1', 'pts_ppr_rolling_avg'
+            ],
+            'K': base_features + [
+                'fgm', 'fga', 'xpm', 'xpa', 'fgm_pct',
+                'fgm_0_19', 'fgm_20_29', 'fgm_30_39', 'fgm_40_49', 'fgm_50p',
+                'pts_ppr_lag1', 'pts_ppr_rolling_avg'
+            ]
+        }
+        
+        return position_features.get(position, base_features)
 
 
 # Example usage

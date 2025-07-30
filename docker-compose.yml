@@ -46,10 +46,6 @@ services:
       PYTHONPATH: /app:/app/backend
     volumes:
       - ./backend:/app/backend
-      - ./models:/app/models
-      - ./api:/app/api
-      - ./data:/app/data
-      - ./ml:/app/ml
       - ./scripts:/app/scripts
     ports:
       - "8000:8000"
@@ -79,6 +75,47 @@ services:
     depends_on:
       - backend
     command: streamlit run app.py
+
+  celery_worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: fantasy_celery_worker
+    environment:
+      DATABASE_URL: postgresql://fantasy_user:fantasy_pass@postgres:5432/fantasy_football
+      REDIS_URL: redis://redis:6379
+      PYTHONPATH: /app:/app/backend
+    volumes:
+      - ./backend:/app/backend
+      - ./scripts:/app/scripts
+    networks:
+      - fantasy_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: celery -A backend.celery_app worker --loglevel=info --queues=ml_training,data_updates
+
+  celery_beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: fantasy_celery_beat
+    environment:
+      DATABASE_URL: postgresql://fantasy_user:fantasy_pass@postgres:5432/fantasy_football
+      REDIS_URL: redis://redis:6379
+      PYTHONPATH: /app:/app/backend
+    volumes:
+      - ./backend:/app/backend
+    networks:
+      - fantasy_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: celery -A backend.celery_app beat --loglevel=info
 
 networks:
   fantasy_network:

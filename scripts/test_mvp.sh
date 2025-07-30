@@ -56,23 +56,23 @@ print_header "2. Database Verification"
 echo "Checking database connection and data..."
 
 # Test database connection
-run_test "Database connection" "docker-compose exec -T postgres psql -U postgres -d fantasy_football -c 'SELECT 1' > /dev/null 2>&1"
+run_test "Database connection" "docker-compose exec -T postgres psql -U fantasy_user -d fantasy_football -c 'SELECT 1' > /dev/null 2>&1"
 
 # Check tables exist
-TABLES=$(docker-compose exec -T postgres psql -U postgres -d fantasy_football -t -c "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public'" 2>/dev/null | tr -d ' ')
+TABLES=$(docker-compose exec -T postgres psql -U fantasy_user -d fantasy_football -t -c "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public'" 2>/dev/null | tr -d ' ')
 run_test "Database tables created (found $TABLES tables)" "[ $TABLES -gt 0 ]"
 
 # Check player data
-PLAYER_COUNT=$(docker-compose exec -T postgres psql -U postgres -d fantasy_football -t -c "SELECT COUNT(*) FROM players" 2>/dev/null | tr -d ' ' || echo "0")
+PLAYER_COUNT=$(docker-compose exec -T postgres psql -U fantasy_user -d fantasy_football -t -c "SELECT COUNT(*) FROM players" 2>/dev/null | tr -d ' ' || echo "0")
 run_test "Players table has data (found $PLAYER_COUNT players)" "[ $PLAYER_COUNT -gt 100 ]"
 
 # Check weekly stats
-STATS_COUNT=$(docker-compose exec -T postgres psql -U postgres -d fantasy_football -t -c "SELECT COUNT(*) FROM weekly_stats" 2>/dev/null | tr -d ' ' || echo "0")
+STATS_COUNT=$(docker-compose exec -T postgres psql -U fantasy_user -d fantasy_football -t -c "SELECT COUNT(*) FROM weekly_stats" 2>/dev/null | tr -d ' ' || echo "0")
 run_test "Weekly stats table has data (found $STATS_COUNT entries)" "[ $STATS_COUNT -gt 1000 ]"
 
 # Sample data verification
 echo -e "\nSample Players in Database:"
-docker-compose exec -T postgres psql -U postgres -d fantasy_football -c "
+docker-compose exec -T postgres psql -U fantasy_user -d fantasy_football -c "
 SELECT full_name, position, team, age 
 FROM players 
 WHERE position IN ('QB', 'RB', 'WR') 
@@ -110,7 +110,7 @@ print_header "4. Data Quality Verification"
 
 # Check for variety in positions
 echo "Checking position distribution..."
-docker-compose exec -T postgres psql -U postgres -d fantasy_football -t -c "
+docker-compose exec -T postgres psql -U fantasy_user -d fantasy_football -t -c "
 SELECT position, COUNT(*) as count 
 FROM players 
 WHERE status = 'Active' 
@@ -120,7 +120,7 @@ ORDER BY count DESC
 
 # Check scoring calculations
 echo -e "\nTop 5 players by average PPR points:"
-docker-compose exec -T postgres psql -U postgres -d fantasy_football -c "
+docker-compose exec -T postgres psql -U fantasy_user -d fantasy_football -c "
 SELECT p.full_name, p.position, p.team, 
        ROUND(AVG(ws.fantasy_points_ppr), 1) as avg_ppr_points,
        COUNT(ws.id) as games_played

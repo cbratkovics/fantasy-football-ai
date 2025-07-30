@@ -9,11 +9,11 @@ Production Database Models for Fantasy Football AI
 
 from sqlalchemy import (
     Column, String, Integer, Float, DateTime, Boolean,
-    ForeignKey, UniqueConstraint, Index, Text, DECIMAL
+    ForeignKey, UniqueConstraint, Index, Text, DECIMAL, create_engine
 )
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy.sql import func
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.ext.asyncio import async_sessionmaker
@@ -328,6 +328,26 @@ class DatabaseManager:
         """Get database session"""
         async with self.async_session() as session:
             yield session
+
+
+# Create engine for database connection
+import os
+from sqlalchemy import create_engine
+
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://fantasy_user:fantasy_pass@postgres:5432/fantasy_football")
+engine = create_engine(DATABASE_URL)
+
+# Create SessionLocal for dependency injection
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# Dependency to get DB session
+def get_db():
+    """Dependency for getting database session"""
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 # Example usage

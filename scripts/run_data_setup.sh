@@ -14,7 +14,7 @@ NC='\033[0m'
 
 # Step 1: Test database connection
 echo -e "\n${YELLOW}Step 1: Testing database connection...${NC}"
-docker-compose exec backend python scripts/test_db_connection.py
+docker-compose exec backend python scripts/test_db_connection_docker.py
 
 if [ $? -ne 0 ]; then
     echo -e "${RED}Database connection failed. Please check your setup.${NC}"

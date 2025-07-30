@@ -49,35 +49,38 @@ class SleeperDataFetcher:
         logger.info("Fetching players from Sleeper API...")
         
         try:
-            players_data = await self.client.get_all_players("nfl")
-            
-            if not players_data:
-                logger.error("No player data received from Sleeper API")
-                return {}
+            async with self.client as client:
+                players_data = await client.get_all_players("nfl")
                 
-            logger.info(f"Fetched {len(players_data)} total players from Sleeper")
-            
-            # Filter for relevant players
-            filtered_players = {}
-            for sleeper_id, player in players_data.items():
-                # Check if it's a Player object or dict
-                if hasattr(player, 'position'):
-                    position = player.position
-                    status = player.status
-                else:
-                    position = player.get('position')
-                    status = player.get('status', 'Active')
+                if not players_data:
+                    logger.error("No player data received from Sleeper API")
+                    return {}
+                    
+                logger.info(f"Fetched {len(players_data)} total players from Sleeper")
                 
-                # Only include active/relevant players in skill positions
-                if (position in self.skill_positions and
-                    status in ["Active", "Inactive", "Injured Reserve", "PUP", "Questionable"]):
-                    filtered_players[sleeper_id] = player
-            
-            logger.info(f"Filtered to {len(filtered_players)} skill position players")
-            return filtered_players
+                # Filter for relevant players
+                filtered_players = {}
+                for sleeper_id, player in players_data.items():
+                    # Check if it's a Player object or dict
+                    if hasattr(player, 'position'):
+                        position = player.position
+                        status = player.status
+                    else:
+                        position = player.get('position')
+                        status = player.get('status', 'Active')
+                    
+                    # Only include active/relevant players in skill positions
+                    if (position in self.skill_positions and
+                        status in ["Active", "Inactive", "Injured Reserve", "PUP", "Questionable"]):
+                        filtered_players[sleeper_id] = player
+                
+                logger.info(f"Filtered to {len(filtered_players)} skill position players")
+                return filtered_players
             
         except Exception as e:
             logger.error(f"Error fetching players: {str(e)}")
+            import traceback
+            traceback.print_exc()
             return {}
     
     def store_players(self, players_data: Dict[str, Any]) -> int:
@@ -101,7 +104,7 @@ class SleeperDataFetcher:
                         years_exp = player_data.years_exp or 0
                         status = player_data.status or 'Active'
                         fantasy_positions = player_data.fantasy_positions or []
-                        injury_status = player_data.injury_status
+                        injury_status = getattr(player_data, 'injury_status', None)
                         
                         # Additional data for meta_data field
                         meta_data = {
