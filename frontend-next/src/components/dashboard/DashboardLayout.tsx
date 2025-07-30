@@ -11,7 +11,7 @@ import {
   CogIcon,
   TrophyIcon,
 } from '@heroicons/react/24/outline'
-import { useAuth, UserButton } from '@clerk/nextjs'
+import { useUser, UserButton } from '@clerk/nextjs'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
@@ -27,7 +27,7 @@ const navigation = [
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const pathname = usePathname()
-  const { user } = useAuth()
+  const { user } = useUser()
 
   return (
     <>
@@ -154,7 +154,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                     <UserButton afterSignOutUrl="/" />
                     <div className="flex-1">
                       <p className="text-sm font-semibold text-gray-900">{user?.firstName || 'User'}</p>
-                      <p className="text-xs text-gray-500">{user?.emailAddresses[0]?.emailAddress}</p>
+                      <p className="text-xs text-gray-500">{user?.primaryEmailAddress?.emailAddress}</p>
                     </div>
                   </div>
                 </li>
