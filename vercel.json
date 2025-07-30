@@ -1,0 +1,17 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "cd frontend-next && npm run build",
+  "outputDirectory": "frontend-next/.next",
+  "installCommand": "cd frontend-next && npm install",
+  "regions": ["iad1"],
+  "functions": {
+    "frontend-next/src/app/api/create-checkout-session/route.ts": {
+      "maxDuration": 10
+    }
+  },
+  "env": {
+    "NEXT_PUBLIC_API_URL": "@fantasy-api-url",
+    "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY": "@clerk-publishable-key",
+    "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY": "@stripe-publishable-key"
+  }
+}

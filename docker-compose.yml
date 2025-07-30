@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   postgres:
     image: postgres:15-alpine
@@ -42,11 +44,15 @@ services:
     environment:
       DATABASE_URL: postgresql://fantasy_user:fantasy_pass@postgres:5432/fantasy_football
       REDIS_URL: redis://redis:6379
-      SECRET_KEY: your-secret-key-change-in-production
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-your-secret-key-change-in-production}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      STRIPE_PRICE_ID: ${STRIPE_PRICE_ID}
       PYTHONPATH: /app:/app/backend
     volumes:
       - ./backend:/app/backend
       - ./scripts:/app/scripts
+      - ./models:/app/models
     ports:
       - "8000:8000"
     networks:
@@ -58,11 +64,33 @@ services:
         condition: service_healthy
     command: uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
 
-  frontend:
+  frontend-next:
+    build:
+      context: ./frontend-next
+      dockerfile: Dockerfile
+    container_name: fantasy_frontend_next
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:8000
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+      CLERK_SECRET_KEY: ${CLERK_SECRET_KEY}
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+    volumes:
+      - ./frontend-next:/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - "3000:3000"
+    networks:
+      - fantasy_network
+    depends_on:
+      - backend
+    command: npm run dev
+
+  frontend-streamlit:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: fantasy_frontend
+    container_name: fantasy_frontend_streamlit
     environment:
       API_BASE_URL: http://backend:8000
     volumes:

@@ -86,3 +86,15 @@ temp/
 **/service-account.json
 api_keys.py
 secrets.py
+
+# Next.js
+.next/
+out/
+build/
+*.tsbuildinfo
+next-env.d.ts
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
