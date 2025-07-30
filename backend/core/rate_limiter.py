@@ -402,3 +402,76 @@ async def reset_rate_limit(user_id: str):
     cache.delete(f"{identifier}:burst:last_refill")
     
     return {"status": "reset", "user_id": user_id}
+
+
+# Prediction-specific rate limiting for free tier
+class PredictionRateLimiter:
+    """
+    Specific rate limiting for prediction endpoints
+    Free users: 5 predictions per week
+    """
+    
+    def __init__(self):
+        self.free_tier_weekly_limit = 5
+    
+    async def check_prediction_usage(
+        self,
+        user_id: str,
+        db,
+        limit: int = 5
+    ) -> bool:
+        """Check if user has remaining predictions for the week"""
+        from datetime import datetime, timedelta
+        from sqlalchemy import and_
+        from backend.models.database import PredictionUsage
+        
+        # Get start of current week (Monday)
+        today = datetime.utcnow()
+        week_start = today - timedelta(days=today.weekday())
+        week_start = week_start.replace(hour=0, minute=0, second=0, microsecond=0)
+        
+        # Check existing usage
+        usage = db.query(PredictionUsage).filter(
+            and_(
+                PredictionUsage.user_id == user_id,
+                PredictionUsage.week_start == week_start
+            )
+        ).first()
+        
+        if not usage:
+            return True  # No usage yet this week
+        
+        return usage.predictions_count < limit
+    
+    async def increment_usage(self, user_id: str, db) -> int:
+        """Increment usage counter for the week"""
+        from datetime import datetime, timedelta
+        from sqlalchemy import and_
+        from backend.models.database import PredictionUsage
+        
+        # Get start of current week
+        today = datetime.utcnow()
+        week_start = today - timedelta(days=today.weekday())
+        week_start = week_start.replace(hour=0, minute=0, second=0, microsecond=0)
+        
+        # Get or create usage record
+        usage = db.query(PredictionUsage).filter(
+            and_(
+                PredictionUsage.user_id == user_id,
+                PredictionUsage.week_start == week_start
+            )
+        ).first()
+        
+        if not usage:
+            usage = PredictionUsage(
+                user_id=user_id,
+                week_start=week_start,
+                predictions_count=0
+            )
+            db.add(usage)
+        
+        # Increment counter
+        usage.predictions_count += 1
+        db.commit()
+        
+        return usage.predictions_count

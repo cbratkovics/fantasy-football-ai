@@ -139,6 +139,71 @@ class Prediction(Base):
     )
 
 
+class User(Base):
+    """User accounts with subscription management"""
+    __tablename__ = 'users'
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    email = Column(String, unique=True, nullable=False, index=True)
+    username = Column(String, unique=True, index=True)
+    hashed_password = Column(String, nullable=False)
+    
+    # Subscription info
+    subscription_tier = Column(String, default='free')
+    stripe_customer_id = Column(String, unique=True)
+    
+    # Tracking
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+    last_login = Column(DateTime)
+    is_active = Column(Boolean, default=True)
+    
+    # Relationships
+    subscription = relationship("Subscription", back_populates="user", uselist=False)
+    prediction_usage = relationship("PredictionUsage", back_populates="user")
+
+
+class Subscription(Base):
+    """User subscription details"""
+    __tablename__ = 'subscriptions'
+    
+    id = Column(Integer, primary_key=True)
+    user_id = Column(String, ForeignKey('users.id'), unique=True)
+    stripe_subscription_id = Column(String, unique=True)
+    
+    status = Column(String)  # active, trialing, past_due, canceled
+    current_period_start = Column(DateTime)
+    current_period_end = Column(DateTime)
+    trial_end = Column(DateTime)
+    canceled_at = Column(DateTime)
+    
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+    
+    # Relationships
+    user = relationship("User", back_populates="subscription")
+
+
+class PredictionUsage(Base):
+    """Track prediction usage for rate limiting"""
+    __tablename__ = 'prediction_usage'
+    
+    id = Column(Integer, primary_key=True)
+    user_id = Column(String, ForeignKey('users.id'))
+    week_start = Column(DateTime, nullable=False)
+    predictions_count = Column(Integer, default=0)
+    
+    created_at = Column(DateTime, default=func.now())
+    
+    # Relationships
+    user = relationship("User", back_populates="prediction_usage")
+    
+    __table_args__ = (
+        UniqueConstraint('user_id', 'week_start'),
+        Index('idx_usage_user_week', user_id, week_start),
+    )
+
+
 class DraftTier(Base):
     """
     GMM clustering results for draft optimization
@@ -174,48 +239,6 @@ class DraftTier(Base):
     )
 
 
-class User(Base):
-    """
-    User accounts with subscription management
-    Ready for Auth0/Supabase integration
-    """
-    __tablename__ = 'users'
-    
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    email = Column(String, unique=True, nullable=False)
-    auth_provider_id = Column(String, unique=True)  # Auth0/Supabase ID
-    
-    # Profile
-    username = Column(String, unique=True)
-    display_name = Column(String)
-    avatar_url = Column(String)
-    
-    # Subscription
-    subscription_tier = Column(
-        String, 
-        default=SubscriptionTier.FREE.value
-    )
-    stripe_customer_id = Column(String)
-    subscription_expires = Column(DateTime)
-    
-    # Settings
-    preferences = Column(JSONB, default={})
-    default_scoring = Column(String, default='ppr')  # std, ppr, half
-    
-    # Audit
-    created_at = Column(DateTime, default=func.now())
-    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
-    last_login = Column(DateTime)
-    
-    # Relationships
-    leagues = relationship("UserLeague", back_populates="user")
-    
-    @property
-    def is_premium(self) -> bool:
-        return self.subscription_tier in [
-            SubscriptionTier.PRO.value,
-            SubscriptionTier.PREMIUM.value
-        ]
 
 
 class UserLeague(Base):

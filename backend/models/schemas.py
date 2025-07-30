@@ -112,3 +112,57 @@ class DraftRecommendation(BaseModel):
     recommended_players: List[PlayerRanking]
     position_needs: Dict[str, int]
     strategy_notes: str
+
+
+class EnhancedPredictionResponse(BaseModel):
+    """Enhanced prediction with transparency"""
+    player: Dict[str, Any]
+    prediction: Dict[str, Any]
+    confidence: Dict[str, Any]
+    explanation: Dict[str, Any]
+    draft_tier: Optional[Dict[str, Any]] = None
+    metadata: Dict[str, Any]
+
+
+class CheckoutSessionRequest(BaseModel):
+    """Stripe checkout session request"""
+    success_url: str
+    cancel_url: str
+
+
+class CheckoutSessionResponse(BaseModel):
+    """Stripe checkout session response"""
+    checkout_url: str
+    session_id: str
+    trial_days: Optional[int] = None
+
+
+class SubscriptionStatus(BaseModel):
+    """User subscription status"""
+    status: str
+    has_access: bool
+    is_trial: Optional[bool] = False
+    trial_ends: Optional[datetime] = None
+    current_period_end: Optional[datetime] = None
+    weekly_predictions_remaining: Optional[int] = None
+    canceled: Optional[bool] = False
+
+
+class WeeklyRankingsResponse(BaseModel):
+    """Weekly rankings response"""
+    position: str
+    week: int
+    season: int
+    generated_at: datetime
+    model_accuracy: float
+    rankings: List[Dict[str, Any]]
+
+
+class AccuracyReport(BaseModel):
+    """Model accuracy report"""
+    week: int
+    season: int
+    predictions_evaluated: int
+    metrics: Dict[str, float]
+    best_predictions: List[Dict[str, Any]]
+    worst_predictions: List[Dict[str, Any]]
