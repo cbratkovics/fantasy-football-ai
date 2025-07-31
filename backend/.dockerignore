@@ -58,8 +58,9 @@ scripts/demonstrate_*.py
 # Data files - should be in external storage
 *.csv
 *.parquet
-*.json
-data/
+data/raw/
+data/*.csv
+data/*.parquet
 
 # Development files
 .env.example

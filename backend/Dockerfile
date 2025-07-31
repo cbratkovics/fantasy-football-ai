@@ -22,24 +22,14 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# Create non-root user
-RUN useradd -m -u 1000 appuser
-
 # Copy application code
-COPY --chown=appuser:appuser . .
+COPY . .
 
 # Make scripts executable
 RUN chmod +x start.sh healthcheck.sh
 
-# Switch to non-root user
-USER appuser
-
-# Expose port
+# Expose port (Railway will override this)
 EXPOSE 8000
 
-# Health check using script
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD ./healthcheck.sh
-
-# Run the application using the startup script
+# Run the application
 CMD ["./start.sh"]
