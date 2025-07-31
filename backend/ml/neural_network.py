@@ -476,7 +476,7 @@ class FantasyNeuralNetwork:
         
         # Save each model
         for position, model in self.models.items():
-            model_path = os.path.join(base_path, f'model_{position}')
+            model_path = os.path.join(base_path, f'model_{position}.keras')
             model.save(model_path)
         
         # Save scalers

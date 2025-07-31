@@ -249,7 +249,7 @@ class UserLeague(Base):
     __tablename__ = 'user_leagues'
     
     id = Column(Integer, primary_key=True)
-    user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'))
+    user_id = Column(String, ForeignKey('users.id'))
     
     # League identification
     platform = Column(String, default='sleeper')  # sleeper, espn, yahoo

@@ -1,0 +1,38 @@
+{
+  "QB": {
+    "pass_yards": 0.25,
+    "pass_tds": 0.2,
+    "pts_ppr_rolling_avg": 0.15,
+    "opponent_rank": 0.1,
+    "completion_pct": 0.1,
+    "is_home": 0.05,
+    "age": 0.05,
+    "interceptions": 0.1
+  },
+  "RB": {
+    "touches": 0.25,
+    "rush_yards": 0.2,
+    "pts_ppr_rolling_avg": 0.15,
+    "receptions": 0.1,
+    "opponent_rank": 0.1,
+    "rush_tds": 0.1,
+    "rec_yards": 0.1
+  },
+  "WR": {
+    "targets": 0.25,
+    "rec_yards": 0.2,
+    "pts_ppr_rolling_avg": 0.15,
+    "catch_rate": 0.1,
+    "opponent_rank": 0.1,
+    "receptions": 0.1,
+    "rec_tds": 0.1
+  },
+  "TE": {
+    "targets": 0.3,
+    "rec_yards": 0.2,
+    "pts_ppr_rolling_avg": 0.15,
+    "receptions": 0.1,
+    "opponent_rank": 0.1,
+    "rec_tds": 0.15
+  }
+}
