@@ -25,6 +25,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY . .
 
+# Set Python path
+ENV PYTHONPATH=/app
+
+# Make start script executable
+RUN chmod +x start_app.py
+
 # Railway provides PORT env var
-# Using shell form to allow environment variable substitution
-CMD uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}
+# Using exec form with sh -c for environment variable substitution
+CMD ["sh", "-c", "python start_app.py"]

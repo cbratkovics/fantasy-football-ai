@@ -13,8 +13,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Import API routers
-from backend.api import auth, players, predictions, subscriptions
-from backend.models.database import engine, Base
+from api import auth, players, predictions, subscriptions
+from models.database import engine, Base
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -22,9 +22,9 @@ logger = logging.getLogger(__name__)
 
 # Try to import LLM components (optional)
 try:
-    from backend.api import llm_endpoints
-    from backend.services.llm_service import LLMService
-    from backend.services.vector_store import VectorStoreService
+    from api import llm_endpoints
+    from services.llm_service import LLMService
+    from services.vector_store import VectorStoreService
     LLM_AVAILABLE = True
     logger.info("LLM services imported successfully")
 except ImportError as e:
@@ -35,8 +35,17 @@ except ImportError as e:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
-    logger.info("Creating database tables...")
-    Base.metadata.create_all(bind=engine)
+    logger.info("Starting Fantasy Football AI Backend...")
+    logger.info(f"Environment: {os.getenv('ENVIRONMENT', 'development')}")
+    logger.info(f"Port: {os.getenv('PORT', '8000')}")
+    
+    try:
+        logger.info("Creating database tables...")
+        Base.metadata.create_all(bind=engine)
+        logger.info("Database tables created successfully")
+    except Exception as e:
+        logger.error(f"Failed to create database tables: {e}")
+        # Continue anyway - tables might already exist
     
     # Initialize LLM services if available
     if LLM_AVAILABLE:
@@ -100,7 +109,7 @@ async def health_check():
     }
 
 # Import new routers
-from backend.api import predictions_v2, payments
+from api import predictions_v2, payments
 
 # Include routers
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
