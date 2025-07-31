@@ -41,18 +41,12 @@ COPY --chown=appuser:appuser ./api ./api
 COPY --chown=appuser:appuser ./models ./models
 COPY --chown=appuser:appuser ./services ./services
 COPY --chown=appuser:appuser ./core ./core
-COPY --chown=appuser:appuser ./data ./data
-COPY --chown=appuser:appuser ./tasks ./tasks
 COPY --chown=appuser:appuser ./ml/fantasy_predictor.py ./ml/fantasy_predictor.py
 COPY --chown=appuser:appuser ./ml/neural_network.py ./ml/neural_network.py
 COPY --chown=appuser:appuser ./ml/feature_engineer.py ./ml/feature_engineer.py
-COPY --chown=appuser:appuser ./ml/draft_optimizer.py ./ml/draft_optimizer.py
 COPY --chown=appuser:appuser ./ml/__init__.py ./ml/__init__.py
 COPY --chown=appuser:appuser ./main.py ./main.py
-COPY --chown=appuser:appuser ./celery_app.py ./celery_app.py
 COPY --chown=appuser:appuser ./__init__.py ./__init__.py
-COPY --chown=appuser:appuser ./alembic.ini ./alembic.ini
-COPY --chown=appuser:appuser ./alembic ./alembic
 
 # Download pre-trained models (if not mounted)
 # In production, you'd mount these from external storage

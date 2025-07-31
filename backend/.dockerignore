@@ -1,0 +1,85 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ml_env/
+ENV/
+.venv
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Tests
+tests/
+test_*.py
+*_test.py
+
+# Documentation
+*.md
+docs/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Training scripts - not needed for production
+scripts/train_*.py
+scripts/test_*.py
+scripts/demonstrate_*.py
+
+# Data files - should be in external storage
+*.csv
+*.parquet
+*.json
+data/
+
+# Development files
+.env.example
+*.log
+logs/
+
+# ML artifacts that should be downloaded separately
+models/*.h5
+models/*.keras
+models/*.pkl
+ml/train_*.py
+ml/test_*.py
+
+# Notebooks
+notebooks/
+*.ipynb
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+cache/
