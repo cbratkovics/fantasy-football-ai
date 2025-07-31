@@ -31,3 +31,7 @@ aiohttp==3.9.1
 ratelimit==2.2.1
 backoff==2.2.1
 python-dotenv==1.0.0
+optuna==4.4.0
+beautifulsoup4==4.13.4
+xgboost==3.0.3
+lightgbm==4.6.0
