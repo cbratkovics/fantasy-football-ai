@@ -28,19 +28,18 @@ RUN useradd -m -u 1000 appuser
 # Copy application code
 COPY --chown=appuser:appuser . .
 
+# Make scripts executable
+RUN chmod +x start.sh healthcheck.sh
+
 # Switch to non-root user
 USER appuser
 
 # Expose port
 EXPOSE 8000
 
-# Copy startup script
-COPY --chown=appuser:appuser start.sh .
-RUN chmod +x start.sh
-
-# Health check - Railway sets PORT dynamically
-HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-    CMD curl -f http://localhost:${PORT:-8000}/health || exit 1
+# Health check using script
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD ./healthcheck.sh
 
 # Run the application using the startup script
 CMD ["./start.sh"]
