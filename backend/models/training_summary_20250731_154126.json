@@ -1,0 +1,50 @@
+{
+  "timestamp": "20250731_154126",
+  "training_samples": 11018,
+  "test_samples": 5537,
+  "features": [
+    "completions",
+    "attempts",
+    "passing_yards",
+    "passing_tds",
+    "interceptions",
+    "sacks",
+    "rushing_yards",
+    "rushing_tds",
+    "receptions",
+    "targets",
+    "receiving_yards",
+    "receiving_tds",
+    "carries",
+    "rushing_fumbles",
+    "receiving_fumbles",
+    "target_share",
+    "air_yards_share",
+    "passing_2pt_conversions",
+    "rushing_2pt_conversions",
+    "receiving_2pt_conversions",
+    "position_QB",
+    "position_RB",
+    "position_TE",
+    "position_WR",
+    "completions_avg_3",
+    "attempts_avg_3",
+    "passing_yards_avg_3",
+    "passing_tds_avg_3",
+    "interceptions_avg_3"
+  ],
+  "models": {
+    "xgboost": {
+      "mae": 0.32991341626663323,
+      "r2": 0.9918321806249414
+    },
+    "random_forest": {
+      "mae": 0.560569811885956,
+      "r2": 0.981939146005119
+    }
+  },
+  "ensemble": {
+    "mae": 0.4043400482522139,
+    "r2": 0.98926208627506
+  }
+}

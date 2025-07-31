@@ -1,0 +1,59 @@
+{
+  "timestamp": "20250731_171728",
+  "data_stats": {
+    "total_records": 31000,
+    "seasons": [
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024
+    ],
+    "unique_players": 1173
+  },
+  "feature_engineering": {
+    "total_features": 65,
+    "all_lagged": true,
+    "no_leakage": true
+  },
+  "model_performance": {
+    "QB": {
+      "mae": 6.173675600034888,
+      "baseline_mae": 7.541418552398682,
+      "improvement": 18.136414825149295,
+      "model_type": "rf",
+      "train_samples": 2402,
+      "test_samples": 653
+    },
+    "RB": {
+      "mae": 4.921580516627673,
+      "baseline_mae": 6.485996246337891,
+      "improvement": 24.11989878337526,
+      "model_type": "rf",
+      "train_samples": 5125,
+      "test_samples": 1313
+    },
+    "WR": {
+      "mae": 4.993198780252138,
+      "baseline_mae": 6.26336669921875,
+      "improvement": 20.279315900904287,
+      "model_type": "rf",
+      "train_samples": 7997,
+      "test_samples": 2082
+    },
+    "TE": {
+      "mae": 3.8836971590208225,
+      "baseline_mae": 4.706700801849365,
+      "improvement": 17.485786275285793,
+      "model_type": "rf",
+      "train_samples": 4003,
+      "test_samples": 1066
+    }
+  },
+  "validation": {
+    "all_mae_above_3": true,
+    "improvements_reasonable": true,
+    "temporal_split_correct": true
+  }
+}

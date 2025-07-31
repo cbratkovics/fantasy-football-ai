@@ -1,0 +1,17 @@
+{
+  "timestamp": "20250731_165052",
+  "description": "Fantasy football models with proper pre-game features only",
+  "data_range": "2019-2024",
+  "training_seasons": [
+    2019,
+    2020,
+    2021,
+    2022
+  ],
+  "validation_season": 2023,
+  "test_season": 2024,
+  "positions": [],
+  "performance": {},
+  "feature_engineering": "Lagged features only (L1W, L3W, L5W, season averages)",
+  "no_leakage": true
+}
