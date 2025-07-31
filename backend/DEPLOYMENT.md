@@ -64,7 +64,12 @@ railway up
 
 ### Common Issues
 
-#### 1. Dependency Installation Failures
+#### 1. Redis Dependency Conflicts
+**Problem**: `redis-py-cluster` conflicts with newer Redis versions
+
+**Solution**: Removed `redis-py-cluster==2.1.3` from requirements.txt as it's not used in the codebase. The project uses standard Redis connections, not clustering.
+
+#### 2. Dependency Installation Failures
 **Problem**: `pip install` fails with compilation errors
 
 **Solution**: The Dockerfile includes all necessary system dependencies for MySQL and PostgreSQL clients. If you still encounter issues:
