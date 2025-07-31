@@ -74,6 +74,13 @@ redis-data/
 *.joblib
 *.pt
 *.pth
+*.keras
+models/nn_model_*/
+models/enhanced/
+models/ultra_accurate/
+ml_env/
+*.png
+*.parquet
 
 # Temporary files
 *.tmp
