@@ -46,11 +46,21 @@ app.add_middleware(
 # Root endpoint
 @app.get("/")
 async def root():
-    """Health check endpoint"""
+    """Root endpoint"""
     return {
         "message": "Fantasy Football AI API",
         "version": "1.0.0",
         "status": "healthy"
+    }
+
+# Health check endpoint
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for monitoring"""
+    return {
+        "status": "healthy",
+        "service": "fantasy-football-ai-backend",
+        "version": "1.0.0"
     }
 
 # Import new routers
