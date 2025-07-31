@@ -1,35 +1,19 @@
-# Simple single-stage build for Railway
+# Minimal Dockerfile for Railway
 FROM python:3.11-slim
 
-# Set working directory
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    gcc \
-    g++ \
-    libpq-dev \
-    libpq5 \
-    curl && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    gcc g++ libpq-dev curl \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first for better caching
+# Copy and install requirements
 COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Python dependencies
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
-
-# Copy application code
+# Copy app
 COPY . .
 
-# Make scripts executable
-RUN chmod +x start.sh healthcheck.sh
-
-# Expose port (Railway will override this)
-EXPOSE 8000
-
-# Run the application
-CMD ["./start.sh"]
+# Railway provides PORT env var
+CMD uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}
