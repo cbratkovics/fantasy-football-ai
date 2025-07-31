@@ -139,6 +139,15 @@ make migrate
 - API: http://localhost:8000
 - API Docs: http://localhost:8000/docs
 
+## Documentation
+
+- [Quick Start Guide](docs/QUICKSTART.md)
+- [Deployment Guide](docs/DEPLOYMENT.md)
+- [Project Structure](docs/PROJECT_STRUCTURE.md)
+- [ML Enhancements](docs/ML_ENHANCEMENTS_SUMMARY.md)
+- [Recent Improvements](docs/IMPROVEMENTS_SUMMARY.md)
+- [Deployment Roadmap](docs/DEPLOYMENT_ROADMAP.md)
+
 ## Project Structure
 
 ```
@@ -159,6 +168,7 @@ fantasy-football-ai/
 │   └── nginx.conf           # Reverse proxy config
 ├── models/                  # Saved ML models
 ├── scripts/                 # Deployment & maintenance scripts
+├── docs/                    # Documentation
 └── tests/                   # Test suite
 ```
 

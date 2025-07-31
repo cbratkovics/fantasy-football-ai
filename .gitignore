@@ -1,14 +1,17 @@
+# Virtual Environments
+venv/
+env/
+ML_env/
+.venv/
+agentic_ai_env/
+ENV/
+
 # Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
-env/
-venv/
-ENV/
-.venv
-agentic_ai_env/
 *.egg-info/
 .pytest_cache/
 .coverage
