@@ -33,10 +33,8 @@ celery==5.3.4
 python-dotenv==1.0.0
 aiohttp==3.9.1
 ratelimit==2.2.1
-nfl_data_py>=0.3.0
-beautifulsoup4>=4.12.0
-httpx>=0.24.0
-xgboost>=2.0.0
+nfl_data_py==0.3.1
+beautifulsoup4==4.12.3
 backoff==2.2.1
 
 # ML inference only - using CPU versions
@@ -46,14 +44,15 @@ pandas==2.1.3
 numpy==1.24.3
 joblib==1.3.2
 scipy==1.11.4
+xgboost==2.0.3
 
 # LLM and AI capabilities
 langchain==0.1.0
 langchain-openai==0.0.5
 langchain-anthropic==0.1.1
 langchain-community==0.0.10
-openai>=1.10.0,<2.0.0
-anthropic==0.8.1
+openai==1.10.0
+anthropic==0.17.0  # Fixed: Compatible with langchain-anthropic 0.1.1
 
 # Vector database and embeddings
 weaviate-client==3.25.3

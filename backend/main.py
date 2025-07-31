@@ -91,10 +91,12 @@ async def root():
 @app.get("/health")
 async def health_check():
     """Health check endpoint for monitoring"""
+    from datetime import datetime
     return {
         "status": "healthy",
         "service": "fantasy-football-ai-backend",
-        "version": "1.0.0"
+        "version": "1.0.0",
+        "timestamp": datetime.utcnow().isoformat() + "Z"
     }
 
 # Import new routers

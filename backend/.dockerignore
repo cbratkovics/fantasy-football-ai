@@ -1,24 +1,30 @@
 # Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
+__pycache__
+*.pyc
+*.pyo
+*.pyd
 .Python
-env/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.git
+.gitignore
+.mypy_cache
+.pytest_cache
+.hypothesis
+
+# Virtual environments
 venv/
-ml_env/
+env/
 ENV/
 .venv
-*.egg-info/
-.pytest_cache/
-.coverage
-htmlcov/
-.mypy_cache/
-.ruff_cache/
-
-# Jupyter
-.ipynb_checkpoints/
-*.ipynb
 
 # IDEs
 .vscode/
@@ -36,51 +42,52 @@ htmlcov/
 ehthumbs.db
 Thumbs.db
 
-# Tests
-tests/
+# Project specific
+.env
+.env.local
+.env.*.local
+*.sqlite3
+*.db
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Docker
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Test files
 test_*.py
 *_test.py
+tests/
 
 # Documentation
 *.md
 docs/
+LICENSE
 
-# Git
-.git/
-.gitignore
-.gitattributes
-
-# Training scripts - not needed for production
-scripts/train_*.py
-scripts/test_*.py
-scripts/demonstrate_*.py
-
-# Data files - should be in external storage
+# Data files
 *.csv
+*.json
+*.pkl
+*.h5
+*.hdf5
 *.parquet
-data/raw/
-data/*.csv
-data/*.parquet
 
-# Development files
-.env.example
-*.log
-logs/
-
-# ML artifacts that should be downloaded separately
-models/*.h5
-models/*.keras
+# ML models (keep these out to reduce image size)
 models/*.pkl
-ml/train_*.py
-ml/test_*.py
+models/*.joblib
+models/*.h5
+models/*.pt
+models/*.pth
+mlruns/
 
 # Notebooks
-notebooks/
 *.ipynb
-
-# Temporary files
-*.tmp
-*.temp
-tmp/
-temp/
-cache/
+.ipynb_checkpoints/
