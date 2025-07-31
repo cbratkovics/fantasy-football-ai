@@ -2,12 +2,13 @@
 
 import { motion } from 'framer-motion'
 import { CheckCircleIcon } from '@heroicons/react/24/outline'
+import { METRICS, FEATURES } from '@/lib/constants'
 
 const stats = [
-  { label: 'Prediction Accuracy', value: '89.2%', description: 'Validated over 2023 season' },
-  { label: 'Players Analyzed', value: '500+', description: 'All skill positions covered' },
-  { label: 'Weekly Predictions', value: '10K+', description: 'Generated every week' },
-  { label: 'Active Users', value: '2,500+', description: 'Growing community' },
+  { label: 'Prediction Accuracy', value: METRICS.accuracy.percentage, description: METRICS.accuracy.description },
+  { label: 'Players Analyzed', value: METRICS.users.playersAnalyzed, description: 'All skill positions covered' },
+  { label: 'Weekly Predictions', value: METRICS.users.predictions, description: 'Generated every week' },
+  { label: 'Active Users', value: METRICS.users.active, description: 'Growing community' },
 ]
 
 export function Accuracy() {
@@ -47,14 +48,7 @@ export function Accuracy() {
               Why Our Predictions Are Different
             </h3>
             <div className="grid gap-4 sm:grid-cols-2">
-              {[
-                'Transparent explanations for every prediction',
-                'Real-time injury and news integration',
-                'Position-specific ML models',
-                'Weather and matchup analysis',
-                'Historical accuracy tracking',
-                'Confidence intervals included',
-              ].map((feature, index) => (
+              {FEATURES.core.slice(1, 7).map((feature, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, x: -20 }}

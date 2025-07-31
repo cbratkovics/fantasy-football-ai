@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { ArrowRightIcon, SparklesIcon } from '@heroicons/react/24/outline'
 import { useState } from 'react'
+import { METRICS } from '@/lib/constants'
 
 export function Hero() {
   const [isHovered, setIsHovered] = useState(false)
@@ -23,7 +24,7 @@ export function Hero() {
             {/* Accuracy Badge */}
             <div className="mb-8 inline-flex items-center rounded-full bg-success-100 px-4 py-2 text-sm font-semibold text-success-800">
               <SparklesIcon className="mr-2 h-4 w-4" />
-              89.2% Prediction Accuracy
+              {METRICS.accuracy.percentage} Prediction Accuracy
             </div>
 
             <h1 className="text-5xl font-bold tracking-tight text-gray-900 sm:text-6xl lg:text-7xl">
