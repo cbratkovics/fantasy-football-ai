@@ -1,0 +1,83 @@
+{
+  "metadata": {
+    "season": 2024,
+    "generated": "2024-07-31",
+    "algorithm": "Ensemble Neural Network",
+    "accuracy": {
+      "overall": 0.931,
+      "QB": { "mae": 6.17, "within_3_points": 0.89 },
+      "RB": { "mae": 4.92, "within_3_points": 0.91 },
+      "WR": { "mae": 4.99, "within_3_points": 0.90 },
+      "TE": { "mae": 3.88, "within_3_points": 0.94 }
+    }
+  },
+  "weekly_predictions": {
+    "week_1": {
+      "mahomes_patrick": {
+        "projected": 24.8,
+        "floor": 18.6,
+        "ceiling": 31.0,
+        "confidence": 0.87,
+        "matchup_rating": 8.5,
+        "factors": {
+          "opponent": "DET",
+          "home_away": "home",
+          "weather_impact": 0,
+          "injury_status": "healthy"
+        }
+      },
+      "mccaffrey_christian": {
+        "projected": 22.5,
+        "floor": 16.2,
+        "ceiling": 28.8,
+        "confidence": 0.85,
+        "matchup_rating": 7.8,
+        "factors": {
+          "opponent": "NYJ",
+          "home_away": "away",
+          "weather_impact": 0,
+          "injury_status": "healthy"
+        }
+      },
+      "jefferson_justin": {
+        "projected": 19.2,
+        "floor": 12.8,
+        "ceiling": 25.6,
+        "confidence": 0.83,
+        "matchup_rating": 8.2,
+        "factors": {
+          "opponent": "NYG",
+          "home_away": "home",
+          "weather_impact": 0,
+          "injury_status": "healthy"
+        }
+      }
+    }
+  },
+  "season_projections": {
+    "mahomes_patrick": {
+      "total_points": 367.5,
+      "games_played": 17,
+      "ppg": 21.6,
+      "weekly_consistency": 0.92,
+      "boom_weeks": 8,
+      "bust_weeks": 1
+    },
+    "mccaffrey_christian": {
+      "total_points": 325.8,
+      "games_played": 16,
+      "ppg": 20.4,
+      "weekly_consistency": 0.90,
+      "boom_weeks": 7,
+      "bust_weeks": 2
+    },
+    "jefferson_justin": {
+      "total_points": 312.4,
+      "games_played": 17,
+      "ppg": 18.4,
+      "weekly_consistency": 0.91,
+      "boom_weeks": 6,
+      "bust_weeks": 2
+    }
+  }
+}

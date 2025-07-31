@@ -2,92 +2,150 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { ArrowRightIcon, SparklesIcon } from '@heroicons/react/24/outline'
+import { ArrowRightIcon, ChartBarIcon, BrainIcon, TargetIcon } from '@heroicons/react/24/outline'
 import { useState } from 'react'
-import { METRICS } from '@/lib/constants'
 
 export function Hero() {
   const [isHovered, setIsHovered] = useState(false)
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-primary-50 via-white to-primary-50 pt-32 pb-20">
+    <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 pt-32 pb-20">
       {/* Background decoration */}
-      <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10" />
+      <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0.6))] opacity-10" />
       
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl text-center">
+        <div className="mx-auto max-w-4xl text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
             {/* Accuracy Badge */}
-            <div className="mb-8 inline-flex items-center rounded-full bg-success-100 px-4 py-2 text-sm font-semibold text-success-800">
-              <SparklesIcon className="mr-2 h-4 w-4" />
-              {METRICS.accuracy.percentage} Prediction Accuracy
+            <div className="mb-8 inline-flex items-center rounded-full bg-blue-500/20 backdrop-blur-sm border border-blue-400/30 px-4 py-2 text-sm font-semibold text-blue-300">
+              <ChartBarIcon className="mr-2 h-4 w-4" />
+              93% Prediction Accuracy • 2019-2024 NFL Data
             </div>
 
-            <h1 className="text-5xl font-bold tracking-tight text-gray-900 sm:text-6xl lg:text-7xl">
-              Win Your Fantasy League with{' '}
-              <span className="text-primary-600">AI-Powered</span> Predictions
+            <h1 className="text-5xl font-bold tracking-tight text-white sm:text-6xl lg:text-7xl">
+              Draft Smarter with{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">
+                AI-Powered Tiers
+              </span>
             </h1>
             
-            <p className="mt-6 text-lg leading-8 text-gray-600 max-w-2xl mx-auto">
-              Get transparent, data-driven player predictions that explain the "why" behind every recommendation. 
-              Our AI analyzes millions of data points to give you the edge you need.
+            <p className="mt-6 text-xl leading-8 text-gray-300 max-w-3xl mx-auto">
+              See player tiers, not just rankings. Our unique dual-algorithm approach combines 
+              GMM clustering for strategic drafting with neural networks for precise weekly predictions.
             </p>
 
-            <div className="mt-10 flex items-center justify-center gap-4">
+            {/* Dual Path CTAs */}
+            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
-                href="/signup"
-                className="group relative inline-flex items-center justify-center px-8 py-3 text-lg font-semibold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-all duration-200 transform hover:scale-105"
+                href="/learn"
+                className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg hover:bg-white/20 transition-all duration-200"
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
               >
-                Start 7-Day Free Trial
+                <BrainIcon className="mr-2 h-5 w-5" />
+                Learn How It Works
                 <ArrowRightIcon className={`ml-2 h-5 w-5 transition-transform duration-200 ${isHovered ? 'translate-x-1' : ''}`} />
               </Link>
               
               <Link
-                href="/demo"
-                className="inline-flex items-center justify-center px-8 py-3 text-lg font-semibold text-gray-700 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                href="/tiers"
+                className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-500 transition-all duration-200 shadow-lg shadow-blue-600/25"
               >
-                View Demo
+                <TargetIcon className="mr-2 h-5 w-5" />
+                Start Drafting Now
               </Link>
             </div>
 
-            <div className="mt-10 flex items-center justify-center gap-8 text-sm text-gray-600">
-              <div className="flex items-center gap-2">
-                <svg className="h-5 w-5 text-success-500" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-                No credit card required
+            {/* Value Props */}
+            <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+              <div className="flex items-center justify-center gap-2 text-gray-300">
+                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                16 Scientific Player Tiers
               </div>
-              <div className="flex items-center gap-2">
-                <svg className="h-5 w-5 text-success-500" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-                Cancel anytime
+              <div className="flex items-center justify-center gap-2 text-gray-300">
+                <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                Weekly Point Predictions
+              </div>
+              <div className="flex items-center justify-center gap-2 text-gray-300">
+                <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                Draft + Season-Long Value
               </div>
             </div>
           </motion.div>
 
-          {/* Preview Image */}
+          {/* Dual Algorithm Preview */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="mt-16"
           >
-            <div className="relative rounded-xl shadow-2xl overflow-hidden">
-              <div className="aspect-[16/9] bg-gradient-to-br from-primary-100 to-primary-50 flex items-center justify-center">
-                <div className="text-center p-8">
-                  <h3 className="text-2xl font-semibold text-gray-900 mb-4">
-                    Interactive Prediction Dashboard
-                  </h3>
-                  <p className="text-gray-600">
-                    See live predictions with confidence scores and explanations
-                  </p>
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* GMM Tiers Preview */}
+              <div className="relative rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 overflow-hidden">
+                <div className="p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-blue-600/20 rounded-lg">
+                      <ChartBarIcon className="w-5 h-5 text-blue-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-white">Draft Strategy</h3>
+                      <p className="text-sm text-blue-400">GMM Clustering</p>
+                    </div>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between items-center text-gray-300">
+                      <span>Tier 1: Elite</span>
+                      <span className="text-blue-400">3 players</span>
+                    </div>
+                    <div className="flex justify-between items-center text-gray-300">
+                      <span>Tier 2: High-End QB1</span>
+                      <span className="text-blue-400">2 players</span>
+                    </div>
+                    <div className="flex justify-between items-center text-gray-300">
+                      <span>Tier 3: Mid QB1</span>
+                      <span className="text-blue-400">3 players</span>
+                    </div>
+                  </div>
+                  <Link href="/tiers" className="inline-flex items-center gap-1 text-blue-400 hover:text-blue-300 text-sm font-medium mt-4">
+                    View Full Tiers <ArrowRightIcon className="w-3 h-3" />
+                  </Link>
+                </div>
+              </div>
+
+              {/* Neural Network Predictions Preview */}
+              <div className="relative rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 overflow-hidden">
+                <div className="p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-emerald-600/20 rounded-lg">
+                      <BrainIcon className="w-5 h-5 text-emerald-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-white">Weekly Predictions</h3>
+                      <p className="text-sm text-emerald-400">Neural Networks</p>
+                    </div>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between items-center text-gray-300">
+                      <span>P. Mahomes</span>
+                      <span className="text-emerald-400">24.8 pts</span>
+                    </div>
+                    <div className="flex justify-between items-center text-gray-300">
+                      <span>C. McCaffrey</span>
+                      <span className="text-emerald-400">22.5 pts</span>
+                    </div>
+                    <div className="flex justify-between items-center text-gray-300">
+                      <span>J. Jefferson</span>
+                      <span className="text-emerald-400">19.2 pts</span>
+                    </div>
+                  </div>
+                  <Link href="/predictions" className="inline-flex items-center gap-1 text-emerald-400 hover:text-emerald-300 text-sm font-medium mt-4">
+                    View Predictions <ArrowRightIcon className="w-3 h-3" />
+                  </Link>
                 </div>
               </div>
             </div>

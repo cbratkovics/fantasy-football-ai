@@ -1,0 +1,245 @@
+{
+  "metadata": {
+    "season": 2024,
+    "generated": "2024-07-31",
+    "algorithm": "Gaussian Mixture Model (16 components)",
+    "positions": ["QB", "RB", "WR", "TE"]
+  },
+  "tiers": {
+    "QB": [
+      {
+        "tier": 1,
+        "label": "Elite",
+        "color": "#FF6B6B",
+        "players": [
+          {
+            "id": "mahomes_patrick",
+            "name": "Patrick Mahomes",
+            "team": "KC",
+            "tier_confidence": 0.95,
+            "projected_points": 367.5,
+            "consistency_score": 0.92
+          },
+          {
+            "id": "allen_josh",
+            "name": "Josh Allen",
+            "team": "BUF",
+            "tier_confidence": 0.93,
+            "projected_points": 358.2,
+            "consistency_score": 0.89
+          },
+          {
+            "id": "hurts_jalen",
+            "name": "Jalen Hurts",
+            "team": "PHI",
+            "tier_confidence": 0.91,
+            "projected_points": 352.8,
+            "consistency_score": 0.88
+          }
+        ]
+      },
+      {
+        "tier": 2,
+        "label": "High-End QB1",
+        "color": "#4ECDC4",
+        "players": [
+          {
+            "id": "jackson_lamar",
+            "name": "Lamar Jackson",
+            "team": "BAL",
+            "tier_confidence": 0.88,
+            "projected_points": 335.4,
+            "consistency_score": 0.85
+          },
+          {
+            "id": "burrow_joe",
+            "name": "Joe Burrow",
+            "team": "CIN",
+            "tier_confidence": 0.87,
+            "projected_points": 328.9,
+            "consistency_score": 0.86
+          }
+        ]
+      },
+      {
+        "tier": 3,
+        "label": "Mid QB1",
+        "color": "#45B7D1",
+        "players": [
+          {
+            "id": "herbert_justin",
+            "name": "Justin Herbert",
+            "team": "LAC",
+            "tier_confidence": 0.84,
+            "projected_points": 312.5,
+            "consistency_score": 0.83
+          },
+          {
+            "id": "stroud_cj",
+            "name": "C.J. Stroud",
+            "team": "HOU",
+            "tier_confidence": 0.82,
+            "projected_points": 308.2,
+            "consistency_score": 0.79
+          },
+          {
+            "id": "lawrence_trevor",
+            "name": "Trevor Lawrence",
+            "team": "JAX",
+            "tier_confidence": 0.80,
+            "projected_points": 305.7,
+            "consistency_score": 0.77
+          }
+        ]
+      }
+    ],
+    "RB": [
+      {
+        "tier": 1,
+        "label": "Elite",
+        "color": "#FF6B6B",
+        "players": [
+          {
+            "id": "mccaffrey_christian",
+            "name": "Christian McCaffrey",
+            "team": "SF",
+            "tier_confidence": 0.96,
+            "projected_points": 325.8,
+            "consistency_score": 0.90
+          },
+          {
+            "id": "taylor_jonathan",
+            "name": "Jonathan Taylor",
+            "team": "IND",
+            "tier_confidence": 0.92,
+            "projected_points": 298.5,
+            "consistency_score": 0.87
+          }
+        ]
+      },
+      {
+        "tier": 2,
+        "label": "High-End RB1",
+        "color": "#4ECDC4",
+        "players": [
+          {
+            "id": "barkley_saquon",
+            "name": "Saquon Barkley",
+            "team": "PHI",
+            "tier_confidence": 0.89,
+            "projected_points": 285.3,
+            "consistency_score": 0.84
+          },
+          {
+            "id": "williams_kyren",
+            "name": "Kyren Williams",
+            "team": "LAR",
+            "tier_confidence": 0.87,
+            "projected_points": 278.9,
+            "consistency_score": 0.85
+          },
+          {
+            "id": "hall_breece",
+            "name": "Breece Hall",
+            "team": "NYJ",
+            "tier_confidence": 0.86,
+            "projected_points": 275.2,
+            "consistency_score": 0.82
+          }
+        ]
+      }
+    ],
+    "WR": [
+      {
+        "tier": 1,
+        "label": "Elite",
+        "color": "#FF6B6B",
+        "players": [
+          {
+            "id": "jefferson_justin",
+            "name": "Justin Jefferson",
+            "team": "MIN",
+            "tier_confidence": 0.97,
+            "projected_points": 312.4,
+            "consistency_score": 0.91
+          },
+          {
+            "id": "chase_jamarr",
+            "name": "Ja'Marr Chase",
+            "team": "CIN",
+            "tier_confidence": 0.95,
+            "projected_points": 305.8,
+            "consistency_score": 0.89
+          },
+          {
+            "id": "hill_tyreek",
+            "name": "Tyreek Hill",
+            "team": "MIA",
+            "tier_confidence": 0.94,
+            "projected_points": 298.5,
+            "consistency_score": 0.88
+          }
+        ]
+      }
+    ],
+    "TE": [
+      {
+        "tier": 1,
+        "label": "Elite",
+        "color": "#FF6B6B",
+        "players": [
+          {
+            "id": "kelce_travis",
+            "name": "Travis Kelce",
+            "team": "KC",
+            "tier_confidence": 0.98,
+            "projected_points": 225.8,
+            "consistency_score": 0.93
+          }
+        ]
+      },
+      {
+        "tier": 2,
+        "label": "High-End TE1",
+        "color": "#4ECDC4",
+        "players": [
+          {
+            "id": "andrews_mark",
+            "name": "Mark Andrews",
+            "team": "BAL",
+            "tier_confidence": 0.89,
+            "projected_points": 185.4,
+            "consistency_score": 0.85
+          },
+          {
+            "id": "kittle_george",
+            "name": "George Kittle",
+            "team": "SF",
+            "tier_confidence": 0.87,
+            "projected_points": 178.9,
+            "consistency_score": 0.84
+          }
+        ]
+      }
+    ]
+  },
+  "tier_breaks": {
+    "QB": [
+      { "between_tiers": [1, 2], "point_gap": 17.4, "significance": "Major drop-off" },
+      { "between_tiers": [2, 3], "point_gap": 16.4, "significance": "Significant gap" },
+      { "between_tiers": [3, 4], "point_gap": 12.8, "significance": "Notable difference" }
+    ],
+    "RB": [
+      { "between_tiers": [1, 2], "point_gap": 13.2, "significance": "Elite separation" },
+      { "between_tiers": [2, 3], "point_gap": 15.5, "significance": "Major drop-off" }
+    ],
+    "WR": [
+      { "between_tiers": [1, 2], "point_gap": 18.7, "significance": "Elite separation" },
+      { "between_tiers": [2, 3], "point_gap": 12.3, "significance": "Clear gap" }
+    ],
+    "TE": [
+      { "between_tiers": [1, 2], "point_gap": 40.4, "significance": "Massive elite advantage" },
+      { "between_tiers": [2, 3], "point_gap": 22.5, "significance": "Major drop-off" }
+    ]
+  }
+}
