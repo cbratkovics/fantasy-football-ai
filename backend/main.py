@@ -7,6 +7,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 import logging
 import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Import API routers
 from backend.api import auth, players, predictions, subscriptions

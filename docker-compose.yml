@@ -86,23 +86,6 @@ services:
       - backend
     command: npm run dev
 
-  frontend-streamlit:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: fantasy_frontend_streamlit
-    environment:
-      API_BASE_URL: http://backend:8000
-    volumes:
-      - ./frontend:/app
-      - ./frontend/.streamlit:/app/.streamlit
-    ports:
-      - "8501:8501"
-    networks:
-      - fantasy_network
-    depends_on:
-      - backend
-    command: streamlit run app.py
 
   celery_worker:
     build:

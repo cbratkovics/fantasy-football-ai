@@ -161,6 +161,7 @@ class User(Base):
     # Relationships
     subscription = relationship("Subscription", back_populates="user", uselist=False)
     prediction_usage = relationship("PredictionUsage", back_populates="user")
+    leagues = relationship("UserLeague", back_populates="user")
 
 
 class Subscription(Base):
@@ -357,7 +358,7 @@ class DatabaseManager:
 import os
 from sqlalchemy import create_engine
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://fantasy_user:fantasy_pass@postgres:5432/fantasy_football")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:-Pv95h_SjeXf%21Dt@db.ypxqifnqokwxrvqqtsgc.supabase.co:5432/postgres")
 engine = create_engine(DATABASE_URL)
 
 # Create SessionLocal for dependency injection
