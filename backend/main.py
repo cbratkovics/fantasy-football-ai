@@ -20,12 +20,42 @@ from backend.models.database import engine, Base
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Try to import LLM components (optional)
+try:
+    from backend.api import llm_endpoints
+    from backend.services.llm_service import LLMService
+    from backend.services.vector_store import VectorStoreService
+    LLM_AVAILABLE = True
+    logger.info("LLM services imported successfully")
+except ImportError as e:
+    logger.warning(f"LLM services not available: {e}")
+    LLM_AVAILABLE = False
+
 # Create database tables on startup
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
     logger.info("Creating database tables...")
     Base.metadata.create_all(bind=engine)
+    
+    # Initialize LLM services if available
+    if LLM_AVAILABLE:
+        logger.info("Initializing LLM services...")
+        try:
+            # Initialize vector store
+            vector_store = VectorStoreService(openai_api_key=os.getenv("OPENAI_API_KEY"))
+            await vector_store.initialize()
+            
+            # Index player profiles and draft scenarios
+            await vector_store.index_player_profiles()
+            await vector_store.index_draft_scenarios()
+            
+            logger.info("LLM services initialized successfully")
+        except Exception as e:
+            logger.error(f"LLM service initialization failed: {e}")
+    else:
+        logger.info("LLM services not available - running without AI features")
+    
     yield
     # Shutdown
     logger.info("Application shutting down...")
@@ -77,6 +107,11 @@ app.include_router(predictions.router, prefix="/predictions", tags=["Predictions
 app.include_router(predictions_v2.router, prefix="/api/v2/predictions", tags=["Predictions V2"])
 app.include_router(payments.router, prefix="/api/payments", tags=["Payments"])
 app.include_router(subscriptions.router, prefix="/subscriptions", tags=["Subscriptions"])
+
+# Include LLM router if available
+if LLM_AVAILABLE:
+    app.include_router(llm_endpoints.router, prefix="/api/llm", tags=["LLM Services"])
+    logger.info("LLM endpoints registered successfully")
 
 # Global exception handler
 @app.exception_handler(Exception)

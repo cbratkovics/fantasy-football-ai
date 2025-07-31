@@ -341,3 +341,18 @@ class CacheWarmer:
         if cache_data:
             cache.pipeline_set(cache_data, ttl=CACHE_TTL_LONG)
             logger.info(f"Warmed cache for {len(cache_data)} player stats")
+
+
+async def get_redis_client():
+    """Get async Redis client for LLM services"""
+    import aioredis
+    try:
+        redis_client = aioredis.from_url(
+            REDIS_URL,
+            encoding="utf-8",
+            decode_responses=True
+        )
+        return redis_client
+    except Exception as e:
+        logger.error(f"Failed to create async Redis client: {e}")
+        return None

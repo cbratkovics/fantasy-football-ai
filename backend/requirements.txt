@@ -43,5 +43,30 @@ numpy==1.24.3
 joblib==1.3.2
 scipy==1.11.4
 
+# LLM and AI capabilities
+langchain==0.1.0
+langchain-openai==0.0.5
+langchain-anthropic==0.1.1
+langchain-community==0.0.10
+openai==1.7.2
+anthropic==0.8.1
+
+# Vector database and embeddings
+weaviate-client==3.25.3
+sentence-transformers==2.2.2
+chromadb==0.4.22
+
+# WebSocket support for real-time features
+websockets==12.0
+
+# Enhanced caching and streaming
+redis-py-cluster==2.1.3
+sse-starlette==1.8.2
+
+# Additional utilities for LLM features  
+tiktoken==0.5.2
+tenacity==8.2.3
+asyncio-throttle==1.0.2
+
 # Note: xgboost and lightgbm removed - models are pre-trained
 # Note: visualization libraries removed - not needed for API
