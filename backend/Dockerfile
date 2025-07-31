@@ -1,8 +1,10 @@
 # Multi-stage build for production - optimized for size
 FROM python:3.11-slim AS builder
 
-# Install build dependencies
-RUN apt-get update && apt-get install -y \
+# Install build dependencies with retry and timeout
+RUN --mount=type=cache,target=/var/cache/apt \
+    apt-get update -qq && \
+    apt-get install -y --no-install-recommends \
     gcc \
     g++ \
     libpq-dev \
@@ -13,15 +15,18 @@ RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 # Copy and install requirements
-COPY requirements-prod.txt /tmp/
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r /tmp/requirements-prod.txt
+COPY requirements.txt /tmp/
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r /tmp/requirements.txt
 
 # Runtime stage - smaller final image
 FROM python:3.11-slim
 
-# Install only runtime dependencies
-RUN apt-get update && apt-get install -y \
+# Install only runtime dependencies with retry
+RUN --mount=type=cache,target=/var/cache/apt \
+    apt-get update -qq && \
+    apt-get install -y --no-install-recommends \
     libpq5 \
     curl \
     && rm -rf /var/lib/apt/lists/*
