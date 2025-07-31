@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChartBarIcon, ArrowDownIcon, InformationCircleIcon, TableCellsIcon, ChartLineIcon } from '@heroicons/react/24/outline'
+import { ChartBarIcon, ArrowDownIcon, InformationCircleIcon, TableCellsIcon, PresentationChartLineIcon } from '@heroicons/react/24/outline'
 import tiersData from '@/data/tiers_2024.json'
 import { TierChart } from './TierChart'
 
@@ -93,7 +93,7 @@ export function TierVisualization() {
                 : 'text-gray-300 hover:text-white hover:bg-white/10'
             }`}
           >
-            <ChartLineIcon className="w-4 h-4" />
+            <PresentationChartLineIcon className="w-4 h-4" />
             Chart View
           </button>
         </div>

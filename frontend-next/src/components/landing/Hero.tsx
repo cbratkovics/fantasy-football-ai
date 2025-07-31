@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { ArrowRightIcon, ChartBarIcon, BrainIcon, TargetIcon } from '@heroicons/react/24/outline'
+import { ArrowRightIcon, ChartBarIcon, CpuChipIcon, FlagIcon } from '@heroicons/react/24/outline'
 import { useState } from 'react'
 
 export function Hero() {
@@ -46,7 +46,7 @@ export function Hero() {
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
               >
-                <BrainIcon className="mr-2 h-5 w-5" />
+                <CpuChipIcon className="mr-2 h-5 w-5" />
                 Learn How It Works
                 <ArrowRightIcon className={`ml-2 h-5 w-5 transition-transform duration-200 ${isHovered ? 'translate-x-1' : ''}`} />
               </Link>
@@ -55,7 +55,7 @@ export function Hero() {
                 href="/tiers"
                 className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-500 transition-all duration-200 shadow-lg shadow-blue-600/25"
               >
-                <TargetIcon className="mr-2 h-5 w-5" />
+                <FlagIcon className="mr-2 h-5 w-5" />
                 Start Drafting Now
               </Link>
             </div>
@@ -122,7 +122,7 @@ export function Hero() {
                 <div className="p-6">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="p-2 bg-emerald-600/20 rounded-lg">
-                      <BrainIcon className="w-5 h-5 text-emerald-400" />
+                      <CpuChipIcon className="w-5 h-5 text-emerald-400" />
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-white">Weekly Predictions</h3>

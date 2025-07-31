@@ -7,7 +7,7 @@ import { useRef } from 'react'
 import { 
   ChartBarIcon, 
   TrophyIcon, 
-  TargetIcon,
+  FlagIcon,
   ArrowTrendingUpIcon,
   CheckCircleIcon,
   ExclamationTriangleIcon
@@ -155,7 +155,7 @@ export function PerformanceDashboard() {
           className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20"
         >
           <div className="flex items-center gap-3 mb-2">
-            <TargetIcon className="w-6 h-6 text-blue-400" />
+            <FlagIcon className="w-6 h-6 text-blue-400" />
             <span className="text-sm text-gray-400">Avg MAE</span>
           </div>
           <div className="text-3xl font-bold text-white">{avgMAE.toFixed(2)}</div>

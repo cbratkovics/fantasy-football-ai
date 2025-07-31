@@ -14,6 +14,13 @@ interface Player {
   consistency_score: number
 }
 
+interface PlayerWithRank extends Player {
+  tier: number
+  tierLabel: string
+  tierColor: string
+  overallRank: number
+}
+
 interface Tier {
   tier: number
   label: string
@@ -29,7 +36,7 @@ interface TierChartProps {
 
 export function TierChart({ position, width = 800, height = 600 }: TierChartProps) {
   const svgRef = useRef<SVGSVGElement>(null)
-  const [hoveredPlayer, setHoveredPlayer] = useState<Player | null>(null)
+  const [hoveredPlayer, setHoveredPlayer] = useState<PlayerWithRank | null>(null)
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 })
 
   useEffect(() => {
@@ -43,7 +50,7 @@ export function TierChart({ position, width = 800, height = 600 }: TierChartProp
     const innerHeight = height - margin.top - margin.bottom
 
     const tiers = tiersData.tiers[position] as Tier[]
-    const allPlayers = tiers.flatMap((tier, tierIndex) => 
+    const allPlayers: PlayerWithRank[] = tiers.flatMap((tier, tierIndex) => 
       tier.players.map((player, playerIndex) => ({
         ...player,
         tier: tier.tier,
@@ -135,7 +142,7 @@ export function TierChart({ position, width = 800, height = 600 }: TierChartProp
     }
 
     // Add connected line
-    const line = d3.line<typeof allPlayers[0]>()
+    const line = d3.line<PlayerWithRank>()
       .x(d => xScale(d.overallRank))
       .y(d => yScale(d.projected_points))
       .curve(d3.curveMonotoneX)
