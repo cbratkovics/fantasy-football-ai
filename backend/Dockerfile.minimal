@@ -1,0 +1,24 @@
+# Minimal Dockerfile for Railway health check testing
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# Upgrade pip
+RUN pip install --upgrade pip
+
+# Copy minimal requirements and install
+COPY requirements-minimal.txt .
+RUN pip install --no-cache-dir -r requirements-minimal.txt
+
+# Copy only essential files
+COPY main_simple.py .
+COPY start_simple.py .
+
+# Set Python path
+ENV PYTHONPATH=/app
+
+# Make start script executable
+RUN chmod +x start_simple.py
+
+# Use minimal app for health check testing
+CMD ["python", "start_simple.py"]

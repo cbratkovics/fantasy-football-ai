@@ -1,0 +1,13 @@
+# Minimal requirements for health check testing
+# Only essential packages for basic FastAPI functionality
+
+# Core FastAPI stack
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+
+# Basic utilities
+python-dotenv==1.0.0
+
+# Note: This minimal requirements file is for debugging Railway health checks
+# Use requirements.txt for full functionality

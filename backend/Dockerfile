@@ -28,9 +28,9 @@ COPY . .
 # Set Python path
 ENV PYTHONPATH=/app
 
-# Make start script executable
-RUN chmod +x start_app.py
+# Make start scripts executable
+RUN chmod +x start_app.py start_simple.py
 
 # Railway provides PORT env var
-# Using exec form with sh -c for environment variable substitution
-CMD ["sh", "-c", "python start_app.py"]
+# Using simple version for debugging - switch back to start_app.py after fixing
+CMD ["sh", "-c", "python start_simple.py"]

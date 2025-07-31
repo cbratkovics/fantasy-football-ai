@@ -358,15 +358,25 @@ class DatabaseManager:
 import os
 from sqlalchemy import create_engine
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:-Pv95h_SjeXf%21Dt@db.ypxqifnqokwxrvqqtsgc.supabase.co:5432/postgres")
-engine = create_engine(DATABASE_URL)
+DATABASE_URL = os.getenv("DATABASE_URL")
+if DATABASE_URL:
+    engine = create_engine(DATABASE_URL)
+else:
+    # Create a dummy engine to prevent import errors
+    engine = None
+    print("Warning: DATABASE_URL not set - database functionality disabled")
 
 # Create SessionLocal for dependency injection
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+if engine:
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+else:
+    SessionLocal = None
 
 # Dependency to get DB session
 def get_db():
     """Dependency for getting database session"""
+    if SessionLocal is None:
+        raise RuntimeError("Database not configured - SessionLocal is None")
     db = SessionLocal()
     try:
         yield db

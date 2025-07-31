@@ -12,9 +12,18 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-# Import API routers
-from api import auth, players, predictions, subscriptions
-from models.database import engine, Base
+# Import API routers with error handling
+try:
+    from api import auth, players, predictions, subscriptions
+    from models.database import engine, Base
+    DATABASE_AVAILABLE = True
+    logger.info("Database models imported successfully")
+except ImportError as e:
+    logger.error(f"Database models not available: {e}")
+    DATABASE_AVAILABLE = False
+    # Create dummy objects to prevent crashes
+    engine = None
+    Base = None
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -39,13 +48,16 @@ async def lifespan(app: FastAPI):
     logger.info(f"Environment: {os.getenv('ENVIRONMENT', 'development')}")
     logger.info(f"Port: {os.getenv('PORT', '8000')}")
     
-    try:
-        logger.info("Creating database tables...")
-        Base.metadata.create_all(bind=engine)
-        logger.info("Database tables created successfully")
-    except Exception as e:
-        logger.error(f"Failed to create database tables: {e}")
-        # Continue anyway - tables might already exist
+    if DATABASE_AVAILABLE and engine and Base:
+        try:
+            logger.info("Creating database tables...")
+            Base.metadata.create_all(bind=engine)
+            logger.info("Database tables created successfully")
+        except Exception as e:
+            logger.error(f"Failed to create database tables: {e}")
+            # Continue anyway - tables might already exist
+    else:
+        logger.warning("Database not available - skipping table creation")
     
     # Initialize LLM services if available
     if LLM_AVAILABLE:
@@ -111,13 +123,20 @@ async def health_check():
 # Import new routers
 from api import predictions_v2, payments
 
-# Include routers
-app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
-app.include_router(players.router, prefix="/players", tags=["Players"])
-app.include_router(predictions.router, prefix="/predictions", tags=["Predictions"])
-app.include_router(predictions_v2.router, prefix="/api/v2/predictions", tags=["Predictions V2"])
-app.include_router(payments.router, prefix="/api/payments", tags=["Payments"])
-app.include_router(subscriptions.router, prefix="/subscriptions", tags=["Subscriptions"])
+# Include routers only if available
+if DATABASE_AVAILABLE:
+    try:
+        app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
+        app.include_router(players.router, prefix="/players", tags=["Players"])  
+        app.include_router(predictions.router, prefix="/predictions", tags=["Predictions"])
+        app.include_router(predictions_v2.router, prefix="/api/v2/predictions", tags=["Predictions V2"])
+        app.include_router(payments.router, prefix="/api/payments", tags=["Payments"])
+        app.include_router(subscriptions.router, prefix="/subscriptions", tags=["Subscriptions"])
+        logger.info("API routers registered successfully")
+    except Exception as e:
+        logger.error(f"Failed to register API routers: {e}")
+else:
+    logger.warning("Database not available - API routers not registered")
 
 # Include LLM router if available
 if LLM_AVAILABLE:
