@@ -6,7 +6,7 @@ To properly deploy the fantasy football frontend on Vercel, you need to set the 
 
 ### 1. Backend API Configuration
 ```
-NEXT_PUBLIC_API_URL=https://fantasy-football-backend.railway.app
+NEXT_PUBLIC_API_URL=https://fantasy-football-ai-production-4441.up.railway.app
 ```
 **Important**: This should point to your deployed Railway backend URL, not localhost.
 
@@ -28,7 +28,7 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
 3. Go to Settings → Environment Variables
 4. Add each variable with:
    - **Name**: The variable name (e.g., `NEXT_PUBLIC_API_URL`)
-   - **Value**: The actual value (e.g., `https://fantasy-football-backend.railway.app`)
+   - **Value**: The actual value (e.g., `https://fantasy-football-ai-production-4441.up.railway.app`)
    - **Environment**: Select "Production", "Preview", and "Development" as needed
 
 ## Current Status
