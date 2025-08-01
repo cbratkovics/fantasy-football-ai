@@ -29,8 +29,12 @@ COPY . .
 ENV PYTHONPATH=/app
 
 # Make start scripts executable
-RUN chmod +x start_app.py start_simple.py
+RUN chmod +x start_app.py start_simple.py start_railway.py
+
+# Add health check for local testing (disabled for Railway - they handle it)
+# HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+#     CMD curl -f http://localhost:$PORT/health || exit 1
 
 # Railway provides PORT env var
-# Using simple version for debugging - switch back to start_app.py after fixing
-CMD ["sh", "-c", "python start_simple.py"]
+# Use Railway-optimized startup script with diagnostics and fallbacks
+CMD ["python", "start_railway.py"]

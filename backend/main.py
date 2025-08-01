@@ -12,6 +12,10 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
+# Configure logging FIRST - before any logger usage
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 # Import API routers with error handling
 try:
     from api import auth, players, predictions, subscriptions
@@ -24,10 +28,6 @@ except ImportError as e:
     # Create dummy objects to prevent crashes
     engine = None
     Base = None
-
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 # Try to import LLM components (optional)
 try:
@@ -120,12 +120,12 @@ async def health_check():
         "timestamp": datetime.utcnow().isoformat() + "Z"
     }
 
-# Import new routers
-from api import predictions_v2, payments
-
 # Include routers only if available
 if DATABASE_AVAILABLE:
     try:
+        # Import additional routers only when database is available
+        from api import predictions_v2, payments
+        
         app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
         app.include_router(players.router, prefix="/players", tags=["Players"])  
         app.include_router(predictions.router, prefix="/predictions", tags=["Predictions"])
@@ -135,6 +135,7 @@ if DATABASE_AVAILABLE:
         logger.info("API routers registered successfully")
     except Exception as e:
         logger.error(f"Failed to register API routers: {e}")
+        logger.warning("App will run with limited functionality")
 else:
     logger.warning("Database not available - API routers not registered")
 
