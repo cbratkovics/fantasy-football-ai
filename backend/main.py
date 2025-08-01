@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 # Import API routers with error handling
 try:
-    from api import auth, players, predictions, subscriptions
+    from api import auth, players, predictions, subscriptions, tiers
     from models.database import engine, Base
     DATABASE_AVAILABLE = True
     logger.info("Database models imported successfully")
@@ -129,6 +129,7 @@ if DATABASE_AVAILABLE:
         app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
         app.include_router(players.router, prefix="/players", tags=["Players"])  
         app.include_router(predictions.router, prefix="/predictions", tags=["Predictions"])
+        app.include_router(tiers.router, prefix="/tiers", tags=["Player Tiers"])
         app.include_router(predictions_v2.router, prefix="/api/v2/predictions", tags=["Predictions V2"])
         app.include_router(payments.router, prefix="/api/payments", tags=["Payments"])
         app.include_router(subscriptions.router, prefix="/subscriptions", tags=["Subscriptions"])

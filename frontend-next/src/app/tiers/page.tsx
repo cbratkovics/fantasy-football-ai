@@ -1,4 +1,4 @@
-import { TierVisualization } from '@/components/tiers/TierVisualization'
+import { TierVisualizationAPI } from '@/components/tiers/TierVisualizationAPI'
 import { Navigation } from '@/components/layout/Navigation'
 import { Footer } from '@/components/layout/Footer'
 
@@ -10,14 +10,14 @@ export default function TiersPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-4xl text-center mb-12">
             <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
-              Player Tiers
+              AI-Powered Player Tiers
             </h1>
             <p className="mt-6 text-xl leading-8 text-gray-300">
-              Our AI groups players by their true fantasy value, revealing clear tiers and value drops. 
-              Know exactly when to draft each position and avoid reaching for overvalued players.
+              Real-time player tiers powered by machine learning. Our AI analyzes thousands of data points 
+              to group players by their true fantasy value, revealing clear tiers and draft strategies.
             </p>
           </div>
-          <TierVisualization />
+          <TierVisualizationAPI />
         </div>
       </main>
       <Footer />
