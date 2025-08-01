@@ -462,7 +462,7 @@ function generateMockTierData(position: Position) {
   const teams = ['KC', 'BUF', 'PHI', 'CIN', 'LAC', 'MIA', 'DAL', 'DEN', 'GB', 'MIN', 'SEA', 'NYG', 'JAX', 'CLE', 'PIT', 'NE', 'GB', 'SF', 'LAR', 'TB']
   const players = playersByPosition[position] || playersByPosition.QB
   
-  const tierConfig = {
+  const tierConfig: Record<Position, { sizes: number[], labels: string[], basePoints: number }> = {
     QB: { sizes: [3, 3, 3, 3, 8], labels: ['Elite', 'High QB1', 'Mid QB1', 'Low QB1', 'Streaming'], basePoints: 22 },
     RB: { sizes: [5, 5, 6, 4], labels: ['Elite RB1', 'High RB1', 'RB2', 'Flex'], basePoints: 16 },
     WR: { sizes: [5, 5, 6, 4], labels: ['Elite WR1', 'High WR1', 'WR2', 'Flex'], basePoints: 15 },
@@ -473,10 +473,10 @@ function generateMockTierData(position: Position) {
   const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8', '#95A5A6']
   
   let playerIndex = 0
-  const tiers = []
+  const tiers: Tier[] = []
   
   config.sizes.forEach((size, tierIndex) => {
-    const tierPlayers = []
+    const tierPlayers: any[] = []
     const pointDecline = tierIndex * 3
     
     for (let i = 0; i < size && playerIndex < players.length; i++) {
@@ -510,7 +510,7 @@ function generateMockTierData(position: Position) {
     }
   })
   
-  const tier_breaks = []
+  const tier_breaks: TierBreak[] = []
   for (let i = 0; i < tiers.length - 1; i++) {
     const gap = tiers[i].point_range.min - tiers[i + 1].point_range.max
     if (gap > 1) {
