@@ -289,7 +289,7 @@ export default function SignUpPage() {
                 </div>
 
                 <div className="space-y-4">
-                  {Object.entries(plans).map(([key, plan]) => (
+                  {(Object.entries(plans) as [string, Plan][]).map(([key, plan]) => (
                     <label
                       key={key}
                       className={`relative flex cursor-pointer rounded-lg border p-4 shadow-sm focus:outline-none ${
@@ -310,7 +310,9 @@ export default function SignUpPage() {
                         <div className="flex flex-col">
                           <span className="block text-sm font-medium text-gray-900">
                             {plan.name}
-                            {plan.price && <span className="ml-2 text-gray-500">{plan.price}</span>}
+                            {'price' in plan && plan.price && (
+                              <span className="ml-2 text-gray-500">{plan.price}</span>
+                            )}
                           </span>
                           <ul className="mt-2 space-y-1">
                             {plan.features.map((feature, idx) => (
