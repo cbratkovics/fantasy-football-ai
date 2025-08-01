@@ -4,6 +4,7 @@
     "builder": "DOCKERFILE"
   },
   "deploy": {
+    "startCommand": "python start.py",
     "healthcheckPath": "/health",
     "healthcheckTimeout": 60,
     "startupTimeoutSeconds": 120,
