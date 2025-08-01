@@ -1,15 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Metadata } from 'next'
 import Link from 'next/link'
 import { CheckIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { ShieldCheckIcon, CreditCardIcon, ArrowPathIcon } from '@heroicons/react/24/solid'
-
-// export const metadata: Metadata = {
-//   title: 'Pricing | WinMyLeague.ai - Choose Your Plan',
-//   description: 'Simple, transparent pricing for WinMyLeague.ai. Start free, upgrade anytime. Win more fantasy football championships.',
-// }
 
 const frequencies = [
   { value: 'monthly', label: 'Monthly', priceSuffix: '/month' },

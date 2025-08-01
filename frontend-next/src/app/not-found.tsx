@@ -1,7 +1,5 @@
-'use client'
-
 import Link from 'next/link'
-import { HomeIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'
+import { HomeIcon } from '@heroicons/react/24/outline'
 
 export default function NotFound() {
   return (
@@ -26,13 +24,6 @@ export default function NotFound() {
                 <HomeIcon className="mr-2 -ml-0.5 h-4 w-4" />
                 Go back home
               </Link>
-              <button
-                onClick={() => window.history.back()}
-                className="inline-flex items-center rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-              >
-                <ArrowLeftIcon className="mr-2 -ml-0.5 h-4 w-4" />
-                Go back
-              </button>
             </div>
           </div>
         </main>

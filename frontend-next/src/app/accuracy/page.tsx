@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { Metadata } from 'next'
 import Link from 'next/link'
 import { 
   ChartBarIcon, 
@@ -9,11 +8,6 @@ import {
   InformationCircleIcon,
   ArrowTrendingUpIcon 
 } from '@heroicons/react/24/outline'
-
-// export const metadata: Metadata = {
-//   title: 'Accuracy Report | WinMyLeague.ai - Our Track Record',
-//   description: 'See our verified prediction accuracy across all positions. 93.1% accurate projections backed by transparent methodology.',
-// }
 
 const positionStats = [
   { position: 'QB', accuracy: 94.2, samples: 3240, trend: '+2.1%' },
