@@ -12,7 +12,7 @@ export default function ApiDebugPage() {
     try {
       console.log(`Testing ${name}:`, `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`)
       const response = await apiClient.get(endpoint)
-      setResults(prev => ({
+      setResults((prev: any) => ({
         ...prev,
         [name]: {
           status: 'success',
@@ -22,7 +22,7 @@ export default function ApiDebugPage() {
       }))
     } catch (error: any) {
       console.error(`Error testing ${name}:`, error)
-      setResults(prev => ({
+      setResults((prev: any) => ({
         ...prev,
         [name]: {
           status: 'error',
