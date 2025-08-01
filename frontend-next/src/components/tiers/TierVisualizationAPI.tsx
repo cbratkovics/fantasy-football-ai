@@ -48,7 +48,13 @@ export function TierVisualizationAPI() {
       setLastUpdated(data.updated_at)
     } catch (err) {
       console.error('Error fetching tier data:', err)
-      setError('Failed to load tier data. Please try again.')
+      setError('Using demo data - API temporarily unavailable.')
+      
+      // Use fallback mock data
+      const mockData = generateMockTierData(selectedPosition)
+      setTiers(mockData.tiers)
+      setTierBreaks(mockData.tier_breaks)
+      setLastUpdated(new Date().toISOString())
     } finally {
       setLoading(false)
     }
@@ -422,4 +428,100 @@ export function TierVisualizationAPI() {
       </motion.div>
     </div>
   )
+}
+
+// Mock data generator for fallback when API is unavailable
+function generateMockTierData(position: Position) {
+  const playersByPosition = {
+    QB: [
+      'Josh Allen', 'Lamar Jackson', 'Jalen Hurts', 'Joe Burrow', 'Justin Herbert',
+      'Tua Tagovailoa', 'Dak Prescott', 'Russell Wilson', 'Aaron Rodgers', 'Kirk Cousins',
+      'Geno Smith', 'Daniel Jones', 'Trevor Lawrence', 'Deshaun Watson', 'Kenny Pickett',
+      'Mac Jones', 'Jordan Love', 'Brock Purdy', 'Anthony Richardson', 'C.J. Stroud'
+    ],
+    RB: [
+      'Christian McCaffrey', 'Austin Ekeler', 'Derrick Henry', 'Saquon Barkley', 'Nick Chubb',
+      'Dalvin Cook', 'Jonathan Taylor', 'Josh Jacobs', 'Aaron Jones', 'Alvin Kamara',
+      'Joe Mixon', 'Najee Harris', 'Kenneth Walker III', 'Tony Pollard', 'Miles Sanders',
+      'Dameon Pierce', 'Breece Hall', 'Travis Etienne', 'Cam Akers', 'D\'Andre Swift'
+    ],
+    WR: [
+      'Cooper Kupp', 'Stefon Diggs', 'Tyreek Hill', 'Davante Adams', 'DeAndre Hopkins',
+      'A.J. Brown', 'Ja\'Marr Chase', 'Justin Jefferson', 'CeeDee Lamb', 'Mike Evans',
+      'Keenan Allen', 'DK Metcalf', 'Tyler Lockett', 'Amari Cooper', 'Terry McLaurin',
+      'Michael Pittman Jr.', 'Jaylen Waddle', 'Amon-Ra St. Brown', 'Chris Godwin', 'Tee Higgins'
+    ],
+    TE: [
+      'Travis Kelce', 'Mark Andrews', 'T.J. Hockenson', 'George Kittle', 'Kyle Pitts',
+      'Darren Waller', 'Dallas Goedert', 'Pat Freiermuth', 'Tyler Higbee', 'Evan Engram',
+      'David Njoku', 'Gerald Everett', 'Hayden Hurst', 'Logan Thomas', 'Robert Tonyan',
+      'Mike Gesicki', 'Noah Fant', 'Hunter Henry', 'Zach Ertz', 'Cole Kmet'
+    ]
+  }
+
+  const teams = ['KC', 'BUF', 'PHI', 'CIN', 'LAC', 'MIA', 'DAL', 'DEN', 'GB', 'MIN', 'SEA', 'NYG', 'JAX', 'CLE', 'PIT', 'NE', 'GB', 'SF', 'LAR', 'TB']
+  const players = playersByPosition[position] || playersByPosition.QB
+  
+  const tierConfig = {
+    QB: { sizes: [3, 3, 3, 3, 8], labels: ['Elite', 'High QB1', 'Mid QB1', 'Low QB1', 'Streaming'], basePoints: 22 },
+    RB: { sizes: [5, 5, 6, 4], labels: ['Elite RB1', 'High RB1', 'RB2', 'Flex'], basePoints: 16 },
+    WR: { sizes: [5, 5, 6, 4], labels: ['Elite WR1', 'High WR1', 'WR2', 'Flex'], basePoints: 15 },
+    TE: { sizes: [3, 3, 4, 10], labels: ['Elite TE1', 'High TE1', 'Streaming', 'Waiver'], basePoints: 11 }
+  }
+
+  const config = tierConfig[position]
+  const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8', '#95A5A6']
+  
+  let playerIndex = 0
+  const tiers = []
+  
+  config.sizes.forEach((size, tierIndex) => {
+    const tierPlayers = []
+    const pointDecline = tierIndex * 3
+    
+    for (let i = 0; i < size && playerIndex < players.length; i++) {
+      tierPlayers.push({
+        id: `${players[playerIndex].toLowerCase().replace(/\s+/g, '_')}_${playerIndex}`,
+        name: players[playerIndex],
+        team: teams[playerIndex % teams.length],
+        tier_confidence: 0.95 - tierIndex * 0.05 - Math.random() * 0.1,
+        projected_points: config.basePoints - pointDecline - Math.random() * 2,
+        consistency_score: 0.85 - tierIndex * 0.05 - Math.random() * 0.1,
+        floor: config.basePoints - pointDecline - 4 - Math.random() * 2,
+        ceiling: config.basePoints - pointDecline + 6 + Math.random() * 3,
+        adp: playerIndex + 1,
+        injury_status: Math.random() < 0.05 ? 'Questionable' : null
+      })
+      playerIndex++
+    }
+    
+    if (tierPlayers.length > 0) {
+      tiers.push({
+        tier: tierIndex + 1,
+        label: config.labels[tierIndex],
+        color: colors[tierIndex],
+        players: tierPlayers,
+        avg_points: tierPlayers.reduce((sum, p) => sum + p.projected_points, 0) / tierPlayers.length,
+        point_range: {
+          min: Math.min(...tierPlayers.map(p => p.projected_points)),
+          max: Math.max(...tierPlayers.map(p => p.projected_points))
+        }
+      })
+    }
+  })
+  
+  const tier_breaks = []
+  for (let i = 0; i < tiers.length - 1; i++) {
+    const gap = tiers[i].point_range.min - tiers[i + 1].point_range.max
+    if (gap > 1) {
+      tier_breaks.push({
+        between_tiers: [tiers[i].tier, tiers[i + 1].tier],
+        point_gap: gap,
+        significance: gap > 3 ? 'Major drop-off' : 'Moderate drop',
+        recommendation: `Target ${tiers[i].label} players before this break`
+      })
+    }
+  }
+  
+  return { tiers, tier_breaks }
 }
