@@ -43,10 +43,11 @@ RUN apt-get update && apt-get install -y procps && rm -rf /var/lib/apt/lists/*
 # Force unbuffered output
 ENV PYTHONUNBUFFERED=1
 
-# Use shell to ensure output and environment variable expansion
-CMD ["/bin/sh", "-c", "echo 'Container CMD executing' && echo 'PORT='$PORT && python -u start_railway.py 2>&1"]
+# Use Python script to handle PORT properly
+CMD ["python", "-u", "railway_direct_uvicorn.py"]
 
 # Alternative CMD options for debugging:
+# CMD ["python", "-u", "railway_simple_start.py"]
 # CMD ["python", "-u", "railway_direct_test.py"]
 # CMD ["python", "-u", "emergency_server.py"]
-# CMD ["/bin/sh", "-c", "python -m http.server $PORT"]
+# CMD ["python", "-u", "start_railway.py"]
