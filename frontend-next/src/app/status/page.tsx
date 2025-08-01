@@ -9,7 +9,7 @@ import {
   ServerIcon,
   GlobeAltIcon,
   CpuChipIcon,
-  DatabaseIcon,
+  CircleStackIcon,
   CloudIcon,
   ArrowPathIcon
 } from '@heroicons/react/24/outline'
@@ -77,7 +77,7 @@ const services: Service[] = [
     uptime: '99.97%',
     responseTime: '45ms',
     description: 'Player data, statistics, and user information storage',
-    icon: DatabaseIcon,
+    icon: CircleStackIcon,
     lastUpdated: '1 minute ago'
   },
   {

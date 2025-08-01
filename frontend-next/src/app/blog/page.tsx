@@ -8,7 +8,7 @@ import {
   ClockIcon,
   TagIcon,
   MagnifyingGlassIcon,
-  TrendingUpIcon,
+  ArrowTrendingUpIcon,
   ChartBarIcon,
   LightBulbIcon,
   NewspaperIcon
@@ -124,7 +124,7 @@ const blogPosts: BlogPost[] = [
 const getCategoryIcon = (category: string) => {
   switch (category) {
     case 'Strategy':
-      return TrendingUpIcon
+      return ArrowTrendingUpIcon
     case 'AI Insights':
       return ChartBarIcon
     case 'Player Analysis':
