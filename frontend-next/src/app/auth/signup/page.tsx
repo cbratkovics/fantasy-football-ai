@@ -8,7 +8,13 @@ import {
   ArrowLongRightIcon
 } from '@heroicons/react/24/outline'
 
-const plans = {
+interface Plan {
+  name: string
+  price?: string
+  features: string[]
+}
+
+const plans: Record<string, Plan> = {
   free: {
     name: 'Free',
     features: [
