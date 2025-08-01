@@ -4,8 +4,21 @@ Railway-optimized startup script for Fantasy Football AI Backend
 Handles environment diagnostics and graceful fallbacks
 """
 
-import os
 import sys
+import os
+
+# IMMEDIATE output to confirm script is running
+print("=" * 50, flush=True)
+print("RAILWAY STARTUP SCRIPT BEGINNING", flush=True)
+print(f"Python: {sys.version}", flush=True)
+print(f"Script: {__file__}", flush=True)
+print(f"PID: {os.getpid()}", flush=True)
+print(f"PORT: {os.environ.get('PORT', 'NOT SET')}", flush=True)
+print(f"Working Dir: {os.getcwd()}", flush=True)
+print(f"Files in dir: {os.listdir('.')}", flush=True)
+print("=" * 50, flush=True)
+sys.stdout.flush()
+
 import logging
 import time
 from datetime import datetime
@@ -25,6 +38,31 @@ def check_environment():
     logger.info("=" * 80)
     logger.info("RAILWAY STARTUP DIAGNOSTICS")
     logger.info("=" * 80)
+    
+    # Check if we're actually in Railway
+    railway_indicators = [
+        "RAILWAY_ENVIRONMENT",
+        "RAILWAY_DEPLOYMENT_ID", 
+        "RAILWAY_SERVICE_ID",
+        "RAILWAY_REPLICA_ID"
+    ]
+
+    print("\nRailway Environment Check:", flush=True)
+    for var in railway_indicators:
+        value = os.environ.get(var, "NOT SET")
+        print(f"  {var}: {value}", flush=True)
+    sys.stdout.flush()
+
+    # Network binding test
+    import socket
+    try:
+        test_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        test_socket.bind(('0.0.0.0', 0))
+        test_socket.close()
+        print("✓ Can bind to 0.0.0.0", flush=True)
+    except Exception as e:
+        print(f"✗ Cannot bind to 0.0.0.0: {e}", flush=True)
+    sys.stdout.flush()
     
     # Basic system info
     logger.info(f"Python version: {sys.version}")
@@ -146,23 +184,78 @@ def start_main_server():
         timeout_graceful_shutdown=30
     )
 
+def start_fallback_chain():
+    """Try multiple server options in order of complexity"""
+    servers = [
+        ("Import Check", "python check_imports.py", False),
+        ("Main App", start_main_server, True),
+        ("Minimal FastAPI", start_minimal_server, True),
+        ("Emergency HTTP", "python emergency_server.py", True),
+        ("Basic Python HTTP", f"python -m http.server {os.environ.get('PORT', 8000)}", True)
+    ]
+    
+    for name, command, is_server in servers:
+        print(f"\n{'='*50}", flush=True)
+        print(f"Attempting: {name}", flush=True)
+        print(f"{'='*50}", flush=True)
+        sys.stdout.flush()
+        
+        try:
+            if callable(command):
+                # It's a function
+                command()
+            else:
+                # It's a shell command
+                print(f"Executing: {command}", flush=True)
+                sys.stdout.flush()
+                exit_code = os.system(command)
+                if exit_code != 0 and not is_server:
+                    print(f"Command failed with exit code: {exit_code}", flush=True)
+                    continue
+            
+            # If we get here and it's a server, it should be running
+            if is_server:
+                print(f"✓ {name} should be running", flush=True)
+                sys.stdout.flush()
+                # Server started, wait forever
+                while True:
+                    time.sleep(60)
+                    
+        except Exception as e:
+            print(f"✗ {name} failed: {e}", flush=True)
+            import traceback
+            traceback.print_exc()
+            sys.stdout.flush()
+            continue
+    
+    # If we get here, everything failed
+    print("\n" + "="*50, flush=True)
+    print("CRITICAL: All server options failed!", flush=True)
+    print("="*50, flush=True)
+    sys.stdout.flush()
+    sys.exit(1)
+
 def main():
     """Main startup function with progressive fallbacks"""
     try:
         # Step 1: Environment diagnostics
         if not check_environment():
-            logger.error("Environment check failed! Exiting...")
-            sys.exit(1)
+            logger.error("Environment check failed! Starting fallback chain...")
+            start_fallback_chain()
         
         # Step 2: Import testing
         if not test_imports():
-            logger.warning("Main app imports failed, starting minimal server...")
-            start_minimal_server()
-            return
+            logger.warning("Main app imports failed, starting fallback chain...")
+            start_fallback_chain()
         
-        # Step 3: Start main application
-        logger.info("All checks passed, starting main application...")
-        start_main_server()
+        # Step 3: Try main application first
+        logger.info("Attempting main application...")
+        try:
+            start_main_server()
+        except Exception as e:
+            logger.error(f"Main server failed: {e}")
+            logger.info("Starting fallback chain...")
+            start_fallback_chain()
         
     except KeyboardInterrupt:
         logger.info("Received keyboard interrupt, shutting down...")
@@ -170,14 +263,7 @@ def main():
     except Exception as e:
         logger.error(f"Startup failed: {e}")
         logger.exception("Full traceback:")
-        
-        # Final fallback
-        logger.info("Attempting minimal server as last resort...")
-        try:
-            start_minimal_server()
-        except Exception as fallback_error:
-            logger.error(f"Minimal server also failed: {fallback_error}")
-            sys.exit(1)
+        start_fallback_chain()
 
 if __name__ == "__main__":
     main()

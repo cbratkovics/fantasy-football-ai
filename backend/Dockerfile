@@ -28,13 +28,25 @@ COPY . .
 # Set Python path
 ENV PYTHONPATH=/app
 
-# Make start scripts executable
-RUN chmod +x start_app.py start_simple.py start_railway.py
+# Make all Python files executable
+RUN chmod +x *.py
 
-# Add health check for local testing (disabled for Railway - they handle it)
-# HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-#     CMD curl -f http://localhost:$PORT/health || exit 1
+# Debug: List files
+RUN echo "Files in /app:" && ls -la
 
-# Railway provides PORT env var
-# Use Railway-optimized startup script with diagnostics and fallbacks
-CMD ["python", "start_railway.py"]
+# Debug: Show Python version
+RUN python --version
+
+# Add procps for debugging
+RUN apt-get update && apt-get install -y procps && rm -rf /var/lib/apt/lists/*
+
+# Force unbuffered output
+ENV PYTHONUNBUFFERED=1
+
+# Use shell to ensure output and environment variable expansion
+CMD ["/bin/sh", "-c", "echo 'Container CMD executing' && echo 'PORT='$PORT && python -u start_railway.py 2>&1"]
+
+# Alternative CMD options for debugging:
+# CMD ["python", "-u", "railway_direct_test.py"]
+# CMD ["python", "-u", "emergency_server.py"]
+# CMD ["/bin/sh", "-c", "python -m http.server $PORT"]
