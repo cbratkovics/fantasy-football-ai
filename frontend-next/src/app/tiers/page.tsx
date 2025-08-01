@@ -13,8 +13,8 @@ export default function TiersPage() {
               Player Tiers
             </h1>
             <p className="mt-6 text-xl leading-8 text-gray-300">
-              16-tier GMM clustering system reveals the true value gaps between players. 
-              Draft with confidence using our scientifically-determined tiers.
+              Our AI groups players by their true fantasy value, revealing clear tiers and value drops. 
+              Know exactly when to draft each position and avoid reaching for overvalued players.
             </p>
           </div>
           <TierVisualization />

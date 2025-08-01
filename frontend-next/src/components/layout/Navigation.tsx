@@ -7,9 +7,9 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const navigation = [
-  { name: 'Features', href: '#features' },
-  { name: 'How It Works', href: '#how-it-works' },
-  { name: 'Pricing', href: '#pricing' },
+  { name: 'Features', href: '/features' },
+  { name: 'How It Works', href: '/how-it-works' },
+  { name: 'Pricing', href: '/pricing' },
   { name: 'Accuracy', href: '/accuracy' },
 ]
 
@@ -22,7 +22,7 @@ export function Navigation() {
       <nav className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
         <div className="flex lg:flex-1">
           <Link href="/" className="-m-1.5 p-1.5">
-            <span className="text-2xl font-bold text-primary-600">Fantasy AI</span>
+            <span className="text-2xl font-bold text-primary-600">WinMyLeague.ai</span>
           </Link>
         </div>
         <div className="flex lg:hidden">
@@ -92,7 +92,7 @@ export function Navigation() {
             >
               <div className="flex items-center justify-between">
                 <Link href="/" className="-m-1.5 p-1.5">
-                  <span className="text-2xl font-bold text-primary-600">Fantasy AI</span>
+                  <span className="text-2xl font-bold text-primary-600">WinMyLeague.ai</span>
                 </Link>
                 <button
                   type="button"

@@ -1,8 +1,9 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { CheckCircleIcon } from '@heroicons/react/24/outline'
+import { CheckCircleIcon, ShieldCheckIcon, ClockIcon, ArrowTrendingUpIcon } from '@heroicons/react/24/outline'
 import { METRICS, FEATURES } from '@/lib/constants'
+import Link from 'next/link'
 
 const stats = [
   { label: 'Prediction Accuracy', value: METRICS.accuracy.percentage, description: METRICS.accuracy.description },
@@ -20,7 +21,7 @@ export function Accuracy() {
             Proven Accuracy You Can Trust
           </h2>
           <p className="mt-4 text-lg text-gray-600">
-            Our ML models are continuously trained on the latest data and rigorously tested against actual results
+            Our AI models are continuously trained on the latest data and independently verified weekly
           </p>
         </div>
 
@@ -63,6 +64,50 @@ export function Accuracy() {
               ))}
             </div>
           </div>
+        </div>
+
+        {/* Trust Badges */}
+        <div className="mt-16">
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
+            <div className="text-center">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100">
+                <ShieldCheckIcon className="h-6 w-6 text-indigo-600" />
+              </div>
+              <h3 className="mt-4 text-sm font-semibold text-gray-900">Independently Verified</h3>
+              <p className="mt-2 text-sm text-gray-600">
+                Accuracy numbers validated weekly against actual NFL results
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100">
+                <ClockIcon className="h-6 w-6 text-indigo-600" />
+              </div>
+              <h3 className="mt-4 text-sm font-semibold text-gray-900">Real-time Updates</h3>
+              <p className="mt-2 text-sm text-gray-600">
+                Predictions update within minutes of injury reports and news
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100">
+                <ArrowTrendingUpIcon className="h-6 w-6 text-indigo-600" />
+              </div>
+              <h3 className="mt-4 text-sm font-semibold text-gray-900">Proven Track Record</h3>
+              <p className="mt-2 text-sm text-gray-600">
+                5+ years of historical data with consistent accuracy improvement
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* CTA to Accuracy Page */}
+        <div className="mt-12 text-center">
+          <Link
+            href="/accuracy"
+            className="inline-flex items-center text-sm font-semibold text-indigo-600 hover:text-indigo-500"
+          >
+            View detailed accuracy report
+            <span aria-hidden="true" className="ml-2">→</span>
+          </Link>
         </div>
       </div>
     </section>

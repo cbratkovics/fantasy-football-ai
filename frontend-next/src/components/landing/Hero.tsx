@@ -23,7 +23,7 @@ export function Hero() {
             {/* Accuracy Badge */}
             <div className="mb-8 inline-flex items-center rounded-full bg-blue-500/20 backdrop-blur-sm border border-blue-400/30 px-4 py-2 text-sm font-semibold text-blue-300">
               <ChartBarIcon className="mr-2 h-4 w-4" />
-              93% Prediction Accuracy • 2019-2024 NFL Data
+              93.1% Prediction Accuracy • 2019-2024 NFL Data
             </div>
 
             <h1 className="text-5xl font-bold tracking-tight text-white sm:text-6xl lg:text-7xl">
@@ -34,8 +34,8 @@ export function Hero() {
             </h1>
             
             <p className="mt-6 text-xl leading-8 text-gray-300 max-w-3xl mx-auto">
-              See player tiers, not just rankings. Our unique dual-algorithm approach combines 
-              GMM clustering for strategic drafting with neural networks for precise weekly predictions.
+              See player tiers, not just rankings. Our AI groups players by actual value, 
+              helping you spot draft steals and avoid reaches. Win more with smarter decisions.
             </p>
 
             {/* Dual Path CTAs */}
@@ -64,7 +64,7 @@ export function Hero() {
             <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
               <div className="flex items-center justify-center gap-2 text-gray-300">
                 <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                16 Scientific Player Tiers
+                Smart Player Groupings
               </div>
               <div className="flex items-center justify-center gap-2 text-gray-300">
                 <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
@@ -94,7 +94,7 @@ export function Hero() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-white">Draft Strategy</h3>
-                      <p className="text-sm text-blue-400">GMM Clustering</p>
+                      <p className="text-sm text-blue-400">AI-Powered Tiers</p>
                     </div>
                   </div>
                   <div className="space-y-2 text-sm">
@@ -126,7 +126,7 @@ export function Hero() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-white">Weekly Predictions</h3>
-                      <p className="text-sm text-emerald-400">Neural Networks</p>
+                      <p className="text-sm text-emerald-400">Advanced AI</p>
                     </div>
                   </div>
                   <div className="space-y-2 text-sm">

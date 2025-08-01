@@ -9,11 +9,11 @@ import { METRICS } from '@/lib/constants'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: `Fantasy Football AI - ${METRICS.accuracy.percentage} Accurate Predictions`,
+  title: `WinMyLeague.ai - ${METRICS.accuracy.percentage} Accurate Fantasy Football Predictions`,
   description: 'AI-powered fantasy football predictions with transparent explanations. Get data-driven insights for your lineup decisions.',
-  keywords: 'fantasy football, AI predictions, NFL, lineup optimizer, player rankings',
+  keywords: 'fantasy football, AI predictions, NFL, lineup optimizer, player rankings, WinMyLeague',
   openGraph: {
-    title: `Fantasy Football AI - ${METRICS.accuracy.percentage} Accurate Predictions`,
+    title: `WinMyLeague.ai - ${METRICS.accuracy.percentage} Accurate Fantasy Football Predictions`,
     description: 'Make winning lineup decisions with AI-powered predictions',
     images: ['/og-image.png'],
   },

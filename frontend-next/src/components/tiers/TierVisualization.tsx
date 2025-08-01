@@ -141,7 +141,7 @@ export function TierVisualization() {
                     <div className="flex items-center gap-3 bg-red-500/20 border border-red-400/30 rounded-lg px-4 py-2">
                       <ArrowDownIcon className="w-4 h-4 text-red-400" />
                       <span className="text-sm font-medium text-red-400">
-                        {tierBreak.point_gap} point drop-off • {tierBreak.significance}
+                        Big value drop: {tierBreak.point_gap} fewer points • {tierBreak.significance}
                       </span>
                     </div>
                   </motion.div>
@@ -175,7 +175,7 @@ export function TierVisualization() {
                   <div className="flex items-center gap-2 text-sm text-gray-400">
                     <ChartBarIcon className="w-4 h-4" />
                     <span>
-                      {Math.round(tier.players.reduce((acc, p) => acc + p.projected_points, 0) / tier.players.length)} avg pts
+                      Avg: {Math.round(tier.players.reduce((acc, p) => acc + p.projected_points, 0) / tier.players.length)} pts/week
                     </span>
                   </div>
                 </div>
@@ -216,7 +216,7 @@ export function TierVisualization() {
                                 {Math.round(player.projected_points)} pts
                               </p>
                               <p className="text-xs text-gray-400">
-                                {Math.round(player.consistency_score * 100)}% consistent
+                                {Math.round(player.consistency_score * 100)}% reliable
                               </p>
                             </div>
                           </div>
@@ -273,15 +273,15 @@ export function TierVisualization() {
         <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-300">
           <div>
             <h4 className="font-medium text-white mb-2">Tier Confidence</h4>
-            <p>How certain our GMM algorithm is about a player's tier placement. Higher confidence means more reliable tier assignment.</p>
+            <p>How certain we are this player belongs in this tier. Higher % = stronger fit with similar players.</p>
           </div>
           <div>
-            <h4 className="font-medium text-white mb-2">Tier Breaks</h4>
-            <p>Significant point gaps between tiers indicate natural draft breakpoints. Major drops suggest tier boundaries.</p>
+            <h4 className="font-medium text-white mb-2">Value Drops</h4>
+            <p>Red bars show big fantasy point drops between tiers. Don't reach past these breaks - wait for the next tier.</p>
           </div>
           <div>
-            <h4 className="font-medium text-white mb-2">Consistency Score</h4>
-            <p>Measures week-to-week performance reliability. Higher scores indicate more predictable fantasy production.</p>
+            <h4 className="font-medium text-white mb-2">Reliability Score</h4>
+            <p>How steady a player performs week to week. 90%+ = very consistent, 70%- = boom or bust.</p>
           </div>
           <div>
             <h4 className="font-medium text-white mb-2">Draft Strategy</h4>

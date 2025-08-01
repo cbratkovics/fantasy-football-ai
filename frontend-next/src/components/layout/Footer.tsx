@@ -2,10 +2,10 @@ import Link from 'next/link'
 
 const navigation = {
   product: [
-    { name: 'Features', href: '#features' },
-    { name: 'Pricing', href: '#pricing' },
+    { name: 'Features', href: '/features' },
+    { name: 'Pricing', href: '/pricing' },
     { name: 'Accuracy Reports', href: '/accuracy' },
-    { name: 'API Docs', href: '/docs' },
+    { name: 'How It Works', href: '/how-it-works' },
   ],
   support: [
     { name: 'Help Center', href: '/help' },
@@ -29,9 +29,9 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-6 pb-8 pt-16 sm:pt-24 lg:px-8 lg:pt-32">
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           <div className="space-y-8">
-            <span className="text-2xl font-bold text-white">Fantasy AI</span>
+            <span className="text-2xl font-bold text-white">WinMyLeague.ai</span>
             <p className="text-sm leading-6 text-gray-300">
-              AI-powered fantasy football predictions with 89.2% accuracy. 
+              AI-powered fantasy football predictions with 93.1% accuracy. 
               Transparent explanations for every recommendation.
             </p>
             <div className="flex space-x-6">
@@ -94,7 +94,7 @@ export function Footer() {
         </div>
         <div className="mt-16 border-t border-white/10 pt-8 sm:mt-20 lg:mt-24">
           <p className="text-xs leading-5 text-gray-400">
-            &copy; {new Date().getFullYear()} Fantasy Football AI. All rights reserved.
+            &copy; {new Date().getFullYear()} WinMyLeague.ai. All rights reserved.
           </p>
         </div>
       </div>
