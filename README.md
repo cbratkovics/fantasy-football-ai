@@ -2,12 +2,16 @@
 
 **Advanced Machine Learning Platform for Fantasy Football Draft Optimization and Player Performance Prediction**
 
-[![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://python.org)
-[![TensorFlow](https://img.shields.io/badge/TensorFlow-2.15-orange.svg)](https://tensorflow.org)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.104-green.svg)](https://fastapi.tiangolo.com)
-[![Next.js](https://img.shields.io/badge/Next.js-14-black.svg)](https://nextjs.org)
-[![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://docker.com)
-[![AWS](https://img.shields.io/badge/AWS-Ready-orange.svg)](https://aws.amazon.com)
+<div align="center">
+
+[![Python](https://img.shields.io/badge/Python-3.11-blue.svg?style=for-the-badge)](https://python.org)
+[![TensorFlow](https://img.shields.io/badge/TensorFlow-2.15-orange.svg?style=for-the-badge)](https://tensorflow.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.104-green.svg?style=for-the-badge)](https://fastapi.tiangolo.com)
+[![Next.js](https://img.shields.io/badge/Next.js-14-black.svg?style=for-the-badge)](https://nextjs.org)
+[![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg?style=for-the-badge)](https://docker.com)
+[![AWS](https://img.shields.io/badge/AWS-Ready-orange.svg?style=for-the-badge)](https://aws.amazon.com)
+
+</div>
 
 ## Technical Overview
 

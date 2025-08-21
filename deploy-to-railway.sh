@@ -37,7 +37,7 @@ railway link || railway init --name fantasy-football-frontend
 
 # Set frontend environment variables
 echo -e "${YELLOW}→ Setting frontend environment variables...${NC}"
-railway variables set NEXT_PUBLIC_API_URL=https://fantasy-football-backend.railway.app
+railway variables set NEXT_PUBLIC_API_URL=https://fantasy-football-ai-production-4441.up.railway.app
 railway variables set NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:-"your-clerk-key"}
 
 # Deploy frontend
@@ -65,7 +65,7 @@ railway variables set JWT_SECRET_KEY=${JWT_SECRET_KEY:-"your-secret-key"}
 railway variables set STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY:-"your-stripe-key"}
 railway variables set STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET:-"your-webhook-secret"}
 railway variables set FRONTEND_URL=https://fantasy-football-frontend.railway.app
-railway variables set BACKEND_URL=https://fantasy-football-backend.railway.app
+railway variables set BACKEND_URL=https://fantasy-football-ai-production-4441.up.railway.app
 
 # Deploy backend
 echo -e "${YELLOW}→ Deploying backend...${NC}"
