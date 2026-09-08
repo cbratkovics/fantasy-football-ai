@@ -79,10 +79,10 @@ export function HowItWorks() {
           className="mt-16 text-center"
         >
           <a
-            href="/signup"
+            href="/auth/signup"
             className="inline-flex items-center justify-center px-8 py-3 text-lg font-semibold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors duration-200"
           >
-            Start Your Free Trial
+            Create an account
           </a>
         </motion.div>
       </div>

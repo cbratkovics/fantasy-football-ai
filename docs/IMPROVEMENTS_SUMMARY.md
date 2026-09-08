@@ -86,7 +86,7 @@ Custom features for each position:
 - `/backend/ml/ultra_accurate_model.py` - 92% accuracy ensemble
 - `/backend/ml/advanced_models.py` - Transformer, LSTM, CNN architectures
 - `/backend/ml/hyperparameter_tuning.py` - Automated optimization
-- `/backend/ml/enhanced_features.py` - 100+ feature engineering
+- `/backend/ml/enhanced_features.py` - feature engineering module
 
 ### Data Collection:
 - `/backend/data/enhanced_data_collector.py` - 10-year data collection

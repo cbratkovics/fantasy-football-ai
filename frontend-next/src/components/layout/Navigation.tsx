@@ -9,8 +9,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 const navigation = [
   { name: 'Features', href: '/features' },
   { name: 'How It Works', href: '/how-it-works' },
+  { name: 'Projections', href: '/predictions' },
   { name: 'Pricing', href: '/pricing' },
-  { name: 'Accuracy', href: '/accuracy' },
 ]
 
 export function Navigation() {
@@ -57,16 +57,16 @@ export function Navigation() {
           ) : (
             <>
               <Link
-                href="/signin"
+                href="/auth/signin"
                 className="text-sm font-semibold leading-6 text-gray-900 hover:text-primary-600 transition-colors"
               >
                 Sign in
               </Link>
               <Link
-                href="/signup"
+                href="/auth/signup"
                 className="text-sm font-semibold leading-6 text-white bg-primary-600 px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors"
               >
-                Start Free Trial
+                Create account
               </Link>
             </>
           )}
@@ -128,16 +128,16 @@ export function Navigation() {
                     ) : (
                       <>
                         <Link
-                          href="/signin"
+                          href="/auth/signin"
                           className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                         >
                           Sign in
                         </Link>
                         <Link
-                          href="/signup"
+                          href="/auth/signup"
                           className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white bg-primary-600 hover:bg-primary-700 text-center mt-4"
                         >
-                          Start Free Trial
+                          Create account
                         </Link>
                       </>
                     )}

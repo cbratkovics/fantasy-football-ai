@@ -78,7 +78,7 @@ const steps = [
 const faqs = [
   {
     question: 'How accurate are the predictions?',
-    answer: 'Our AI models achieve 93.1% accuracy in weekly player projections, significantly outperforming traditional fantasy football advice.'
+    answer: 'Our models produce weekly point projections with confidence intervals from an ensemble of gradient-boosted trees and neural networks.'
   },
   {
     question: 'Which platforms do you support?',
@@ -250,7 +250,7 @@ export default function HowItWorksPage() {
                 href="/auth/signup"
                 className="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-indigo-600 shadow-sm hover:bg-indigo-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
               >
-                Start free trial
+                Create an account
               </Link>
               <Link href="/pricing" className="text-sm font-semibold leading-6 text-white">
                 View pricing <span aria-hidden="true">→</span>

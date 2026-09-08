@@ -3,18 +3,18 @@ import Link from 'next/link'
 const navigation = {
   product: [
     { name: 'Features', href: '/features' },
-    { name: 'Pricing', href: '/pricing' },
-    { name: 'Accuracy Reports', href: '/accuracy' },
     { name: 'How It Works', href: '/how-it-works' },
+    { name: 'Projections', href: '/predictions' },
+    { name: 'Player Tiers', href: '/tiers' },
+    { name: 'Pricing', href: '/pricing' },
   ],
   support: [
     { name: 'Help Center', href: '/help' },
     { name: 'Contact', href: '/contact' },
-    { name: 'Status', href: '/status' },
+    { name: 'Learn', href: '/learn' },
   ],
   company: [
     { name: 'About', href: '/about' },
-    { name: 'Blog', href: '/blog' },
     { name: 'Privacy', href: '/privacy' },
     { name: 'Terms', href: '/terms' },
   ],
@@ -31,7 +31,7 @@ export function Footer() {
           <div className="space-y-8">
             <span className="text-2xl font-bold text-white">WinMyLeague.ai</span>
             <p className="text-sm leading-6 text-gray-300">
-              AI-powered fantasy football predictions with 93.1% accuracy. 
+              AI-powered fantasy football projections with confidence intervals. 
               Transparent explanations for every recommendation.
             </p>
             <div className="flex space-x-6">

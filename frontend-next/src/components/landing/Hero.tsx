@@ -23,7 +23,7 @@ export function Hero() {
             {/* Accuracy Badge */}
             <div className="mb-8 inline-flex items-center rounded-full bg-blue-500/20 backdrop-blur-sm border border-blue-400/30 px-4 py-2 text-sm font-semibold text-blue-300">
               <ChartBarIcon className="mr-2 h-4 w-4" />
-              93.1% Prediction Accuracy • 2019-2024 NFL Data
+              Ensemble Projections • 2019-2024 NFL Data
             </div>
 
             <h1 className="text-5xl font-bold tracking-tight text-white sm:text-6xl lg:text-7xl">

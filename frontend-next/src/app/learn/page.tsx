@@ -120,11 +120,11 @@ const tutorials = [
 const faqs = [
   {
     question: 'How accurate are the AI predictions?',
-    answer: 'Our AI models achieve 93.1% accuracy in weekly player projections, significantly outperforming traditional fantasy advice. We measure accuracy using a 15% margin of error on actual fantasy points scored.'
+    answer: 'Our models produce weekly point projections with confidence intervals, using an ensemble of gradient-boosted trees and neural networks. Projection quality varies by position and week, and every prediction ships with its own confidence interval rather than a single headline accuracy number.'
   },
   {
     question: 'What makes WinMyLeague.ai different from other sites?',
-    answer: 'We use advanced machine learning models that analyze 100+ data points per player, including matchup data, weather, injury reports, and historical trends. Our transparent approach shows you exactly why we make each recommendation.'
+    answer: 'We use ensemble machine learning models built on engineered features covering usage, efficiency, matchup, weather, injury reports, and historical trends. Every recommendation comes with the factors that drove it, so you can see the reasoning rather than taking the number on faith.'
   },
   {
     question: 'Should I always follow the AI recommendations?',
@@ -308,7 +308,7 @@ export default function LearnPage() {
                 href="/auth/signup"
                 className="px-8 py-3 bg-white text-indigo-600 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
               >
-                Start Free Trial
+                Create an account
               </Link>
               <Link
                 href="/features"

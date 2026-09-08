@@ -6,10 +6,10 @@ import { METRICS, FEATURES } from '@/lib/constants'
 import Link from 'next/link'
 
 const stats = [
-  { label: 'Prediction Accuracy', value: METRICS.accuracy.percentage, description: METRICS.accuracy.description },
-  { label: 'Players Analyzed', value: METRICS.users.playersAnalyzed, description: 'All skill positions covered' },
-  { label: 'Weekly Predictions', value: METRICS.users.predictions, description: 'Generated every week' },
-  { label: 'Active Users', value: METRICS.users.active, description: 'Growing community' },
+  { label: 'Projections', value: 'Weekly', description: METRICS.accuracy.description },
+  { label: 'Coverage', value: 'All skill positions', description: 'QB, RB, WR, TE, and K' },
+  { label: 'Models', value: 'Ensemble', description: METRICS.models.architecture },
+  { label: 'Explanations', value: 'Per prediction', description: 'Feature attributions included' },
 ]
 
 export function Accuracy() {
@@ -93,19 +93,19 @@ export function Accuracy() {
               </div>
               <h3 className="mt-4 text-sm font-semibold text-gray-900">Proven Track Record</h3>
               <p className="mt-2 text-sm text-gray-600">
-                5+ years of historical data with consistent accuracy improvement
+                Models trained on multiple seasons of historical NFL data
               </p>
             </div>
           </div>
         </div>
 
-        {/* CTA to Accuracy Page */}
+        {/* CTA */}
         <div className="mt-12 text-center">
           <Link
-            href="/accuracy"
+            href="/how-it-works"
             className="inline-flex items-center text-sm font-semibold text-indigo-600 hover:text-indigo-500"
           >
-            View detailed accuracy report
+            See how the projections are built
             <span aria-hidden="true" className="ml-2">→</span>
           </Link>
         </div>

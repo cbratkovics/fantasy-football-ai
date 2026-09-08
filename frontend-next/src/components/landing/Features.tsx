@@ -13,7 +13,7 @@ import {
 const features = [
   {
     name: 'AI-Powered Predictions',
-    description: 'Ensemble of XGBoost, LightGBM, and Neural Networks analyze 100+ features to achieve 93.1% accuracy.',
+    description: 'An ensemble of XGBoost, LightGBM, and neural networks over engineered player, matchup, and situational features.',
     icon: ChartBarIcon,
     color: 'text-primary-600',
     bgColor: 'bg-primary-100',

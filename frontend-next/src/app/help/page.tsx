@@ -74,12 +74,12 @@ const faqs = [
   {
     category: 'General',
     question: 'How accurate are WinMyLeague.ai predictions?',
-    answer: 'Our AI models achieve 93.1% accuracy in weekly player projections, measured using a 15% margin of error on actual fantasy points scored. We continuously improve our models with new data and feedback.'
+    answer: 'Our models produce weekly point projections with confidence intervals. Projection quality varies by position, week, and how much a player\u2019s role has changed recently, so each prediction ships with its own interval rather than a single headline accuracy figure.'
   },
   {
     category: 'General',
     question: 'What makes WinMyLeague.ai different from other fantasy sites?',
-    answer: 'We use advanced machine learning that analyzes 100+ data points per player, including matchup data, weather, injury reports, and historical trends. Our transparent approach shows you exactly why we make each recommendation.'
+    answer: 'We use ensemble machine learning models built on engineered features covering usage, efficiency, matchup, weather, injury reports, and historical trends. Every recommendation comes with the factors that drove it.'
   },
   {
     category: 'Features',
@@ -93,18 +93,18 @@ const faqs = [
   },
   {
     category: 'Account',
-    question: 'Can I cancel my subscription anytime?',
-    answer: 'Absolutely. You can cancel your subscription at any time from your account settings. You\'ll continue to have access through the end of your current billing period.'
+    question: 'What does it cost?',
+    answer: 'Nothing. WinMyLeague.ai is free while in beta, and no payment details are collected anywhere on the site.'
   },
   {
     category: 'Account',
-    question: 'Do you offer refunds?',
-    answer: 'We offer a 7-day money-back guarantee for new subscribers. If you\'re not satisfied within the first week, contact support for a full refund.'
+    question: 'How do I delete my account?',
+    answer: 'Email support@winmyleague.ai and your account and its associated data will be deleted. No reason required.'
   },
   {
     category: 'Technical',
     question: 'Is there a mobile app?',
-    answer: 'Our website is fully optimized for mobile devices. We\'re working on dedicated mobile apps for iOS and Android, which will be available in early 2024.'
+    answer: 'The website is designed to work on mobile browsers. There is no dedicated iOS or Android app.'
   },
   {
     category: 'Technical',
@@ -180,17 +180,17 @@ export default function HelpPage() {
               </Link>
 
               <Link
-                href="/status"
+                href="/how-it-works"
                 className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow group"
               >
                 <div className="w-12 h-12 rounded-lg bg-yellow-100 flex items-center justify-center mb-4 group-hover:bg-yellow-200 transition-colors">
                   <CogIcon className="h-6 w-6 text-yellow-600" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  System Status
+                  How It Works
                 </h3>
                 <p className="text-gray-600">
-                  Check if all systems are running smoothly
+                  How the projections are produced, end to end
                 </p>
               </Link>
             </div>

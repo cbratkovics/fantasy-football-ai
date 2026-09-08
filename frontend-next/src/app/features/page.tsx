@@ -18,14 +18,14 @@ export const metadata: Metadata = {
 const features = [
   {
     name: 'AI-Powered Predictions',
-    description: 'Our advanced machine learning models analyze thousands of data points to deliver 93.1% accurate weekly projections for every NFL player.',
+    description: 'Our machine learning models analyze a wide range of player, matchup, and situational signals to produce weekly projections for every NFL player.',
     icon: BoltIcon,
     stats: {
-      accuracy: '93.1%',
-      dataPoints: '10,000+',
-      updateFrequency: 'Real-time'
+      output: 'Weekly projections',
+      interval: 'Confidence included',
+      updateFrequency: 'Updated weekly'
     },
-    href: '/accuracy'
+    href: '/predictions'
   },
   {
     name: 'Smart Player Tiers',
@@ -43,9 +43,9 @@ const features = [
     description: 'Automated lineup recommendations based on matchups, weather, injuries, and historical performance. Set your optimal lineup in seconds.',
     icon: UsersIcon,
     stats: {
-      factors: '15+ analyzed',
-      winRate: '+23% improvement',
-      time: '< 30 seconds'
+      factors: 'Matchup, weather, injuries',
+      output: 'Ranked lineup options',
+      basis: 'Model projections'
     },
     href: '/start-sit'
   },
@@ -108,7 +108,7 @@ export default function FeaturesPage() {
                 href="/auth/signup"
                 className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
-                Start free trial
+                Create an account
               </Link>
               <Link href="/how-it-works" className="text-sm font-semibold leading-6 text-gray-900">
                 See how it works <span aria-hidden="true">→</span>
@@ -171,7 +171,7 @@ export default function FeaturesPage() {
             </h2>
             <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-600">
               Join thousands of fantasy players who are already winning with WinMyLeague.ai. 
-              Start your free trial today.
+              Create a free account to get started.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Link
@@ -180,8 +180,8 @@ export default function FeaturesPage() {
               >
                 View pricing
               </Link>
-              <Link href="/accuracy" className="text-sm font-semibold leading-6 text-gray-900">
-                Check our accuracy <span aria-hidden="true">→</span>
+              <Link href="/how-it-works" className="text-sm font-semibold leading-6 text-gray-900">
+                See how it works <span aria-hidden="true">→</span>
               </Link>
             </div>
           </div>

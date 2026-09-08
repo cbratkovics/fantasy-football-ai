@@ -1,29 +1,19 @@
-// Centralized constants for metrics and statistics
+// Centralized constants for the application.
+//
+// This is a portfolio demo, not a commercial service. No prediction-accuracy,
+// user-count, or usage figures are published here, because none have been measured
+// against a held-out evaluation set on live data. Describe capability, not results.
+
 export const METRICS = {
   accuracy: {
-    percentage: '93.1%',
-    description: 'Validated predictions within 3 fantasy points',
-    oldAccuracy: '54-57%', // Previous accuracy for comparison
-  },
-  mae: {
-    current: '1.25',
-    previous: '5.0',
-    unit: 'points',
-  },
-  features: {
-    count: '100+',
-    categories: 10,
-    playerAttributes: '50+',
+    description: 'Weekly point projections with confidence intervals',
   },
   models: {
     architecture: 'Ensemble of XGBoost, LightGBM, and Neural Networks',
     types: ['XGBoost', 'LightGBM', 'Neural Networks'],
-    tiers: 16,
   },
-  users: {
-    active: '2,500+',
-    predictions: '10K+',
-    playersAnalyzed: '500+',
+  features: {
+    description: 'Engineered features spanning usage, efficiency, matchup, and momentum signals',
   },
   techStack: {
     python: '3.11',
@@ -35,16 +25,14 @@ export const METRICS = {
 
 export const FEATURES = {
   core: [
-    'AI-Powered Predictions with 93.1% accuracy',
+    'AI-powered weekly point projections',
     'Transparent explanations for every prediction',
     'Real-time injury and news integration',
     'Position-specific ML models',
     'Weather and matchup analysis',
-    'Historical accuracy tracking',
     'Confidence intervals included',
-    '100+ engineered features across 10 categories',
+    'Engineered features across usage, efficiency, and matchup categories',
     'Ensemble models combining multiple algorithms',
-    '50+ player attributes analyzed',
   ],
   tiers: {
     free: {

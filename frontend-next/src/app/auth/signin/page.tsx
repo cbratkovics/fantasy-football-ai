@@ -14,7 +14,7 @@ import {
 const benefits = [
   {
     icon: BoltIcon,
-    text: '93.1% accurate AI predictions'
+    text: 'AI projections with confidence intervals'
   },
   {
     icon: ChartBarIcon,
@@ -39,8 +39,8 @@ export default function SignInPage() {
     setLoading(true)
 
     try {
-      // TODO: Implement actual authentication
-      console.log('Sign in:', { email, password })
+      // TODO: Implement actual authentication via Clerk.
+      // Do not log credentials here.
       
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000))
@@ -216,7 +216,7 @@ export default function SignInPage() {
               Your championship season starts here
             </h3>
             <p className="mt-6 text-lg leading-8 text-white/90">
-              Join 2,500+ fantasy players who are already winning more games with AI-powered insights.
+              Weekly projections, player tiers, and start/sit comparisons, free while in beta.
             </p>
             
             <div className="mt-10 space-y-6">

@@ -365,7 +365,7 @@ Current Draft Context:
 
 Your expertise includes:
 - Player tier classifications from Gaussian Mixture Models
-- Neural network predictions with 93.1% accuracy
+- Neural network and gradient-boosted ensemble predictions
 - Advanced metrics like efficiency ratios and momentum detection
 - Draft strategy optimization
 

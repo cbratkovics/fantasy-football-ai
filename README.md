@@ -15,16 +15,16 @@
 
 ## Technical Overview
 
-This is a production-grade machine learning system demonstrating advanced AI/ML engineering skills including:
+A machine learning system for fantasy football projections, demonstrating:
 
 **Deep Learning & Neural Networks:**
-- Ensemble models (XGBoost, LightGBM, Neural Networks) with 93.1% prediction accuracy
+- Ensemble models (XGBoost, LightGBM, Neural Networks) for weekly point projections
 - Position-specific architectures optimized for fantasy football metrics
 - Monte Carlo Dropout for uncertainty quantification
 - Advanced regularization techniques (dropout, batch normalization, L2)
 
 **Ensemble Learning & Model Architecture:**
-- XGBoost, LightGBM, and Neural Networks combined for 93.1% accuracy
+- XGBoost, LightGBM, and Neural Networks combined in a weighted ensemble
 - Gaussian Mixture Models (GMM) for intelligent player tier segmentation
 - Dynamic PCA dimensionality reduction with optimal component selection
 - Probabilistic cluster assignments with confidence scoring
@@ -47,7 +47,6 @@ This is a production-grade machine learning system demonstrating advanced AI/ML 
 
 **Ensemble Learning & Model Fusion:**
 - Weighted ensemble combining XGBoost, LightGBM, and neural networks
-- Achieved 93.1% accuracy (predictions within 3 fantasy points)
 - Dynamic weight adjustment based on prediction confidence
 - Advanced stacking techniques for improved generalization
 - Model performance tracking with automated retraining triggers
@@ -78,7 +77,7 @@ This is a production-grade machine learning system demonstrating advanced AI/ML 
 Data Ingestion → Feature Engineering → Model Training → Ensemble Prediction → Real-time Serving
      ↓                  ↓                  ↓                ↓                    ↓
 Sleeper API     100+ Features      Ensemble Models   Weighted Fusion     FastAPI + Redis
-NFL Stats       50+ Attributes     XGBoost/LGBM/NN   93.1% Accuracy     Sub-200ms Response
+NFL Stats       Engineered Feats   XGBoost/LGBM/NN   Weighted Fusion    Cached Responses
 Weather Data    Momentum Detection  GMM Clustering    Uncertainty         Auto-scaling
 ```
 
@@ -365,27 +364,24 @@ docker-compose run --rm backend pytest tests/test_ml.py
 docker-compose run --rm backend pytest --cov=app tests/
 ```
 
-## Performance Benchmarks & Metrics
+## Performance and Evaluation
 
-### Machine Learning Performance
-- **Ensemble Model Accuracy**: 93.1% (predictions within 3 points)
-- **GMM Clustering Silhouette Score**: 0.73 (excellent cluster separation)
-- **Feature Selection Stability**: 0.85 (high feature consistency across CV folds)
-- **Ensemble Model RMSE**: 2.31 fantasy points (industry-leading accuracy)
-- **Cross-validation R²**: 0.847 (strong predictive power)
+This repository does not publish model accuracy, latency, or throughput figures.
 
-### System Performance
-- **API Response Time**: <100ms (cached), <200ms (uncached with ML inference)
-- **Database Query Performance**: <50ms average (optimized with JSONB indexes)
-- **Model Training Time**: 4.2 minutes (full neural network retraining)
-- **Concurrent Users Supported**: 1000+ (with Redis caching and load balancing)
-- **Uptime**: 99.9% (monitored with comprehensive health checks)
+Prediction quality depends on which seasons you ingest, your train/test split, scoring settings,
+and how you handle injuries and bye weeks. Latency and throughput depend on your hardware and
+deployment. Numbers measured in one environment would not describe yours, so the evaluation
+scripts are provided instead of published results.
 
-### Real-time Data Pipeline
-- **Data Ingestion Latency**: <30 seconds from source to availability
-- **Feature Engineering Processing**: 500 players/second
-- **Model Prediction Throughput**: 2000 predictions/second (batch processing)
-- **Cache Hit Rate**: 94% (Redis optimization for frequent queries)
+To evaluate on your own data pull:
+
+```bash
+# Train and evaluate the ensemble on your ingested data
+python -m backend.ml.train --evaluate
+```
+
+Report whatever you measure with the split and scoring settings you used.
+
 
 ## Automated ML Operations (MLOps)
 

@@ -6,7 +6,6 @@ import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 import { PredictionsList } from '@/components/predictions/PredictionsList'
 import { PlayerSearch } from '@/components/predictions/PlayerSearch'
 import { WeekSelector } from '@/components/predictions/WeekSelector'
-import { SubscriptionBanner } from '@/components/dashboard/SubscriptionBanner'
 
 export default function Dashboard() {
   const { isLoaded, userId } = useAuth()
@@ -18,7 +17,7 @@ export default function Dashboard() {
   }
 
   if (!userId) {
-    window.location.href = '/signin'
+    window.location.href = '/auth/signin'
     return null
   }
 
@@ -31,8 +30,6 @@ export default function Dashboard() {
             Get AI-powered predictions with transparent explanations
           </p>
         </div>
-
-        <SubscriptionBanner />
 
         <div className="grid gap-6 md:grid-cols-12">
           <div className="md:col-span-3">

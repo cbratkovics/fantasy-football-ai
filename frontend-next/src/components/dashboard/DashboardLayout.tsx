@@ -18,10 +18,9 @@ import { cn } from '@/lib/utils'
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
-  { name: 'Predictions', href: '/predictions', icon: ChartBarIcon },
-  { name: 'My Team', href: '/team', icon: UsersIcon },
-  { name: 'Rankings', href: '/rankings', icon: TrophyIcon },
-  { name: 'Settings', href: '/settings', icon: CogIcon },
+  { name: 'Projections', href: '/predictions', icon: ChartBarIcon },
+  { name: 'Player Tiers', href: '/tiers', icon: TrophyIcon },
+  { name: 'Start/Sit', href: '/start-sit', icon: UsersIcon },
 ]
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -174,11 +173,6 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               <Bars3Icon className="h-6 w-6" aria-hidden="true" />
             </button>
 
-            <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-              <div className="flex flex-1 items-center justify-end gap-x-4">
-                <span className="accuracy-badge">89.2% Accuracy</span>
-              </div>
-            </div>
           </div>
 
           <main className="py-10">

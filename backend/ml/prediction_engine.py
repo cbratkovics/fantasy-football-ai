@@ -104,17 +104,12 @@ class PredictionEngine:
         return predictions
     
     def get_model_accuracy(self) -> Dict[str, float]:
-        """Get current model accuracy metrics"""
-        
-        return {
-            "overall_accuracy": 0.931,  # 93.1% as advertised
-            "position_accuracy": {
-                "QB": 0.942,
-                "RB": 0.918,
-                "WR": 0.926,
-                "TE": 0.937
-            },
-            "mae": 2.15,  # Mean Absolute Error
-            "r_squared": 0.887,
-            "last_updated": "2024-08-01"
-        }
+        """
+        Return recorded evaluation metrics for the current model.
+
+        No evaluation metrics are recorded in this repository. Train and evaluate a model,
+        then wire this method to your metrics store. Returning placeholder scores here would
+        surface unmeasured numbers through the API and the assistant prompt.
+        """
+
+        return {}

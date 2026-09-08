@@ -28,7 +28,7 @@ const plans: Record<string, Plan> = {
     name: 'Pro',
     price: '$19/month',
     features: [
-      'Advanced AI predictions (93.1% accuracy)',
+      'Advanced AI predictions with confidence intervals',
       'Complete player tier system',
       'Weekly lineup optimizer',
       'Mock draft simulator',
@@ -98,8 +98,8 @@ export default function SignUpPage() {
     setLoading(true)
 
     try {
-      // TODO: Implement actual registration
-      console.log('Sign up:', { ...formData, plan: selectedPlan })
+      // TODO: Implement actual registration via Clerk.
+      // Do not log formData here; it contains the password.
       
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500))

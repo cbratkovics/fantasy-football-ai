@@ -3,10 +3,6 @@
 import { useState } from 'react'
 import { 
   EnvelopeIcon,
-  PhoneIcon,
-  ChatBubbleLeftRightIcon,
-  ClockIcon,
-  MapPinIcon,
   CheckCircleIcon
 } from '@heroicons/react/24/outline'
 import { Navigation } from '@/components/layout/Navigation'
@@ -15,35 +11,12 @@ import { Breadcrumb } from '@/components/layout/Breadcrumb'
 
 const contactMethods = [
   {
-    title: 'Email Support',
-    description: 'Get help via email within 24 hours',
+    title: 'Email',
+    description: 'The best way to reach me. I read everything, and I reply as soon as I can.',
     icon: EnvelopeIcon,
     contact: 'support@winmyleague.ai',
-    action: 'Send Email',
     color: 'blue'
-  },
-  {
-    title: 'Live Chat',
-    description: 'Chat with our team in real-time',
-    icon: ChatBubbleLeftRightIcon,
-    contact: 'Available 9 AM - 6 PM EST',
-    action: 'Start Chat',
-    color: 'green'
-  },
-  {
-    title: 'Phone Support',
-    description: 'Speak directly with our support team',
-    icon: PhoneIcon,
-    contact: '+1 (555) 123-4567',
-    action: 'Call Now',
-    color: 'purple'
   }
-]
-
-const supportHours = [
-  { day: 'Monday - Friday', hours: '9:00 AM - 6:00 PM EST' },
-  { day: 'Saturday', hours: '10:00 AM - 4:00 PM EST' },
-  { day: 'Sunday', hours: 'Closed' }
 ]
 
 export default function ContactPage() {
@@ -132,7 +105,7 @@ export default function ContactPage() {
                 Get in Touch
               </h1>
               <p className="mt-6 text-xl text-gray-600 max-w-3xl mx-auto">
-                Have questions about WinMyLeague.ai? Need help with your account? Our support team is here to help.
+                Questions about WinMyLeague.ai, or something not working right? Send a message and it comes straight to me.
               </p>
             </div>
           </div>
@@ -140,7 +113,7 @@ export default function ContactPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             {/* Contact Methods */}
             <div className="lg:col-span-1">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Contact Options</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">How to Reach Me</h2>
               
               <div className="space-y-6 mb-8">
                 {contactMethods.map((method) => (
@@ -160,53 +133,16 @@ export default function ContactPage() {
                     <p className="text-sm font-medium text-gray-900 mb-4">
                       {method.contact}
                     </p>
-                    <button className={`w-full py-2 px-4 rounded-lg font-medium transition-colors bg-${method.color}-600 text-white hover:bg-${method.color}-700`}>
-                      {method.action}
-                    </button>
                   </div>
                 ))}
               </div>
 
-              {/* Support Hours */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <div className="flex items-center mb-4">
-                  <ClockIcon className="h-5 w-5 text-indigo-600 mr-2" />
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Support Hours
-                  </h3>
-                </div>
-                <div className="space-y-2">
-                  {supportHours.map((schedule, idx) => (
-                    <div key={idx} className="flex justify-between text-sm">
-                      <span className="text-gray-600">{schedule.day}</span>
-                      <span className="font-medium text-gray-900">{schedule.hours}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Office Info */}
-              <div className="mt-6 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <div className="flex items-center mb-4">
-                  <MapPinIcon className="h-5 w-5 text-indigo-600 mr-2" />
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Our Office
-                  </h3>
-                </div>
-                <address className="text-sm text-gray-600 not-italic">
-                  WinMyLeague.ai<br />
-                  123 Fantasy Drive<br />
-                  Suite 456<br />
-                  San Francisco, CA 94105<br />
-                  United States
-                </address>
-              </div>
             </div>
 
             {/* Contact Form */}
             <div className="lg:col-span-2">
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Send us a message</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Send a message</h2>
                 
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
