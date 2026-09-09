@@ -1,19 +1,16 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
 import './globals.css'
 import { ClerkProvider } from '@clerk/nextjs'
 import { Providers } from '@/components/providers'
 import { Toaster } from 'react-hot-toast'
 
-const inter = Inter({ subsets: ['latin'] })
-
 export const metadata: Metadata = {
-  title: 'WinMyLeague.ai - Fantasy Football Projections',
-  description: 'AI-powered fantasy football predictions with transparent explanations. Get data-driven insights for your lineup decisions.',
-  keywords: 'fantasy football, AI predictions, NFL, lineup optimizer, player rankings, WinMyLeague',
+  title: 'Win My League · Applied Data Science Decision Lab',
+  description: 'An end-to-end data science case study: reliable forecasts, explicit decision policies, cohort evaluation, and production-minded delivery.',
+  keywords: 'data science portfolio, decision science, machine learning, analytics engineering, fantasy football',
   openGraph: {
-    title: 'WinMyLeague.ai - Fantasy Football Projections',
-    description: 'Make winning lineup decisions with AI-powered predictions',
+    title: 'Win My League · Applied Data Science Decision Lab',
+    description: 'From noisy signals to measurable, explainable decisions.',
     images: ['/og-image.png'],
   },
 }
@@ -26,7 +23,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" className="h-full">
-        <body className={`${inter.className} h-full bg-gray-50`}>
+        <body className="h-full bg-gray-50 font-sans">
           <Providers>
             {children}
             <Toaster position="top-right" />
