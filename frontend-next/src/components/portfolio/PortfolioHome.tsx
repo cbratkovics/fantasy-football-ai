@@ -182,7 +182,7 @@ export function PortfolioHome() {
 
       <footer className="portfolio-footer">
         <div><span className="footer-mark">WML</span><div><b>Win My League · Decision Lab</b><p>An applied data science portfolio project by Christopher Bratkovics.</p></div></div>
-        <div><a href="https://github.com/cbratkovics">GitHub</a><a href="https://linkedin.com/in/cbratkovics">LinkedIn</a></div>
+        <div><a href="mailto:chris@fantasyfootballai.com">Email</a><a href="https://github.com/cbratkovics">GitHub</a><a href="https://linkedin.com/in/cbratkovics">LinkedIn</a></div>
       </footer>
     </main>
   )
