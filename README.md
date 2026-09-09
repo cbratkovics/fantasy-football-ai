@@ -1,521 +1,209 @@
-# Fantasy Football AI - Production ML System
-
-**Advanced Machine Learning Platform for Fantasy Football Draft Optimization and Player Performance Prediction**
-
 <div align="center">
 
-[![Python](https://img.shields.io/badge/Python-3.11-blue.svg?style=for-the-badge)](https://python.org)
-[![TensorFlow](https://img.shields.io/badge/TensorFlow-2.15-orange.svg?style=for-the-badge)](https://tensorflow.org)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.104-green.svg?style=for-the-badge)](https://fastapi.tiangolo.com)
-[![Next.js](https://img.shields.io/badge/Next.js-14-black.svg?style=for-the-badge)](https://nextjs.org)
-[![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg?style=for-the-badge)](https://docker.com)
-[![AWS](https://img.shields.io/badge/AWS-Ready-orange.svg?style=for-the-badge)](https://aws.amazon.com)
+# Win My League
+
+### Applied decision science for high-uncertainty choices
+
+**A portfolio case study in point-in-time modeling, policy optimization, analytics engineering, and explainable product design.**
+
+[![Python](https://img.shields.io/badge/Python-Evaluation-3776AB?style=flat-square&logo=python&logoColor=white)](backend/evaluation/decision_evaluator.py)
+[![Next.js](https://img.shields.io/badge/Next.js-Decision_Lab-111111?style=flat-square&logo=nextdotjs&logoColor=white)](frontend-next)
+[![SQL](https://img.shields.io/badge/SQL-Metric_Contract-176E5A?style=flat-square&logo=postgresql&logoColor=white)](analytics/sql/risk_strategy.sql)
+[![FastAPI](https://img.shields.io/badge/FastAPI-Model_Serving-009688?style=flat-square&logo=fastapi&logoColor=white)](backend)
+[![Tests](https://img.shields.io/badge/Evaluation_Tests-Passing-74A12E?style=flat-square)](tests/test_decision_evaluator.py)
+[![License](https://img.shields.io/badge/License-MIT-EF6C3E?style=flat-square)](LICENSE)
+
+[Explore the case study](docs/PORTFOLIO_CASE_STUDY.md) · [Review the evaluator](backend/evaluation/decision_evaluator.py) · [Inspect the SQL mart](analytics/sql/risk_strategy.sql) · [Run locally](#run-it-locally)
 
 </div>
 
-## Technical Overview
+---
 
-A machine learning system for fantasy football projections, demonstrating:
+## The 60-second overview
 
-**Deep Learning & Neural Networks:**
-- Ensemble models (XGBoost, LightGBM, Neural Networks) for weekly point projections
-- Position-specific architectures optimized for fantasy football metrics
-- Monte Carlo Dropout for uncertainty quantification
-- Advanced regularization techniques (dropout, batch normalization, L2)
+Most ML demos stop after producing a score. **Win My League starts with the decision.**
 
-**Ensemble Learning & Model Architecture:**
-- XGBoost, LightGBM, and Neural Networks combined in a weighted ensemble
-- Gaussian Mixture Models (GMM) for intelligent player tier segmentation
-- Dynamic PCA dimensionality reduction with optimal component selection
-- Probabilistic cluster assignments with confidence scoring
-- 16-tier draft optimization system based on clustering analysis
+The system helps a fantasy manager choose a lineup under incomplete and rapidly changing information. It estimates player outcomes, represents uncertainty, applies an explicit risk policy, and measures whether the resulting action was better than a simple baseline.
 
-**Advanced Feature Engineering:**
-- 100+ engineered features across 10 distinct categories
-- 50+ player attributes including physical, career, and situational metrics
-- Multi-temporal feature extraction (3-week, 5-week rolling windows)
-- Weather impact modeling with historical performance correlation
-- Injury impact prediction using survival analysis techniques
+Fantasy football is a deliberately low-risk domain, but the analytical pattern transfers to real-time risk work:
 
-**Production ML Infrastructure:**
-- Real-time model serving with sub-200ms response times
-- Automated ML pipeline with model versioning and A/B testing
-- Feature selection using ensemble methods (LASSO, Random Forest, SHAP, RFE)
-- Comprehensive monitoring and observability stack
+| Risk-system concern | Portfolio analogue |
+|---|---|
+| Score an entity from time-sensitive signals | Forecast a player using only pre-kickoff information |
+| Balance approval and loss | Balance recommendation coverage and downside |
+| Apply a configurable risk strategy | Convert calibrated scores into recommend/review/abstain actions |
+| Diagnose changing populations | Monitor errors and outcomes by position, week, and score band |
+| Explain a consequential decision | Surface uncertainty, freshness, drivers, and model/policy versions |
 
-## Advanced AI/ML Capabilities
+> [!IMPORTANT]
+> **Evidence before claims.** UI examples and repository fixtures are labeled demonstrations—not measured production results. A metric becomes a portfolio claim only when its dataset, temporal split, baseline, model version, code commit, and reproduction path are recorded.
 
-**Ensemble Learning & Model Fusion:**
-- Weighted ensemble combining XGBoost, LightGBM, and neural networks
-- Dynamic weight adjustment based on prediction confidence
-- Advanced stacking techniques for improved generalization
-- Model performance tracking with automated retraining triggers
+## What this project demonstrates
 
-**Natural Language Processing & Analytics:**
-- Injury report analysis using NLP for impact assessment
-- Trade analysis engine with multi-team optimization
-- Sentiment analysis of player news and social media
-- Automated report generation with natural language explanations
+<table>
+<tr>
+<td width="25%"><strong>Decision science</strong><br/><sub>Separates outcome estimation from policy; makes coverage, downside, and abstention explicit.</sub></td>
+<td width="25%"><strong>Applied modeling</strong><br/><sub>Uses temporal validation, causal baselines, position cohorts, uncertainty, and model challengers.</sub></td>
+<td width="25%"><strong>Analytics engineering</strong><br/><sub>Defines grains, denominators, point-in-time joins, version dimensions, and dashboard-ready marts.</sub></td>
+<td width="25%"><strong>Production thinking</strong><br/><sub>Includes API boundaries, data validation, evidence manifests, caching/queue scaffolding, and containers.</sub></td>
+</tr>
+</table>
 
-**Time Series Analysis & Forecasting:**
-- Momentum detection using statistical trend analysis
-- Seasonal decomposition for performance patterns
-- ARIMA modeling for long-term player trajectory prediction
-- Breakout/regression probability calculation
+### The question behind the product
 
-**Advanced Optimization Techniques:**
-- Multi-objective optimization for draft recommendations
-- Genetic algorithms for lineup optimization
-- Reinforcement learning for dynamic strategy adjustment
-- Bayesian optimization for hyperparameter tuning
+> **Who should we act on, at what threshold, and what evidence would change that decision?**
 
-## System Architecture & Implementation
+A point forecast alone cannot answer that question. The product treats the decision as an expected-utility problem:
 
-### Machine Learning Pipeline Architecture
-
-```
-Data Ingestion → Feature Engineering → Model Training → Ensemble Prediction → Real-time Serving
-     ↓                  ↓                  ↓                ↓                    ↓
-Sleeper API     100+ Features      Ensemble Models   Weighted Fusion     FastAPI + Redis
-NFL Stats       Engineered Feats   XGBoost/LGBM/NN   Weighted Fusion    Cached Responses
-Weather Data    Momentum Detection  GMM Clustering    Uncertainty         Auto-scaling
+```text
+expected utility = expected performance
+                 − risk tolerance × downside shortfall
+                 − opportunity cost
 ```
 
-### Technical Stack & Justification
+The interactive Decision Lab makes this concrete: moving the policy threshold changes both the number of recommendations and the downside profile of those selections.
 
-**Backend Infrastructure:**
-- **FastAPI**: Asynchronous Python framework for high-performance API serving
-- **PostgreSQL**: ACID-compliant database with JSONB support for flexible schema
-- **Redis**: In-memory caching for sub-100ms prediction retrieval
-- **Celery**: Distributed task queue for ML model training and data updates
+## System design
 
-**Machine Learning Framework:**
-- **TensorFlow 2.16**: Deep learning framework with GPU acceleration support
-- **XGBoost & LightGBM**: Gradient boosting for ensemble predictions
-- **Scikit-learn**: Classical ML algorithms and preprocessing utilities
-- **SHAP**: Model explainability and feature importance analysis
-- **Optuna**: Bayesian hyperparameter optimization
+```mermaid
+flowchart LR
+    A[Source events] --> B[Point-in-time validation]
+    B --> C[Feature computation]
+    C --> D[Baseline + challenger]
+    D --> E[Calibrated score and interval]
+    E --> F{Policy}
+    F -->|Recommend| G[User action]
+    F -->|Review| H[Human judgment]
+    F -->|Abstain| I[Safe fallback]
+    G & H & I --> J[Outcome mart]
+    J --> K[Cohorts, drift, regret]
+    K -. evidence .-> C
+```
 
-**Production Deployment:**
-- **Docker**: Containerized deployment with multi-stage builds
-- **Kubernetes**: Orchestration with auto-scaling and load balancing
-- **AWS ECS/Fargate**: Serverless container deployment
-- **Terraform**: Infrastructure as Code for reproducible deployments
+The separation between **model** and **policy** is intentional. A model estimates an outcome distribution; a versioned policy determines the action and can be tuned to different risk tolerances without retraining the model.
 
-## Quick Start Guide
+## Evaluation that can be audited
 
-### Prerequisites
+The standalone evaluator consumes a prediction CSV instead of importing a training pipeline. This prevents candidate-model code from quietly redefining how it is judged.
 
-- Docker & Docker Compose
-- Python 3.11+
-- PostgreSQL 15+
-- Redis 7+
-- AWS Account (for production deployment)
+It currently provides:
 
-### Local Development Setup
+- a forward-time test holdout;
+- a trailing-mean baseline that cannot see same-week outcomes;
+- MAE and median absolute error for model and baseline;
+- position-level cohort results;
+- recommendation coverage, selected-population MAE, and downside rate across policy thresholds;
+- an immutable evidence manifest containing the input SHA-256, Git commit, generation time, and split definition.
 
-1. **Clone the repository**
+### Input contract
+
+| Column | Meaning | Constraint |
+|---|---|---|
+| `player_id` | Stable entity identifier | Required |
+| `season`, `week` | Decision period | Required; determines temporal ordering |
+| `position` | Evaluation cohort | Required |
+| `prediction` | Pre-event point estimate | Required; finite numeric value |
+| `actual` | Post-event outcome | Required; finite numeric value |
+| `decision_score` | Policy score | Required; between `0` and `1` |
+| `prediction_floor` | Estimated downside floor | Optional; enables downside-rate evaluation |
+
 ```bash
-git clone https://github.com/cbratkovics/fantasy-football-ai.git
-cd fantasy-football-ai
+python -m backend.evaluation.decision_evaluator predictions.csv \
+  --test-start 2024-10 \
+  --output artifacts/evaluation.json
 ```
 
-2. **Set up environment variables**
+The result is a machine-readable artifact suitable for CI checks, dashboard ingestion, or a generated model card.
+
+## Decision-performance metrics
+
+The SQL reference mart declares one row per **UTC decision date × position × model version × policy version**.
+
+| Metric | Definition | Why it belongs beside model error |
+|---|---|---|
+| Recommendation rate | recommendations / eligible decisions | Prevents apparent quality gains from recommending almost nothing |
+| Hit rate | selections above replacement level / selections | Measures useful actions, not merely close forecasts |
+| Mean regret | best eligible result − selected result | Quantifies missed opportunity |
+| Downside rate | selections below their predicted floor / selections | Exposes asymmetric harm and interval failures |
+| Review rate | review actions / eligible decisions | Measures friction imposed on the user |
+
+## Implementation map
+
+| Layer | Key paths | Maturity |
+|---|---|---|
+| Portfolio product | [`frontend-next/src/components/portfolio`](frontend-next/src/components/portfolio) | **Implemented** |
+| Evidence generation | [`backend/evaluation`](backend/evaluation) | **Implemented and tested** |
+| Decision analytics | [`analytics/sql/risk_strategy.sql`](analytics/sql/risk_strategy.sql) | **Reference implementation** |
+| API surface | [`backend/api`](backend/api) | **Implemented; integration maturity varies** |
+| Modeling | [`backend/ml`](backend/ml) | **Prototype modules** |
+| Source adapters | [`backend/data`](backend/data) | **Mixed live connectors and demos** |
+| Operations | [`infrastructure`](infrastructure), Docker, Railway/Vercel configs | **Deployment scaffolding** |
+
+This vocabulary is deliberate: scaffolding demonstrates design intent; only repeatable tests and artifacts demonstrate operation.
+
+## Run it locally
+
+### Portfolio UI
+
 ```bash
-cp .env.example .env
-# Edit .env with your configuration
+cd frontend-next
+npm ci
+npm run dev
 ```
 
-3. **Build and start services**
+Open [`http://localhost:3000`](http://localhost:3000).
+
+### Evaluation tests
+
+From the repository root:
+
 ```bash
-make build
-make up
+python -m unittest tests.test_decision_evaluator
 ```
 
-4. **Initialize the database**
-```bash
-make migrate
-```
+## Repository guide
 
-5. **Access the application**
-- Frontend: http://localhost:8501
-- API: http://localhost:8000
-- API Docs: http://localhost:8000/docs
-
-## Documentation
-
-- [Quick Start Guide](docs/QUICKSTART.md)
-- [Deployment Guide](docs/DEPLOYMENT.md)
-- [Project Structure](docs/PROJECT_STRUCTURE.md)
-- [ML Enhancements](docs/ML_ENHANCEMENTS_SUMMARY.md)
-- [Recent Improvements](docs/IMPROVEMENTS_SUMMARY.md)
-- [Deployment Roadmap](docs/DEPLOYMENT_ROADMAP.md)
-
-## Project Structure
-
-```
-fantasy-football-ai/
+```text
+.
+├── analytics/sql/           # Versioned decision-performance metric contract
 ├── backend/
-│   ├── api/                 # FastAPI endpoints
-│   ├── ml/                  # ML models (GMM, Neural Networks)
-│   ├── data/                # Data pipeline & Sleeper API
-│   ├── models/              # Database models
-│   └── tasks/               # Celery background tasks
-├── frontend/
-│   ├── app.py               # Streamlit main app
-│   ├── pages/               # UI pages
-│   └── components/          # Reusable components
-├── infrastructure/
-│   ├── docker-compose.yml   # Docker orchestration
-│   ├── terraform/           # AWS infrastructure as code
-│   └── nginx.conf           # Reverse proxy config
-├── models/                  # Saved ML models
-├── scripts/                 # Deployment & maintenance scripts
-├── docs/                    # Documentation
-└── tests/                   # Test suite
+│   ├── api/                 # FastAPI route modules
+│   ├── data/                # Source adapters and ingestion prototypes
+│   ├── evaluation/          # Independent, reproducible evidence generation
+│   ├── ml/                  # Feature, model, tier, and training prototypes
+│   └── services/            # Inference, explanation, and integrations
+├── docs/                    # Technical brief, architecture, and roadmap
+├── frontend-next/           # Interactive Next.js portfolio and product views
+├── infrastructure/          # Container and cloud deployment scaffolding
+└── tests/                   # Focused evaluation-contract tests
 ```
 
-## Core Machine Learning Models
+## What I would build next
 
-### 1. Gaussian Mixture Model (GMM) Draft Tier System
+1. **Freeze a licensed historical dataset** and document when every input became available.
+2. **Extend the evaluator to rolling-origin folds** with an untouched final test season.
+3. **Add a frozen expert-ranking baseline** and bootstrap uncertainty by week—not by correlated player row.
+4. **Generate a versioned model card** and feed only generated artifacts into the performance UI.
+5. **Canonicalize the runtime** by selecting one API entry point, one training path, and one dependency strategy.
 
-**Technical Implementation:**
-```python
-# Advanced GMM with dynamic component selection
-from sklearn.mixture import GaussianMixture
-from sklearn.decomposition import PCA
+I would not add an autonomous agent to the scoring path. If generative AI is added, its narrow role should be translating structured, precomputed drivers into plain language—with schema validation, caching, a token ceiling, and a deterministic fallback.
 
-class GMMDraftOptimizer:
-    def __init__(self, n_components=16, n_pca_components=10):
-        self.gmm = GaussianMixture(
-            n_components=n_components,
-            covariance_type='full',
-            random_state=42
-        )
-        self.pca = PCA(n_components=n_pca_components)
-```
+## Technical brief
 
-**Key Innovations:**
-- Probabilistic tier assignments with uncertainty quantification
-- Dynamic PCA dimensionality reduction preventing overfitting
-- Tier-specific feature weighting based on position analysis
-- Integration with draft value theory and positional scarcity
+The full [portfolio case study](docs/PORTFOLIO_CASE_STUDY.md) covers:
 
-### 2. Deep Neural Network Predictor
-
-**Architecture Details:**
-```python
-# Position-specific neural network architecture
-model = tf.keras.Sequential([
-    tf.keras.layers.Dense(128, activation='relu', input_shape=(n_features,)),
-    tf.keras.layers.BatchNormalization(),
-    tf.keras.layers.Dropout(0.3),
-    tf.keras.layers.Dense(64, activation='relu'),
-    tf.keras.layers.BatchNormalization(),
-    tf.keras.layers.Dropout(0.3),
-    tf.keras.layers.Dense(32, activation='relu'),
-    tf.keras.layers.Dense(1, activation='linear')
-])
-```
-
-**Advanced Features:**
-- Monte Carlo Dropout for uncertainty estimation
-- Position-specific weight initialization
-- Custom loss function incorporating prediction variance
-- Ensemble bootstrapping for improved generalization
-
-### 3. Advanced Feature Engineering Framework
-
-**Statistical Features (100+ engineered features across 10 categories):**
-```python
-# Proprietary Efficiency Ratio calculation
-efficiency_ratio = (actual_performance / expected_performance) * opportunity_weight
-
-# Momentum detection using exponential smoothing
-momentum_score = alpha * recent_performance + (1-alpha) * historical_momentum
-
-# Weather impact modeling
-weather_adjustment = base_prediction * weather_factor * position_sensitivity
-```
-
-**Feature Categories:**
-- **Performance Metrics**: PPG, volatility, consistency scores, ceiling/floor analysis
-- **Opportunity Indicators**: Target share, red zone usage, snap count trends
-- **Efficiency Metrics**: Yards per target, touchdown conversion rates, efficiency ratios
-- **Contextual Factors**: Weather conditions, home/away splits, rest advantages
-- **Momentum Indicators**: 3/5-week trends, breakout/regression probabilities
-
-## Production API & Performance
-
-### Authentication
-```bash
-POST /auth/register
-POST /auth/login
-GET  /auth/me
-```
-
-### Players
-```bash
-GET  /players/rankings?position=QB&tier=1&scoring=ppr
-GET  /players/{player_id}
-```
-
-### Predictions
-```bash
-POST /predictions/custom
-{
-  "player_ids": ["1234", "5678"],
-  "week": 10,
-  "scoring_type": "ppr"
-}
-```
-
-### Draft Assistant
-```bash
-POST /draft/recommendations?round=3&pick=7
-```
-
-## Database Architecture & Schema
-
-### Optimized PostgreSQL Schema
-```sql
--- Core player performance table with JSONB for flexible stats
-CREATE TABLE player_stats (
-    id UUID PRIMARY KEY,
-    player_id VARCHAR(50) NOT NULL,
-    week INTEGER NOT NULL,
-    season INTEGER NOT NULL,
-    stats JSONB NOT NULL,  -- Flexible schema for evolving stats
-    created_at TIMESTAMP DEFAULT NOW(),
-    INDEX CONCURRENTLY idx_player_week (player_id, week, season)
-);
-
--- ML predictions with confidence intervals
-CREATE TABLE predictions (
-    id UUID PRIMARY KEY,
-    player_id VARCHAR(50) NOT NULL,
-    model_version VARCHAR(20) NOT NULL,
-    prediction DECIMAL(5,2) NOT NULL,
-    confidence_interval_lower DECIMAL(5,2),
-    confidence_interval_upper DECIMAL(5,2),
-    prediction_std DECIMAL(5,2),
-    created_at TIMESTAMP DEFAULT NOW()
-);
-
--- GMM clustering results with probabilistic assignments
-CREATE TABLE draft_tiers (
-    id UUID PRIMARY KEY,
-    player_id VARCHAR(50) NOT NULL,
-    tier INTEGER NOT NULL,
-    probability DECIMAL(5,4) NOT NULL,
-    cluster_features JSONB,
-    season INTEGER NOT NULL
-);
-```
-
-## Production Deployment & Scaling
-
-### AWS Infrastructure
-
-The system is designed to run on AWS with:
-- **EC2**: t3.medium instance (~$35/month)
-- **RDS PostgreSQL**: db.t3.micro (~$15/month)
-- **ElastiCache Redis**: Optional for production
-- **Total Cost**: Under $50/month
-
-### Deployment Steps
-
-1. **Set up AWS infrastructure**
-```bash
-cd terraform
-terraform init
-terraform plan
-terraform apply
-```
-
-2. **Configure environment**
-```bash
-# Update .env.production with AWS endpoints
-DATABASE_URL=postgresql://user:pass@rds-endpoint:5432/fantasy_football
-REDIS_URL=redis://elasticache-endpoint:6379
-```
-
-3. **Deploy application**
-```bash
-make deploy-prod
-```
-
-### SSL/HTTPS Setup
-
-1. Obtain SSL certificate (Let's Encrypt recommended)
-2. Place certificates in `./ssl/`
-3. Update `nginx.conf` with your domain
-
-## 🧪 Testing
-
-```bash
-# Run all tests
-make test
-
-# Run specific test suite
-docker-compose run --rm backend pytest tests/test_ml.py
-
-# Test coverage
-docker-compose run --rm backend pytest --cov=app tests/
-```
-
-## Performance and Evaluation
-
-This repository does not publish model accuracy, latency, or throughput figures.
-
-Prediction quality depends on which seasons you ingest, your train/test split, scoring settings,
-and how you handle injuries and bye weeks. Latency and throughput depend on your hardware and
-deployment. Numbers measured in one environment would not describe yours, so the evaluation
-scripts are provided instead of published results.
-
-To evaluate on your own data pull:
-
-```bash
-# Train and evaluate the ensemble on your ingested data
-python -m backend.ml.train --evaluate
-```
-
-Report whatever you measure with the split and scoring settings you used.
-
-
-## Automated ML Operations (MLOps)
-
-### Model Versioning & A/B Testing
-```python
-# Automated model deployment with performance tracking
-class ModelVersionManager:
-    def deploy_model(self, model, version, traffic_split=0.1):
-        # Canary deployment with automatic rollback
-        if self.validate_model_performance(model, threshold=0.85):
-            self.update_traffic_routing(version, traffic_split)
-        else:
-            self.rollback_deployment(previous_version)
-```
-
-### Continuous Integration Pipeline
-- **Automated Testing**: 95% code coverage with ML-specific tests
-- **Model Validation**: Performance regression detection
-- **Feature Drift Detection**: Statistical tests for data distribution changes
-- **Automated Retraining**: Triggered by performance degradation alerts
-
-## Business Intelligence & Monetization
-
-### Subscription Tier Analytics
-```python
-# Revenue optimization through predictive analytics
-subscription_tiers = {
-    'free': {'conversion_rate': 0.08, 'monthly_value': 0},
-    'pro': {'conversion_rate': 0.73, 'monthly_value': 9.99, 'churn_rate': 0.12},
-    'premium': {'conversion_rate': 0.19, 'monthly_value': 19.99, 'churn_rate': 0.08}
-}
-```
-
-### Revenue Projections (Data-Driven)
-- **Year 1 Conservative**: $144,000 ARR (1,000 Pro + 100 Premium subscribers)
-- **Year 2 Growth**: $1,440,000 ARR (8,000 Pro + 2,000 Premium subscribers)
-- **Customer Lifetime Value**: $247 (Pro), $518 (Premium)
-- **Customer Acquisition Cost**: $23 (organic), $67 (paid marketing)
-
-## Development & Testing Framework
-
-### Database Backup
-```bash
-make db-backup
-# Backups stored in ./backups/
-```
-
-### Update ML Models
-```bash
-make train-models
-```
-
-### Monitor Logs
-```bash
-make logs
-# Or specific service
-docker-compose logs -f backend
-```
-
-## Contributing & Development Standards
-
-### Code Quality Standards
-- **Type Safety**: Comprehensive type hints with mypy validation
-- **Code Style**: Black formatter, isort imports, flake8 linting
-- **Testing**: 95% coverage requirement with ML-specific test suites
-- **Documentation**: Comprehensive docstrings with mathematical notation
-- **Performance**: Benchmarking required for ML model changes
-
-### ML Model Development Guidelines
-```python
-# Required performance testing for new models
-def test_model_performance(model, test_data):
-    accuracy = evaluate_accuracy(model, test_data)
-    assert accuracy > 0.85, "Model accuracy below production threshold"
-    
-    latency = measure_inference_time(model)
-    assert latency < 100, "Model inference too slow for production"
-```
-
-### Research & Development Process
-1. **Hypothesis Formation**: Data-driven problem identification
-2. **Experimentation**: A/B testing with statistical significance validation
-3. **Model Development**: Cross-validation and hyperparameter optimization
-4. **Production Testing**: Canary deployments with automated rollback
-5. **Performance Monitoring**: Continuous model performance tracking
-
-## Technical Skills Demonstrated
-
-### Advanced Machine Learning Engineering
-- **Deep Learning**: Custom TensorFlow architectures with regularization
-- **Unsupervised Learning**: GMM clustering with probabilistic modeling
-- **Feature Engineering**: 100+ engineered features with domain expertise
-- **Model Optimization**: Hyperparameter tuning with Bayesian optimization
-- **Ensemble Methods**: Weighted model fusion with uncertainty quantification
-
-### Production Systems Architecture
-- **Scalable APIs**: FastAPI with async processing and caching
-- **Database Optimization**: PostgreSQL with JSONB and performance tuning
-- **Real-time Processing**: Redis caching with sub-100ms response times
-- **MLOps Pipeline**: Automated training, validation, and deployment
-- **Monitoring**: Comprehensive observability with automated alerting
-
-### Data Engineering & Pipeline Management
-- **ETL Processes**: Automated data ingestion from multiple sources
-- **Data Quality**: Validation, cleaning, and anomaly detection
-- **Stream Processing**: Real-time updates with minimal latency
-- **Feature Stores**: Centralized feature management and versioning
-
-## License & Attribution
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Technical References & Acknowledgments
-
-- **Scientific Computing**: NumPy, SciPy, Pandas for numerical analysis
-- **Machine Learning**: TensorFlow, Scikit-learn, XGBoost for modeling
-- **Statistical Analysis**: SHAP for model interpretability
-- **Data Visualization**: Matplotlib, Plotly for analytical insights
-- **Web Framework**: FastAPI for high-performance API development
-
-## Contact & Professional Profile
-
-**Christopher Bratkovics** - Machine Learning Engineer
-- GitHub: [@cbratkovics](https://github.com/cbratkovics)
-- LinkedIn: [cbratkovics](https://linkedin.com/in/cbratkovics)
-- Email: chris@fantasyfootballai.com
-
-**Specializations:**
-- Deep Learning & Neural Networks
-- Production ML Systems Architecture
-- Statistical Modeling & Feature Engineering
-- High-Performance API Development
-- MLOps & Automated ML Pipelines
+- the codebase audit and credibility gaps;
+- metric definitions and temporal evaluation design;
+- the point-in-time analytics model;
+- production monitoring and rollback strategy;
+- a concise interview narrative and discussion prompts.
 
 ---
 
-*Advanced Machine Learning System demonstrating production-grade AI/ML engineering capabilities for sports analytics and predictive modeling.*
+<div align="center">
+
+Built by **Christopher Bratkovics** · [GitHub](https://github.com/cbratkovics) · [LinkedIn](https://linkedin.com/in/cbratkovics)
+
+[MIT License](LICENSE)
+
+</div>
