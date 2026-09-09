@@ -1,0 +1,26 @@
+<svg width="1200" height="360" viewBox="0 0 1200 360" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Win My League Decision Lab</title>
+  <desc id="desc">An applied decision science system that turns forecasts into explainable actions.</desc>
+  <rect width="1200" height="360" fill="#101B19"/>
+  <path d="M0 302H1200M0 244H1200M0 186H1200M0 128H1200M0 70H1200" stroke="#293835"/>
+  <path d="M760 360V0M842 360V0M924 360V0M1006 360V0M1088 360V0M1170 360V0" stroke="#293835"/>
+  <circle cx="72" cy="67" r="28" fill="#C7F36B"/>
+  <text x="72" y="72" text-anchor="middle" fill="#101B19" font-family="monospace" font-size="12" font-weight="700">WML</text>
+  <text x="118" y="62" fill="#F2F0E9" font-family="Arial, sans-serif" font-size="17" font-weight="700">WIN MY LEAGUE</text>
+  <text x="118" y="83" fill="#86948F" font-family="monospace" font-size="10" letter-spacing="2">DECISION LAB</text>
+  <rect x="72" y="121" width="114" height="26" fill="#FF6B35"/>
+  <text x="129" y="138" text-anchor="middle" fill="white" font-family="monospace" font-size="10" font-weight="700" letter-spacing="1">CASE STUDY</text>
+  <text x="72" y="203" fill="#F2F0E9" font-family="Arial, sans-serif" font-size="55" font-weight="700" letter-spacing="-2">Forecast less.</text>
+  <text x="72" y="263" fill="#C7F36B" font-family="Georgia, serif" font-size="58" font-style="italic">Decide better.</text>
+  <text x="74" y="312" fill="#AEBBB6" font-family="Arial, sans-serif" font-size="15">CALIBRATED FORECASTS  ·  EXPLICIT POLICY  ·  COHORT EVALUATION  ·  AUDITABLE EVIDENCE</text>
+  <rect x="794" y="47" width="339" height="266" fill="#152420" stroke="#40504C"/>
+  <circle cx="819" cy="72" r="4" fill="#C7F36B"/>
+  <text x="833" y="76" fill="#C7D2CE" font-family="monospace" font-size="10" font-weight="700" letter-spacing="1">POLICY SIGNAL</text>
+  <text x="1105" y="76" text-anchor="end" fill="#71807C" font-family="monospace" font-size="9">AS OF KICKOFF</text>
+  <path d="M819 247L850 226L881 235L912 188L943 203L974 155L1005 174L1036 119L1067 139L1107 91" stroke="#C7F36B" stroke-width="3"/>
+  <path d="M819 270H1107" stroke="#40504C"/>
+  <rect x="819" y="286" width="90" height="7" fill="#40504C"/><rect x="919" y="286" width="54" height="7" fill="#FF6B35"/><rect x="983" y="286" width="124" height="7" fill="#C7F36B"/>
+  <text x="819" y="109" fill="#71807C" font-family="monospace" font-size="9" letter-spacing="1">DECISION QUALITY</text>
+  <text x="819" y="141" fill="#F2F0E9" font-family="Arial, sans-serif" font-size="30" font-weight="700">Opportunity</text>
+  <text x="819" y="166" fill="#86948F" font-family="Arial, sans-serif" font-size="12">balanced against downside</text>
+</svg>
