@@ -1,24 +1,26 @@
+import type { Metadata } from 'next'
 import { PerformanceDashboard } from '@/components/dashboard/PerformanceDashboard'
 import { Navigation } from '@/components/layout/Navigation'
 import { Footer } from '@/components/layout/Footer'
 
+export const metadata: Metadata = {
+  title: 'Model Evaluation | Win My League Decision Lab',
+  description: 'Explore model error, positional cohorts, and the methodology behind the Win My League decision system.',
+}
+
 export default function PerformancePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
+    <div className="evaluation-shell">
       <Navigation />
-      <main className="pt-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-4xl text-center mb-12">
-            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
-              Performance Dashboard
-            </h1>
-            <p className="mt-6 text-xl leading-8 text-gray-300">
-              Track model accuracy, analyze prediction performance, and monitor tier effectiveness 
-              across all positions and time periods.
-            </p>
+      <main>
+        <header className="evaluation-hero">
+          <div className="eyebrow"><span /> Model evaluation · historical sample</div>
+          <div className="evaluation-title-row">
+            <h1>Evidence, not<br /><em>just output.</em></h1>
+            <div><p>Inspect model error and reliability across positional cohorts. Every result should be read with its sample, time window, and methodology in view.</p><span>2019—2024 · PRE-GAME FEATURES</span></div>
           </div>
-          <PerformanceDashboard />
-        </div>
+        </header>
+        <PerformanceDashboard />
       </main>
       <Footer />
     </div>
