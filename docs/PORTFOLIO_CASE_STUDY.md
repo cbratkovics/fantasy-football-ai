@@ -137,9 +137,15 @@ An LLM is not necessary for scoring. If included, use it only to draft a plain-l
 ### Phase 1 — trustworthy evidence
 
 - Freeze a licensed historical dataset and document the as-of timestamp semantics.
-- Implement baseline models and rolling-origin evaluation.
+- Extend the implemented forward-time evaluation CLI to rolling-origin folds and add a frozen expert-ranking baseline.
 - Generate a checked-in HTML/JSON model card from one command.
 - Replace all remaining fixture-derived accuracy copy with generated metrics or explicit demo labels.
+
+The first executable foundation now lives in `backend/evaluation/decision_evaluator.py`.
+It validates the input contract, computes a same-week-leakage-safe trailing baseline,
+holds out only future periods, reports position cohorts, sweeps policy thresholds,
+and writes a JSON artifact with the input hash and code commit. This is intentionally
+independent of training code so a candidate model cannot redefine its own evaluation.
 
 ### Phase 2 — analytical product
 

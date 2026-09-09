@@ -16,6 +16,7 @@ The sports setting is intentionally low-risk, but the workflow transfers to risk
 | Data | Sleeper/ESPN/weather connectors plus synthetic fixture generation | Mixed live connectors and demos |
 | Operations | Docker, Railway/Vercel configuration, Alembic, Redis/Celery scaffolding | Deployment scaffolding |
 | Decision analytics | Policy simulator and a documented SQL metric contract | Portfolio reference implementation |
+| Evaluation | Forward-time holdout, causal baseline, cohort metrics, policy sweep, evidence manifest | Implemented CLI |
 
 See [`docs/PORTFOLIO_CASE_STUDY.md`](docs/PORTFOLIO_CASE_STUDY.md) for the codebase audit, target architecture, evaluation design, metric tree, and interview narrative.
 
@@ -56,6 +57,21 @@ Every reported experiment should include:
 6. model/feature versions and one command that reproduces the report.
 
 This prioritizes honest, decision-relevant evidence over an unsupported “accuracy” headline.
+
+### Generate an evidence artifact
+
+Provide a CSV containing `player_id`, `season`, `week`, `position`, `prediction`,
+`actual`, and `decision_score`; `prediction_floor` is optional. Scores must be on
+a 0–1 scale if you use the default policy thresholds.
+
+```bash
+python -m backend.evaluation.decision_evaluator predictions.csv \
+  --test-start 2024-10 \
+  --output artifacts/evaluation.json
+```
+
+The generated JSON records the input SHA-256, Git commit, forward-time split,
+causal trailing-mean baseline, position cohorts, and threshold-policy metrics.
 
 ## Stack
 
