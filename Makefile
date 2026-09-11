@@ -38,8 +38,9 @@ SEASON ?= 2024
 tiers:
 	$(PY) scripts/tiers.py --season $(SEASON)
 
+ARGS ?=
 evaluate:
-	$(PY) scripts/evaluate.py
+	$(PY) scripts/evaluate.py $(ARGS)
 
 WEEK ?= 1
 THROUGH ?= $(SEASON)
