@@ -1,0 +1,40 @@
+{
+  "challenger": {
+    "candidate": {
+      "QB": "xgb",
+      "RB": "xgb",
+      "TE": "xgb",
+      "WR": "xgb"
+    },
+    "model_version": "20260911-asof_v1-d333de20"
+  },
+  "champion": {
+    "candidate": {
+      "QB": "rf",
+      "RB": "rf",
+      "TE": "rf",
+      "WR": "rf"
+    },
+    "model_version": "20260911-asof_v1-d333de20"
+  },
+  "data_through": {
+    "season": 2024,
+    "week": 18
+  },
+  "eval_id": "eval-20260911-20260911-asof_v1-d333de20-rf",
+  "feature_version": "asof_v1",
+  "last_run": {
+    "action": "PUBLISH",
+    "at_utc": "2026-09-11T01:42:01+00:00",
+    "reasons": [
+      "initial evaluation"
+    ],
+    "run_id": "bootstrap"
+  },
+  "manifest_version": "1.0",
+  "predictions": {
+    "latest": "predictions/2025/week_01.json"
+  },
+  "tiers_version": "20260911-tiers_prevseason_v1-2024",
+  "updated_at_utc": "2026-09-11T01:44:18+00:00"
+}

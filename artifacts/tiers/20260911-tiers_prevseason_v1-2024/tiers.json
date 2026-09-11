@@ -1,0 +1,3865 @@
+{
+  "tier_version": "20260911-tiers_prevseason_v1-2024",
+  "season": 2024,
+  "positions": {
+    "QB": [
+      {
+        "tier": 1,
+        "players": [
+          {
+            "player_id": "00-0026158",
+            "name": "Joe Flacco",
+            "team": "CLE",
+            "ppg_prev": 20.17,
+            "games_prev": 5,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0029604",
+            "name": "Kirk Cousins",
+            "team": "MIN",
+            "ppg_prev": 18.72,
+            "games_prev": 8,
+            "tier_probability": 1.0
+          }
+        ]
+      },
+      {
+        "tier": 2,
+        "players": [
+          {
+            "player_id": "00-0034857",
+            "name": "Josh Allen",
+            "team": "BUF",
+            "ppg_prev": 23.1,
+            "games_prev": 17,
+            "tier_probability": 0.998
+          },
+          {
+            "player_id": "00-0036389",
+            "name": "Jalen Hurts",
+            "team": "PHI",
+            "ppg_prev": 20.99,
+            "games_prev": 17,
+            "tier_probability": 0.9447
+          },
+          {
+            "player_id": "00-0034796",
+            "name": "Lamar Jackson",
+            "team": "BAL",
+            "ppg_prev": 20.7,
+            "games_prev": 16,
+            "tier_probability": 0.6215
+          },
+          {
+            "player_id": "00-0033077",
+            "name": "Dak Prescott",
+            "team": "DAL",
+            "ppg_prev": 20.17,
+            "games_prev": 17,
+            "tier_probability": 0.9992
+          },
+          {
+            "player_id": "00-0036264",
+            "name": "Jordan Love",
+            "team": "GB",
+            "ppg_prev": 18.77,
+            "games_prev": 17,
+            "tier_probability": 0.9412
+          },
+          {
+            "player_id": "00-0033873",
+            "name": "Patrick Mahomes",
+            "team": "KC",
+            "ppg_prev": 17.51,
+            "games_prev": 16,
+            "tier_probability": 0.9911
+          },
+          {
+            "player_id": "00-0033106",
+            "name": "Jared Goff",
+            "team": "DET",
+            "ppg_prev": 17.01,
+            "games_prev": 17,
+            "tier_probability": 0.9988
+          },
+          {
+            "player_id": "00-0034855",
+            "name": "Baker Mayfield",
+            "team": "TB",
+            "ppg_prev": 16.12,
+            "games_prev": 17,
+            "tier_probability": 0.9976
+          },
+          {
+            "player_id": "00-0036212",
+            "name": "Tua Tagovailoa",
+            "team": "MIA",
+            "ppg_prev": 15.9,
+            "games_prev": 17,
+            "tier_probability": 0.8547
+          },
+          {
+            "player_id": "00-0030565",
+            "name": "Geno Smith",
+            "team": "SEA",
+            "ppg_prev": 15.15,
+            "games_prev": 15,
+            "tier_probability": 0.9997
+          },
+          {
+            "player_id": "00-0031280",
+            "name": "Derek Carr",
+            "team": "NO",
+            "ppg_prev": 14.18,
+            "games_prev": 17,
+            "tier_probability": 1.0
+          }
+        ]
+      },
+      {
+        "tier": 3,
+        "players": [
+          {
+            "player_id": "00-0029263",
+            "name": "Russell Wilson",
+            "team": "DEN",
+            "ppg_prev": 17.13,
+            "games_prev": 15,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0026498",
+            "name": "Matthew Stafford",
+            "team": "LA",
+            "ppg_prev": 16.21,
+            "games_prev": 15,
+            "tier_probability": 1.0
+          }
+        ]
+      },
+      {
+        "tier": 4,
+        "players": [
+          {
+            "player_id": "00-0037834",
+            "name": "Brock Purdy",
+            "team": "SF",
+            "ppg_prev": 18.48,
+            "games_prev": 16,
+            "tier_probability": 0.9949
+          },
+          {
+            "player_id": "00-0039163",
+            "name": "C.J. Stroud",
+            "team": "HOU",
+            "ppg_prev": 18.4,
+            "games_prev": 15,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0036355",
+            "name": "Justin Herbert",
+            "team": "LAC",
+            "ppg_prev": 18.01,
+            "games_prev": 13,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0036945",
+            "name": "Justin Fields",
+            "team": "CHI",
+            "ppg_prev": 17.71,
+            "games_prev": 13,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0036971",
+            "name": "Trevor Lawrence",
+            "team": "JAX",
+            "ppg_prev": 16.41,
+            "games_prev": 16,
+            "tier_probability": 0.9979
+          },
+          {
+            "player_id": "00-0033949",
+            "name": "Joshua Dobbs",
+            "team": "MIN",
+            "ppg_prev": 15.44,
+            "games_prev": 13,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0037077",
+            "name": "Sam Howell",
+            "team": "WAS",
+            "ppg_prev": 15.15,
+            "games_prev": 17,
+            "tier_probability": 0.9998
+          },
+          {
+            "player_id": "00-0035289",
+            "name": "Gardner Minshew",
+            "team": "IND",
+            "ppg_prev": 12.26,
+            "games_prev": 16,
+            "tier_probability": 0.9938
+          },
+          {
+            "player_id": "00-0038122",
+            "name": "Desmond Ridder",
+            "team": "ATL",
+            "ppg_prev": 11.81,
+            "games_prev": 15,
+            "tier_probability": 0.9959
+          },
+          {
+            "player_id": "00-0039150",
+            "name": "Bryce Young",
+            "team": "CAR",
+            "ppg_prev": 9.77,
+            "games_prev": 16,
+            "tier_probability": 1.0
+          }
+        ]
+      },
+      {
+        "tier": 5,
+        "players": [
+          {
+            "player_id": "00-0035100",
+            "name": "Jake Browning",
+            "team": "CIN",
+            "ppg_prev": 16.05,
+            "games_prev": 9,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0036442",
+            "name": "Joe Burrow",
+            "team": "CIN",
+            "ppg_prev": 14.72,
+            "games_prev": 10,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0033537",
+            "name": "Deshaun Watson",
+            "team": "CLE",
+            "ppg_prev": 14.47,
+            "games_prev": 6,
+            "tier_probability": 1.0
+          }
+        ]
+      },
+      {
+        "tier": 6,
+        "players": [
+          {
+            "player_id": "00-0039164",
+            "name": "Anthony Richardson",
+            "team": "IND",
+            "ppg_prev": 18.17,
+            "games_prev": 4,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0035710",
+            "name": "Daniel Jones",
+            "team": "NYG",
+            "ppg_prev": 9.49,
+            "games_prev": 6,
+            "tier_probability": 1.0
+          }
+        ]
+      },
+      {
+        "tier": 7,
+        "players": [
+          {
+            "player_id": "00-0035228",
+            "name": "Kyler Murray",
+            "team": "ARI",
+            "ppg_prev": 18.3,
+            "games_prev": 8,
+            "tier_probability": 0.9994
+          },
+          {
+            "player_id": "00-0038579",
+            "name": "Aidan O'Connell",
+            "team": "LV",
+            "ppg_prev": 11.44,
+            "games_prev": 11,
+            "tier_probability": 0.9967
+          },
+          {
+            "player_id": "00-0039152",
+            "name": "Will Levis",
+            "team": "TEN",
+            "ppg_prev": 11.34,
+            "games_prev": 9,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0038476",
+            "name": "Tommy DeVito",
+            "team": "NYG",
+            "ppg_prev": 10.39,
+            "games_prev": 9,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0037013",
+            "name": "Zach Wilson",
+            "team": "NYJ",
+            "ppg_prev": 9.99,
+            "games_prev": 12,
+            "tier_probability": 0.998
+          },
+          {
+            "player_id": "00-0036972",
+            "name": "Mac Jones",
+            "team": "NE",
+            "ppg_prev": 9.67,
+            "games_prev": 11,
+            "tier_probability": 0.9985
+          },
+          {
+            "player_id": "00-0038102",
+            "name": "Kenny Pickett",
+            "team": "PIT",
+            "ppg_prev": 9.18,
+            "games_prev": 12,
+            "tier_probability": 0.9985
+          },
+          {
+            "player_id": "00-0029701",
+            "name": "Ryan Tannehill",
+            "team": "TEN",
+            "ppg_prev": 8.89,
+            "games_prev": 9,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0038108",
+            "name": "Bailey Zappe",
+            "team": "NE",
+            "ppg_prev": 6.92,
+            "games_prev": 10,
+            "tier_probability": 1.0
+          }
+        ]
+      },
+      {
+        "tier": 8,
+        "players": [
+          {
+            "player_id": "00-0031800",
+            "name": "Taylor Heinicke",
+            "team": "ATL",
+            "ppg_prev": 13.2,
+            "games_prev": 5,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0031345",
+            "name": "Jimmy Garoppolo",
+            "team": "LV",
+            "ppg_prev": 9.16,
+            "games_prev": 7,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0028118",
+            "name": "Tyrod Taylor",
+            "team": "NYG",
+            "ppg_prev": 8.73,
+            "games_prev": 10,
+            "tier_probability": 0.9949
+          },
+          {
+            "player_id": "00-0032156",
+            "name": "Trevor Siemian",
+            "team": "NYJ",
+            "ppg_prev": 5.39,
+            "games_prev": 5,
+            "tier_probability": 0.9779
+          }
+        ]
+      },
+      {
+        "tier": 9,
+        "players": [
+          {
+            "player_id": "00-0035282",
+            "name": "Easton Stick",
+            "team": "LAC",
+            "ppg_prev": 13.51,
+            "games_prev": 5,
+            "tier_probability": 0.9999
+          },
+          {
+            "player_id": "00-0033319",
+            "name": "Nick Mullens",
+            "team": "MIN",
+            "ppg_prev": 13.35,
+            "games_prev": 5,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0038416",
+            "name": "Tyson Bagent",
+            "team": "CHI",
+            "ppg_prev": 10.65,
+            "games_prev": 5,
+            "tier_probability": 0.9997
+          },
+          {
+            "player_id": "00-0034771",
+            "name": "Mason Rudolph",
+            "team": "PIT",
+            "ppg_prev": 9.89,
+            "games_prev": 4,
+            "tier_probability": 0.9711
+          },
+          {
+            "player_id": "00-0033869",
+            "name": "Mitchell Trubisky",
+            "team": "PIT",
+            "ppg_prev": 9.74,
+            "games_prev": 5,
+            "tier_probability": 0.9997
+          },
+          {
+            "player_id": "00-0035704",
+            "name": "Drew Lock",
+            "team": "SEA",
+            "ppg_prev": 7.28,
+            "games_prev": 4,
+            "tier_probability": 0.9153
+          },
+          {
+            "player_id": "00-0036898",
+            "name": "Davis Mills",
+            "team": "HOU",
+            "ppg_prev": 3.56,
+            "games_prev": 5,
+            "tier_probability": 0.9283
+          },
+          {
+            "player_id": "00-0038583",
+            "name": "Dorian Thompson-Robinson",
+            "team": "CLE",
+            "ppg_prev": 3.16,
+            "games_prev": 7,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0034869",
+            "name": "Sam Darnold",
+            "team": "SF",
+            "ppg_prev": 2.34,
+            "games_prev": 10,
+            "tier_probability": 1.0
+          }
+        ]
+      },
+      {
+        "tier": 10,
+        "players": [
+          {
+            "player_id": "00-0035993",
+            "name": "Tyler Huntley",
+            "team": "BAL",
+            "ppg_prev": 5.12,
+            "games_prev": 5,
+            "tier_probability": 0.9941
+          },
+          {
+            "player_id": "00-0033275",
+            "name": "PJ Walker",
+            "team": "CLE",
+            "ppg_prev": 3.99,
+            "games_prev": 5,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0033936",
+            "name": "C.J. Beathard",
+            "team": "JAX",
+            "ppg_prev": 3.58,
+            "games_prev": 6,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0031503",
+            "name": "Jameis Winston",
+            "team": "NO",
+            "ppg_prev": 1.99,
+            "games_prev": 6,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0038582",
+            "name": "Clayton Tune",
+            "team": "ARI",
+            "ppg_prev": 1.25,
+            "games_prev": 6,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0033662",
+            "name": "Cooper Rush",
+            "team": "DAL",
+            "ppg_prev": 0.47,
+            "games_prev": 7,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0034401",
+            "name": "Mike White",
+            "team": "MIA",
+            "ppg_prev": 0.34,
+            "games_prev": 6,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0034577",
+            "name": "Kyle Allen",
+            "team": "BUF",
+            "ppg_prev": -0.22,
+            "games_prev": 6,
+            "tier_probability": 1.0
+          }
+        ]
+      }
+    ],
+    "RB": [
+      {
+        "tier": 1,
+        "players": [
+          {
+            "player_id": "00-0033280",
+            "name": "Christian McCaffrey",
+            "team": "SF",
+            "ppg_prev": 24.46,
+            "games_prev": 16,
+            "tier_probability": 0.9997
+          },
+          {
+            "player_id": "00-0037840",
+            "name": "Kyren Williams",
+            "team": "LA",
+            "ppg_prev": 21.25,
+            "games_prev": 12,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0033906",
+            "name": "Alvin Kamara",
+            "team": "NO",
+            "ppg_prev": 17.92,
+            "games_prev": 13,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0031687",
+            "name": "Raheem Mostert",
+            "team": "MIA",
+            "ppg_prev": 17.85,
+            "games_prev": 15,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0039040",
+            "name": "De'Von Achane",
+            "team": "MIA",
+            "ppg_prev": 17.34,
+            "games_prev": 11,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0039139",
+            "name": "Jahmyr Gibbs",
+            "team": "DET",
+            "ppg_prev": 16.14,
+            "games_prev": 15,
+            "tier_probability": 0.9053
+          },
+          {
+            "player_id": "00-0034844",
+            "name": "Saquon Barkley",
+            "team": "NYG",
+            "ppg_prev": 15.94,
+            "games_prev": 14,
+            "tier_probability": 0.9999
+          },
+          {
+            "player_id": "00-0036223",
+            "name": "Jonathan Taylor",
+            "team": "IND",
+            "ppg_prev": 15.64,
+            "games_prev": 10,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0033553",
+            "name": "James Conner",
+            "team": "ARI",
+            "ppg_prev": 15.5,
+            "games_prev": 13,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0037197",
+            "name": "Isiah Pacheco",
+            "team": "KC",
+            "ppg_prev": 15.28,
+            "games_prev": 14,
+            "tier_probability": 0.9988
+          },
+          {
+            "player_id": "00-0035685",
+            "name": "David Montgomery",
+            "team": "DET",
+            "ppg_prev": 14.8,
+            "games_prev": 14,
+            "tier_probability": 0.9999
+          },
+          {
+            "player_id": "00-0032764",
+            "name": "Derrick Henry",
+            "team": "TEN",
+            "ppg_prev": 14.51,
+            "games_prev": 17,
+            "tier_probability": 0.9852
+          },
+          {
+            "player_id": "00-0035700",
+            "name": "Josh Jacobs",
+            "team": "LV",
+            "ppg_prev": 13.93,
+            "games_prev": 13,
+            "tier_probability": 0.9999
+          },
+          {
+            "player_id": "00-0033699",
+            "name": "Austin Ekeler",
+            "team": "LAC",
+            "ppg_prev": 13.24,
+            "games_prev": 14,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0037746",
+            "name": "Brian Robinson",
+            "team": "WAS",
+            "ppg_prev": 13.21,
+            "games_prev": 15,
+            "tier_probability": 0.7362
+          },
+          {
+            "player_id": "00-0033293",
+            "name": "Aaron Jones",
+            "team": "GB",
+            "ppg_prev": 12.26,
+            "games_prev": 11,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0036875",
+            "name": "Rhamondre Stevenson",
+            "team": "NE",
+            "ppg_prev": 12.14,
+            "games_prev": 12,
+            "tier_probability": 0.9997
+          },
+          {
+            "player_id": "00-0036251",
+            "name": "Zack Moss",
+            "team": "IND",
+            "ppg_prev": 12.11,
+            "games_prev": 14,
+            "tier_probability": 0.9999
+          },
+          {
+            "player_id": "00-0034184",
+            "name": "Gus Edwards",
+            "team": "BAL",
+            "ppg_prev": 11.0,
+            "games_prev": 17,
+            "tier_probability": 0.7858
+          },
+          {
+            "player_id": "00-0033925",
+            "name": "D'Onta Foreman",
+            "team": "CHI",
+            "ppg_prev": 10.13,
+            "games_prev": 9,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0036906",
+            "name": "Khalil Herbert",
+            "team": "CHI",
+            "ppg_prev": 9.38,
+            "games_prev": 12,
+            "tier_probability": 0.9781
+          }
+        ]
+      },
+      {
+        "tier": 2,
+        "players": [
+          {
+            "player_id": "00-0038120",
+            "name": "Breece Hall",
+            "team": "NYJ",
+            "ppg_prev": 17.09,
+            "games_prev": 17,
+            "tier_probability": 0.8358
+          },
+          {
+            "player_id": "00-0036973",
+            "name": "Travis Etienne",
+            "team": "JAX",
+            "ppg_prev": 16.61,
+            "games_prev": 17,
+            "tier_probability": 0.8155
+          },
+          {
+            "player_id": "00-0037256",
+            "name": "Rachaad White",
+            "team": "TB",
+            "ppg_prev": 15.76,
+            "games_prev": 17,
+            "tier_probability": 0.9099
+          },
+          {
+            "player_id": "00-0033897",
+            "name": "Joe Mixon",
+            "team": "CIN",
+            "ppg_prev": 15.71,
+            "games_prev": 17,
+            "tier_probability": 0.5907
+          },
+          {
+            "player_id": "00-0038542",
+            "name": "Bijan Robinson",
+            "team": "ATL",
+            "ppg_prev": 14.49,
+            "games_prev": 17,
+            "tier_probability": 0.9281
+          },
+          {
+            "player_id": "00-0037248",
+            "name": "James Cook",
+            "team": "BUF",
+            "ppg_prev": 13.69,
+            "games_prev": 17,
+            "tier_probability": 0.9187
+          },
+          {
+            "player_id": "00-0038134",
+            "name": "Kenneth Walker III",
+            "team": "SEA",
+            "ppg_prev": 13.29,
+            "games_prev": 15,
+            "tier_probability": 0.6557
+          },
+          {
+            "player_id": "00-0035261",
+            "name": "Tony Pollard",
+            "team": "DAL",
+            "ppg_prev": 13.09,
+            "games_prev": 17,
+            "tier_probability": 0.8696
+          },
+          {
+            "player_id": "00-0036275",
+            "name": "D'Andre Swift",
+            "team": "PHI",
+            "ppg_prev": 12.46,
+            "games_prev": 16,
+            "tier_probability": 0.9049
+          },
+          {
+            "player_id": "00-0037267",
+            "name": "Jerome Ford",
+            "team": "CLE",
+            "ppg_prev": 12.42,
+            "games_prev": 17,
+            "tier_probability": 0.9716
+          },
+          {
+            "player_id": "00-0037228",
+            "name": "Jaylen Warren",
+            "team": "PIT",
+            "ppg_prev": 11.55,
+            "games_prev": 17,
+            "tier_probability": 0.9788
+          },
+          {
+            "player_id": "00-0036893",
+            "name": "Najee Harris",
+            "team": "PIT",
+            "ppg_prev": 11.5,
+            "games_prev": 17,
+            "tier_probability": 0.9228
+          },
+          {
+            "player_id": "00-0036997",
+            "name": "Javonte Williams",
+            "team": "DEN",
+            "ppg_prev": 11.2,
+            "games_prev": 16,
+            "tier_probability": 0.9772
+          },
+          {
+            "player_id": "00-0036555",
+            "name": "Chuba Hubbard",
+            "team": "CAR",
+            "ppg_prev": 10.74,
+            "games_prev": 17,
+            "tier_probability": 0.9668
+          },
+          {
+            "player_id": "00-0033045",
+            "name": "Ezekiel Elliott",
+            "team": "NE",
+            "ppg_prev": 10.26,
+            "games_prev": 17,
+            "tier_probability": 0.6921
+          },
+          {
+            "player_id": "00-0035250",
+            "name": "Devin Singletary",
+            "team": "HOU",
+            "ppg_prev": 9.84,
+            "games_prev": 17,
+            "tier_probability": 0.9483
+          },
+          {
+            "player_id": "00-0039032",
+            "name": "Tyjae Spears",
+            "team": "TEN",
+            "ppg_prev": 9.05,
+            "games_prev": 17,
+            "tier_probability": 0.97
+          },
+          {
+            "player_id": "00-0034972",
+            "name": "Alexander Mattison",
+            "team": "MIN",
+            "ppg_prev": 8.33,
+            "games_prev": 16,
+            "tier_probability": 0.974
+          },
+          {
+            "player_id": "00-0037263",
+            "name": "Tyler Allgeier",
+            "team": "ATL",
+            "ppg_prev": 8.09,
+            "games_prev": 17,
+            "tier_probability": 0.9757
+          },
+          {
+            "player_id": "00-0036328",
+            "name": "Antonio Gibson",
+            "team": "WAS",
+            "ppg_prev": 7.96,
+            "games_prev": 16,
+            "tier_probability": 0.9162
+          },
+          {
+            "player_id": "00-0036265",
+            "name": "AJ Dillon",
+            "team": "GB",
+            "ppg_prev": 7.84,
+            "games_prev": 15,
+            "tier_probability": 0.9074
+          },
+          {
+            "player_id": "00-0033526",
+            "name": "Samaje Perine",
+            "team": "DEN",
+            "ppg_prev": 7.14,
+            "games_prev": 17,
+            "tier_probability": 0.6625
+          },
+          {
+            "player_id": "00-0034975",
+            "name": "Justice Hill",
+            "team": "BAL",
+            "ppg_prev": 6.83,
+            "games_prev": 16,
+            "tier_probability": 0.8435
+          },
+          {
+            "player_id": "00-0039021",
+            "name": "Roschon Johnson",
+            "team": "CHI",
+            "ppg_prev": 6.81,
+            "games_prev": 15,
+            "tier_probability": 0.9306
+          },
+          {
+            "player_id": "00-0039165",
+            "name": "Zach Charbonnet",
+            "team": "SEA",
+            "ppg_prev": 6.63,
+            "games_prev": 16,
+            "tier_probability": 0.9822
+          },
+          {
+            "player_id": "00-0037276",
+            "name": "Ty Chandler",
+            "team": "MIN",
+            "ppg_prev": 6.31,
+            "games_prev": 16,
+            "tier_probability": 0.8935
+          },
+          {
+            "player_id": "00-0038794",
+            "name": "Jaleel McLaughlin",
+            "team": "DEN",
+            "ppg_prev": 6.24,
+            "games_prev": 17,
+            "tier_probability": 0.979
+          },
+          {
+            "player_id": "00-0036919",
+            "name": "Kenny Gainwell",
+            "team": "PHI",
+            "ppg_prev": 6.09,
+            "games_prev": 16,
+            "tier_probability": 0.9735
+          },
+          {
+            "player_id": "00-0037258",
+            "name": "Dameon Pierce",
+            "team": "HOU",
+            "ppg_prev": 5.91,
+            "games_prev": 14,
+            "tier_probability": 0.7649
+          },
+          {
+            "player_id": "00-0036139",
+            "name": "Rico Dowdle",
+            "team": "DAL",
+            "ppg_prev": 5.72,
+            "games_prev": 16,
+            "tier_probability": 0.8956
+          },
+          {
+            "player_id": "00-0030513",
+            "name": "Latavius Murray",
+            "team": "BUF",
+            "ppg_prev": 5.53,
+            "games_prev": 15,
+            "tier_probability": 0.5909
+          },
+          {
+            "player_id": "00-0035243",
+            "name": "Miles Sanders",
+            "team": "CAR",
+            "ppg_prev": 5.48,
+            "games_prev": 16,
+            "tier_probability": 0.8909
+          },
+          {
+            "player_id": "00-0036360",
+            "name": "Clyde Edwards-Helaire",
+            "team": "KC",
+            "ppg_prev": 4.67,
+            "games_prev": 15,
+            "tier_probability": 0.7217
+          },
+          {
+            "player_id": "00-0036924",
+            "name": "Michael Carter",
+            "team": "ARI",
+            "ppg_prev": 3.92,
+            "games_prev": 15,
+            "tier_probability": 0.9388
+          },
+          {
+            "player_id": "00-0036370",
+            "name": "Joshua Kelley",
+            "team": "LAC",
+            "ppg_prev": 3.63,
+            "games_prev": 17,
+            "tier_probability": 0.93
+          },
+          {
+            "player_id": "00-0037525",
+            "name": "Jordan Mason",
+            "team": "SF",
+            "ppg_prev": 2.79,
+            "games_prev": 16,
+            "tier_probability": 0.991
+          },
+          {
+            "player_id": "00-0038098",
+            "name": "Pierre Strong",
+            "team": "CLE",
+            "ppg_prev": 2.68,
+            "games_prev": 16,
+            "tier_probability": 0.9958
+          },
+          {
+            "player_id": "00-0035628",
+            "name": "D'Ernest Johnson",
+            "team": "JAX",
+            "ppg_prev": 2.18,
+            "games_prev": 16,
+            "tier_probability": 0.7712
+          },
+          {
+            "player_id": "00-0038555",
+            "name": "Tank Bigsby",
+            "team": "JAX",
+            "ppg_prev": 1.91,
+            "games_prev": 13,
+            "tier_probability": 0.9124
+          },
+          {
+            "player_id": "00-0035291",
+            "name": "Trayveon Williams",
+            "team": "CIN",
+            "ppg_prev": 0.93,
+            "games_prev": 16,
+            "tier_probability": 0.9994
+          },
+          {
+            "player_id": "00-0036425",
+            "name": "DeeJay Dallas",
+            "team": "SEA",
+            "ppg_prev": 0.72,
+            "games_prev": 17,
+            "tier_probability": 0.9999
+          }
+        ]
+      },
+      {
+        "tier": 3,
+        "players": [
+          {
+            "player_id": "00-0033923",
+            "name": "Kareem Hunt",
+            "team": "CLE",
+            "ppg_prev": 7.9,
+            "games_prev": 15,
+            "tier_probability": 0.7324
+          },
+          {
+            "player_id": "00-0031376",
+            "name": "Jerick McKinnon",
+            "team": "KC",
+            "ppg_prev": 7.03,
+            "games_prev": 12,
+            "tier_probability": 0.9774
+          },
+          {
+            "player_id": "00-0038705",
+            "name": "Emari Demercado",
+            "team": "ARI",
+            "ppg_prev": 6.66,
+            "games_prev": 11,
+            "tier_probability": 0.9679
+          },
+          {
+            "player_id": "00-0038040",
+            "name": "Zamir White",
+            "team": "LV",
+            "ppg_prev": 5.68,
+            "games_prev": 13,
+            "tier_probability": 0.9104
+          },
+          {
+            "player_id": "00-0033948",
+            "name": "Jamaal Williams",
+            "team": "NO",
+            "ppg_prev": 4.68,
+            "games_prev": 13,
+            "tier_probability": 0.9976
+          },
+          {
+            "player_id": "00-0034115",
+            "name": "Jeff Wilson",
+            "team": "MIA",
+            "ppg_prev": 4.59,
+            "games_prev": 9,
+            "tier_probability": 0.9504
+          },
+          {
+            "player_id": "00-0038597",
+            "name": "Chase Brown",
+            "team": "CIN",
+            "ppg_prev": 4.46,
+            "games_prev": 12,
+            "tier_probability": 0.9599
+          },
+          {
+            "player_id": "00-0036567",
+            "name": "Elijah Mitchell",
+            "team": "SF",
+            "ppg_prev": 4.32,
+            "games_prev": 11,
+            "tier_probability": 0.9831
+          },
+          {
+            "player_id": "00-0034838",
+            "name": "Royce Freeman",
+            "team": "LA",
+            "ppg_prev": 4.2,
+            "games_prev": 11,
+            "tier_probability": 0.9958
+          },
+          {
+            "player_id": "00-0035537",
+            "name": "Ty Johnson",
+            "team": "BUF",
+            "ppg_prev": 3.6,
+            "games_prev": 9,
+            "tier_probability": 0.6695
+          },
+          {
+            "player_id": "00-0033308",
+            "name": "Matt Breida",
+            "team": "NYG",
+            "ppg_prev": 3.13,
+            "games_prev": 15,
+            "tier_probability": 0.9689
+          },
+          {
+            "player_id": "00-0030578",
+            "name": "Cordarrelle Patterson",
+            "team": "ATL",
+            "ppg_prev": 3.08,
+            "games_prev": 12,
+            "tier_probability": 0.9999
+          },
+          {
+            "player_id": "00-0034681",
+            "name": "Chase Edmonds",
+            "team": "TB",
+            "ppg_prev": 3.05,
+            "games_prev": 13,
+            "tier_probability": 0.9994
+          },
+          {
+            "player_id": "00-0033893",
+            "name": "Dalvin Cook",
+            "team": "NYJ",
+            "ppg_prev": 2.87,
+            "games_prev": 14,
+            "tier_probability": 0.9799
+          },
+          {
+            "player_id": "00-0035973",
+            "name": "Patrick Taylor",
+            "team": "GB",
+            "ppg_prev": 2.73,
+            "games_prev": 11,
+            "tier_probability": 0.7841
+          },
+          {
+            "player_id": "00-0035567",
+            "name": "Craig Reynolds",
+            "team": "DET",
+            "ppg_prev": 2.63,
+            "games_prev": 12,
+            "tier_probability": 0.9981
+          },
+          {
+            "player_id": "00-0032104",
+            "name": "Ameer Abdullah",
+            "team": "LV",
+            "ppg_prev": 2.56,
+            "games_prev": 16,
+            "tier_probability": 0.979
+          },
+          {
+            "player_id": "00-0033376",
+            "name": "Patrick Ricard",
+            "team": "BAL",
+            "ppg_prev": 2.31,
+            "games_prev": 7,
+            "tier_probability": 0.8049
+          },
+          {
+            "player_id": "00-0034414",
+            "name": "Boston Scott",
+            "team": "PHI",
+            "ppg_prev": 1.48,
+            "games_prev": 12,
+            "tier_probability": 0.9983
+          },
+          {
+            "player_id": "00-0034208",
+            "name": "Mike Boone",
+            "team": "HOU",
+            "ppg_prev": 1.48,
+            "games_prev": 9,
+            "tier_probability": 0.8918
+          },
+          {
+            "player_id": "00-0033854",
+            "name": "Dare Ogunbowale",
+            "team": "HOU",
+            "ppg_prev": 0.81,
+            "games_prev": 9,
+            "tier_probability": 0.9813
+          },
+          {
+            "player_id": "00-0035726",
+            "name": "Jakob Johnson",
+            "team": "LV",
+            "ppg_prev": 0.28,
+            "games_prev": 8,
+            "tier_probability": 0.8212
+          }
+        ]
+      },
+      {
+        "tier": 4,
+        "players": [
+          {
+            "player_id": "00-0035664",
+            "name": "Darrell Henderson",
+            "team": "LA",
+            "ppg_prev": 10.88,
+            "games_prev": 4,
+            "tier_probability": 0.9963
+          },
+          {
+            "player_id": "00-0038454",
+            "name": "Keaton Mitchell",
+            "team": "BAL",
+            "ppg_prev": 9.99,
+            "games_prev": 7,
+            "tier_probability": 0.9143
+          },
+          {
+            "player_id": "00-0036414",
+            "name": "Cam Akers",
+            "team": "MIN",
+            "ppg_prev": 6.67,
+            "games_prev": 7,
+            "tier_probability": 0.8757
+          },
+          {
+            "player_id": "00-0038551",
+            "name": "Kendre Miller",
+            "team": "NO",
+            "ppg_prev": 6.19,
+            "games_prev": 7,
+            "tier_probability": 0.947
+          },
+          {
+            "player_id": "00-0036020",
+            "name": "Salvon Ahmed",
+            "team": "MIA",
+            "ppg_prev": 6.13,
+            "games_prev": 7,
+            "tier_probability": 0.8902
+          },
+          {
+            "player_id": "00-0035860",
+            "name": "Tony Jones",
+            "team": "ARI",
+            "ppg_prev": 5.37,
+            "games_prev": 6,
+            "tier_probability": 0.9595
+          },
+          {
+            "player_id": "00-0037286",
+            "name": "Kevin Harris",
+            "team": "NE",
+            "ppg_prev": 5.33,
+            "games_prev": 4,
+            "tier_probability": 0.9869
+          },
+          {
+            "player_id": "00-0036297",
+            "name": "Darrynton Evans",
+            "team": "MIA",
+            "ppg_prev": 5.0,
+            "games_prev": 6,
+            "tier_probability": 0.9373
+          },
+          {
+            "player_id": "00-0032144",
+            "name": "Melvin Gordon",
+            "team": "BAL",
+            "ppg_prev": 4.92,
+            "games_prev": 4,
+            "tier_probability": 0.976
+          },
+          {
+            "player_id": "00-0038611",
+            "name": "Chris Rodriguez Jr.",
+            "team": "WAS",
+            "ppg_prev": 4.21,
+            "games_prev": 9,
+            "tier_probability": 0.5435
+          },
+          {
+            "player_id": "00-0035657",
+            "name": "Damien Harris",
+            "team": "BUF",
+            "ppg_prev": 3.17,
+            "games_prev": 6,
+            "tier_probability": 0.9285
+          },
+          {
+            "player_id": "00-0038389",
+            "name": "Israel Abanikanda",
+            "team": "NYJ",
+            "ppg_prev": 3.05,
+            "games_prev": 6,
+            "tier_probability": 0.9985
+          },
+          {
+            "player_id": "00-0037120",
+            "name": "Tyler Goodson",
+            "team": "IND",
+            "ppg_prev": 3.02,
+            "games_prev": 6,
+            "tier_probability": 0.9882
+          },
+          {
+            "player_id": "00-0038797",
+            "name": "Emanuel Wilson",
+            "team": "GB",
+            "ppg_prev": 2.96,
+            "games_prev": 5,
+            "tier_probability": 0.9872
+          },
+          {
+            "player_id": "00-0036569",
+            "name": "Gary Brightwell",
+            "team": "NYG",
+            "ppg_prev": 2.9,
+            "games_prev": 4,
+            "tier_probability": 0.97
+          },
+          {
+            "player_id": "00-0036984",
+            "name": "Trey Sermon",
+            "team": "IND",
+            "ppg_prev": 2.54,
+            "games_prev": 8,
+            "tier_probability": 0.8816
+          },
+          {
+            "player_id": "00-0038622",
+            "name": "Deuce Vaughn",
+            "team": "DAL",
+            "ppg_prev": 2.5,
+            "games_prev": 6,
+            "tier_probability": 0.9988
+          },
+          {
+            "player_id": "00-0037557",
+            "name": "Ronnie Rivers",
+            "team": "LA",
+            "ppg_prev": 2.23,
+            "games_prev": 9,
+            "tier_probability": 0.8695
+          },
+          {
+            "player_id": "00-0029239",
+            "name": "Brandon Bolden",
+            "team": "LV",
+            "ppg_prev": 2.22,
+            "games_prev": 5,
+            "tier_probability": 0.9615
+          },
+          {
+            "player_id": "00-0038045",
+            "name": "Isaiah Spiller",
+            "team": "LAC",
+            "ppg_prev": 2.11,
+            "games_prev": 9,
+            "tier_probability": 0.9982
+          },
+          {
+            "player_id": "00-0037299",
+            "name": "Keaontay Ingram",
+            "team": "ARI",
+            "ppg_prev": 2.0,
+            "games_prev": 7,
+            "tier_probability": 0.9804
+          },
+          {
+            "player_id": "00-0034433",
+            "name": "Nick Bawden",
+            "team": "NYJ",
+            "ppg_prev": 1.92,
+            "games_prev": 6,
+            "tier_probability": 0.8058
+          },
+          {
+            "player_id": "00-0037429",
+            "name": "Raheem Blackshear",
+            "team": "CAR",
+            "ppg_prev": 1.9,
+            "games_prev": 9,
+            "tier_probability": 0.901
+          },
+          {
+            "player_id": "00-0038396",
+            "name": "Eric Gray",
+            "team": "NYG",
+            "ppg_prev": 1.3,
+            "games_prev": 10,
+            "tier_probability": 0.9839
+          },
+          {
+            "player_id": "00-0036450",
+            "name": "Ke'Shawn Vaughn",
+            "team": "TB",
+            "ppg_prev": 1.28,
+            "games_prev": 5,
+            "tier_probability": 0.9408
+          },
+          {
+            "player_id": "00-0038738",
+            "name": "Hunter Luepke",
+            "team": "DAL",
+            "ppg_prev": 1.27,
+            "games_prev": 10,
+            "tier_probability": 0.9916
+          },
+          {
+            "player_id": "00-0033296",
+            "name": "Alex Armah",
+            "team": "WAS",
+            "ppg_prev": 1.07,
+            "games_prev": 4,
+            "tier_probability": 0.9827
+          },
+          {
+            "player_id": "00-0039136",
+            "name": "Zach Evans",
+            "team": "LA",
+            "ppg_prev": 0.48,
+            "games_prev": 4,
+            "tier_probability": 0.9997
+          },
+          {
+            "player_id": "00-0036187",
+            "name": "Reggie Gilliam",
+            "team": "BUF",
+            "ppg_prev": 0.26,
+            "games_prev": 5,
+            "tier_probability": 0.9792
+          },
+          {
+            "player_id": "00-0036842",
+            "name": "Kene Nwangwu",
+            "team": "MIN",
+            "ppg_prev": 0.16,
+            "games_prev": 8,
+            "tier_probability": 0.988
+          },
+          {
+            "player_id": "00-0034614",
+            "name": "Godwin Igwebuike",
+            "team": "PIT",
+            "ppg_prev": 0.0,
+            "games_prev": 7,
+            "tier_probability": 0.9937
+          },
+          {
+            "player_id": "00-0035594",
+            "name": "Travis Homer",
+            "team": "CHI",
+            "ppg_prev": 0.0,
+            "games_prev": 7,
+            "tier_probability": 0.9973
+          },
+          {
+            "player_id": "00-0038488",
+            "name": "Brady Russell",
+            "team": "SEA",
+            "ppg_prev": 0.0,
+            "games_prev": 6,
+            "tier_probability": 0.9974
+          },
+          {
+            "player_id": "00-0038489",
+            "name": "Ben VanSumeren",
+            "team": "PHI",
+            "ppg_prev": 0.0,
+            "games_prev": 5,
+            "tier_probability": 0.9997
+          }
+        ]
+      }
+    ],
+    "WR": [
+      {
+        "tier": 1,
+        "players": [
+          {
+            "player_id": "00-0036358",
+            "name": "CeeDee Lamb",
+            "team": "DAL",
+            "ppg_prev": 23.72,
+            "games_prev": 17,
+            "tier_probability": 0.8667
+          },
+          {
+            "player_id": "00-0033040",
+            "name": "Tyreek Hill",
+            "team": "MIA",
+            "ppg_prev": 23.52,
+            "games_prev": 16,
+            "tier_probability": 0.8465
+          },
+          {
+            "player_id": "00-0035676",
+            "name": "A.J. Brown",
+            "team": "PHI",
+            "ppg_prev": 17.04,
+            "games_prev": 17,
+            "tier_probability": 0.9771
+          },
+          {
+            "player_id": "00-0034827",
+            "name": "DJ Moore",
+            "team": "CHI",
+            "ppg_prev": 16.85,
+            "games_prev": 17,
+            "tier_probability": 0.9797
+          },
+          {
+            "player_id": "00-0031408",
+            "name": "Mike Evans",
+            "team": "TB",
+            "ppg_prev": 16.62,
+            "games_prev": 17,
+            "tier_probability": 0.9567
+          },
+          {
+            "player_id": "00-0031588",
+            "name": "Stefon Diggs",
+            "team": "BUF",
+            "ppg_prev": 16.11,
+            "games_prev": 17,
+            "tier_probability": 0.9534
+          },
+          {
+            "player_id": "00-0036252",
+            "name": "Michael Pittman",
+            "team": "IND",
+            "ppg_prev": 15.76,
+            "games_prev": 16,
+            "tier_probability": 0.9435
+          },
+          {
+            "player_id": "00-0031381",
+            "name": "Davante Adams",
+            "team": "LV",
+            "ppg_prev": 15.61,
+            "games_prev": 17,
+            "tier_probability": 0.9607
+          },
+          {
+            "player_id": "00-0036261",
+            "name": "Brandon Aiyuk",
+            "team": "SF",
+            "ppg_prev": 15.57,
+            "games_prev": 16,
+            "tier_probability": 0.8738
+          },
+          {
+            "player_id": "00-0036912",
+            "name": "DeVonta Smith",
+            "team": "PHI",
+            "ppg_prev": 14.22,
+            "games_prev": 16,
+            "tier_probability": 0.5922
+          },
+          {
+            "player_id": "00-0035640",
+            "name": "DK Metcalf",
+            "team": "SEA",
+            "ppg_prev": 14.09,
+            "games_prev": 16,
+            "tier_probability": 0.8717
+          },
+          {
+            "player_id": "00-0034960",
+            "name": "Jakobi Meyers",
+            "team": "LV",
+            "ppg_prev": 13.66,
+            "games_prev": 16,
+            "tier_probability": 0.8646
+          },
+          {
+            "player_id": "00-0030035",
+            "name": "Adam Thielen",
+            "team": "CAR",
+            "ppg_prev": 13.59,
+            "games_prev": 17,
+            "tier_probability": 0.9727
+          },
+          {
+            "player_id": "00-0034837",
+            "name": "Calvin Ridley",
+            "team": "JAX",
+            "ppg_prev": 13.52,
+            "games_prev": 17,
+            "tier_probability": 0.952
+          },
+          {
+            "player_id": "00-0030564",
+            "name": "DeAndre Hopkins",
+            "team": "TEN",
+            "ppg_prev": 13.15,
+            "games_prev": 17,
+            "tier_probability": 0.9617
+          },
+          {
+            "player_id": "00-0033921",
+            "name": "Chris Godwin Jr.",
+            "team": "TB",
+            "ppg_prev": 12.31,
+            "games_prev": 17,
+            "tier_probability": 0.7782
+          },
+          {
+            "player_id": "00-0035659",
+            "name": "Terry McLaurin",
+            "team": "WAS",
+            "ppg_prev": 11.95,
+            "games_prev": 17,
+            "tier_probability": 0.8927
+          },
+          {
+            "player_id": "00-0032211",
+            "name": "Tyler Lockett",
+            "team": "SEA",
+            "ppg_prev": 11.91,
+            "games_prev": 17,
+            "tier_probability": 0.9691
+          },
+          {
+            "player_id": "00-0034348",
+            "name": "Courtland Sutton",
+            "team": "DEN",
+            "ppg_prev": 11.89,
+            "games_prev": 16,
+            "tier_probability": 0.902
+          },
+          {
+            "player_id": "00-0033282",
+            "name": "Curtis Samuel",
+            "team": "WAS",
+            "ppg_prev": 9.82,
+            "games_prev": 16,
+            "tier_probability": 0.7871
+          },
+          {
+            "player_id": "00-0035535",
+            "name": "Darius Slayton",
+            "team": "NYG",
+            "ppg_prev": 8.88,
+            "games_prev": 17,
+            "tier_probability": 0.8475
+          },
+          {
+            "player_id": "00-0033009",
+            "name": "Tyler Boyd",
+            "team": "CIN",
+            "ppg_prev": 8.52,
+            "games_prev": 17,
+            "tier_probability": 0.7395
+          },
+          {
+            "player_id": "00-0033943",
+            "name": "Josh Reynolds",
+            "team": "DET",
+            "ppg_prev": 8.05,
+            "games_prev": 16,
+            "tier_probability": 0.4408
+          }
+        ]
+      },
+      {
+        "tier": 2,
+        "players": [
+          {
+            "player_id": "00-0030279",
+            "name": "Keenan Allen",
+            "team": "LAC",
+            "ppg_prev": 21.45,
+            "games_prev": 13,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0036322",
+            "name": "Justin Jefferson",
+            "team": "MIN",
+            "ppg_prev": 20.22,
+            "games_prev": 10,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0038977",
+            "name": "Tank Dell",
+            "team": "HOU",
+            "ppg_prev": 16.5,
+            "games_prev": 10,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0035719",
+            "name": "Deebo Samuel Sr.",
+            "team": "SF",
+            "ppg_prev": 16.25,
+            "games_prev": 15,
+            "tier_probability": 0.9992
+          },
+          {
+            "player_id": "00-0031544",
+            "name": "Amari Cooper",
+            "team": "CLE",
+            "ppg_prev": 15.13,
+            "games_prev": 15,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0033908",
+            "name": "Cooper Kupp",
+            "team": "LA",
+            "ppg_prev": 13.7,
+            "games_prev": 12,
+            "tier_probability": 0.9999
+          },
+          {
+            "player_id": "00-0034775",
+            "name": "Christian Kirk",
+            "team": "JAX",
+            "ppg_prev": 12.52,
+            "games_prev": 12,
+            "tier_probability": 0.9731
+          },
+          {
+            "player_id": "00-0033307",
+            "name": "Kendrick Bourne",
+            "team": "NE",
+            "ppg_prev": 12.5,
+            "games_prev": 8,
+            "tier_probability": 0.9929
+          },
+          {
+            "player_id": "00-0035216",
+            "name": "Diontae Johnson",
+            "team": "PIT",
+            "ppg_prev": 11.75,
+            "games_prev": 13,
+            "tier_probability": 0.9804
+          },
+          {
+            "player_id": "00-0037091",
+            "name": "Bo Melton",
+            "team": "GB",
+            "ppg_prev": 11.48,
+            "games_prev": 4,
+            "tier_probability": 0.9974
+          },
+          {
+            "player_id": "00-0036410",
+            "name": "Tee Higgins",
+            "team": "CIN",
+            "ppg_prev": 11.47,
+            "games_prev": 12,
+            "tier_probability": 0.9992
+          },
+          {
+            "player_id": "00-0038124",
+            "name": "Christian Watson",
+            "team": "GB",
+            "ppg_prev": 11.26,
+            "games_prev": 9,
+            "tier_probability": 0.9951
+          },
+          {
+            "player_id": "00-0032775",
+            "name": "Demarcus Robinson",
+            "team": "LA",
+            "ppg_prev": 10.93,
+            "games_prev": 8,
+            "tier_probability": 0.9256
+          },
+          {
+            "player_id": "00-0031236",
+            "name": "Brandin Cooks",
+            "team": "DAL",
+            "ppg_prev": 10.82,
+            "games_prev": 16,
+            "tier_probability": 0.7093
+          },
+          {
+            "player_id": "00-0036988",
+            "name": "Josh Palmer",
+            "team": "LAC",
+            "ppg_prev": 10.67,
+            "games_prev": 10,
+            "tier_probability": 0.95
+          },
+          {
+            "player_id": "00-0035662",
+            "name": "Marquise Brown",
+            "team": "ARI",
+            "ppg_prev": 10.36,
+            "games_prev": 13,
+            "tier_probability": 0.8873
+          },
+          {
+            "player_id": "00-0033591",
+            "name": "Noah Brown",
+            "team": "HOU",
+            "ppg_prev": 10.16,
+            "games_prev": 10,
+            "tier_probability": 0.9994
+          },
+          {
+            "player_id": "00-0032765",
+            "name": "Michael Thomas",
+            "team": "NO",
+            "ppg_prev": 8.98,
+            "games_prev": 10,
+            "tier_probability": 0.6034
+          },
+          {
+            "player_id": "00-0038559",
+            "name": "Michael Wilson",
+            "team": "ARI",
+            "ppg_prev": 8.81,
+            "games_prev": 13,
+            "tier_probability": 0.8909
+          },
+          {
+            "player_id": "00-0033891",
+            "name": "Zay Jones",
+            "team": "JAX",
+            "ppg_prev": 8.68,
+            "games_prev": 9,
+            "tier_probability": 0.6158
+          },
+          {
+            "player_id": "00-0034777",
+            "name": "DJ Chark",
+            "team": "CAR",
+            "ppg_prev": 8.25,
+            "games_prev": 14,
+            "tier_probability": 0.8046
+          },
+          {
+            "player_id": "00-0038612",
+            "name": "A.T. Perry",
+            "team": "NO",
+            "ppg_prev": 7.58,
+            "games_prev": 8,
+            "tier_probability": 0.7088
+          },
+          {
+            "player_id": "00-0037382",
+            "name": "Brandon Johnson",
+            "team": "DEN",
+            "ppg_prev": 7.34,
+            "games_prev": 10,
+            "tier_probability": 0.7578
+          },
+          {
+            "player_id": "00-0036271",
+            "name": "Quez Watkins",
+            "team": "PHI",
+            "ppg_prev": 7.04,
+            "games_prev": 5,
+            "tier_probability": 0.9783
+          },
+          {
+            "player_id": "00-0037257",
+            "name": "David Bell",
+            "team": "CLE",
+            "ppg_prev": 5.41,
+            "games_prev": 9,
+            "tier_probability": 0.7278
+          },
+          {
+            "player_id": "00-0038606",
+            "name": "Parker Washington",
+            "team": "JAX",
+            "ppg_prev": 4.9,
+            "games_prev": 8,
+            "tier_probability": 0.5891
+          }
+        ]
+      },
+      {
+        "tier": 3,
+        "players": [
+          {
+            "player_id": "00-0036963",
+            "name": "Amon-Ra St. Brown",
+            "team": "DET",
+            "ppg_prev": 20.68,
+            "games_prev": 16,
+            "tier_probability": 0.5362
+          },
+          {
+            "player_id": "00-0039075",
+            "name": "Puka Nacua",
+            "team": "LA",
+            "ppg_prev": 17.56,
+            "games_prev": 17,
+            "tier_probability": 0.9342
+          },
+          {
+            "player_id": "00-0036554",
+            "name": "Nico Collins",
+            "team": "HOU",
+            "ppg_prev": 17.36,
+            "games_prev": 15,
+            "tier_probability": 0.7774
+          },
+          {
+            "player_id": "00-0036900",
+            "name": "Ja'Marr Chase",
+            "team": "CIN",
+            "ppg_prev": 16.42,
+            "games_prev": 16,
+            "tier_probability": 0.9147
+          },
+          {
+            "player_id": "00-0037239",
+            "name": "Chris Olave",
+            "team": "NO",
+            "ppg_prev": 14.46,
+            "games_prev": 16,
+            "tier_probability": 0.8972
+          },
+          {
+            "player_id": "00-0036613",
+            "name": "Jaylen Waddle",
+            "team": "MIA",
+            "ppg_prev": 14.19,
+            "games_prev": 14,
+            "tier_probability": 0.7517
+          },
+          {
+            "player_id": "00-0039146",
+            "name": "Jayden Reed",
+            "team": "GB",
+            "ppg_prev": 13.58,
+            "games_prev": 16,
+            "tier_probability": 0.9062
+          },
+          {
+            "player_id": "00-0039067",
+            "name": "Rashee Rice",
+            "team": "KC",
+            "ppg_prev": 13.28,
+            "games_prev": 16,
+            "tier_probability": 0.9077
+          },
+          {
+            "player_id": "00-0038994",
+            "name": "Jordan Addison",
+            "team": "MIN",
+            "ppg_prev": 13.02,
+            "games_prev": 17,
+            "tier_probability": 0.8882
+          },
+          {
+            "player_id": "00-0039064",
+            "name": "Zay Flowers",
+            "team": "BAL",
+            "ppg_prev": 12.9,
+            "games_prev": 16,
+            "tier_probability": 0.905
+          },
+          {
+            "player_id": "00-0037740",
+            "name": "Garrett Wilson",
+            "team": "NYJ",
+            "ppg_prev": 12.54,
+            "games_prev": 17,
+            "tier_probability": 0.979
+          },
+          {
+            "player_id": "00-0037247",
+            "name": "George Pickens",
+            "team": "PIT",
+            "ppg_prev": 12.28,
+            "games_prev": 17,
+            "tier_probability": 0.9339
+          },
+          {
+            "player_id": "00-0037238",
+            "name": "Drake London",
+            "team": "ATL",
+            "ppg_prev": 10.9,
+            "games_prev": 16,
+            "tier_probability": 0.913
+          },
+          {
+            "player_id": "00-0037545",
+            "name": "Rashid Shaheed",
+            "team": "NO",
+            "ppg_prev": 10.51,
+            "games_prev": 15,
+            "tier_probability": 0.772
+          },
+          {
+            "player_id": "00-0037816",
+            "name": "Romeo Doubs",
+            "team": "GB",
+            "ppg_prev": 10.26,
+            "games_prev": 17,
+            "tier_probability": 0.9542
+          },
+          {
+            "player_id": "00-0036196",
+            "name": "Gabe Davis",
+            "team": "BUF",
+            "ppg_prev": 10.09,
+            "games_prev": 16,
+            "tier_probability": 0.8601
+          },
+          {
+            "player_id": "00-0038997",
+            "name": "Josh Downs",
+            "team": "IND",
+            "ppg_prev": 9.24,
+            "games_prev": 17,
+            "tier_probability": 0.9926
+          },
+          {
+            "player_id": "00-0038117",
+            "name": "Wan'Dale Robinson",
+            "team": "NYG",
+            "ppg_prev": 8.88,
+            "games_prev": 15,
+            "tier_probability": 0.9399
+          },
+          {
+            "player_id": "00-0036407",
+            "name": "Jerry Jeudy",
+            "team": "DEN",
+            "ppg_prev": 8.86,
+            "games_prev": 16,
+            "tier_probability": 0.7906
+          },
+          {
+            "player_id": "00-0038543",
+            "name": "Jaxon Smith-Njigba",
+            "team": "SEA",
+            "ppg_prev": 8.81,
+            "games_prev": 17,
+            "tier_probability": 0.9923
+          },
+          {
+            "player_id": "00-0036980",
+            "name": "Elijah Moore",
+            "team": "CLE",
+            "ppg_prev": 8.26,
+            "games_prev": 16,
+            "tier_probability": 0.9501
+          },
+          {
+            "player_id": "00-0036849",
+            "name": "Tutu Atwell",
+            "team": "LA",
+            "ppg_prev": 8.03,
+            "games_prev": 14,
+            "tier_probability": 0.7232
+          },
+          {
+            "player_id": "00-0038393",
+            "name": "Dontayvion Wicks",
+            "team": "GB",
+            "ppg_prev": 7.98,
+            "games_prev": 15,
+            "tier_probability": 0.7805
+          },
+          {
+            "player_id": "00-0038621",
+            "name": "DeMario Douglas",
+            "team": "NE",
+            "ppg_prev": 7.66,
+            "games_prev": 14,
+            "tier_probability": 0.8294
+          },
+          {
+            "player_id": "00-0037741",
+            "name": "Jahan Dotson",
+            "team": "WAS",
+            "ppg_prev": 7.34,
+            "games_prev": 17,
+            "tier_probability": 0.9508
+          },
+          {
+            "player_id": "00-0037261",
+            "name": "Khalil Shakir",
+            "team": "BUF",
+            "ppg_prev": 7.07,
+            "games_prev": 16,
+            "tier_probability": 0.9302
+          },
+          {
+            "player_id": "00-0036936",
+            "name": "Rondale Moore",
+            "team": "ARI",
+            "ppg_prev": 6.18,
+            "games_prev": 17,
+            "tier_probability": 0.955
+          },
+          {
+            "player_id": "00-0039062",
+            "name": "Jonathan Mingo",
+            "team": "CAR",
+            "ppg_prev": 5.65,
+            "games_prev": 15,
+            "tier_probability": 0.9401
+          },
+          {
+            "player_id": "00-0039052",
+            "name": "Trey Palmer",
+            "team": "TB",
+            "ppg_prev": 5.63,
+            "games_prev": 17,
+            "tier_probability": 0.9745
+          },
+          {
+            "player_id": "00-0037664",
+            "name": "Alec Pierce",
+            "team": "IND",
+            "ppg_prev": 5.61,
+            "games_prev": 17,
+            "tier_probability": 0.9525
+          },
+          {
+            "player_id": "00-0038544",
+            "name": "Quentin Johnston",
+            "team": "LAC",
+            "ppg_prev": 5.53,
+            "games_prev": 17,
+            "tier_probability": 0.9749
+          },
+          {
+            "player_id": "00-0036550",
+            "name": "Rashod Bateman",
+            "team": "BAL",
+            "ppg_prev": 5.1,
+            "games_prev": 15,
+            "tier_probability": 0.8557
+          },
+          {
+            "player_id": "00-0038976",
+            "name": "Marvin Mims Jr.",
+            "team": "DEN",
+            "ppg_prev": 4.67,
+            "games_prev": 16,
+            "tier_probability": 0.7327
+          },
+          {
+            "player_id": "00-0038496",
+            "name": "Xavier Gipson",
+            "team": "NYJ",
+            "ppg_prev": 3.69,
+            "games_prev": 17,
+            "tier_probability": 0.952
+          },
+          {
+            "player_id": "00-0037837",
+            "name": "Calvin Austin III",
+            "team": "PIT",
+            "ppg_prev": 3.29,
+            "games_prev": 16,
+            "tier_probability": 0.6971
+          },
+          {
+            "player_id": "00-0037614",
+            "name": "John Metchie III",
+            "team": "HOU",
+            "ppg_prev": 2.3,
+            "games_prev": 14,
+            "tier_probability": 0.5258
+          },
+          {
+            "player_id": "00-0038573",
+            "name": "Derius Davis",
+            "team": "LAC",
+            "ppg_prev": 2.22,
+            "games_prev": 17,
+            "tier_probability": 0.9357
+          },
+          {
+            "player_id": "00-0036626",
+            "name": "Dyami Brown",
+            "team": "WAS",
+            "ppg_prev": 2.19,
+            "games_prev": 16,
+            "tier_probability": 0.8152
+          },
+          {
+            "player_id": "00-0037487",
+            "name": "Deven Thompkins",
+            "team": "TB",
+            "ppg_prev": 2.05,
+            "games_prev": 17,
+            "tier_probability": 0.8619
+          },
+          {
+            "player_id": "00-0036635",
+            "name": "Ihmir Smith-Marsette",
+            "team": "CAR",
+            "ppg_prev": 1.91,
+            "games_prev": 17,
+            "tier_probability": 0.8075
+          }
+        ]
+      },
+      {
+        "tier": 4,
+        "players": [
+          {
+            "player_id": "00-0036345",
+            "name": "K.J. Osborn",
+            "team": "MIN",
+            "ppg_prev": 8.0,
+            "games_prev": 15,
+            "tier_probability": 0.4202
+          },
+          {
+            "player_id": "00-0031235",
+            "name": "Odell Beckham Jr.",
+            "team": "BAL",
+            "ppg_prev": 7.68,
+            "games_prev": 14,
+            "tier_probability": 0.746
+          },
+          {
+            "player_id": "00-0037240",
+            "name": "Jameson Williams",
+            "team": "DET",
+            "ppg_prev": 6.69,
+            "games_prev": 12,
+            "tier_probability": 0.6384
+          },
+          {
+            "player_id": "00-0036182",
+            "name": "Nick Westbrook-Ikhine",
+            "team": "TEN",
+            "ppg_prev": 6.54,
+            "games_prev": 13,
+            "tier_probability": 0.8492
+          },
+          {
+            "player_id": "00-0030431",
+            "name": "Robert Woods",
+            "team": "HOU",
+            "ppg_prev": 6.38,
+            "games_prev": 14,
+            "tier_probability": 0.9741
+          },
+          {
+            "player_id": "00-0034418",
+            "name": "Cedrick Wilson Jr.",
+            "team": "MIA",
+            "ppg_prev": 6.33,
+            "games_prev": 11,
+            "tier_probability": 0.9641
+          },
+          {
+            "player_id": "00-0031549",
+            "name": "Nelson Agholor",
+            "team": "BAL",
+            "ppg_prev": 6.07,
+            "games_prev": 16,
+            "tier_probability": 0.7845
+          },
+          {
+            "player_id": "00-0034386",
+            "name": "Justin Watson",
+            "team": "KC",
+            "ppg_prev": 5.93,
+            "games_prev": 15,
+            "tier_probability": 0.9307
+          },
+          {
+            "player_id": "00-0032464",
+            "name": "Kalif Raymond",
+            "team": "DET",
+            "ppg_prev": 5.73,
+            "games_prev": 17,
+            "tier_probability": 0.773
+          },
+          {
+            "player_id": "00-0032543",
+            "name": "Alex Erickson",
+            "team": "LAC",
+            "ppg_prev": 5.65,
+            "games_prev": 8,
+            "tier_probability": 0.9581
+          },
+          {
+            "player_id": "00-0036309",
+            "name": "Darnell Mooney",
+            "team": "CHI",
+            "ppg_prev": 5.64,
+            "games_prev": 14,
+            "tier_probability": 0.6802
+          },
+          {
+            "player_id": "00-0031547",
+            "name": "DeVante Parker",
+            "team": "NE",
+            "ppg_prev": 5.57,
+            "games_prev": 13,
+            "tier_probability": 0.9835
+          },
+          {
+            "player_id": "00-0033857",
+            "name": "JuJu Smith-Schuster",
+            "team": "NE",
+            "ppg_prev": 5.55,
+            "games_prev": 11,
+            "tier_probability": 0.9051
+          },
+          {
+            "player_id": "00-0038563",
+            "name": "Tre Tucker",
+            "team": "LV",
+            "ppg_prev": 5.52,
+            "games_prev": 13,
+            "tier_probability": 0.5907
+          },
+          {
+            "player_id": "00-0034764",
+            "name": "Michael Gallup",
+            "team": "DAL",
+            "ppg_prev": 5.49,
+            "games_prev": 16,
+            "tier_probability": 0.7315
+          },
+          {
+            "player_id": "00-0035341",
+            "name": "Trenton Irwin",
+            "team": "CIN",
+            "ppg_prev": 5.22,
+            "games_prev": 12,
+            "tier_probability": 0.9509
+          },
+          {
+            "player_id": "00-0038938",
+            "name": "Jalin Hyatt",
+            "team": "NYG",
+            "ppg_prev": 4.64,
+            "games_prev": 13,
+            "tier_probability": 0.7227
+          },
+          {
+            "player_id": "00-0038619",
+            "name": "Andrei Iosivas",
+            "team": "CIN",
+            "ppg_prev": 4.6,
+            "games_prev": 11,
+            "tier_probability": 0.7024
+          },
+          {
+            "player_id": "00-0032398",
+            "name": "Chris Moore",
+            "team": "TEN",
+            "ppg_prev": 4.55,
+            "games_prev": 15,
+            "tier_probability": 0.9888
+          },
+          {
+            "player_id": "00-0027944",
+            "name": "Julio Jones",
+            "team": "PHI",
+            "ppg_prev": 4.55,
+            "games_prev": 8,
+            "tier_probability": 0.7744
+          },
+          {
+            "player_id": "00-0034054",
+            "name": "River Cracraft",
+            "team": "MIA",
+            "ppg_prev": 4.52,
+            "games_prev": 6,
+            "tier_probability": 0.9623
+          },
+          {
+            "player_id": "00-0037742",
+            "name": "Treylon Burks",
+            "team": "TEN",
+            "ppg_prev": 4.43,
+            "games_prev": 9,
+            "tier_probability": 0.832
+          },
+          {
+            "player_id": "00-0037666",
+            "name": "Jalen Tolbert",
+            "team": "DAL",
+            "ppg_prev": 4.34,
+            "games_prev": 14,
+            "tier_probability": 0.686
+          },
+          {
+            "player_id": "00-0034521",
+            "name": "Allen Lazard",
+            "team": "NYJ",
+            "ppg_prev": 4.29,
+            "games_prev": 14,
+            "tier_probability": 0.9704
+          },
+          {
+            "player_id": "00-0035406",
+            "name": "Lil'Jordan Humphrey",
+            "team": "DEN",
+            "ppg_prev": 4.29,
+            "games_prev": 11,
+            "tier_probability": 0.8984
+          },
+          {
+            "player_id": "00-0036165",
+            "name": "Isaiah Hodgins",
+            "team": "NYG",
+            "ppg_prev": 4.29,
+            "games_prev": 14,
+            "tier_probability": 0.702
+          },
+          {
+            "player_id": "00-0038492",
+            "name": "Jason Brownlee",
+            "team": "NYJ",
+            "ppg_prev": 4.15,
+            "games_prev": 4,
+            "tier_probability": 0.9014
+          },
+          {
+            "player_id": "00-0037273",
+            "name": "Kyle Philips",
+            "team": "TEN",
+            "ppg_prev": 4.14,
+            "games_prev": 8,
+            "tier_probability": 0.8539
+          },
+          {
+            "player_id": "00-0031428",
+            "name": "Allen Robinson",
+            "team": "PIT",
+            "ppg_prev": 4.13,
+            "games_prev": 15,
+            "tier_probability": 0.9608
+          },
+          {
+            "player_id": "00-0038090",
+            "name": "Skyy Moore",
+            "team": "KC",
+            "ppg_prev": 4.13,
+            "games_prev": 13,
+            "tier_probability": 0.8478
+          },
+          {
+            "player_id": "00-0036955",
+            "name": "Terrace Marshall Jr.",
+            "team": "CAR",
+            "ppg_prev": 4.11,
+            "games_prev": 8,
+            "tier_probability": 0.6586
+          },
+          {
+            "player_id": "00-0036913",
+            "name": "Kadarius Toney",
+            "team": "KC",
+            "ppg_prev": 4.08,
+            "games_prev": 13,
+            "tier_probability": 0.8891
+          },
+          {
+            "player_id": "00-0034646",
+            "name": "Brandon Powell",
+            "team": "MIN",
+            "ppg_prev": 4.06,
+            "games_prev": 17,
+            "tier_probability": 0.8564
+          },
+          {
+            "player_id": "00-0038752",
+            "name": "Jake Bobo",
+            "team": "SEA",
+            "ppg_prev": 4.06,
+            "games_prev": 14,
+            "tier_probability": 0.8227
+          },
+          {
+            "player_id": "00-0035500",
+            "name": "Greg Dortch",
+            "team": "ARI",
+            "ppg_prev": 4.03,
+            "games_prev": 16,
+            "tier_probability": 0.4779
+          },
+          {
+            "player_id": "00-0038979",
+            "name": "Cedric Tillman",
+            "team": "CLE",
+            "ppg_prev": 4.02,
+            "games_prev": 11,
+            "tier_probability": 0.8817
+          },
+          {
+            "player_id": "00-0036259",
+            "name": "Jauan Jennings",
+            "team": "SF",
+            "ppg_prev": 3.96,
+            "games_prev": 13,
+            "tier_probability": 0.9375
+          },
+          {
+            "player_id": "00-0035140",
+            "name": "Mecole Hardman",
+            "team": "KC",
+            "ppg_prev": 3.96,
+            "games_prev": 7,
+            "tier_probability": 0.8724
+          },
+          {
+            "player_id": "00-0032688",
+            "name": "Robbie Chosen",
+            "team": "MIA",
+            "ppg_prev": 3.77,
+            "games_prev": 6,
+            "tier_probability": 0.9761
+          },
+          {
+            "player_id": "00-0037801",
+            "name": "KaVontae Turpin",
+            "team": "DAL",
+            "ppg_prev": 3.73,
+            "games_prev": 16,
+            "tier_probability": 0.9624
+          },
+          {
+            "player_id": "00-0033572",
+            "name": "Jamal Agnew",
+            "team": "JAX",
+            "ppg_prev": 3.66,
+            "games_prev": 11,
+            "tier_probability": 0.9748
+          },
+          {
+            "player_id": "00-0034419",
+            "name": "Braxton Berrios",
+            "team": "MIA",
+            "ppg_prev": 3.62,
+            "games_prev": 16,
+            "tier_probability": 0.9268
+          },
+          {
+            "player_id": "00-0033555",
+            "name": "Mack Hollins",
+            "team": "ATL",
+            "ppg_prev": 3.59,
+            "games_prev": 12,
+            "tier_probability": 0.9948
+          },
+          {
+            "player_id": "00-0035414",
+            "name": "Jalen Guyton",
+            "team": "LAC",
+            "ppg_prev": 3.56,
+            "games_prev": 7,
+            "tier_probability": 0.9055
+          },
+          {
+            "player_id": "00-0035298",
+            "name": "Scott Miller",
+            "team": "ATL",
+            "ppg_prev": 3.55,
+            "games_prev": 11,
+            "tier_probability": 0.9692
+          },
+          {
+            "player_id": "00-0034272",
+            "name": "Marquez Valdes-Scantling",
+            "team": "KC",
+            "ppg_prev": 3.53,
+            "games_prev": 16,
+            "tier_probability": 0.9175
+          },
+          {
+            "player_id": "00-0035208",
+            "name": "Olamide Zaccheaus",
+            "team": "PHI",
+            "ppg_prev": 3.49,
+            "games_prev": 11,
+            "tier_probability": 0.9515
+          },
+          {
+            "player_id": "00-0034983",
+            "name": "Hunter Renfrow",
+            "team": "LV",
+            "ppg_prev": 3.46,
+            "games_prev": 14,
+            "tier_probability": 0.8605
+          },
+          {
+            "player_id": "00-0033589",
+            "name": "David Moore",
+            "team": "TB",
+            "ppg_prev": 3.4,
+            "games_prev": 6,
+            "tier_probability": 0.949
+          },
+          {
+            "player_id": "00-0036387",
+            "name": "Jalen Reagor",
+            "team": "NE",
+            "ppg_prev": 3.17,
+            "games_prev": 9,
+            "tier_probability": 0.9262
+          },
+          {
+            "player_id": "00-0035639",
+            "name": "Parris Campbell",
+            "team": "NYG",
+            "ppg_prev": 3.04,
+            "games_prev": 10,
+            "tier_probability": 0.9723
+          },
+          {
+            "player_id": "00-0038104",
+            "name": "Tyquan Thornton",
+            "team": "NE",
+            "ppg_prev": 3.02,
+            "games_prev": 9,
+            "tier_probability": 0.9292
+          },
+          {
+            "player_id": "00-0036415",
+            "name": "Van Jefferson",
+            "team": "ATL",
+            "ppg_prev": 2.95,
+            "games_prev": 14,
+            "tier_probability": 0.987
+          },
+          {
+            "player_id": "00-0036364",
+            "name": "Lynn Bowden",
+            "team": "NO",
+            "ppg_prev": 2.81,
+            "games_prev": 8,
+            "tier_probability": 0.971
+          },
+          {
+            "player_id": "00-0038465",
+            "name": "Malik Heath",
+            "team": "GB",
+            "ppg_prev": 2.79,
+            "games_prev": 12,
+            "tier_probability": 0.9349
+          },
+          {
+            "player_id": "00-0038941",
+            "name": "Tyler Scott",
+            "team": "CHI",
+            "ppg_prev": 2.76,
+            "games_prev": 13,
+            "tier_probability": 0.8988
+          },
+          {
+            "player_id": "00-0036268",
+            "name": "Laviska Shenault Jr.",
+            "team": "CAR",
+            "ppg_prev": 2.69,
+            "games_prev": 8,
+            "tier_probability": 0.9735
+          },
+          {
+            "player_id": "00-0034854",
+            "name": "KhaDarel Hodge",
+            "team": "ATL",
+            "ppg_prev": 2.66,
+            "games_prev": 14,
+            "tier_probability": 0.9948
+          },
+          {
+            "player_id": "00-0035215",
+            "name": "Deonte Harty",
+            "team": "BUF",
+            "ppg_prev": 2.62,
+            "games_prev": 16,
+            "tier_probability": 0.8656
+          },
+          {
+            "player_id": "00-0034286",
+            "name": "Richie James",
+            "team": "KC",
+            "ppg_prev": 2.38,
+            "games_prev": 9,
+            "tier_probability": 0.9753
+          },
+          {
+            "player_id": "00-0034407",
+            "name": "Ray-Ray McCloud",
+            "team": "SF",
+            "ppg_prev": 2.38,
+            "games_prev": 12,
+            "tier_probability": 0.9896
+          },
+          {
+            "player_id": "00-0038647",
+            "name": "Ronnie Bell",
+            "team": "SF",
+            "ppg_prev": 2.37,
+            "games_prev": 13,
+            "tier_probability": 0.9322
+          },
+          {
+            "player_id": "00-0031941",
+            "name": "Jamison Crowder",
+            "team": "WAS",
+            "ppg_prev": 2.37,
+            "games_prev": 16,
+            "tier_probability": 0.9861
+          },
+          {
+            "player_id": "00-0034487",
+            "name": "Trent Sherfield",
+            "team": "BUF",
+            "ppg_prev": 2.33,
+            "games_prev": 11,
+            "tier_probability": 0.988
+          },
+          {
+            "player_id": "00-0034297",
+            "name": "Byron Pringle",
+            "team": "WAS",
+            "ppg_prev": 2.32,
+            "games_prev": 13,
+            "tier_probability": 0.998
+          },
+          {
+            "player_id": "00-0034279",
+            "name": "Equanimeous St. Brown",
+            "team": "CHI",
+            "ppg_prev": 2.24,
+            "games_prev": 5,
+            "tier_probability": 0.9893
+          },
+          {
+            "player_id": "00-0032385",
+            "name": "Sterling Shepard",
+            "team": "NYG",
+            "ppg_prev": 2.23,
+            "games_prev": 10,
+            "tier_probability": 0.9982
+          },
+          {
+            "player_id": "00-0037098",
+            "name": "Samori Toure",
+            "team": "GB",
+            "ppg_prev": 2.23,
+            "games_prev": 8,
+            "tier_probability": 0.977
+          },
+          {
+            "player_id": "00-0034317",
+            "name": "Keith Kirkwood",
+            "team": "NO",
+            "ppg_prev": 2.1,
+            "games_prev": 7,
+            "tier_probability": 0.9939
+          },
+          {
+            "player_id": "00-0036233",
+            "name": "Donovan Peoples-Jones",
+            "team": "DET",
+            "ppg_prev": 2.04,
+            "games_prev": 14,
+            "tier_probability": 0.6738
+          },
+          {
+            "player_id": "00-0036326",
+            "name": "Chase Claypool",
+            "team": "MIA",
+            "ppg_prev": 1.97,
+            "games_prev": 11,
+            "tier_probability": 0.9624
+          },
+          {
+            "player_id": "00-0036497",
+            "name": "Tim Jones",
+            "team": "JAX",
+            "ppg_prev": 1.93,
+            "games_prev": 10,
+            "tier_probability": 0.9777
+          },
+          {
+            "player_id": "00-0037216",
+            "name": "Justyn Ross",
+            "team": "KC",
+            "ppg_prev": 1.88,
+            "games_prev": 6,
+            "tier_probability": 0.9443
+          },
+          {
+            "player_id": "00-0038576",
+            "name": "Charlie Jones",
+            "team": "CIN",
+            "ppg_prev": 1.88,
+            "games_prev": 11,
+            "tier_probability": 0.9702
+          },
+          {
+            "player_id": "00-0028002",
+            "name": "Randall Cobb",
+            "team": "NYJ",
+            "ppg_prev": 1.88,
+            "games_prev": 9,
+            "tier_probability": 0.9747
+          },
+          {
+            "player_id": "00-0038618",
+            "name": "Xavier Hutchinson",
+            "team": "HOU",
+            "ppg_prev": 1.83,
+            "games_prev": 12,
+            "tier_probability": 0.9529
+          },
+          {
+            "player_id": "00-0038667",
+            "name": "Elijah Cooks",
+            "team": "JAX",
+            "ppg_prev": 1.7,
+            "games_prev": 4,
+            "tier_probability": 0.9497
+          },
+          {
+            "player_id": "00-0036862",
+            "name": "Ben Skowronek",
+            "team": "LA",
+            "ppg_prev": 1.65,
+            "games_prev": 13,
+            "tier_probability": 0.9816
+          },
+          {
+            "player_id": "00-0029293",
+            "name": "Marvin Jones",
+            "team": "DET",
+            "ppg_prev": 1.62,
+            "games_prev": 4,
+            "tier_probability": 0.9767
+          },
+          {
+            "player_id": "00-0033466",
+            "name": "Isaiah McKenzie",
+            "team": "IND",
+            "ppg_prev": 1.58,
+            "games_prev": 13,
+            "tier_probability": 0.9969
+          },
+          {
+            "player_id": "00-0038821",
+            "name": "Rakim Jarrett",
+            "team": "TB",
+            "ppg_prev": 1.43,
+            "games_prev": 7,
+            "tier_probability": 0.9205
+          },
+          {
+            "player_id": "00-0030068",
+            "name": "Marquise Goodwin",
+            "team": "CLE",
+            "ppg_prev": 1.4,
+            "games_prev": 10,
+            "tier_probability": 0.9816
+          },
+          {
+            "player_id": "00-0036630",
+            "name": "Tylan Wallace",
+            "team": "BAL",
+            "ppg_prev": 1.35,
+            "games_prev": 6,
+            "tier_probability": 0.9593
+          },
+          {
+            "player_id": "00-0032200",
+            "name": "Ty Montgomery",
+            "team": "NE",
+            "ppg_prev": 0.9,
+            "games_prev": 11,
+            "tier_probability": 0.9861
+          },
+          {
+            "player_id": "00-0037745",
+            "name": "Velus Jones Jr.",
+            "team": "CHI",
+            "ppg_prev": 0.85,
+            "games_prev": 13,
+            "tier_probability": 0.9799
+          },
+          {
+            "player_id": "00-0033251",
+            "name": "Zach Pascal",
+            "team": "ARI",
+            "ppg_prev": 0.59,
+            "games_prev": 10,
+            "tier_probability": 0.9977
+          },
+          {
+            "player_id": "00-0035703",
+            "name": "Miles Boykin",
+            "team": "PIT",
+            "ppg_prev": 0.59,
+            "games_prev": 8,
+            "tier_probability": 0.9938
+          },
+          {
+            "player_id": "00-0031763",
+            "name": "DeAndre Carter",
+            "team": "LV",
+            "ppg_prev": 0.57,
+            "games_prev": 17,
+            "tier_probability": 0.9427
+          },
+          {
+            "player_id": "00-0036331",
+            "name": "Devin Duvernay",
+            "team": "BAL",
+            "ppg_prev": 0.56,
+            "games_prev": 13,
+            "tier_probability": 0.9658
+          },
+          {
+            "player_id": "00-0037132",
+            "name": "Britain Covey",
+            "team": "PHI",
+            "ppg_prev": 0.55,
+            "games_prev": 15,
+            "tier_probability": 0.9667
+          },
+          {
+            "player_id": "00-0036841",
+            "name": "Austin Trammell",
+            "team": "LA",
+            "ppg_prev": 0.46,
+            "games_prev": 15,
+            "tier_probability": 0.5648
+          },
+          {
+            "player_id": "00-0035645",
+            "name": "Gunner Olszewski",
+            "team": "NYG",
+            "ppg_prev": 0.42,
+            "games_prev": 12,
+            "tier_probability": 0.9931
+          },
+          {
+            "player_id": "00-0038632",
+            "name": "Colton Dowell",
+            "team": "TEN",
+            "ppg_prev": 0.33,
+            "games_prev": 4,
+            "tier_probability": 0.9733
+          },
+          {
+            "player_id": "00-0036176",
+            "name": "Mason Kinsey",
+            "team": "TEN",
+            "ppg_prev": 0.27,
+            "games_prev": 6,
+            "tier_probability": 0.9819
+          },
+          {
+            "player_id": "00-0036620",
+            "name": "Dee Eskridge",
+            "team": "SEA",
+            "ppg_prev": 0.12,
+            "games_prev": 4,
+            "tier_probability": 0.9922
+          },
+          {
+            "player_id": "00-0026293",
+            "name": "Matthew Slater",
+            "team": "NE",
+            "ppg_prev": 0.0,
+            "games_prev": 5,
+            "tier_probability": 0.988
+          },
+          {
+            "player_id": "00-0036133",
+            "name": "James Proche",
+            "team": "CLE",
+            "ppg_prev": 0.0,
+            "games_prev": 10,
+            "tier_probability": 0.9949
+          },
+          {
+            "player_id": "00-0036527",
+            "name": "DJ Turner",
+            "team": "LV",
+            "ppg_prev": 0.0,
+            "games_prev": 7,
+            "tier_probability": 0.9938
+          },
+          {
+            "player_id": "00-0037156",
+            "name": "Irvin Charles",
+            "team": "NYJ",
+            "ppg_prev": 0.0,
+            "games_prev": 6,
+            "tier_probability": 0.9928
+          },
+          {
+            "player_id": "00-0037272",
+            "name": "Montrell Washington",
+            "team": "KC",
+            "ppg_prev": 0.0,
+            "games_prev": 4,
+            "tier_probability": 0.9771
+          },
+          {
+            "player_id": "00-0033292",
+            "name": "Trent Taylor",
+            "team": "CHI",
+            "ppg_prev": -0.01,
+            "games_prev": 15,
+            "tier_probability": 0.9895
+          }
+        ]
+      }
+    ],
+    "TE": [
+      {
+        "tier": 1,
+        "players": [
+          {
+            "player_id": "00-0030506",
+            "name": "Travis Kelce",
+            "team": "KC",
+            "ppg_prev": 14.63,
+            "games_prev": 15,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0035229",
+            "name": "T.J. Hockenson",
+            "team": "MIN",
+            "ppg_prev": 14.6,
+            "games_prev": 15,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0039065",
+            "name": "Sam LaPorta",
+            "team": "DET",
+            "ppg_prev": 14.08,
+            "games_prev": 17,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0033881",
+            "name": "Evan Engram",
+            "team": "JAX",
+            "ppg_prev": 13.55,
+            "games_prev": 17,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0034753",
+            "name": "Mark Andrews",
+            "team": "BAL",
+            "ppg_prev": 13.54,
+            "games_prev": 10,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0033288",
+            "name": "George Kittle",
+            "team": "SF",
+            "ppg_prev": 12.7,
+            "games_prev": 16,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0033885",
+            "name": "David Njoku",
+            "team": "CLE",
+            "ppg_prev": 12.57,
+            "games_prev": 16,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0036290",
+            "name": "Cole Kmet",
+            "team": "CHI",
+            "ppg_prev": 11.32,
+            "games_prev": 16,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0037744",
+            "name": "Trey McBride",
+            "team": "ARI",
+            "ppg_prev": 10.68,
+            "games_prev": 17,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0038041",
+            "name": "Jake Ferguson",
+            "team": "DAL",
+            "ppg_prev": 10.42,
+            "games_prev": 17,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0034383",
+            "name": "Dalton Schultz",
+            "team": "HOU",
+            "ppg_prev": 10.03,
+            "games_prev": 15,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0034351",
+            "name": "Dallas Goedert",
+            "team": "PHI",
+            "ppg_prev": 9.74,
+            "games_prev": 14,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0031610",
+            "name": "Darren Waller",
+            "team": "NYG",
+            "ppg_prev": 9.43,
+            "games_prev": 12,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0038933",
+            "name": "Dalton Kincaid",
+            "team": "BUF",
+            "ppg_prev": 9.39,
+            "games_prev": 16,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0033090",
+            "name": "Hunter Henry",
+            "team": "NE",
+            "ppg_prev": 9.22,
+            "games_prev": 13,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0033357",
+            "name": "Taysom Hill",
+            "team": "NO",
+            "ppg_prev": 8.97,
+            "games_prev": 16,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0036970",
+            "name": "Kyle Pitts",
+            "team": "ATL",
+            "ppg_prev": 8.08,
+            "games_prev": 17,
+            "tier_probability": 0.9993
+          },
+          {
+            "player_id": "00-0031260",
+            "name": "Logan Thomas",
+            "team": "WAS",
+            "ppg_prev": 7.92,
+            "games_prev": 16,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0036040",
+            "name": "Juwan Johnson",
+            "team": "NO",
+            "ppg_prev": 7.52,
+            "games_prev": 13,
+            "tier_probability": 0.9943
+          },
+          {
+            "player_id": "00-0033895",
+            "name": "Gerald Everett",
+            "team": "LAC",
+            "ppg_prev": 7.41,
+            "games_prev": 15,
+            "tier_probability": 0.9975
+          },
+          {
+            "player_id": "00-0033858",
+            "name": "Jonnu Smith",
+            "team": "ATL",
+            "ppg_prev": 7.31,
+            "games_prev": 17,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0034270",
+            "name": "Tyler Conklin",
+            "team": "NYJ",
+            "ppg_prev": 7.24,
+            "games_prev": 17,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0033110",
+            "name": "Tyler Higbee",
+            "team": "LA",
+            "ppg_prev": 7.23,
+            "games_prev": 15,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0037838",
+            "name": "Isaiah Likely",
+            "team": "BAL",
+            "ppg_prev": 7.22,
+            "games_prev": 14,
+            "tier_probability": 0.8217
+          },
+          {
+            "player_id": "00-0038129",
+            "name": "Cade Otton",
+            "team": "TB",
+            "ppg_prev": 6.97,
+            "games_prev": 17,
+            "tier_probability": 0.9975
+          },
+          {
+            "player_id": "00-0037809",
+            "name": "Chig Okonkwo",
+            "team": "TEN",
+            "ppg_prev": 6.67,
+            "games_prev": 17,
+            "tier_probability": 0.9886
+          }
+        ]
+      },
+      {
+        "tier": 2,
+        "players": [
+          {
+            "player_id": "00-0030061",
+            "name": "Zach Ertz",
+            "team": "ARI",
+            "ppg_prev": 7.39,
+            "games_prev": 7,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0024243",
+            "name": "Marcedes Lewis",
+            "team": "CHI",
+            "ppg_prev": 2.15,
+            "games_prev": 6,
+            "tier_probability": 1.0
+          }
+        ]
+      },
+      {
+        "tier": 3,
+        "players": [
+          {
+            "player_id": "00-0036894",
+            "name": "Pat Freiermuth",
+            "team": "PIT",
+            "ppg_prev": 6.98,
+            "games_prev": 11,
+            "tier_probability": 0.8286
+          },
+          {
+            "player_id": "00-0039144",
+            "name": "Luke Musgrave",
+            "team": "GB",
+            "ppg_prev": 6.84,
+            "games_prev": 11,
+            "tier_probability": 0.5405
+          },
+          {
+            "player_id": "00-0034613",
+            "name": "Tanner Hudson",
+            "team": "CIN",
+            "ppg_prev": 6.68,
+            "games_prev": 12,
+            "tier_probability": 0.9398
+          },
+          {
+            "player_id": "00-0035329",
+            "name": "Donald Parham",
+            "team": "LAC",
+            "ppg_prev": 5.68,
+            "games_prev": 14,
+            "tier_probability": 0.7433
+          },
+          {
+            "player_id": "00-0038996",
+            "name": "Tucker Kraft",
+            "team": "GB",
+            "ppg_prev": 5.61,
+            "games_prev": 14,
+            "tier_probability": 0.8126
+          },
+          {
+            "player_id": "00-0034798",
+            "name": "Durham Smythe",
+            "team": "MIA",
+            "ppg_prev": 5.51,
+            "games_prev": 13,
+            "tier_probability": 0.963
+          },
+          {
+            "player_id": "00-0039066",
+            "name": "Michael Mayer",
+            "team": "LV",
+            "ppg_prev": 5.49,
+            "games_prev": 13,
+            "tier_probability": 0.6866
+          },
+          {
+            "player_id": "00-0035689",
+            "name": "Dawson Knox",
+            "team": "BUF",
+            "ppg_prev": 5.46,
+            "games_prev": 10,
+            "tier_probability": 0.8699
+          },
+          {
+            "player_id": "00-0035644",
+            "name": "Noah Fant",
+            "team": "SEA",
+            "ppg_prev": 4.89,
+            "games_prev": 15,
+            "tier_probability": 0.9119
+          },
+          {
+            "player_id": "00-0036876",
+            "name": "Kylen Granson",
+            "team": "IND",
+            "ppg_prev": 4.87,
+            "games_prev": 15,
+            "tier_probability": 0.8414
+          },
+          {
+            "player_id": "00-0034830",
+            "name": "Hayden Hurst",
+            "team": "CAR",
+            "ppg_prev": 4.71,
+            "games_prev": 9,
+            "tier_probability": 0.9931
+          },
+          {
+            "player_id": "00-0036637",
+            "name": "Noah Gray",
+            "team": "KC",
+            "ppg_prev": 4.41,
+            "games_prev": 16,
+            "tier_probability": 0.8336
+          },
+          {
+            "player_id": "00-0034829",
+            "name": "Mike Gesicki",
+            "team": "NE",
+            "ppg_prev": 4.36,
+            "games_prev": 15,
+            "tier_probability": 0.9103
+          },
+          {
+            "player_id": "00-0036244",
+            "name": "Colby Parkinson",
+            "team": "SEA",
+            "ppg_prev": 4.11,
+            "games_prev": 15,
+            "tier_probability": 0.8129
+          },
+          {
+            "player_id": "00-0035249",
+            "name": "Josh Oliver",
+            "team": "MIN",
+            "ppg_prev": 4.1,
+            "games_prev": 13,
+            "tier_probability": 0.9404
+          },
+          {
+            "player_id": "00-0037005",
+            "name": "Tommy Tremble",
+            "team": "CAR",
+            "ppg_prev": 4.03,
+            "games_prev": 15,
+            "tier_probability": 0.595
+          },
+          {
+            "player_id": "00-0033246",
+            "name": "Johnny Mundt",
+            "team": "MIN",
+            "ppg_prev": 4.02,
+            "games_prev": 10,
+            "tier_probability": 0.9955
+          },
+          {
+            "player_id": "00-0036422",
+            "name": "Adam Trautman",
+            "team": "DEN",
+            "ppg_prev": 3.78,
+            "games_prev": 16,
+            "tier_probability": 0.8895
+          },
+          {
+            "player_id": "00-0035631",
+            "name": "Drew Sample",
+            "team": "CIN",
+            "ppg_prev": 3.59,
+            "games_prev": 14,
+            "tier_probability": 0.981
+          },
+          {
+            "player_id": "00-0034981",
+            "name": "Foster Moreau",
+            "team": "NO",
+            "ppg_prev": 3.56,
+            "games_prev": 13,
+            "tier_probability": 0.7933
+          },
+          {
+            "player_id": "00-0033217",
+            "name": "Mo Alie-Cox",
+            "team": "IND",
+            "ppg_prev": 3.51,
+            "games_prev": 14,
+            "tier_probability": 0.9719
+          },
+          {
+            "player_id": "00-0033439",
+            "name": "Pharaoh Brown",
+            "team": "NE",
+            "ppg_prev": 3.44,
+            "games_prev": 11,
+            "tier_probability": 0.9931
+          },
+          {
+            "player_id": "00-0034159",
+            "name": "Will Dissly",
+            "team": "SEA",
+            "ppg_prev": 3.09,
+            "games_prev": 13,
+            "tier_probability": 0.9628
+          },
+          {
+            "player_id": "00-0032392",
+            "name": "Austin Hooper",
+            "team": "LV",
+            "ppg_prev": 3.03,
+            "games_prev": 16,
+            "tier_probability": 0.9819
+          },
+          {
+            "player_id": "00-0036232",
+            "name": "Harrison Bryant",
+            "team": "CLE",
+            "ppg_prev": 2.71,
+            "games_prev": 14,
+            "tier_probability": 0.7342
+          },
+          {
+            "player_id": "00-0036628",
+            "name": "John Bates",
+            "team": "WAS",
+            "ppg_prev": 2.27,
+            "games_prev": 15,
+            "tier_probability": 0.8782
+          },
+          {
+            "player_id": "00-0034364",
+            "name": "Jordan Akins",
+            "team": "CLE",
+            "ppg_prev": 2.17,
+            "games_prev": 13,
+            "tier_probability": 0.9598
+          },
+          {
+            "player_id": "00-0033757",
+            "name": "Robert Tonyan",
+            "team": "CHI",
+            "ppg_prev": 1.85,
+            "games_prev": 12,
+            "tier_probability": 0.7277
+          }
+        ]
+      },
+      {
+        "tier": 4,
+        "players": [
+          {
+            "player_id": "00-0027696",
+            "name": "Jimmy Graham",
+            "team": "NO",
+            "ppg_prev": 5.65,
+            "games_prev": 6,
+            "tier_probability": 0.9997
+          },
+          {
+            "player_id": "00-0036556",
+            "name": "Brevin Jordan",
+            "team": "HOU",
+            "ppg_prev": 5.09,
+            "games_prev": 10,
+            "tier_probability": 0.9958
+          },
+          {
+            "player_id": "00-0039074",
+            "name": "Davis Allen",
+            "team": "LA",
+            "ppg_prev": 3.64,
+            "games_prev": 7,
+            "tier_probability": 1.0
+          },
+          {
+            "player_id": "00-0038115",
+            "name": "Daniel Bellinger",
+            "team": "NYG",
+            "ppg_prev": 3.61,
+            "games_prev": 14,
+            "tier_probability": 0.6923
+          },
+          {
+            "player_id": "00-0038394",
+            "name": "Will Mallory",
+            "team": "IND",
+            "ppg_prev": 3.52,
+            "games_prev": 11,
+            "tier_probability": 0.9709
+          },
+          {
+            "player_id": "00-0037539",
+            "name": "Lucas Krull",
+            "team": "DEN",
+            "ppg_prev": 3.36,
+            "games_prev": 7,
+            "tier_probability": 0.9998
+          },
+          {
+            "player_id": "00-0034970",
+            "name": "Irv Smith",
+            "team": "CIN",
+            "ppg_prev": 3.35,
+            "games_prev": 10,
+            "tier_probability": 0.9819
+          },
+          {
+            "player_id": "00-0039041",
+            "name": "Elijah Higgins",
+            "team": "ARI",
+            "ppg_prev": 3.3,
+            "games_prev": 11,
+            "tier_probability": 0.9938
+          },
+          {
+            "player_id": "00-0037292",
+            "name": "Andrew Ogletree",
+            "team": "IND",
+            "ppg_prev": 3.25,
+            "games_prev": 11,
+            "tier_probability": 0.8399
+          },
+          {
+            "player_id": "00-0036754",
+            "name": "Brock Wright",
+            "team": "DET",
+            "ppg_prev": 3.12,
+            "games_prev": 9,
+            "tier_probability": 0.9894
+          },
+          {
+            "player_id": "00-0037805",
+            "name": "Jeremy Ruckert",
+            "team": "NYJ",
+            "ppg_prev": 3.11,
+            "games_prev": 10,
+            "tier_probability": 0.9565
+          },
+          {
+            "player_id": "00-0037078",
+            "name": "Cole Turner",
+            "team": "WAS",
+            "ppg_prev": 2.88,
+            "games_prev": 8,
+            "tier_probability": 0.9685
+          },
+          {
+            "player_id": "00-0036887",
+            "name": "Luke Farrell",
+            "team": "JAX",
+            "ppg_prev": 2.85,
+            "games_prev": 10,
+            "tier_probability": 0.7393
+          },
+          {
+            "player_id": "00-0036145",
+            "name": "Lawrence Cager",
+            "team": "NYG",
+            "ppg_prev": 2.72,
+            "games_prev": 5,
+            "tier_probability": 0.9985
+          },
+          {
+            "player_id": "00-0038589",
+            "name": "Josh Whyle",
+            "team": "TEN",
+            "ppg_prev": 2.71,
+            "games_prev": 9,
+            "tier_probability": 0.9951
+          },
+          {
+            "player_id": "00-0037475",
+            "name": "Stone Smartt",
+            "team": "LAC",
+            "ppg_prev": 2.71,
+            "games_prev": 12,
+            "tier_probability": 0.91
+          },
+          {
+            "player_id": "00-0036424",
+            "name": "Brycen Hopkins",
+            "team": "LA",
+            "ppg_prev": 2.56,
+            "games_prev": 5,
+            "tier_probability": 0.991
+          },
+          {
+            "player_id": "00-0038046",
+            "name": "Charlie Kolar",
+            "team": "BAL",
+            "ppg_prev": 2.41,
+            "games_prev": 9,
+            "tier_probability": 0.9697
+          },
+          {
+            "player_id": "00-0038547",
+            "name": "Luke Schoonmaker",
+            "team": "DAL",
+            "ppg_prev": 2.21,
+            "games_prev": 12,
+            "tier_probability": 0.926
+          },
+          {
+            "player_id": "00-0038935",
+            "name": "Brenton Strange",
+            "team": "JAX",
+            "ppg_prev": 2.07,
+            "games_prev": 7,
+            "tier_probability": 0.9993
+          },
+          {
+            "player_id": "00-0038809",
+            "name": "Ben Sims",
+            "team": "GB",
+            "ppg_prev": 2.02,
+            "games_prev": 6,
+            "tier_probability": 0.977
+          },
+          {
+            "player_id": "00-0039050",
+            "name": "Payne Durham",
+            "team": "TB",
+            "ppg_prev": 1.8,
+            "games_prev": 6,
+            "tier_probability": 0.5849
+          },
+          {
+            "player_id": "00-0032062",
+            "name": "Blake Bell",
+            "team": "KC",
+            "ppg_prev": 1.66,
+            "games_prev": 7,
+            "tier_probability": 0.9754
+          }
+        ]
+      },
+      {
+        "tier": 5,
+        "players": [
+          {
+            "player_id": "00-0031585",
+            "name": "MyCole Pruitt",
+            "team": "ATL",
+            "ppg_prev": 2.6,
+            "games_prev": 10,
+            "tier_probability": 0.6122
+          },
+          {
+            "player_id": "00-0032134",
+            "name": "C.J. Uzomah",
+            "team": "NYJ",
+            "ppg_prev": 2.48,
+            "games_prev": 8,
+            "tier_probability": 0.973
+          },
+          {
+            "player_id": "00-0036438",
+            "name": "Stephen Sullivan",
+            "team": "CAR",
+            "ppg_prev": 2.45,
+            "games_prev": 10,
+            "tier_probability": 0.4876
+          },
+          {
+            "player_id": "00-0032141",
+            "name": "Geoff Swaim",
+            "team": "ARI",
+            "ppg_prev": 2.42,
+            "games_prev": 8,
+            "tier_probability": 0.996
+          },
+          {
+            "player_id": "00-0038558",
+            "name": "Darnell Washington",
+            "team": "PIT",
+            "ppg_prev": 1.64,
+            "games_prev": 8,
+            "tier_probability": 0.972
+          },
+          {
+            "player_id": "00-0036332",
+            "name": "Josiah Deguara",
+            "team": "GB",
+            "ppg_prev": 1.61,
+            "games_prev": 9,
+            "tier_probability": 0.7101
+          },
+          {
+            "player_id": "00-0036741",
+            "name": "Jack Stoll",
+            "team": "PHI",
+            "ppg_prev": 1.47,
+            "games_prev": 6,
+            "tier_probability": 0.8092
+          },
+          {
+            "player_id": "00-0034365",
+            "name": "Ian Thomas",
+            "team": "CAR",
+            "ppg_prev": 1.32,
+            "games_prev": 8,
+            "tier_probability": 0.9684
+          },
+          {
+            "player_id": "00-0038783",
+            "name": "Nate Adkins",
+            "team": "DEN",
+            "ppg_prev": 1.24,
+            "games_prev": 5,
+            "tier_probability": 0.5103
+          },
+          {
+            "player_id": "00-0035771",
+            "name": "Mitchell Wilcox",
+            "team": "CIN",
+            "ppg_prev": 1.22,
+            "games_prev": 12,
+            "tier_probability": 0.8239
+          },
+          {
+            "player_id": "00-0037569",
+            "name": "Peyton Hendershot",
+            "team": "DAL",
+            "ppg_prev": 0.98,
+            "games_prev": 8,
+            "tier_probability": 0.8716
+          },
+          {
+            "player_id": "00-0038720",
+            "name": "Julian Hill",
+            "team": "MIA",
+            "ppg_prev": 0.88,
+            "games_prev": 10,
+            "tier_probability": 0.8887
+          },
+          {
+            "player_id": "00-0037311",
+            "name": "Ko Kieft",
+            "team": "TB",
+            "ppg_prev": 0.72,
+            "games_prev": 10,
+            "tier_probability": 0.7576
+          },
+          {
+            "player_id": "00-0036429",
+            "name": "Charlie Woerner",
+            "team": "SF",
+            "ppg_prev": 0.62,
+            "games_prev": 10,
+            "tier_probability": 0.9276
+          },
+          {
+            "player_id": "00-0035259",
+            "name": "Trevon Wesco",
+            "team": "TEN",
+            "ppg_prev": 0.52,
+            "games_prev": 6,
+            "tier_probability": 0.9899
+          },
+          {
+            "player_id": "00-0031484",
+            "name": "Chris Manhertz",
+            "team": "DEN",
+            "ppg_prev": 0.51,
+            "games_prev": 7,
+            "tier_probability": 0.9999
+          },
+          {
+            "player_id": "00-0035562",
+            "name": "Jesper Horsted",
+            "team": "LV",
+            "ppg_prev": 0.28,
+            "games_prev": 5,
+            "tier_probability": 0.9541
+          },
+          {
+            "player_id": "00-0034193",
+            "name": "Kevin Rader",
+            "team": "TEN",
+            "ppg_prev": 0.23,
+            "games_prev": 7,
+            "tier_probability": 0.998
+          },
+          {
+            "player_id": "00-0036032",
+            "name": "Sean McKeon",
+            "team": "DAL",
+            "ppg_prev": 0.0,
+            "games_prev": 8,
+            "tier_probability": 0.9793
+          },
+          {
+            "player_id": "00-0037451",
+            "name": "Rod Williams",
+            "team": "PIT",
+            "ppg_prev": 0.0,
+            "games_prev": 6,
+            "tier_probability": 0.993
+          }
+        ]
+      }
+    ]
+  }
+}

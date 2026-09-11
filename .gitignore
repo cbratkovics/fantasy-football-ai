@@ -111,3 +111,6 @@ yarn-error.log*
 
 # nflverse parquet cache (ffai.data.nflverse)
 data/cache/
+
+# Versioned model artifacts are committed on purpose (small, compressed)
+!artifacts/**
