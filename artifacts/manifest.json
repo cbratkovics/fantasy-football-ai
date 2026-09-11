@@ -41,13 +41,13 @@
   "feature_version": "asof_v1",
   "last_run": {
     "action": "PUBLISH",
-    "at_utc": "2026-09-11T03:50:10+00:00",
+    "at_utc": "2026-09-11T21:18:15+00:00",
     "reasons": [
       "drift warning on RB:fantasy_points_ppr_L1",
       "contracts ok, drift within limits",
       "no promotion: fewer than 4 scored weeks available"
     ],
-    "run_id": "run-20260911T035010Z",
+    "run_id": "run-20260911T211815Z",
     "season": 2026,
     "stats_rows": 40330,
     "week": 1
@@ -57,5 +57,5 @@
     "latest": "predictions/2026/week_01.json"
   },
   "tiers_version": "20260911-tiers_prevseason_v1-2024-mpc8",
-  "updated_at_utc": "2026-09-11T03:52:21+00:00"
+  "updated_at_utc": "2026-09-11T21:18:20+00:00"
 }
