@@ -1,3 +1,13 @@
+---
+title: Fantasy Football AI
+emoji: 🏈
+colorFrom: green
+colorTo: gray
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # Fantasy Football AI — artifact-backed weekly projections
 
 > **In one paragraph.** A weekly NFL fantasy projection system rebuilt around evidence: one as-of
