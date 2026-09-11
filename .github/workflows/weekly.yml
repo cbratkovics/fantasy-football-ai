@@ -85,6 +85,19 @@ jobs:
           git diff --cached --quiet && echo "nothing to commit" && exit 0
           git commit -m "weekly: ${{ steps.outcome.outputs.season }} wk${{ steps.outcome.outputs.week }} ${{ steps.outcome.outputs.action }}"
           git push
+      - name: Mirror artifacts to the Hugging Face Space
+        # The Space is a mirror of main's working tree (artifacts included); refreshed only
+        # when something was published. HF_TOKEN is a repository secret with write scope.
+        if: ${{ inputs.dry_run != true && (steps.outcome.outputs.action == 'PUBLISH' || steps.outcome.outputs.action == 'PROMOTE') }}
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          pip install -q "huggingface_hub[cli]"
+          hf upload cbratkovics/fantasy-football-ai . . --repo-type space \
+            --exclude ".git/*" --exclude ".venv/*" --exclude "data/*" --exclude "*.egg-info/*" \
+            --exclude ".mypy_cache/*" --exclude ".ruff_cache/*" --exclude ".pytest_cache/*" \
+            --exclude ".vscode/*" --exclude ".claude/*" --exclude "*.env*" \
+            --exclude "frontend-next/node_modules/*" --exclude "frontend-next/.next/*"
       - name: Open an issue on HOLD
         if: ${{ steps.outcome.outputs.action == 'HOLD' }}
         env:

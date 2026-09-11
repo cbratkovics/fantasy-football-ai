@@ -1,0 +1,92 @@
+{
+  "run_id": "run-20260911T035010Z",
+  "at_utc": "2026-09-11T03:50:10+00:00",
+  "dry_run": false,
+  "steps": [
+    {
+      "step": "season_week",
+      "season": 2026,
+      "week": 1
+    },
+    {
+      "step": "stats",
+      "loaded_rows": 40353,
+      "rows_before_target_week": 40330,
+      "dropped_partial_rows": 23
+    },
+    {
+      "step": "contracts",
+      "ok": true,
+      "failures": [],
+      "summary": {
+        "rows": 40330,
+        "players": 1349,
+        "latest": [
+          2025,
+          18
+        ]
+      }
+    },
+    {
+      "step": "drift",
+      "status": "warn",
+      "positions": {
+        "QB": {
+          "status": "ok",
+          "median_monitored": 0.0959,
+          "flagged": [],
+          "severe": [],
+          "n": 160
+        },
+        "RB": {
+          "status": "warn",
+          "median_monitored": 0.0499,
+          "flagged": [
+            "fantasy_points_ppr_L1"
+          ],
+          "severe": [],
+          "n": 367
+        },
+        "WR": {
+          "status": "ok",
+          "median_monitored": 0.0776,
+          "flagged": [],
+          "severe": [],
+          "n": 578
+        },
+        "TE": {
+          "status": "ok",
+          "median_monitored": 0.067,
+          "flagged": [],
+          "severe": [],
+          "n": 295
+        }
+      }
+    },
+    {
+      "step": "rolling_eval",
+      "week": null,
+      "note": "week 1: no prior week to score"
+    },
+    {
+      "step": "promotion_rule",
+      "promote": false,
+      "reason": "fewer than 4 scored weeks available",
+      "weeks_scored": 0
+    },
+    {
+      "step": "score",
+      "week": 1,
+      "n": 610,
+      "model_version": "20260911-asof_v1-d333de20"
+    }
+  ],
+  "season": 2026,
+  "week": 1,
+  "action": "PUBLISH",
+  "reasons": [
+    "drift warning on RB:fantasy_points_ppr_L1",
+    "contracts ok, drift within limits",
+    "no promotion: fewer than 4 scored weeks available"
+  ]
+}

@@ -147,3 +147,32 @@ noisy input stream.
 change. Every run log records the per-position median, the flagged features, and the severe
 features so the threshold can be revisited with evidence. This departs from the brief's literal
 rule and is flagged in `docs/REBUILD_REPORT.md`.
+
+## ADR-0011 — Remove the 2025 week-1 predictions file (2026-09-11)
+
+**Context.** `artifacts/predictions/2025/week_01.json` was produced during the rebuild by scoring
+2025 week 1 from 2024 history as a serving demonstration. The 2025 season is now complete and the
+frozen model has been evaluated on all of it out of sample
+(`artifacts/eval/…-oos2025.json`, `models/<version>/oos_predictions_2025.csv`), which
+supersedes a single pre-season week and carries actuals.
+
+**Decision.** The file is deleted; the manifest's `predictions.latest` points at the first 2026
+weekly artifact. Player history for 2025 is served from the out-of-sample predictions CSV.
+
+**Consequences.** No prediction file exists for a season without a matching evaluation; the
+`predictions/` tree holds only live-season weekly outputs of the job.
+
+## ADR-0012 — Minimum players per GMM component (2026-09-11)
+
+**Context.** BIC alone chose 10 components for 60 quarterbacks (2024 preseason tiers), giving
+tiers of two or three players and a within-band rate of 29.6 %.
+
+**Decision.** The BIC search is capped at `n_components <= n_players // 8` (constant
+`MIN_PLAYERS_PER_COMPONENT`). Tiers are retrained alone (models untouched) into a new
+`tiers_version`; each position is compared against the previous artifact on Spearman and
+within-band, and a position that gets worse on both keeps its previous tiers (recorded as
+`kept: "previous"` in `metadata.json -> comparison_to_previous`). The old artifact directory
+stays committed.
+
+**Consequences.** The before/after table is in the model card. The cap is a structural
+constraint, not a tuned hyper-parameter; changing it requires the same comparison.

@@ -90,6 +90,17 @@ make weekly                       # dry-run of the autonomous job
 Docker: `docker build -t ffai-api . && docker run -p 7860:7860 ffai-api` (API only, non-root,
 port 7860 for Hugging Face Spaces). `docker compose up` runs API + frontend.
 
+## Deployment
+
+* **API** — Hugging Face Space `cbratkovics/fantasy-football-ai` (Docker SDK, port 7860). The Space
+  is a **mirror of `main`'s working tree including `artifacts/`**, uploaded with `hf upload`
+  (the same exclusions live in `.github/workflows/weekly.yml`). The weekly job refreshes it after
+  every `PUBLISH`/`PROMOTE`; the `deploy-space` job in `ci.yml` does it on demand. Both need the
+  `HF_TOKEN` repository secret (write scope).
+* **Frontend** — Vercel project `fantasy-football-ai` (root `frontend-next`, production branch
+  `main`) with `NEXT_PUBLIC_API_URL` set to the Space URL.
+* Nothing else runs anywhere; there is no database, cache, or worker.
+
 ## The weekly job
 
 `.github/workflows/weekly.yml` runs `ffai/pipeline/weekly.py` on Tuesdays during the season

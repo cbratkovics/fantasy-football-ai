@@ -281,6 +281,12 @@ def run_weekly(
                 )
             else:
                 step("rolling_eval", week=None, note="week 1: no prior week to score")
+            if not dry_run:
+                # The season's rolling file exists from week 1 (possibly with no weeks yet) so its
+                # absence is never mistaken for a missing artifact.
+                rolling_path(season, artifacts).write_text(
+                    json.dumps(rolling, indent=2) + "\n", encoding="utf-8"
+                )
 
             # 6. promotion rule
             recent_c = [w["champion"]["mae"] for w in rolling["weeks"]]

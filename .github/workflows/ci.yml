@@ -4,6 +4,12 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
+    inputs:
+      deploy_space:
+        description: "Mirror the working tree to the Hugging Face Space"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -65,3 +71,24 @@ jobs:
       - run: npm run build
         env:
           NEXT_PUBLIC_API_URL: http://localhost:7860
+
+  deploy-space:
+    # Manual only: "Run workflow" with deploy_space=true. Mirrors main to the Space with the same
+    # exclusions the weekly job uses. Needs the HF_TOKEN repository secret (write scope).
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy_space }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Upload to the Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          pip install -q "huggingface_hub[cli]"
+          hf upload cbratkovics/fantasy-football-ai . . --repo-type space \
+            --exclude ".git/*" --exclude ".venv/*" --exclude "data/*" --exclude "*.egg-info/*" \
+            --exclude ".mypy_cache/*" --exclude ".ruff_cache/*" --exclude ".pytest_cache/*" \
+            --exclude ".vscode/*" --exclude ".claude/*" --exclude "*.env*" \
+            --exclude "frontend-next/node_modules/*" --exclude "frontend-next/.next/*"
