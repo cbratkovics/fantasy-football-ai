@@ -56,6 +56,6 @@
   "predictions": {
     "latest": "predictions/2026/week_01.json"
   },
-  "tiers_version": "20260911-tiers_prevseason_v1-2024",
-  "updated_at_utc": "2026-09-11T03:50:18+00:00"
+  "tiers_version": "20260911-tiers_prevseason_v1-2024-mpc8",
+  "updated_at_utc": "2026-09-11T03:52:21+00:00"
 }

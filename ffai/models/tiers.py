@@ -12,7 +12,8 @@ Inputs for tiers of season ``S`` are computed **only** from season ``S-1`` regul
 Players with fewer than ``MIN_GAMES`` prior-season games are excluded (too little signal).
 
 Per position: StandardScaler → PCA (smallest number of components explaining ≥ 90% variance)
-→ GaussianMixture with ``n_components`` chosen by BIC in [4, 12], ``n_init=5``, fixed random
+→ GaussianMixture with ``n_components`` chosen by BIC in [4, 12] subject to
+``n_components <= n_players // MIN_PLAYERS_PER_COMPONENT`` (default 8), ``n_init=5``, fixed random
 state. Tiers are numbered 1..k in decreasing order of the component's mean prior PPR/game.
 
 Honest evaluation (``evaluate_tiers``): for the tiers of season ``S`` compare tier rank with the
@@ -45,6 +46,8 @@ MIN_GAMES = 4
 COMPONENT_RANGE = range(4, 13)
 PCA_VARIANCE = 0.90
 MIN_PLAYERS_FOR_GMM = 25
+# A component must have room for at least this many players: n_components <= n_players // 8.
+MIN_PLAYERS_PER_COMPONENT = 8
 
 _OPPORTUNITY = {
     "QB": ["attempts"],
@@ -117,8 +120,9 @@ def fit_position_tiers(inputs: pd.DataFrame, position: str) -> dict[str, Any]:
     xp = pca.transform(xs)
     best = None
     bics = {}
+    max_k = max(COMPONENT_RANGE.start, len(pos) // MIN_PLAYERS_PER_COMPONENT)
     for k in COMPONENT_RANGE:
-        if k >= len(pos):
+        if k >= len(pos) or k > max_k:
             break
         gmm = GaussianMixture(
             n_components=k, covariance_type="full", n_init=5, random_state=RANDOM_STATE
@@ -143,6 +147,7 @@ def fit_position_tiers(inputs: pd.DataFrame, position: str) -> dict[str, Any]:
         "tier_of_component": tier_of_component,
         "features": feats,
         "n_components": k,
+        "max_components_allowed": max_k,
         "bic": bics,
         "pca_components": n_pca,
         "pca_explained_variance": [float(v) for v in pca.explained_variance_ratio_],
@@ -176,6 +181,23 @@ def evaluate_tiers(players: pd.DataFrame, realised: pd.DataFrame) -> dict[str, A
     }
 
 
+def _load_previous(previous_tier_version: str, artifacts: Path) -> dict[str, Any]:
+    d = artifacts / "tiers" / previous_tier_version
+    return {
+        "meta": json.loads((d / "metadata.json").read_text(encoding="utf-8")),
+        "tiers": json.loads((d / "tiers.json").read_text(encoding="utf-8")),
+        "pipelines": joblib.load(d / "model.pkl"),
+    }
+
+
+def _worse_on_both(before: dict[str, Any], after: dict[str, Any]) -> bool:
+    b_s, a_s = before.get("spearman"), after.get("spearman")
+    b_w, a_w = before.get("within_band_rate"), after.get("within_band_rate")
+    if None in (b_s, a_s, b_w, a_w):
+        return False
+    return a_s < b_s and a_w < b_w
+
+
 def build_tiers(
     stats: pd.DataFrame,
     season: int,
@@ -183,12 +205,22 @@ def build_tiers(
     rosters: pd.DataFrame | None = None,
     artifacts: Path = ARTIFACTS_DIR,
     evaluate_on_realised: bool = True,
+    previous_tier_version: str | None = None,
     now: dt.datetime | None = None,
 ) -> dict[str, Any]:
-    """Fit tiers for preseason ``season`` and persist ``artifacts/tiers/<tier_version>/``."""
+    """Fit tiers for preseason ``season`` and persist ``artifacts/tiers/<tier_version>/``.
+
+    With ``previous_tier_version`` the new fit is compared position by position against that
+    artifact's evaluation; a position that gets worse on **both** Spearman and within-band keeps
+    the previous tiers (players and pipeline are copied over) and is marked ``kept: "previous"``
+    in ``metadata.json -> comparison_to_previous``.
+    """
     now = now or dt.datetime.now(dt.UTC)
     inputs = prior_season_inputs(stats, season, rosters)
-    tier_version = f"{now:%Y%m%d}-{TIER_FEATURE_VERSION}-{season}"
+    tier_version = f"{now:%Y%m%d}-{TIER_FEATURE_VERSION}-{season}-mpc{MIN_PLAYERS_PER_COMPONENT}"
+    if previous_tier_version == tier_version:
+        raise ValueError("previous_tier_version must differ from the new version")
+    previous = _load_previous(previous_tier_version, artifacts) if previous_tier_version else None
     out_dir = artifacts / "tiers" / tier_version
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -241,6 +273,37 @@ def build_tiers(
         if realised is not None:
             evaluation["positions"][pos] = evaluate_tiers(players, realised)
 
+    comparison = None
+    if previous is not None and realised is not None:
+        comparison = {"previous_tier_version": previous_tier_version, "positions": {}}
+        prev_eval = (previous["meta"].get("evaluation") or {}).get("positions", {})
+        for pos in POSITIONS:
+            before = {
+                **prev_eval.get(pos, {}),
+                **{
+                    k: previous["meta"]["positions"][pos][k]
+                    for k in ("n_components", "pca_components", "n_players")
+                },
+            }
+            after = {
+                **evaluation["positions"][pos],
+                **{
+                    k: positions_meta[pos][k]
+                    for k in ("n_components", "pca_components", "n_players")
+                },
+            }
+            kept = "new"
+            if _worse_on_both(before, after):
+                kept = "previous"
+                pipelines[pos] = previous["pipelines"][pos]
+                tiers_json[pos] = previous["tiers"]["positions"][pos]
+                positions_meta[pos] = {
+                    **previous["meta"]["positions"][pos],
+                    "kept_from": previous_tier_version,
+                }
+                evaluation["positions"][pos] = prev_eval[pos]
+            comparison["positions"][pos] = {"before": before, "after": after, "kept": kept}
+
     joblib.dump(pipelines, out_dir / "model.pkl", compress=3)
     (out_dir / "tiers.json").write_text(
         json.dumps(
@@ -264,6 +327,8 @@ def build_tiers(
         "generated_at_utc": now.isoformat(timespec="seconds"),
         "positions": positions_meta,
         "evaluation": evaluation if realised is not None else None,
+        "min_players_per_component": MIN_PLAYERS_PER_COMPONENT,
+        "comparison_to_previous": comparison,
     }
     (out_dir / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
     return metadata

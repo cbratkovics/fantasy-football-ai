@@ -1,0 +1,331 @@
+{
+  "tier_version": "20260911-tiers_prevseason_v1-2024-mpc8",
+  "tier_feature_version": "tiers_prevseason_v1",
+  "feature_version": "asof_v1",
+  "season": 2024,
+  "inputs": "prior-season (season-1) aggregates only; min games 4; age from rosters when available",
+  "method": "StandardScaler -> PCA (>=90% variance) -> GaussianMixture(full, n_init=5), n_components by BIC in [4, 12]; tiers ordered by component mean prior PPG",
+  "generated_at_utc": "2026-09-11T03:46:02+00:00",
+  "positions": {
+    "QB": {
+      "n_players": 60,
+      "n_components": 4,
+      "bic": {
+        "4": 613.246458713429,
+        "5": 632.1381837115133,
+        "6": 615.232337492334,
+        "7": 619.8950662924074
+      },
+      "pca_components": 3,
+      "pca_explained_variance": [
+        0.5797756560013319,
+        0.2189448073181003,
+        0.1382874474803042
+      ],
+      "features": [
+        "ppg_prev",
+        "ppg_std_prev",
+        "games_prev",
+        "opportunity_share_prev",
+        "age"
+      ],
+      "tier_sizes": {
+        "1": 19,
+        "2": 6,
+        "3": 11,
+        "4": 24
+      }
+    },
+    "RB": {
+      "n_players": 118,
+      "n_components": 4,
+      "bic": {
+        "4": 1145.1936201167573,
+        "5": 1172.2337925444745,
+        "6": 1193.66309846501,
+        "7": 1222.0020005596118,
+        "8": 1275.0697765676427,
+        "9": 1277.7411735904882,
+        "10": 1292.0026080261036,
+        "11": 1319.4337166388123,
+        "12": 1336.0363594970236
+      },
+      "pca_components": 3,
+      "pca_explained_variance": [
+        0.6314986020120809,
+        0.20683473725798365,
+        0.11540217931401157
+      ],
+      "features": [
+        "ppg_prev",
+        "ppg_std_prev",
+        "games_prev",
+        "opportunity_share_prev",
+        "age"
+      ],
+      "tier_sizes": {
+        "1": 21,
+        "2": 41,
+        "3": 22,
+        "4": 34
+      }
+    },
+    "WR": {
+      "n_players": 190,
+      "n_components": 4,
+      "bic": {
+        "4": 1821.9945936035647,
+        "5": 1851.8622590324926,
+        "6": 1896.2566570967974,
+        "7": 1921.3199050536275,
+        "8": 1945.1421492809752,
+        "9": 1990.6539243579969,
+        "10": 1975.750232466724,
+        "11": 2030.8951946251866,
+        "12": 2077.901836314184
+      },
+      "pca_components": 3,
+      "pca_explained_variance": [
+        0.6100103176983545,
+        0.1991570523882469,
+        0.1417036164880268
+      ],
+      "features": [
+        "ppg_prev",
+        "ppg_std_prev",
+        "games_prev",
+        "opportunity_share_prev",
+        "age"
+      ],
+      "tier_sizes": {
+        "1": 23,
+        "2": 26,
+        "3": 40,
+        "4": 101
+      }
+    },
+    "TE": {
+      "n_players": 99,
+      "n_components": 5,
+      "bic": {
+        "4": 965.5065393176035,
+        "5": 964.6483655682289,
+        "6": 997.4011163970406,
+        "7": 1011.7828915838192,
+        "8": 1047.638359655993,
+        "9": 1055.3305149930839,
+        "10": 1075.2634722884427,
+        "11": 1091.947044828982,
+        "12": 1152.405326296152
+      },
+      "pca_components": 3,
+      "pca_explained_variance": [
+        0.6728965724895396,
+        0.19826780969091592,
+        0.08707658963629897
+      ],
+      "features": [
+        "ppg_prev",
+        "ppg_std_prev",
+        "games_prev",
+        "opportunity_share_prev",
+        "age"
+      ],
+      "tier_sizes": {
+        "1": 26,
+        "2": 2,
+        "3": 28,
+        "4": 23,
+        "5": 20
+      }
+    }
+  },
+  "evaluation": {
+    "season": 2024,
+    "positions": {
+      "QB": {
+        "n": 54,
+        "spearman": 0.4956,
+        "within_band_rate": 0.463,
+        "tier_sizes": {
+          "1": 19,
+          "2": 6,
+          "3": 9,
+          "4": 20
+        }
+      },
+      "RB": {
+        "n": 98,
+        "spearman": 0.6542,
+        "within_band_rate": 0.5306,
+        "tier_sizes": {
+          "1": 21,
+          "2": 39,
+          "3": 16,
+          "4": 22
+        }
+      },
+      "WR": {
+        "n": 159,
+        "spearman": 0.617,
+        "within_band_rate": 0.478,
+        "tier_sizes": {
+          "1": 23,
+          "2": 23,
+          "3": 39,
+          "4": 74
+        }
+      },
+      "TE": {
+        "n": 84,
+        "spearman": 0.7609,
+        "within_band_rate": 0.619,
+        "tier_sizes": {
+          "1": 24,
+          "2": 2,
+          "3": 26,
+          "4": 17,
+          "5": 15
+        }
+      }
+    }
+  },
+  "min_players_per_component": 8,
+  "comparison_to_previous": {
+    "previous_tier_version": "20260911-tiers_prevseason_v1-2024",
+    "positions": {
+      "QB": {
+        "before": {
+          "n": 54,
+          "spearman": 0.6067,
+          "within_band_rate": 0.2963,
+          "tier_sizes": {
+            "1": 2,
+            "2": 11,
+            "3": 2,
+            "4": 10,
+            "5": 3,
+            "6": 2,
+            "7": 7,
+            "8": 3,
+            "9": 8,
+            "10": 6
+          },
+          "n_components": 10,
+          "pca_components": 3,
+          "n_players": 60
+        },
+        "after": {
+          "n": 54,
+          "spearman": 0.4956,
+          "within_band_rate": 0.463,
+          "tier_sizes": {
+            "1": 19,
+            "2": 6,
+            "3": 9,
+            "4": 20
+          },
+          "n_components": 4,
+          "pca_components": 3,
+          "n_players": 60
+        },
+        "kept": "new"
+      },
+      "RB": {
+        "before": {
+          "n": 98,
+          "spearman": 0.6542,
+          "within_band_rate": 0.5306,
+          "tier_sizes": {
+            "1": 21,
+            "2": 39,
+            "3": 16,
+            "4": 22
+          },
+          "n_components": 4,
+          "pca_components": 3,
+          "n_players": 118
+        },
+        "after": {
+          "n": 98,
+          "spearman": 0.6542,
+          "within_band_rate": 0.5306,
+          "tier_sizes": {
+            "1": 21,
+            "2": 39,
+            "3": 16,
+            "4": 22
+          },
+          "n_components": 4,
+          "pca_components": 3,
+          "n_players": 118
+        },
+        "kept": "new"
+      },
+      "WR": {
+        "before": {
+          "n": 159,
+          "spearman": 0.617,
+          "within_band_rate": 0.478,
+          "tier_sizes": {
+            "1": 23,
+            "2": 23,
+            "3": 39,
+            "4": 74
+          },
+          "n_components": 4,
+          "pca_components": 3,
+          "n_players": 190
+        },
+        "after": {
+          "n": 159,
+          "spearman": 0.617,
+          "within_band_rate": 0.478,
+          "tier_sizes": {
+            "1": 23,
+            "2": 23,
+            "3": 39,
+            "4": 74
+          },
+          "n_components": 4,
+          "pca_components": 3,
+          "n_players": 190
+        },
+        "kept": "new"
+      },
+      "TE": {
+        "before": {
+          "n": 84,
+          "spearman": 0.7609,
+          "within_band_rate": 0.619,
+          "tier_sizes": {
+            "1": 24,
+            "2": 2,
+            "3": 26,
+            "4": 17,
+            "5": 15
+          },
+          "n_components": 5,
+          "pca_components": 3,
+          "n_players": 99
+        },
+        "after": {
+          "n": 84,
+          "spearman": 0.7609,
+          "within_band_rate": 0.619,
+          "tier_sizes": {
+            "1": 24,
+            "2": 2,
+            "3": 26,
+            "4": 17,
+            "5": 15
+          },
+          "n_components": 5,
+          "pca_components": 3,
+          "n_players": 99
+        },
+        "kept": "new"
+      }
+    }
+  }
+}

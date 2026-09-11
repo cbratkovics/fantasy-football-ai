@@ -124,17 +124,26 @@ On the 2025 season (n = 5914) the frozen champion's MAE is 4.4909 versus 4.5512 
 Keys: `positions[pos].candidates[cand].val_mae / test_mae`, `positions[pos].baseline_position_mean.test_mae`.
 Sample sizes (`positions[pos].n_train / n_val / n_test`): QB 2376/651/653, RB 5760/1445/1504, WR 9031/2429/2391, TE 4466/1162/1199.
 
-## Draft tiers — 20260911-tiers_prevseason_v1-2024
+## Draft tiers — 20260911-tiers_prevseason_v1-2024-mpc8
 
 Preseason GMM tiers from prior-season aggregates only (`ffai/models/tiers.py`; StandardScaler -> PCA (>=90% variance) -> GaussianMixture(full, n_init=5), n_components by BIC in [4, 12]; tiers ordered by component mean prior PPG).
-Evaluated on the 2024 season (`artifacts/tiers/20260911-tiers_prevseason_v1-2024/metadata.json: evaluation`):
+Evaluated on the 2024 season (`artifacts/tiers/20260911-tiers_prevseason_v1-2024-mpc8/metadata.json: evaluation`):
 
 | Position | Components (BIC) | PCA dims | Players | Spearman(tier rank, realised PPR/game) | Share within tier rank band |
 |---|---|---|---|---|---|
-| QB | 10 | 3 | 60 | 0.607 | 29.6% |
+| QB | 4 | 3 | 60 | 0.496 | 46.3% |
 | RB | 4 | 3 | 118 | 0.654 | 53.1% |
 | WR | 4 | 3 | 190 | 0.617 | 47.8% |
 | TE | 5 | 3 | 99 | 0.761 | 61.9% |
+
+Change versus `20260911-tiers_prevseason_v1-2024` (`metadata.json: comparison_to_previous`):
+
+| Position | Components before → after | Spearman before → after | Within band before → after | Kept |
+|---|---|---|---|---|
+| QB | 10 → 4 | 0.607 → 0.496 | 29.6% → 46.3% | new |
+| RB | 4 → 4 | 0.654 → 0.654 | 53.1% → 53.1% | new |
+| WR | 4 → 4 | 0.617 → 0.617 | 47.8% → 47.8% | new |
+| TE | 5 → 5 | 0.761 → 0.761 | 61.9% → 61.9% | new |
 
 ## Intended use and limitations
 
