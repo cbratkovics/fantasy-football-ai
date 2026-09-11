@@ -87,6 +87,3 @@ cache/
 node_modules/
 package-lock.json
 
-# Archives
-archive/
-scripts/
