@@ -55,10 +55,16 @@ def test_predictions_latest_week_all_formats(client) -> None:
         client.get(f"/predictions/{season}/{week}?scoring=half").json()
     )
     by_id = {p.player_id: p for p in body.predictions}
-    for s, h in zip(std.predictions, half.predictions, strict=True):
-        p = by_id[s.player_id]
+    half_by_id = {p.player_id: p for p in half.predictions}
+    assert set(by_id) == set(half_by_id) == {p.player_id for p in std.predictions}
+    for s in std.predictions:
+        p, h = by_id[s.player_id], half_by_id[s.player_id]
         assert s.prediction == pytest.approx(p.prediction - p.receptions_estimate, abs=0.011)
         assert h.prediction == pytest.approx(p.prediction - 0.5 * p.receptions_estimate, abs=0.011)
+    # Each list is sorted by the prediction under its own scoring format.
+    for lst in (body, std, half):
+        vals = [p.prediction for p in lst.predictions]
+        assert vals == sorted(vals, reverse=True)
     qb = client.get(f"/predictions/{season}/{week}?position=QB").json()
     assert qb["n"] > 0 and all(p["position"] == "QB" for p in qb["predictions"])
     assert client.get(f"/predictions/{season}/{week}?position=K").status_code == 422

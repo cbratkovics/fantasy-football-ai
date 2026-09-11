@@ -191,6 +191,7 @@ def predictions(
                 actual=r.get("actual"),
             )
         )
+    out.sort(key=lambda r: (-r.prediction, r.player_id))
     return schemas.PredictionsResponse(
         season=season,
         week=week,
