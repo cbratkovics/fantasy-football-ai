@@ -26,7 +26,7 @@ and the branch evaluator — and deleted everything else. The result:
 | Estimate | one as-of feature module; RF champion + XGB challenger per position; residual-quantile intervals | `tests/test_asof_no_leakage.py` on real data; `artifacts/models/<version>/metadata.json` |
 | Policy | deterministic publish / hold / promote rule in the weekly job (`ffai/pipeline/weekly.py`, `ffai/models/registry.py`) | `tests/test_weekly_policy.py`, `tests/test_registry.py` |
 | Explain | every served record carries model version, feature version, interval method, and the reception-based derivation of half/standard points | `ffai/serve/schemas.py` |
-| Monitor | forward holdout + causal trailing-mean baseline + rolling-origin folds, written as a hashed, commit-stamped artifact; weekly rolling evaluation appended by CI | `artifacts/eval/*.json`, `docs/MODEL_CARD.md` |
+| Monitor | forward holdout + causal trailing-mean baseline + rolling-origin folds, written as a hashed, commit-stamped artifact; the same frozen model scored on the complete 2025 season it never saw (`kind: out_of_sample_season`); weekly rolling evaluation appended by CI | `artifacts/eval/*.json` (one per evaluation, listed in `manifest.evaluations`), `docs/MODEL_CARD.md` |
 
 ## What changed in the claims
 
@@ -36,6 +36,15 @@ and every place that shows one (model card, `/performance` API, the frontend per
 reads it from there and names the key. "Within ±3 points" is defined explicitly as
 `mean(|actual − prediction| ≤ 3)` on the same rows as MAE, which was the audit's central finding:
 the old headline accuracy and the old MAE could not have come from the same sample.
+
+## The strongest evidence: a season the model never saw
+
+The champion was trained on 2019–2022, selected on 2023, and tested on 2024. After the 2025
+season completed it was scored on every 2025 game with the same frozen artifact and feature
+builder, and evaluated with the same evaluator and baseline. The model card shows both tables and
+a delta paragraph composed from the two artifacts; the API's `/performance` returns both artifacts
+with their `kind`, and the site's performance page switches between them. No number in that
+comparison is typed by hand.
 
 ## Decision layer: designed, partially implemented
 

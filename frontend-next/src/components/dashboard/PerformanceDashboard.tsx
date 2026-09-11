@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { ChartBarIcon, CircleStackIcon, ScaleIcon, ShieldCheckIcon } from '@heroicons/react/24/outline'
-import { getPerformance } from '@/lib/api/players'
+import { EVAL_KIND_EXPLANATION, EVAL_KIND_LABEL, evaluationLabel, getPerformance, sortEvaluations } from '@/lib/api/players'
 import type { MetricBlock, PerformanceArtifact } from '@/lib/api/types'
 import { fmtInt, fmtNum, fmtPct, fmtUtc, shortHash } from '@/lib/format'
 import { ErrorState, LoadingState } from '@/components/ui/States'
@@ -43,12 +43,15 @@ export function PerformanceDashboard() {
   const perf = useQuery({ queryKey: ['performance'], queryFn: getPerformance })
   const [metric, setMetric] = useState<MetricKey>('mae')
   const [cohort, setCohort] = useState<Cohort>('ALL')
+  // Which artifact is shown. null = "not chosen yet", which resolves to the highest season.
+  const [evalId, setEvalId] = useState<string | null>(null)
 
-  const rows = useMemo(() => (perf.data ? cohortRows(perf.data) : []), [perf.data])
+  const evaluations = useMemo(() => sortEvaluations(perf.data?.evaluations ?? []), [perf.data])
+  const a: PerformanceArtifact | undefined = evaluations.find((e) => e.eval_id === evalId) ?? evaluations[0]
+
+  const rows = useMemo(() => (a ? cohortRows(a) : []), [a])
   const selected = rows.find((r) => r.cohort === cohort) ?? rows[0]
   const chartRows = cohort === 'ALL' ? rows.filter((r) => r.cohort !== 'ALL') : rows.filter((r) => r.cohort === cohort)
-
-  const a = perf.data
 
   return (
     <>
@@ -69,7 +72,7 @@ export function PerformanceDashboard() {
             </p>
             {a && (
               <span>
-                {a.split.strategy.replace(/_/g, ' ').toUpperCase()} · TEST FROM SEASON {a.split.test_start_season} WEEK {a.split.test_start_week}
+                {a.split.strategy.replace(/_/g, ' ').toUpperCase()} · {evaluationLabel(a).toUpperCase()} · FROM WEEK {a.split.test_start_week}
               </span>
             )}
           </div>
@@ -82,9 +85,33 @@ export function PerformanceDashboard() {
 
         {a && selected && (
           <>
-            <p className="my-6 border border-ink bg-acid px-4 py-3 font-mono text-[11px] font-bold text-ink">
+            <div className="evaluation-toolbar evaluation-selector">
+              <div>
+                <small>Evaluation</small>
+                <div role="tablist" aria-label="Evaluation season">
+                  {evaluations.map((e) => (
+                    <button
+                      key={e.eval_id}
+                      role="tab"
+                      aria-selected={e.eval_id === a.eval_id}
+                      className={e.eval_id === a.eval_id ? 'active' : ''}
+                      onClick={() => setEvalId(e.eval_id)}
+                    >
+                      {evaluationLabel(e)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <p className="max-w-xl text-xs leading-relaxed text-[#52605d]">
+                <b className="text-ink">{evaluationLabel(a)}</b>: {EVAL_KIND_EXPLANATION[a.kind] ?? a.kind}.
+              </p>
+            </div>
+
+            <p className="mb-6 border border-ink bg-acid px-4 py-3 font-mono text-[11px] font-bold text-ink">
               Every figure on this page is read from the committed evaluation artifact {a.eval_id}.
             </p>
+
+            {evaluations.length > 1 && <EvaluationComparison evaluations={evaluations} activeId={a.eval_id} onSelect={setEvalId} />}
 
             <div className="evaluation-kpis">
               <article>
@@ -117,7 +144,7 @@ export function PerformanceDashboard() {
                   <span>Sample · {selected.cohort}</span>
                 </div>
                 <strong>{fmtInt(selected.model.n)}</strong>
-                <p>player-game rows in the holdout</p>
+                <p>player-game rows in the {a.season} {EVAL_KIND_LABEL[a.kind] ?? a.kind}</p>
               </article>
             </div>
 
@@ -203,7 +230,7 @@ export function PerformanceDashboard() {
                     {a.rolling_origin.folds.length} folds for candidate {a.rolling_origin.candidate}.
                   </p>
                 </div>
-                <RollingOriginChart folds={a.rolling_origin.folds} />
+                <RollingOriginChart key={a.eval_id} folds={a.rolling_origin.folds} label={evaluationLabel(a)} />
                 <div className="mt-4 max-h-64 overflow-auto border border-[#d1d3cd]">
                   <table className="w-full text-left font-mono text-[11px]">
                     <thead className="sticky top-0 bg-[#f8f7f2] text-[9px] uppercase tracking-widest text-[#61706c]">
@@ -252,10 +279,11 @@ export function PerformanceDashboard() {
                 <h2>What was evaluated.</h2>
                 <ul>
                   <li><span>ID</span><div><b>eval_id</b><p className="break-all">{a.eval_id}</p></div></li>
+                  <li><span>KD</span><div><b>kind / season</b><p>{a.kind} · {a.season} — {EVAL_KIND_EXPLANATION[a.kind] ?? a.kind}</p></div></li>
                   <li><span>MV</span><div><b>model version</b><p>{a.model.version} · features {a.model.feature_version}</p></div></li>
                   <li><span>CH</span><div><b>champion / challenger</b><p>{describeCandidates(a.model.candidate)} / {describeCandidates(a.model.challenger)}</p></div></li>
                   <li><span>GT</span><div><b>code commit</b><p>{shortHash(a.code_commit)}</p></div></li>
-                  <li><span>IN</span><div><b>input</b><p>sha256 {shortHash(a.input.sha256)} · {fmtInt(a.input.n_rows)} rows</p></div></li>
+                  <li><span>IN</span><div><b>input</b><p className="break-all">{a.input.path} · sha256 {shortHash(a.input.sha256)} · {fmtInt(a.input.n_rows)} rows</p></div></li>
                   <li><span>TS</span><div><b>trained / evaluated</b><p>{fmtUtc(a.model.trained_at_utc)} / {fmtUtc(a.generated_at_utc)}</p></div></li>
                 </ul>
               </article>
@@ -270,14 +298,71 @@ export function PerformanceDashboard() {
                   Positional cohorts share one model version and one split, so their figures can be compared directly. Sample sizes differ by position; use them
                   when weighing the differences.
                 </p>
+                {evaluations.length > 1 && (
+                  <p>
+                    Every evaluation listed above scores the same frozen model artifact ({a.model.version}); only the scored season and its role in model
+                    selection differ.
+                  </p>
+                )}
                 {a.policy_sweep.length === 0 && <p>The artifact&apos;s policy sweep is empty for this evaluation, so no threshold analysis is shown.</p>}
               </article>
             </div>
-            <p className="evaluation-disclaimer">Held-out evaluation of a committed artifact. Not a guarantee of future performance.</p>
+            <p className="evaluation-disclaimer">
+              {a.kind === 'frozen_test' ? 'Held-out' : 'Out-of-sample'} evaluation of a committed artifact. Not a guarantee of future performance.
+            </p>
           </>
         )}
       </section>
     </>
+  )
+}
+
+/** Compact side-by-side of the headline figures per evaluation. Values only; the reader draws the comparison. */
+function EvaluationComparison({
+  evaluations,
+  activeId,
+  onSelect,
+}: {
+  evaluations: PerformanceArtifact[]
+  activeId: string
+  onSelect: (id: string) => void
+}) {
+  return (
+    <div className="mb-6 overflow-x-auto border border-[#bec2b8] bg-[#f8f7f2]">
+      <table className="w-full min-w-[560px] text-left font-mono text-xs">
+        <thead className="text-[9px] uppercase tracking-widest text-[#61706c]">
+          <tr>
+            <th className="px-4 py-2">Evaluation</th>
+            <th className="px-4 py-2 text-right">n</th>
+            <th className="px-4 py-2 text-right">MAE · ALL</th>
+            <th className="px-4 py-2 text-right">Baseline MAE</th>
+            <th className="px-4 py-2 text-right">Within ±3</th>
+            <th className="px-4 py-2 text-right">Baseline ±3</th>
+            <th className="px-4 py-2 text-right">Folds</th>
+          </tr>
+        </thead>
+        <tbody>
+          {evaluations.map((e) => {
+            const active = e.eval_id === activeId
+            return (
+              <tr key={e.eval_id} className={`border-t border-[#d1d3cd] ${active ? 'bg-white font-bold' : 'text-[#52605d]'}`}>
+                <td className="px-4 py-2">
+                  <button type="button" className="text-left underline-offset-2 hover:underline" onClick={() => onSelect(e.eval_id)} aria-pressed={active}>
+                    {evaluationLabel(e)}
+                  </button>
+                </td>
+                <td className="px-4 py-2 text-right">{fmtInt(e.metrics.n)}</td>
+                <td className="px-4 py-2 text-right">{fmtNum(e.metrics.mae, 2)}</td>
+                <td className="px-4 py-2 text-right">{fmtNum(e.baseline.mae, 2)}</td>
+                <td className="px-4 py-2 text-right">{fmtPct(e.metrics.within_3_rate)}</td>
+                <td className="px-4 py-2 text-right">{fmtPct(e.baseline.within_3_rate)}</td>
+                <td className="px-4 py-2 text-right">{e.rolling_origin.folds.length}</td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+    </div>
   )
 }
 

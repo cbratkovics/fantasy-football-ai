@@ -69,6 +69,20 @@ def decide(
     ]
 
 
+def _describe_failure(check: dict[str, Any]) -> str:
+    """Human-readable contract failure naming the missing (season, week) where relevant."""
+    d = check.get("detail") or {}
+    if check["name"] == "freshness":
+        exp, latest = d.get("expected_through", []), d.get("latest", [])
+        return (
+            f"freshness: nflverse has no complete stats through season {exp[0]} week {exp[1]} "
+            f"(latest available: season {latest[0]} week {latest[1]})"
+        )
+    if check["name"] == "newest_week_row_count":
+        return f"newest_week_row_count: {d.get('rows')} rows, expected within {d.get('band')}"
+    return check["name"]
+
+
 def rolling_path(season: int, artifacts: Path) -> Path:
     return artifacts / "eval" / f"rolling_{season}.json"
 
@@ -151,8 +165,12 @@ def run_weekly(
     log["season"], log["week"] = int(season), int(week)
     step("season_week", season=season, week=week)
 
-    # 2. stats + contracts
-    stats = nflverse.load_weekly_stats(range(MIN_SEASON, season + 1))
+    # 2. stats + contracts. Rows of the target week itself (and anything later) are dropped
+    # before any check: they are incomplete by definition while the week is being played.
+    loaded = nflverse.load_weekly_stats(range(MIN_SEASON, season + 1))
+    stats = loaded[
+        (loaded["season"] < season) | ((loaded["season"] == season) & (loaded["week"] < week))
+    ].reset_index(drop=True)
     if week > 1:
         expected_through = (season, week - 1)
     else:
@@ -161,7 +179,13 @@ def run_weekly(
     report = contracts.check_stats_contract(
         stats, expected_through=expected_through, prior_row_count=prior_rows
     )
-    failures = [c["name"] for c in report["checks"] if not c["ok"]]
+    failures = [_describe_failure(c) for c in report["checks"] if not c["ok"]]
+    step(
+        "stats",
+        loaded_rows=int(len(loaded)),
+        rows_before_target_week=int(len(stats)),
+        dropped_partial_rows=int(len(loaded) - len(stats)),
+    )
     step("contracts", ok=report["ok"], failures=failures, summary=report["summary"])
     contract_ok = report["ok"]
 
@@ -320,13 +344,9 @@ def run_weekly(
     }
     if not dry_run:
         registry.write_manifest(manifest, artifacts / "manifest.json")
-        if write_model_card and manifest.get("eval_id"):
+        if write_model_card and registry.evaluations(manifest):
             model_card.write_model_card(
-                champ_version,
-                manifest["eval_id"],
-                tiers_version=manifest.get("tiers_version"),
-                artifacts=artifacts,
-                out_path=REPO_ROOT / "docs" / "MODEL_CARD.md",
+                manifest, artifacts=artifacts, out_path=REPO_ROOT / "docs" / "MODEL_CARD.md"
             )
         runs = artifacts / "runs"
         runs.mkdir(parents=True, exist_ok=True)

@@ -8,8 +8,11 @@ const WIDTH = 640
 const HEIGHT = 220
 const MARGIN = { top: 12, right: 12, bottom: 34, left: 40 }
 
-/** Fold-by-fold MAE for the candidate and the causal baseline. */
-export function RollingOriginChart({ folds }: { folds: RollingFold[] }) {
+/**
+ * Fold-by-fold MAE for the candidate and the causal baseline. Works for any evaluation artifact
+ * (frozen test or out-of-sample season): the x-axis is whatever (season, week) folds the artifact carries.
+ */
+export function RollingOriginChart({ folds, label }: { folds: RollingFold[]; label?: string }) {
   const m = useMemo(() => {
     const key = (f: RollingFold) => `${f.season}·${f.week}`
     const keys = folds.map(key)
@@ -28,12 +31,12 @@ export function RollingOriginChart({ folds }: { folds: RollingFold[] }) {
   return (
     <figure className="mt-5 border border-[#d1d3cd] bg-white p-3">
       <figcaption className="mb-1 flex justify-between font-mono text-[9px] uppercase tracking-widest text-[#61706c]">
-        <span>Fold MAE by scored week</span>
+        <span>Fold MAE by scored week{label ? ` · ${label}` : ''}</span>
         <span>
           <i className="mr-1 inline-block h-2 w-4 bg-moss align-middle" />model <i className="ml-3 mr-1 inline-block h-2 w-4 bg-[#b9d3c8] align-middle" />baseline
         </span>
       </figcaption>
-      <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="h-auto w-full" role="img" aria-label="Rolling-origin MAE per fold, model versus baseline">
+      <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="h-auto w-full" role="img" aria-label={`Rolling-origin MAE per fold, model versus baseline${label ? `, ${label}` : ''}`}>
         {m.ticks.map((t) => (
           <g key={t}>
             <line x1={MARGIN.left} x2={WIDTH - MARGIN.right} y1={m.y(t)} y2={m.y(t)} stroke="#e4e5dd" />

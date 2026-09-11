@@ -18,9 +18,10 @@ strictly earlier periods, falling back to the position's earlier outcomes, falli
 row's own prediction when nothing earlier exists. Outcomes of a period are appended only after
 every row of that period has been scored.
 
-Artifact schema (``artifact_version`` 2.0):
+Artifact schema (``artifact_version`` 2.1):
 
-    artifact_version, eval_id, generated_at_utc, code_commit,
+    artifact_version, eval_id, kind (frozen_test | out_of_sample_season), season,
+    generated_at_utc, code_commit,
     input {path, sha256, n_rows}, model {version, feature_version, candidate},
     split {strategy, test_start_season, test_start_week},
     metrics {n, mae, median_ae, rmse, within_3_rate, within_5_rate},
@@ -45,7 +46,9 @@ from typing import Any
 
 import pandas as pd
 
-ARTIFACT_VERSION = "2.0"
+from ffai.config import REPO_ROOT
+
+ARTIFACT_VERSION = "2.1"
 REQUIRED_COLUMNS = {"player_id", "season", "week", "position", "prediction", "actual"}
 DEFAULT_THRESHOLDS: tuple[float, ...] = (0.5, 0.7, 0.9)
 BASELINE_NAME = "causal_trailing_mean"
@@ -273,6 +276,20 @@ def sha256_of_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+EVAL_KINDS = ("frozen_test", "out_of_sample_season")
+
+
+def repo_relative(path: Path | None) -> str | None:
+    """Path relative to the repository root when inside it (never a machine-specific absolute)."""
+    if path is None:
+        return None
+    path = Path(path).resolve()
+    try:
+        return path.relative_to(REPO_ROOT).as_posix()
+    except ValueError:
+        return path.name
+
+
 def build_artifact(
     report: dict[str, Any],
     *,
@@ -281,20 +298,35 @@ def build_artifact(
     model: dict[str, Any],
     rolling: dict[str, Any] | None = None,
     eval_id: str | None = None,
+    kind: str = "frozen_test",
+    season: int | None = None,
+    id_suffix: str = "",
 ) -> dict[str, Any]:
-    """Wrap an evaluation report with provenance fields."""
+    """Wrap an evaluation report with provenance fields.
+
+    ``kind`` is ``frozen_test`` (the season held out at training time) or
+    ``out_of_sample_season`` (a complete season the model never saw, scored with the frozen
+    artifact). ``input.path`` is repository-relative so public artifacts carry no local paths.
+    """
+    if kind not in EVAL_KINDS:
+        raise ValueError(f"kind must be one of {EVAL_KINDS}")
     now = dt.datetime.now(dt.UTC)
     cand = model.get("candidate", "")
     if isinstance(cand, dict):
         cand = cand[next(iter(cand))] if len(set(cand.values())) == 1 else "mixed"
-    eval_id = eval_id or f"eval-{now:%Y%m%d}-{model.get('version', 'model')}-{cand}".rstrip("-")
+    eval_id = eval_id or (
+        f"eval-{now:%Y%m%d}-{model.get('version', 'model')}-{cand}".rstrip("-") + id_suffix
+    )
+    season = season if season is not None else report.get("split", {}).get("test_start_season")
     artifact = {
         "artifact_version": ARTIFACT_VERSION,
         "eval_id": eval_id,
+        "kind": kind,
+        "season": season,
         "generated_at_utc": now.isoformat(timespec="seconds"),
         "code_commit": git_commit(),
         "input": {
-            "path": str(input_path) if input_path else None,
+            "path": repo_relative(input_path),
             "sha256": sha256_of_file(input_path) if input_path else None,
             "n_rows": int(input_rows),
         },

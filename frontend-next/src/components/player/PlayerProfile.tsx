@@ -6,7 +6,7 @@ import { fmtNum, fmtUtc } from '@/lib/format'
 import { PageShell } from '@/components/ui/PageShell'
 import { ErrorState, LoadingState } from '@/components/ui/States'
 import { Provenance } from '@/components/ui/Provenance'
-import { PlayerHistoryChart } from './PlayerHistoryChart'
+import { PlayerHistoryChart, SOURCE_LABEL, SOURCE_STYLE } from './PlayerHistoryChart'
 
 export function PlayerProfile({ playerId }: { playerId: string }) {
   const player = useQuery({ queryKey: ['player', playerId], queryFn: () => getPlayer(playerId) })
@@ -16,7 +16,7 @@ export function PlayerProfile({ playerId }: { playerId: string }) {
     <PageShell
       wide
       crumb={data?.name ?? playerId}
-      eyebrow="Player history · frozen test + weekly rows"
+      eyebrow="Player history · frozen test, out-of-sample and weekly rows"
       title={
         data ? (
           <>
@@ -29,7 +29,7 @@ export function PlayerProfile({ playerId }: { playerId: string }) {
           playerId
         )
       }
-      lede="Rows marked frozen_test come from the champion's held-out test predictions and carry realised points. Rows marked weekly come from published prediction files and gain an actual only once that week is scored."
+      lede="Frozen-test rows are the champion's held-out test season and carry realised points. Out-of-sample rows are a later complete season the same frozen model scored without any selection decision touching it. Weekly rows come from published prediction files and gain an actual only once that week is scored."
     >
       {player.isPending && <LoadingState label="Loading player history…" />}
       {player.isError && <ErrorState error={player.error} context={`GET /players/${playerId}`} />}
@@ -76,7 +76,7 @@ export function PlayerProfile({ playerId }: { playerId: string }) {
                         {err === null ? '—' : `${err > 0 ? '+' : ''}${fmtNum(err, 1)}`}
                       </td>
                       <td className="px-4 py-2.5">
-                        <span className={`px-1.5 py-0.5 text-[10px] ${row.source === 'frozen_test' ? 'bg-sand text-ink' : 'bg-ink text-acid'}`}>{row.source}</span>
+                        <span className={`px-1.5 py-0.5 text-[10px] ${SOURCE_STYLE[row.source] ?? 'bg-ink text-acid'}`}>{SOURCE_LABEL[row.source] ?? row.source}</span>
                       </td>
                       <td className="px-4 py-2.5 text-[#8c9a96]">{row.model_version ?? '—'}</td>
                     </tr>

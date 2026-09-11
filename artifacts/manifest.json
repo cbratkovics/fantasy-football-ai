@@ -22,6 +22,22 @@
     "week": 18
   },
   "eval_id": "eval-20260911-20260911-asof_v1-d333de20-rf",
+  "evaluations": [
+    {
+      "eval_id": "eval-20260911-20260911-asof_v1-d333de20-rf",
+      "generated_at_utc": "2026-09-11T03:43:01+00:00",
+      "kind": "frozen_test",
+      "path": "eval/eval-20260911-20260911-asof_v1-d333de20-rf.json",
+      "season": 2024
+    },
+    {
+      "eval_id": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025",
+      "generated_at_utc": "2026-09-11T03:44:17+00:00",
+      "kind": "out_of_sample_season",
+      "path": "eval/eval-20260911-20260911-asof_v1-d333de20-rf-oos2025.json",
+      "season": 2025
+    }
+  ],
   "feature_version": "asof_v1",
   "last_run": {
     "action": "PUBLISH",
@@ -36,5 +52,5 @@
     "latest": "predictions/2025/week_01.json"
   },
   "tiers_version": "20260911-tiers_prevseason_v1-2024",
-  "updated_at_utc": "2026-09-11T02:03:03+00:00"
+  "updated_at_utc": "2026-09-11T03:46:57+00:00"
 }

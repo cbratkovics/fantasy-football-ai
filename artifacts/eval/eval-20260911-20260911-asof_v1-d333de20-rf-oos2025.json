@@ -1,0 +1,255 @@
+{
+  "artifact_version": "2.1",
+  "eval_id": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025",
+  "kind": "out_of_sample_season",
+  "season": 2025,
+  "generated_at_utc": "2026-09-11T03:44:17+00:00",
+  "code_commit": "8e22a47cfc99ba85861cccbe63732da42feb27ab",
+  "input": {
+    "path": "artifacts/models/20260911-asof_v1-d333de20/oos_predictions_2025.csv",
+    "sha256": "6ba7b21b2772395f95056299dfef30c405861728276f88e3af74a0d702f9c02f",
+    "n_rows": 5914
+  },
+  "model": {
+    "version": "20260911-asof_v1-d333de20",
+    "feature_version": "asof_v1",
+    "candidate": {
+      "QB": "rf",
+      "RB": "rf",
+      "WR": "rf",
+      "TE": "rf"
+    },
+    "challenger": {
+      "QB": "xgb",
+      "RB": "xgb",
+      "WR": "xgb",
+      "TE": "xgb"
+    },
+    "trained_at_utc": "2026-09-11T02:01:34+00:00",
+    "input_sha256": "d333de203dc465fb13928e910f3b684b0c530ea014c454e95ec4b6e3acbde853"
+  },
+  "metric_definitions": {
+    "mae": "mean(|actual - prediction|)",
+    "median_ae": "median(|actual - prediction|)",
+    "rmse": "sqrt(mean((actual - prediction)^2))",
+    "within_3_rate": "mean(|actual - prediction| <= 3), same rows as mae",
+    "within_5_rate": "mean(|actual - prediction| <= 5), same rows as mae",
+    "baseline": "causal trailing mean of the player's earlier realised points (position fallback); outcomes of a week are added only after that week is scored"
+  },
+  "split": {
+    "strategy": "forward_time_holdout",
+    "test_start_season": 2025,
+    "test_start_week": 1
+  },
+  "metrics": {
+    "n": 5914,
+    "mae": 4.4909,
+    "median_ae": 3.287,
+    "rmse": 6.1377,
+    "within_3_rate": 0.4603,
+    "within_5_rate": 0.6726
+  },
+  "baseline": {
+    "name": "causal_trailing_mean",
+    "n": 5914,
+    "mae": 4.8046,
+    "median_ae": 3.5973,
+    "rmse": 6.4873,
+    "within_3_rate": 0.432,
+    "within_5_rate": 0.6251
+  },
+  "cohorts": {
+    "QB": {
+      "n": 650,
+      "mae": 6.635,
+      "median_ae": 5.648,
+      "rmse": 8.2294,
+      "within_3_rate": 0.2538,
+      "within_5_rate": 0.4492,
+      "baseline": {
+        "n": 650,
+        "mae": 7.079,
+        "median_ae": 6.4047,
+        "rmse": 8.6099,
+        "within_3_rate": 0.2246,
+        "within_5_rate": 0.4169
+      }
+    },
+    "RB": {
+      "n": 1539,
+      "mae": 4.5439,
+      "median_ae": 3.295,
+      "rmse": 6.2838,
+      "within_3_rate": 0.4542,
+      "within_5_rate": 0.679,
+      "baseline": {
+        "n": 1539,
+        "mae": 4.786,
+        "median_ae": 3.4323,
+        "rmse": 6.6262,
+        "within_3_rate": 0.4483,
+        "within_5_rate": 0.6244
+      }
+    },
+    "TE": {
+      "n": 1264,
+      "mae": 3.5882,
+      "median_ae": 2.548,
+      "rmse": 5.0716,
+      "within_3_rate": 0.5578,
+      "within_5_rate": 0.7682,
+      "baseline": {
+        "n": 1264,
+        "mae": 3.748,
+        "median_ae": 2.6983,
+        "rmse": 5.2464,
+        "within_3_rate": 0.5356,
+        "within_5_rate": 0.7358
+      }
+    },
+    "WR": {
+      "n": 2461,
+      "mae": 4.3551,
+      "median_ae": 3.239,
+      "rmse": 5.8938,
+      "within_3_rate": 0.4685,
+      "within_5_rate": 0.6786,
+      "baseline": {
+        "n": 2461,
+        "mae": 4.7582,
+        "median_ae": 3.6857,
+        "rmse": 6.3215,
+        "within_3_rate": 0.4234,
+        "within_5_rate": 0.6237
+      }
+    }
+  },
+  "policy_sweep": [],
+  "rolling_origin": {
+    "candidate": "rf",
+    "strategy": "refit on all rows strictly before (season, week); score that week",
+    "folds": [
+      {
+        "season": 2025,
+        "week": 2,
+        "n": 339,
+        "mae": 4.7398,
+        "baseline_mae": 4.9546
+      },
+      {
+        "season": 2025,
+        "week": 3,
+        "n": 347,
+        "mae": 4.3121,
+        "baseline_mae": 4.9046
+      },
+      {
+        "season": 2025,
+        "week": 4,
+        "n": 352,
+        "mae": 4.595,
+        "baseline_mae": 5.3034
+      },
+      {
+        "season": 2025,
+        "week": 5,
+        "n": 311,
+        "mae": 4.2145,
+        "baseline_mae": 4.8791
+      },
+      {
+        "season": 2025,
+        "week": 6,
+        "n": 317,
+        "mae": 4.4148,
+        "baseline_mae": 5.093
+      },
+      {
+        "season": 2025,
+        "week": 7,
+        "n": 335,
+        "mae": 4.5545,
+        "baseline_mae": 5.313
+      },
+      {
+        "season": 2025,
+        "week": 8,
+        "n": 287,
+        "mae": 4.5224,
+        "baseline_mae": 5.245
+      },
+      {
+        "season": 2025,
+        "week": 9,
+        "n": 309,
+        "mae": 4.4479,
+        "baseline_mae": 5.153
+      },
+      {
+        "season": 2025,
+        "week": 10,
+        "n": 310,
+        "mae": 4.4351,
+        "baseline_mae": 5.4668
+      },
+      {
+        "season": 2025,
+        "week": 11,
+        "n": 324,
+        "mae": 4.4548,
+        "baseline_mae": 5.0689
+      },
+      {
+        "season": 2025,
+        "week": 12,
+        "n": 308,
+        "mae": 4.3523,
+        "baseline_mae": 5.1687
+      },
+      {
+        "season": 2025,
+        "week": 13,
+        "n": 349,
+        "mae": 4.2346,
+        "baseline_mae": 4.9626
+      },
+      {
+        "season": 2025,
+        "week": 14,
+        "n": 325,
+        "mae": 4.3215,
+        "baseline_mae": 5.1075
+      },
+      {
+        "season": 2025,
+        "week": 15,
+        "n": 341,
+        "mae": 4.6027,
+        "baseline_mae": 5.4234
+      },
+      {
+        "season": 2025,
+        "week": 16,
+        "n": 362,
+        "mae": 4.4755,
+        "baseline_mae": 5.4675
+      },
+      {
+        "season": 2025,
+        "week": 17,
+        "n": 353,
+        "mae": 4.3888,
+        "baseline_mae": 5.2878
+      },
+      {
+        "season": 2025,
+        "week": 18,
+        "n": 344,
+        "mae": 4.3456,
+        "baseline_mae": 5.2512
+      }
+    ],
+    "mean_mae": 4.436,
+    "mean_baseline_mae": 5.1794
+  }
+}

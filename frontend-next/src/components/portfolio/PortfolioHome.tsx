@@ -13,8 +13,8 @@ import {
   CommandLineIcon,
   ShieldCheckIcon,
 } from '@heroicons/react/24/outline'
-import { getHealth, getLatestWeek, getPerformance, getPredictions } from '@/lib/api/players'
-import { fmtNum, fmtPct } from '@/lib/format'
+import { evaluationLabel, getHealth, getLatestWeek, getPerformance, getPredictions, latestEvaluation } from '@/lib/api/players'
+import { fmtInt, fmtNum, fmtPct } from '@/lib/format'
 import { describeError } from '@/lib/api/client'
 import { Navigation } from '@/components/layout/Navigation'
 import { Footer } from '@/components/layout/Footer'
@@ -57,6 +57,9 @@ export function PortfolioHome() {
     queryFn: () => getPredictions(latest.data!.season, latest.data!.week, 'ppr'),
     enabled: !!latest.data,
   })
+
+  // The most recent season on record; the API lists every evaluation and the UI never names an id.
+  const evaluation = useMemo(() => latestEvaluation(perf.data?.evaluations), [perf.data])
 
   const rows = useMemo(() => (preds.data?.predictions ?? []).slice(0, CONSOLE_ROWS), [preds.data])
   const maxFloor = useMemo(() => Math.ceil(Math.max(0, ...rows.map((r) => r.floor))), [rows])
@@ -114,17 +117,17 @@ export function PortfolioHome() {
             </div>
             <div className="console-metrics">
               <div>
-                <small>HOLDOUT MAE · CHAMPION</small>
-                <strong>{perf.data ? fmtNum(perf.data.metrics.mae, 2) : '—'}</strong>
-                <span>{perf.data ? `baseline ${fmtNum(perf.data.baseline.mae, 2)} · n ${perf.data.metrics.n.toLocaleString()}` : 'reading evaluation artifact'}</span>
+                <small>{evaluation ? `MAE · ${evaluationLabel(evaluation)}` : 'MAE · CHAMPION'}</small>
+                <strong>{evaluation ? fmtNum(evaluation.metrics.mae, 2) : '—'}</strong>
+                <span>{evaluation ? `baseline ${fmtNum(evaluation.baseline.mae, 2)} · n ${fmtInt(evaluation.metrics.n)}` : 'reading evaluation artifacts'}</span>
               </div>
               <div>
                 <small>WITHIN ±3 POINTS</small>
-                <strong>{perf.data ? fmtPct(perf.data.metrics.within_3_rate, 0) : '—'}</strong>
-                <span>{perf.data ? `baseline ${fmtPct(perf.data.baseline.within_3_rate, 0)}` : ''}</span>
+                <strong>{evaluation ? fmtPct(evaluation.metrics.within_3_rate, 0) : '—'}</strong>
+                <span>{evaluation ? `baseline ${fmtPct(evaluation.baseline.within_3_rate, 0)}` : ''}</span>
               </div>
             </div>
-            {perf.data && <FoldBars folds={perf.data.rolling_origin.folds} />}
+            {evaluation && <FoldBars folds={evaluation.rolling_origin.folds} />}
             <div className="threshold-control">
               <div>
                 <label htmlFor="floor-threshold">Minimum floor to start</label>
@@ -156,7 +159,8 @@ export function PortfolioHome() {
             </div>
             <p className="console-note">
               {rows.length > 0 ? `${approved.length} of ${rows.length} top projections clear the floor. ` : ''}
-              Live values from the API; MAE and fold bars come from evaluation artifact {perf.data?.eval_id ?? '…'}.
+              Live values from the API; MAE and fold bars come from evaluation artifact {evaluation?.eval_id ?? '…'}
+              {evaluation ? ` (${evaluationLabel(evaluation)})` : ''}.
             </p>
           </div>
         </section>

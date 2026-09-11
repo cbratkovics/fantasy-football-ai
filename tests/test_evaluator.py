@@ -153,3 +153,29 @@ def test_build_artifact_records_provenance(tmp_path) -> None:
     assert art["metric_definitions"]["within_3_rate"].startswith("mean(|actual - prediction| <= 3)")
     path = evaluator.write_artifact(art, tmp_path / "out" / "e.json")
     assert path.exists()
+
+
+def test_input_path_is_repo_relative_and_kind_is_recorded(tmp_path) -> None:
+    from ffai.config import REPO_ROOT
+
+    inside = REPO_ROOT / "artifacts" / "models" / "v" / "test_predictions.csv"
+    assert evaluator.repo_relative(inside) == "artifacts/models/v/test_predictions.csv"
+    assert evaluator.repo_relative(None) is None
+    outside = tmp_path / "preds.csv"
+    pd.DataFrame(ROWS).to_csv(outside, index=False)
+    assert "/" not in evaluator.repo_relative(outside)  # never a machine-specific absolute path
+    report = evaluator.evaluate_rows(ROWS, (2024, 1))
+    art = evaluator.build_artifact(
+        report,
+        input_path=outside,
+        input_rows=4,
+        model={"version": "v", "candidate": {"QB": "rf"}},
+        kind="out_of_sample_season",
+        season=2025,
+        id_suffix="-oos2025",
+    )
+    assert art["kind"] == "out_of_sample_season" and art["season"] == 2025
+    assert art["eval_id"].endswith("-rf-oos2025")
+    assert art["input"]["path"] == "preds.csv"
+    with pytest.raises(ValueError, match="kind"):
+        evaluator.build_artifact(report, input_path=None, input_rows=4, model={}, kind="nope")

@@ -9,7 +9,9 @@
       "champion":   {"model_version": "...", "candidate": "rf"},
       "challenger": {"model_version": "...", "candidate": "xgb"},
       "tiers_version": "...",
-      "eval_id": "...",
+      "eval_id": "...",                       # the frozen-test evaluation (legacy field)
+      "evaluations": [{"eval_id": "...", "kind": "frozen_test|out_of_sample_season",
+                       "season": 2024, "path": "eval/<eval_id>.json"}],
       "data_through": {"season": 2024, "week": 18},
       "predictions": {"latest": "predictions/2025/week_01.json"},
       "last_run": {"run_id": "...", "at_utc": "...", "action": "PUBLISH|HOLD|PROMOTE",
@@ -84,6 +86,36 @@ def load_pipelines(
             raise FileNotFoundError(f"missing model artifact {p}")
         out[pos] = joblib.load(p)
     return out
+
+
+def evaluations(manifest: dict[str, Any]) -> list[dict[str, Any]]:
+    """The manifest's ``evaluations`` list (each ``{eval_id, kind, season, path}``).
+
+    Older manifests only carry ``eval_id``; that entry is returned as the frozen-test evaluation
+    so callers never need the legacy field.
+    """
+    evs = list(manifest.get("evaluations") or [])
+    if not evs and manifest.get("eval_id"):
+        evs = [
+            {
+                "eval_id": manifest["eval_id"],
+                "kind": "frozen_test",
+                "season": None,
+                "path": f"eval/{manifest['eval_id']}.json",
+            }
+        ]
+    return evs
+
+
+def register_evaluation(manifest: dict[str, Any], entry: dict[str, Any]) -> dict[str, Any]:
+    """Insert or replace ``entry`` (by ``eval_id``) in ``manifest['evaluations']``."""
+    evs = [e for e in evaluations(manifest) if e["eval_id"] != entry["eval_id"]]
+    evs.append(entry)
+    evs.sort(key=lambda e: (e.get("season") or 0, e["eval_id"]))
+    manifest["evaluations"] = evs
+    if entry.get("kind") == "frozen_test":
+        manifest["eval_id"] = entry["eval_id"]
+    return manifest
 
 
 def slot(manifest: dict[str, Any], name: str) -> tuple[str, str | dict[str, str]]:

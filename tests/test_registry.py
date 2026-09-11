@@ -35,3 +35,41 @@ def test_promote_requires_four_recent_wins_and_frozen_test_win() -> None:
     # Only the last four weeks count.
     ok, _ = registry.should_promote([1, 5, 5, 5, 5], [9, 4, 4, 4, 4], 5.0, 4.5)
     assert ok
+
+
+def test_evaluations_helper_falls_back_to_legacy_eval_id() -> None:
+    legacy = {"eval_id": "eval-a"}
+    evs = registry.evaluations(legacy)
+    assert evs == [
+        {"eval_id": "eval-a", "kind": "frozen_test", "season": None, "path": "eval/eval-a.json"}
+    ]
+    assert registry.evaluations({}) == []
+
+
+def test_register_evaluation_keeps_frozen_as_legacy_eval_id_and_replaces_by_id() -> None:
+    m = {"eval_id": "eval-a"}
+    registry.register_evaluation(
+        m,
+        {
+            "eval_id": "eval-a-oos2025",
+            "kind": "out_of_sample_season",
+            "season": 2025,
+            "path": "eval/x.json",
+        },
+    )
+    registry.register_evaluation(
+        m, {"eval_id": "eval-a", "kind": "frozen_test", "season": 2024, "path": "eval/eval-a.json"}
+    )
+    ids = [e["eval_id"] for e in m["evaluations"]]
+    assert ids == ["eval-a", "eval-a-oos2025"]  # sorted by season
+    assert m["eval_id"] == "eval-a"
+    registry.register_evaluation(
+        m,
+        {
+            "eval_id": "eval-a-oos2025",
+            "kind": "out_of_sample_season",
+            "season": 2025,
+            "path": "eval/y.json",
+        },
+    )
+    assert len(m["evaluations"]) == 2 and m["evaluations"][1]["path"] == "eval/y.json"

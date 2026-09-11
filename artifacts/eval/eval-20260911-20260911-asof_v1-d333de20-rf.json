@@ -1,10 +1,12 @@
 {
-  "artifact_version": "2.0",
+  "artifact_version": "2.1",
   "eval_id": "eval-20260911-20260911-asof_v1-d333de20-rf",
-  "generated_at_utc": "2026-09-11T02:02:56+00:00",
-  "code_commit": "c0a47cc7e81af913a6c701286d8667d11375f7c9",
+  "kind": "frozen_test",
+  "season": 2024,
+  "generated_at_utc": "2026-09-11T03:43:01+00:00",
+  "code_commit": "8e22a47cfc99ba85861cccbe63732da42feb27ab",
   "input": {
-    "path": "/Users/christopherbratkovics/Desktop/portfolio_projects/fantasy-football-ai/artifacts/models/20260911-asof_v1-d333de20/test_predictions.csv",
+    "path": "artifacts/models/20260911-asof_v1-d333de20/test_predictions.csv",
     "sha256": "30cf233f8cd8e9083e00c2fac50b8cd65b24cf51cc07dbe30e3ad75af628b6f5",
     "n_rows": 5747
   },

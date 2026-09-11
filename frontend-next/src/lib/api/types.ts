@@ -11,12 +11,29 @@ export interface DataThrough {
   week: number
 }
 
+/** How an evaluation artifact relates to model selection. Mirrors schemas.EvalKind. */
+export type EvalKind = 'frozen_test' | 'out_of_sample_season'
+
+export type HistorySource = EvalKind | 'weekly'
+
+export interface Root {
+  name: string
+  version: string
+  docs: string
+  health: string
+  performance: string
+  manifest: string
+}
+
 export interface Health {
   status: 'ok'
   model_version: string
   feature_version: string
   tiers_version: string | null
+  /** The frozen-test evaluation id. */
   eval_id: string | null
+  /** Every registered eval_id, in manifest order. */
+  evaluations: string[]
   data_through: DataThrough
   loaded_at_utc: string
   positions_loaded: string[]
@@ -76,7 +93,7 @@ export interface PlayerHistoryRow {
   ceiling: number | null
   actual: number | null
   model_version: string | null
-  source: 'frozen_test' | 'weekly'
+  source: HistorySource
 }
 
 export interface PlayerResponse {
@@ -151,6 +168,8 @@ export interface RollingFold {
 export interface PerformanceArtifact {
   artifact_version: string
   eval_id: string
+  kind: EvalKind
+  season: number
   generated_at_utc: string
   code_commit: string
   input: { path: string; sha256: string; n_rows: number }
@@ -175,4 +194,11 @@ export interface PerformanceArtifact {
   }
   metric_definitions: Record<string, string>
   policy_sweep: unknown[]
+}
+
+/** GET /performance: every registered evaluation artifact for the champion. */
+export interface PerformanceResponse {
+  model_version: string
+  feature_version: string
+  evaluations: PerformanceArtifact[]
 }

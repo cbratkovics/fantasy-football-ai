@@ -2,8 +2,9 @@
 
 Startup reads ``artifacts/manifest.json`` and loads: the champion pipelines per position (to
 validate the artifact set and expose versions), the tiers artifact, every predictions file, the
-frozen test predictions of the champion, and the evaluation artifact. It fails fast with a clear
-error when the manifest is missing. There is no database, cache, auth, payment, or LLM code.
+champion's frozen-test and out-of-sample season predictions, and every registered evaluation
+artifact. It fails fast with a clear error when the manifest is missing. There is no database,
+cache, auth, payment, or language-model code.
 
 Run locally:  ``uvicorn ffai.serve.app:app --port 7860``
 """
@@ -34,6 +35,7 @@ DEFAULT_ORIGINS = [
     "http://127.0.0.1:3000",
     "https://winmyleague.ai",
     "https://www.winmyleague.ai",
+    "https://fantasy-football-ai.vercel.app",
 ]
 
 
@@ -47,10 +49,17 @@ class State:
     pipelines: dict[str, Any]
     tiers: dict[str, Any] | None
     tiers_meta: dict[str, Any] | None
-    evaluation: dict[str, Any] | None
+    evaluations: dict[str, dict[str, Any]]  # eval_id -> artifact (insertion order = manifest)
     predictions: dict[tuple[int, int], dict[str, Any]]
-    frozen_test: pd.DataFrame | None
+    scored_seasons: list[tuple[str, pd.DataFrame]]  # (source, champion rows with actuals)
     loaded_at_utc: str
+
+
+def _champion_rows(df: pd.DataFrame, candidate: str | dict[str, str]) -> pd.DataFrame:
+    mask = df.apply(
+        lambda r: r["candidate"] == registry.candidate_for(candidate, r["position"]), axis=1
+    )
+    return df[mask].reset_index(drop=True)
 
 
 def load_state(artifacts: Path = ARTIFACTS_DIR) -> State:
@@ -68,10 +77,14 @@ def load_state(artifacts: Path = ARTIFACTS_DIR) -> State:
         s.tiers = json.loads((tdir / "tiers.json").read_text(encoding="utf-8"))
         s.tiers_meta = json.loads((tdir / "metadata.json").read_text(encoding="utf-8"))
 
-    s.evaluation = None
-    ev = manifest.get("eval_id")
-    if ev:
-        s.evaluation = json.loads((artifacts / "eval" / f"{ev}.json").read_text(encoding="utf-8"))
+    s.evaluations = {}
+    for entry in registry.evaluations(manifest):
+        p = artifacts / entry["path"]
+        if p.exists():
+            art = json.loads(p.read_text(encoding="utf-8"))
+            art.setdefault("kind", entry.get("kind", "frozen_test"))
+            art.setdefault("season", entry.get("season"))
+            s.evaluations[entry["eval_id"]] = art
 
     s.predictions = {}
     pdir = artifacts / "predictions"
@@ -80,16 +93,15 @@ def load_state(artifacts: Path = ARTIFACTS_DIR) -> State:
             payload = json.loads(f.read_text(encoding="utf-8"))
             s.predictions[(int(payload["season"]), int(payload["week"]))] = payload
 
-    s.frozen_test = None
-    tp = registry.model_dir(s.model_version, artifacts) / s.metadata.get(
-        "test_predictions_path", "test_predictions.csv"
-    )
+    s.scored_seasons = []
+    mdir = registry.model_dir(s.model_version, artifacts)
+    tp = mdir / s.metadata.get("test_predictions_path", "test_predictions.csv")
     if tp.exists():
-        df = pd.read_csv(tp)
-        champ = df.apply(
-            lambda r: r["candidate"] == registry.candidate_for(s.candidate, r["position"]), axis=1
+        s.scored_seasons.append(("frozen_test", _champion_rows(pd.read_csv(tp), s.candidate)))
+    for f in sorted(mdir.glob("oos_predictions_*.csv")):
+        s.scored_seasons.append(
+            ("out_of_sample_season", _champion_rows(pd.read_csv(f), s.candidate))
         )
-        s.frozen_test = df[champ].reset_index(drop=True)
 
     s.loaded_at_utc = dt.datetime.now(dt.UTC).isoformat(timespec="seconds")
     return s
@@ -104,11 +116,11 @@ async def lifespan(app: FastAPI):
         raise RuntimeError(f"cannot start: {exc}") from exc
     st: State = app.state.s
     log.info(
-        "loaded model %s (%s) tiers=%s eval=%s predictions=%d",
+        "loaded model %s (%s) tiers=%s evaluations=%s predictions=%d",
         st.model_version,
         st.candidate,
         st.manifest.get("tiers_version"),
-        st.manifest.get("eval_id"),
+        list(st.evaluations),
         len(st.predictions),
     )
     yield
@@ -136,6 +148,18 @@ def _reception_weight(fmt: str) -> float:
     return {"ppr": 0.0, "half": 0.5, "standard": 1.0}[fmt]
 
 
+@app.get("/", response_model=schemas.Root)
+def root() -> schemas.Root:
+    return schemas.Root(
+        name="ffai — fantasy football projections",
+        version=__version__,
+        docs="/docs",
+        health="/health",
+        performance="/performance",
+        manifest="/manifest",
+    )
+
+
 @app.get("/health", response_model=schemas.Health)
 def health() -> schemas.Health:
     s = _state()
@@ -145,6 +169,7 @@ def health() -> schemas.Health:
         feature_version=s.metadata["feature_version"],
         tiers_version=s.manifest.get("tiers_version"),
         eval_id=s.manifest.get("eval_id"),
+        evaluations=list(s.evaluations),
         data_through=s.manifest.get("data_through", s.metadata["data_through"]),
         loaded_at_utc=s.loaded_at_utc,
         positions_loaded=sorted(s.pipelines),
@@ -212,9 +237,9 @@ def player(player_id: str) -> schemas.PlayerResponse:
     s = _state()
     rows: list[schemas.PlayerHistoryRow] = []
     name = team = position = None
-    if s.frozen_test is not None:
-        ft = s.frozen_test[s.frozen_test["player_id"] == player_id]
-        for r in ft.itertuples(index=False):
+    for source, frame in s.scored_seasons:
+        sub = frame[frame["player_id"] == player_id]
+        for r in sub.itertuples(index=False):
             name, team, position = r.player_display_name, r.team, r.position
             rows.append(
                 schemas.PlayerHistoryRow(
@@ -225,7 +250,7 @@ def player(player_id: str) -> schemas.PlayerResponse:
                     ceiling=float(r.prediction_ceiling),
                     actual=float(r.actual),
                     model_version=s.model_version,
-                    source="frozen_test",
+                    source=source,
                 )
             )
     for (season, week), payload in sorted(s.predictions.items()):
@@ -279,9 +304,24 @@ def tiers(position: str) -> schemas.TiersResponse:
     )
 
 
-@app.get("/performance")
-def performance() -> dict[str, Any]:
+@app.get("/performance", response_model=schemas.EvaluationsResponse)
+def performance() -> schemas.EvaluationsResponse:
+    """Every registered evaluation artifact (frozen test and out-of-sample seasons)."""
     s = _state()
-    if s.evaluation is None:
+    if not s.evaluations:
         raise HTTPException(404, "no evaluation artifact in manifest")
-    return s.evaluation
+    return schemas.EvaluationsResponse(
+        model_version=s.model_version,
+        feature_version=s.metadata["feature_version"],
+        evaluations=list(s.evaluations.values()),
+    )
+
+
+@app.get("/performance/{eval_id}")
+def performance_one(eval_id: str) -> dict[str, Any]:
+    """One evaluation artifact by id (the original single-artifact shape)."""
+    s = _state()
+    art = s.evaluations.get(eval_id)
+    if art is None:
+        raise HTTPException(404, f"unknown eval_id {eval_id!r}; known: {list(s.evaluations)}")
+    return art

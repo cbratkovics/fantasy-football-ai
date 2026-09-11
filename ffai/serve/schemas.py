@@ -7,6 +7,16 @@ from typing import Any, Literal
 from pydantic import BaseModel, Field
 
 ScoringFormat = Literal["standard", "half", "ppr"]
+EvalKind = Literal["frozen_test", "out_of_sample_season"]
+
+
+class Root(BaseModel):
+    name: str
+    version: str
+    docs: str
+    health: str
+    performance: str
+    manifest: str
 
 
 class Health(BaseModel):
@@ -14,7 +24,8 @@ class Health(BaseModel):
     model_version: str
     feature_version: str
     tiers_version: str | None
-    eval_id: str | None
+    eval_id: str | None = Field(description="the frozen-test evaluation id")
+    evaluations: list[str] = Field(default_factory=list, description="every registered eval_id")
     data_through: dict[str, int]
     loaded_at_utc: str
     positions_loaded: list[str]
@@ -56,7 +67,7 @@ class PlayerHistoryRow(BaseModel):
     ceiling: float | None = None
     actual: float | None
     model_version: str | None
-    source: Literal["frozen_test", "weekly"]
+    source: Literal["frozen_test", "out_of_sample_season", "weekly"]
 
 
 class PlayerResponse(BaseModel):
@@ -97,3 +108,18 @@ class TiersResponse(BaseModel):
 
 class ManifestResponse(BaseModel):
     manifest: dict[str, Any]
+
+
+class EvaluationSummary(BaseModel):
+    eval_id: str
+    kind: EvalKind
+    season: int | None
+    path: str
+
+
+class EvaluationsResponse(BaseModel):
+    model_version: str
+    feature_version: str
+    evaluations: list[dict[str, Any]] = Field(
+        description="full evaluation artifacts, each with eval_id, kind and season"
+    )

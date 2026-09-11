@@ -94,10 +94,35 @@ def test_tiers_per_position(client) -> None:
     assert client.get("/tiers/K").status_code == 404
 
 
-def test_performance_is_the_eval_artifact(client) -> None:
+def test_root_lists_entry_points(client) -> None:
+    body = client.get("/").json()
+    assert body["docs"] == "/docs" and body["health"] == "/health"
+    assert body["performance"] == "/performance" and body["name"]
+
+
+def test_performance_lists_every_registered_evaluation(client) -> None:
     body = client.get("/performance").json()
-    assert body["artifact_version"] and body["metrics"]["mae"] > 0
-    assert body["baseline"]["name"] == "causal_trailing_mean"
-    assert set(body["cohorts"]) == set(POSITIONS)
-    assert "within_3_rate" in body["metric_definitions"]
-    assert body["metrics"]["mae"] > 3.0, "MAE below 3 would suggest leakage"
+    assert body["model_version"] and body["feature_version"] == "asof_v1"
+    evs = body["evaluations"]
+    assert evs, "no evaluations"
+    kinds = {e["kind"] for e in evs}
+    assert "frozen_test" in kinds
+    for art in evs:
+        assert art["artifact_version"] and art["eval_id"] and art["season"]
+        assert art["baseline"]["name"] == "causal_trailing_mean"
+        assert set(art["cohorts"]) == set(POSITIONS)
+        assert "within_3_rate" in art["metric_definitions"]
+        assert art["metrics"]["mae"] > 3.0, "MAE below 3 would suggest leakage"
+        assert not art["input"]["path"].startswith("/"), "public artifact carries a local path"
+    health = client.get("/health").json()
+    assert set(health["evaluations"]) == {e["eval_id"] for e in evs}
+    if len(evs) > 1:
+        assert "out_of_sample_season" in kinds
+
+
+def test_performance_by_eval_id_keeps_the_single_artifact_shape(client) -> None:
+    evs = client.get("/performance").json()["evaluations"]
+    for art in evs:
+        one = client.get(f"/performance/{art['eval_id']}").json()
+        assert one["eval_id"] == art["eval_id"] and one["metrics"] == art["metrics"]
+    assert client.get("/performance/does-not-exist").status_code == 404
