@@ -108,3 +108,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+
+# nflverse parquet cache (ffai.data.nflverse)
+data/cache/

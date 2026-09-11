@@ -1,0 +1,11 @@
+# Runtime dependencies for the API image only (ffai.serve). Keep this list minimal:
+# the server loads committed artifacts and never trains, fetches, or talks to a database.
+# scikit-learn must match the version recorded in artifacts/models/<version>/metadata.json.
+fastapi>=0.110
+uvicorn[standard]>=0.29
+pydantic>=2.6
+numpy>=1.26
+pandas>=2.2
+scikit-learn>=1.5
+scipy>=1.12
+joblib>=1.3
