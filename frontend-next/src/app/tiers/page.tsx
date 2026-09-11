@@ -1,26 +1,26 @@
-import { TierVisualizationAPI } from '@/components/tiers/TierVisualizationAPI'
-import { Navigation } from '@/components/layout/Navigation'
-import { Footer } from '@/components/layout/Footer'
+import type { Metadata } from 'next'
+import { PageShell } from '@/components/ui/PageShell'
+import { TierBoard } from '@/components/tiers/TierBoard'
+
+export const metadata: Metadata = {
+  title: 'Preseason Tiers | Win My League',
+  description: 'Gaussian-mixture preseason tiers built from prior-season aggregates, read from the committed tiers artifact.',
+}
 
 export default function TiersPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
-      <Navigation />
-      <main className="pt-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-4xl text-center mb-12">
-            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
-              AI-Powered Player Tiers
-            </h1>
-            <p className="mt-6 text-xl leading-8 text-gray-300">
-              Real-time player tiers powered by machine learning. Our AI analyzes thousands of data points 
-              to group players by their true fantasy value, revealing clear tiers and draft strategies.
-            </p>
-          </div>
-          <TierVisualizationAPI />
-        </div>
-      </main>
-      <Footer />
-    </div>
+    <PageShell
+      wide
+      crumb="Tiers"
+      eyebrow="Preseason tiers · Gaussian mixture"
+      title={
+        <>
+          Groups, not <em className="font-serif font-normal text-moss">rankings.</em>
+        </>
+      }
+      lede="Tiers are fitted once per preseason from prior-season aggregates. Each player carries the probability the mixture assigned to their tier, and the artifact records how well those tiers matched the season that followed."
+    >
+      <TierBoard />
+    </PageShell>
   )
 }

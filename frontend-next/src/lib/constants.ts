@@ -1,53 +1,27 @@
-// Centralized constants for the application.
-//
-// This is a portfolio demo, not a commercial service. No prediction-accuracy,
-// user-count, or usage figures are published here, because none have been measured
-// against a held-out evaluation set on live data. Describe capability, not results.
+// Site-wide constants. No performance figures live here: every metric shown in the UI is read at
+// runtime from the API, which serves the committed evaluation artifact.
 
-export const METRICS = {
-  accuracy: {
-    description: 'Weekly point projections with confidence intervals',
-  },
-  models: {
-    architecture: 'Ensemble of XGBoost, LightGBM, and Neural Networks',
-    types: ['XGBoost', 'LightGBM', 'Neural Networks'],
-  },
-  features: {
-    description: 'Engineered features spanning usage, efficiency, matchup, and momentum signals',
-  },
-  techStack: {
-    python: '3.11',
-    tensorflow: '2.16',
-    nextjs: '14',
-    fastapi: '0.104',
-  },
+export const SITE = {
+  name: 'Win My League',
+  shortName: 'WML',
+  tagline: 'Decision Lab',
+  supportEmail: 'support@winmyleague.ai',
+  repoUrl: 'https://github.com/cbratkovics/fantasy-football-ai',
+  authorGithub: 'https://github.com/cbratkovics',
+  authorLinkedin: 'https://linkedin.com/in/cbratkovics',
 } as const
 
-export const FEATURES = {
-  core: [
-    'AI-powered weekly point projections',
-    'Transparent explanations for every prediction',
-    'Real-time injury and news integration',
-    'Position-specific ML models',
-    'Weather and matchup analysis',
-    'Confidence intervals included',
-    'Engineered features across usage, efficiency, and matchup categories',
-    'Ensemble models combining multiple algorithms',
-  ],
-  tiers: {
-    free: {
-      predictions: '5 per week',
-      features: ['Basic predictions', 'Limited explanations'],
-    },
-    pro: {
-      predictions: 'Unlimited',
-      features: ['Full predictions', 'Detailed explanations', 'Draft assistant'],
-      price: '$14.99/month',
-    },
-    premium: {
-      predictions: 'Unlimited',
-      features: ['Everything in Pro', 'API access', 'Custom scoring', 'Priority support'],
-      price: '$29.99/month',
-    },
-  },
+export const ROUTES = {
+  home: '/',
+  predictions: '/predictions',
+  tiers: '/tiers',
+  draft: '/draft',
+  startSit: '/start-sit',
+  performance: '/performance',
+  howItWorks: '/how-it-works',
+  learn: '/learn',
+  help: '/help',
+  about: '/about',
+  privacy: '/privacy',
+  terms: '/terms',
 } as const

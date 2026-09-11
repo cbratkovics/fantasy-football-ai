@@ -1,33 +1,20 @@
 import Link from 'next/link'
-import { HomeIcon } from '@heroicons/react/24/outline'
+import { ROUTES } from '@/lib/constants'
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-white px-4 py-16 sm:px-6 sm:py-24 md:grid md:place-items-center lg:px-8">
-      <div className="mx-auto max-w-max">
-        <main className="sm:flex">
-          <p className="text-4xl font-bold tracking-tight text-indigo-600 sm:text-5xl">404</p>
-          <div className="sm:ml-6">
-            <div className="sm:border-l sm:border-gray-200 sm:pl-6">
-              <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-                Page not found
-              </h1>
-              <p className="mt-1 text-base text-gray-500">
-                Sorry, we couldn't find the page you're looking for.
-              </p>
-            </div>
-            <div className="mt-10 flex space-x-3 sm:border-l sm:border-transparent sm:pl-6">
-              <Link
-                href="/"
-                className="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-              >
-                <HomeIcon className="mr-2 -ml-0.5 h-4 w-4" />
-                Go back home
-              </Link>
-            </div>
-          </div>
-        </main>
-      </div>
+    <div className="flex min-h-screen items-center justify-center bg-cream px-6 text-ink">
+      <main className="max-w-lg border border-[#c5c7c0] bg-[#f8f7f2] p-10">
+        <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-ember">Not found</p>
+        <h1 className="mt-4 text-4xl font-semibold tracking-[-0.04em]">There is nothing at this address.</h1>
+        <p className="mt-4 text-sm leading-6 text-[#52605d]">
+          The route may have been removed in the rebuild, or a player or week you asked for has no published artifact.
+        </p>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Link href={ROUTES.home} className="portfolio-button primary">Home</Link>
+          <Link href={ROUTES.predictions} className="portfolio-button secondary">Predictions</Link>
+        </div>
+      </main>
     </div>
   )
 }

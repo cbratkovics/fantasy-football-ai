@@ -1,165 +1,116 @@
-<p align="center">
-  <img src="docs/assets/readme-hero.svg" alt="Win My League Decision Lab — Forecast less. Decide better." width="100%" />
-</p>
+# Fantasy Football AI — artifact-backed weekly projections
 
-<p align="center">
-  <a href="https://fantasy-football-ai.vercel.app"><img alt="Live portfolio" src="https://img.shields.io/badge/EXPLORE_LIVE_PORTFOLIO-C7F36B?style=for-the-badge&logo=vercel&logoColor=101B19&labelColor=C7F36B"></a>
-  <a href="docs/PORTFOLIO_CASE_STUDY.md"><img alt="Read the case study" src="https://img.shields.io/badge/READ_THE_CASE_STUDY-176E5A?style=for-the-badge&logo=readme&logoColor=white"></a>
-  <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/LICENSE-MIT-FF6B35?style=for-the-badge"></a>
-</p>
+> **In one paragraph.** A weekly NFL fantasy projection system rebuilt around evidence: one as-of
+> feature module shared by training, evaluation, and serving; RandomForest champion models with an
+> XGBoost challenger per position; preseason GMM draft tiers; a forward-time evaluator with a causal
+> baseline and rolling-origin folds; a $0/month FastAPI server that only reads committed, versioned
+> artifacts; and an autonomous weekly GitHub Actions job that ingests nflverse data, checks contracts
+> and drift, scores the champion, shadow-scores the challenger, and publishes, holds, or promotes by a
+> deterministic rule. Every number in the docs and UI is read from a committed evaluation artifact
+> that records the dataset hash, split, baseline, metric definition, and code commit.
 
-<p align="center">
-  <strong>An end-to-end decision-science system disguised as a fantasy-football app.</strong><br />
-  Forecast outcomes. Quantify uncertainty. Apply an explicit policy. Measure whether the decision helped.
-</p>
+The audit that motivated this rebuild is in [`AUDIT.md`](AUDIT.md); the decisions are in
+[`docs/DECISIONS.md`](docs/DECISIONS.md); what was built and what remains is in
+[`docs/REBUILD_REPORT.md`](docs/REBUILD_REPORT.md).
 
----
+## What it does
 
-## The decision—not just the prediction
+* Predicts regular-season **PPR points for a player's next game** (QB/RB/WR/TE) from that player's
+  own prior weeks only. Standard and half-PPR are derived by the same scoring rules, not multipliers.
+* Publishes **preseason draft tiers** per position from prior-season aggregates.
+* Serves predictions, tiers, player history, and the full evaluation artifact over a read-only API.
+* Re-scores itself every week in CI and commits the results.
 
-Most ML projects stop at a score. **Win My League starts there.** It turns noisy, time-sensitive signals into ranked and explainable lineup actions, then evaluates the trade-off between opportunity, coverage, and downside.
-
-The sports domain is intentionally low-risk; the workflow maps directly to real decision systems with entity-level scores, asymmetric errors, policy thresholds, cohort monitoring, and decisions that must be explained.
-
-<table>
-<tr>
-<td width="33%"><strong>01 · ESTIMATE</strong><br><br>Position-specific forecasts and uncertainty from information available before the decision.</td>
-<td width="33%"><strong>02 · DECIDE</strong><br><br>A configurable policy separates model output from the action a user should take.</td>
-<td width="33%"><strong>03 · EVALUATE</strong><br><br>Forward-time tests compare error, coverage, regret, and downside across cohorts.</td>
-</tr>
-</table>
-
-> [!IMPORTANT]
-> **Evidence over theater.** Repository fixtures and UI examples are demo data—not measured production results. A metric becomes a portfolio claim only when an evaluation artifact records its input hash, time split, baseline, model version, and definition.
-
-## See it in action
-
-The interactive portfolio makes the system legible to both technical and product audiences:
-
-- **Policy simulator** — move the recommendation threshold and watch coverage/downside change.
-- **Evaluation workbench** — compare accuracy, tier agreement, and MAE by position cohort.
-- **System narrative** — follow the path from raw event through validation, modeling, decision, and monitoring.
-- **Technical brief** — inspect design choices, limitations, metric definitions, and the production path.
-
-<p align="center">
-  <a href="https://fantasy-football-ai.vercel.app"><strong>Open the live Decision Lab →</strong></a>
-  &nbsp;&nbsp;·&nbsp;&nbsp;
-  <a href="https://fantasy-football-ai.vercel.app/performance"><strong>Inspect evaluation →</strong></a>
-</p>
-
-## System at a glance
+## Architecture
 
 ```mermaid
 flowchart LR
-    A["01 · INGEST<br/>stats · availability · context"] --> B["02 · VALIDATE<br/>contracts · freshness · leakage"]
-    B --> C["03 · MODEL<br/>baselines · ensembles · intervals"]
-    C --> D["04 · DECIDE<br/>utility · threshold · abstention"]
-    D --> E["05 · MONITOR<br/>cohorts · drift · outcomes"]
-    E -. feedback .-> B
-
-    classDef core fill:#101b19,color:#f2f0e9,stroke:#176e5a,stroke-width:2px;
-    classDef action fill:#c7f36b,color:#101b19,stroke:#101b19,stroke-width:2px;
-    class A,B,C,E core;
-    class D action;
+  N[nflverse · nflreadpy] --> C[contracts + drift]
+  C --> F[as-of features · asof_v1]
+  F --> T[train: RF champion · XGB challenger]
+  F --> S[score week]
+  T --> A[(artifacts/ · manifest, models, tiers, eval, predictions)]
+  S --> A
+  A --> API[FastAPI · Docker :7860]
+  API --> UI[Next.js · frontend-next]
+  W[weekly.yml · Tuesdays] -. runs .-> C
+  W -. commits .-> A
 ```
 
-| Layer | What is here | Maturity |
-|:--|:--|:--:|
-| **Experience** | Next.js portfolio, policy simulator, projections, tiers, evaluation | ✅ Implemented |
-| **Evaluation** | Forward-time holdout, causal baseline, cohorts, policy sweep, evidence manifest | ✅ Implemented CLI |
-| **API** | FastAPI routes for players, predictions, tiers, authentication, subscriptions | 🟡 Mixed integration |
-| **Modeling** | Feature engineering, position models, ensembles, uncertainty, GMM tiers | 🧪 Prototype modules |
-| **Data** | Sleeper, ESPN, and weather adapters plus synthetic fixtures | 🟡 Mixed sources |
-| **Operations** | Docker, Railway/Vercel, Alembic, Redis/Celery, Terraform | 🏗️ Scaffolding |
+Details: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
-## Run it locally
+## Data and licence
 
-**Prerequisites:** Node.js 18+ and npm.
+The only data source is nflverse (weekly player stats, schedules, rosters) via `nflreadpy`, cached
+locally as parquet. Scoring rules are reconciled row-for-row against nflverse's own
+`fantasy_points` / `fantasy_points_ppr`. See [`docs/DATA_SOURCES.md`](docs/DATA_SOURCES.md) for the
+columns used and the licence statement.
+
+## How the numbers are produced
+
+No performance figure is written by hand. `scripts/train.py` records dataset hash, seasons, and
+per-position validation/test MAE in `artifacts/models/<version>/metadata.json`;
+`scripts/evaluate.py` evaluates the champion on the frozen 2024 season against a causal
+trailing-mean baseline, runs rolling-origin folds, writes `artifacts/eval/<eval_id>.json`, and
+renders [`docs/MODEL_CARD.md`](docs/MODEL_CARD.md) with the JSON key next to every figure. The API's
+`/performance` endpoint returns that same artifact, and the frontend renders it.
+
+Leakage is prevented by construction (every feature is computed on a series already shifted within
+the player's history) and verified on real data by `tests/test_asof_no_leakage.py`.
+
+## Run locally
 
 ```bash
-git clone https://github.com/cbratkovics/fantasy-football-ai.git
-cd fantasy-football-ai/frontend-next
-npm ci
-npm run dev
+# Python 3.11
+make install                      # uv venv + training/dev deps + editable install
+make test                         # offline: committed 40-player fixture
+FFAI_TEST_DATA=full make test     # same tests on the full 2019-2024 pull (network on first run)
+
+make api                          # http://127.0.0.1:7860/health  (reads artifacts/manifest.json)
+make frontend                     # http://localhost:3000  (NEXT_PUBLIC_API_URL=http://localhost:7860)
+
+# Retrain / re-evaluate / score (all write to artifacts/)
+make train
+make tiers SEASON=2024
+make evaluate
+make score SEASON=2025 WEEK=1 THROUGH=2024
+make weekly                       # dry-run of the autonomous job
 ```
 
-Open **[localhost:3000](http://localhost:3000)**. Authentication-backed routes require the Clerk environment values documented in [`frontend-next/VERCEL_ENVIRONMENT_SETUP.md`](frontend-next/VERCEL_ENVIRONMENT_SETUP.md); the portfolio landing page itself is the primary review experience.
+Docker: `docker build -t ffai-api . && docker run -p 7860:7860 ffai-api` (API only, non-root,
+port 7860 for Hugging Face Spaces). `docker compose up` runs API + frontend.
 
-## Reproduce an evaluation
+## The weekly job
 
-The evaluator is deliberately independent from model training, so a candidate model cannot redefine its own test. Give it a CSV with `player_id`, `season`, `week`, `position`, `prediction`, `actual`, and `decision_score`; `prediction_floor` is optional.
+`.github/workflows/weekly.yml` runs `ffai/pipeline/weekly.py` on Tuesdays during the season
+(and on demand): load stats through the last completed week → data contracts → PSI drift check
+→ build as-of features → score the champion → attach last week's actuals and append to the rolling
+evaluation → shadow-score the challenger → apply the policy (`PUBLISH` / `HOLD` / `PROMOTE`) →
+update `artifacts/manifest.json` and regenerate the model card → commit. A `HOLD` opens a GitHub
+issue with the run log. The policy is pure Python and unit-tested (`tests/test_weekly_policy.py`).
 
-```bash
-python -m backend.evaluation.decision_evaluator predictions.csv \
-  --test-start 2024-10 \
-  --output artifacts/evaluation.json
+## Repository layout
+
+```
+ffai/            package: config, data/, scoring, features/asof.py, models/, eval/, pipeline/, serve/
+artifacts/       committed, versioned: manifest.json, models/, tiers/, eval/, predictions/
+scripts/         thin CLIs: train, tiers, evaluate, score_week, run_weekly
+tests/           scoring reconciliation, leakage, grain, contracts, evaluator, drift, registry, API, policy
+docs/            ARCHITECTURE, DATA_SOURCES, DECISIONS, MODEL_CARD (generated), REBUILD_REPORT, case study
+frontend-next/   Next.js 14 app that only calls the API
+.github/         ci.yml (lint, tests, import check, docker build) · weekly.yml
 ```
 
-The artifact captures:
+## Limitations
 
-```text
-input SHA-256       forward-time split       Git commit
-causal baseline     position cohorts         threshold-policy metrics
-```
+* Features are the player's own production only; no opponent, injury, weather, depth-chart, or
+  market inputs. Players with no prior stat row get no prediction.
+* Weekly fantasy scores are noisy; see the model card for error magnitudes and the baseline
+  comparison before relying on any single projection.
+* Models are not retrained automatically; drift is monitored and the job holds publication when
+  inputs shift materially.
+* Not for betting.
 
-<details>
-<summary><strong>What every reported experiment should prove</strong></summary>
+## Licence
 
-1. An immutable input snapshot or content hash.
-2. Rolling-origin train, validation, and test windows.
-3. Naive and frozen expert-ranking baselines.
-4. MAE and interval coverage by position and week.
-5. Policy coverage, regret, and downside by cohort.
-6. Model and feature versions plus one reproduction command.
-
-</details>
-
-## Repository map
-
-```text
-fantasy-football-ai/
-├── frontend-next/              Next.js product and portfolio experience
-│   └── src/
-│       ├── app/                Route-level experiences
-│       └── components/         Decision, evaluation, and visualization UI
-├── backend/
-│   ├── api/                    FastAPI route modules
-│   ├── data/                   Source adapters and ingestion prototypes
-│   ├── evaluation/             Independent evidence-artifact CLI
-│   ├── ml/                     Features, models, tiers, and trainers
-│   └── services/               Inference, explanation, and integrations
-├── analytics/sql/              Decision-performance metric contract
-├── infrastructure/             Containers, proxy, and Terraform
-└── docs/                       Architecture, deployment, and case-study notes
-```
-
-## Technology
-
-<p>
-  <img alt="Python" src="https://img.shields.io/badge/Python-101B19?style=flat-square&logo=python&logoColor=C7F36B">
-  <img alt="FastAPI" src="https://img.shields.io/badge/FastAPI-101B19?style=flat-square&logo=fastapi&logoColor=C7F36B">
-  <img alt="pandas" src="https://img.shields.io/badge/pandas-101B19?style=flat-square&logo=pandas&logoColor=C7F36B">
-  <img alt="scikit-learn" src="https://img.shields.io/badge/scikit--learn-101B19?style=flat-square&logo=scikitlearn&logoColor=FF6B35">
-  <img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-101B19?style=flat-square&logo=postgresql&logoColor=C7F36B">
-  <img alt="Next.js" src="https://img.shields.io/badge/Next.js-101B19?style=flat-square&logo=nextdotjs&logoColor=white">
-  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-101B19?style=flat-square&logo=typescript&logoColor=C7F36B">
-  <img alt="Docker" src="https://img.shields.io/badge/Docker-101B19?style=flat-square&logo=docker&logoColor=C7F36B">
-  <img alt="Terraform" src="https://img.shields.io/badge/Terraform-101B19?style=flat-square&logo=terraform&logoColor=C7F36B">
-</p>
-
-## Go deeper
-
-| Read | Why |
-|:--|:--|
-| **[Portfolio case study](docs/PORTFOLIO_CASE_STUDY.md)** | Codebase audit, evaluation design, metric tree, system architecture, and interview narrative |
-| **[Deployment guide](docs/DEPLOYMENT.md)** | Hosting topology and deployment workflow |
-| **[Project structure](docs/PROJECT_STRUCTURE.md)** | Detailed guide to the repository |
-| **[Decision metric contract](analytics/sql/risk_strategy.sql)** | Grain, denominators, policy outcomes, and cohort definitions |
-
----
-
-<p align="center">
-  Built by <a href="https://github.com/cbratkovics"><strong>Christopher Bratkovics</strong></a><br />
-  <sub>Transparent assumptions · reproducible evidence · decisions that can be defended</sub><br /><br />
-  <a href="LICENSE">MIT License</a>
-</p>
+MIT (see `LICENSE`). Data: nflverse, CC-BY-4.0.

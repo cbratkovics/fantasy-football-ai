@@ -1,8 +1,0 @@
-{
-  "regions": ["iad1"],
-  "functions": {
-    "frontend/src/app/api/create-checkout-session/route.ts": {
-      "maxDuration": 10
-    }
-  }
-}

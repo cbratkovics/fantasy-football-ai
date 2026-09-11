@@ -1,26 +1,26 @@
+import type { Metadata } from 'next'
+import { PageShell } from '@/components/ui/PageShell'
 import { DraftSimulator } from '@/components/draft/DraftSimulator'
-import { Navigation } from '@/components/layout/Navigation'
-import { Footer } from '@/components/layout/Footer'
+
+export const metadata: Metadata = {
+  title: 'Draft Board | Win My League',
+  description: 'A snake mock draft whose board is built from the committed preseason tiers artifact.',
+}
 
 export default function DraftPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
-      <Navigation />
-      <main className="pt-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-4xl text-center mb-12">
-            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
-              Mock Draft Simulator
-            </h1>
-            <p className="mt-6 text-xl leading-8 text-gray-300">
-              Practice your draft strategy with AI-powered opponents. Get tier-based recommendations 
-              and see how your draft compares to optimal strategies.
-            </p>
-          </div>
-          <DraftSimulator />
-        </div>
-      </main>
-      <Footer />
-    </div>
+    <PageShell
+      wide
+      crumb="Draft"
+      eyebrow="Draft board built from the current tiers artifact"
+      title={
+        <>
+          Draft by tier, <em className="font-serif font-normal text-moss">then by prior PPG.</em>
+        </>
+      }
+      lede="Opponents follow one transparent rule: take the best available player by tier, breaking ties on prior-season points per game, subject to simple roster caps. There is no hidden strategy engine."
+    >
+      <DraftSimulator />
+    </PageShell>
   )
 }

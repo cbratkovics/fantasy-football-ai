@@ -114,3 +114,6 @@ data/cache/
 
 # Versioned model artifacts are committed on purpose (small, compressed)
 !artifacts/**
+
+# Placeholder-only example env file is tracked
+!.env.example

@@ -1,65 +1,59 @@
-.PHONY: help build up down logs clean test
+.PHONY: help install test lint format train tiers evaluate score weekly api build frontend
+
+PY ?= .venv/bin/python
 
 help:
-	@echo "Available commands:"
-	@echo "  make build    - Build Docker images"
-	@echo "  make up       - Start all services"
-	@echo "  make down     - Stop all services"
-	@echo "  make logs     - View logs"
-	@echo "  make clean    - Clean up volumes and images"
-	@echo "  make test     - Run tests"
-	@echo "  make migrate  - Run database migrations"
-	@echo "  make shell    - Open shell in backend container"
+	@echo "install   - create .venv and install training + dev dependencies"
+	@echo "test      - run the test suite (offline fixture; FFAI_TEST_DATA=full for the real pull)"
+	@echo "lint      - ruff + black --check"
+	@echo "format    - black"
+	@echo "train     - train champion/challenger candidates (writes artifacts/models/<version>)"
+	@echo "tiers     - build preseason GMM tiers (SEASON=2024)"
+	@echo "evaluate  - frozen-test + rolling-origin evaluation, manifest, model card"
+	@echo "score     - score one week: SEASON=2025 WEEK=1 [THROUGH=2024]"
+	@echo "weekly    - dry-run the autonomous weekly job"
+	@echo "api       - run the API locally on :7860"
+	@echo "build     - build the API Docker image"
+	@echo "frontend  - run the Next.js dev server on :3000"
 
-build:
-	docker-compose build
-
-up:
-	docker-compose up -d
-
-down:
-	docker-compose down
-
-logs:
-	docker-compose logs -f
-
-clean:
-	docker-compose down -v
-	docker system prune -f
+install:
+	uv venv --python 3.11 .venv
+	uv pip install --python $(PY) -r requirements-train.txt
+	uv pip install --python $(PY) -e .
 
 test:
-	docker-compose run --rm backend pytest
+	$(PY) -m pytest tests
 
-migrate:
-	docker-compose run --rm backend alembic upgrade head
+lint:
+	$(PY) -m ruff check ffai tests scripts
+	$(PY) -m black --check ffai tests scripts
 
-shell:
-	docker-compose exec backend /bin/bash
+format:
+	$(PY) -m black ffai tests scripts
 
-# Development
-dev-backend:
-	cd backend && uvicorn main:app --reload --host 0.0.0.0 --port 8000
+train:
+	$(PY) scripts/train.py
 
-dev-frontend:
-	cd frontend && streamlit run app.py
+SEASON ?= 2024
+tiers:
+	$(PY) scripts/tiers.py --season $(SEASON)
 
-# Production deployment
-deploy-prod:
-	./scripts/deploy.sh production
+evaluate:
+	$(PY) scripts/evaluate.py
 
-deploy-staging:
-	./scripts/deploy.sh staging
+WEEK ?= 1
+THROUGH ?= $(SEASON)
+score:
+	$(PY) scripts/score_week.py --season $(SEASON) --week $(WEEK) --through-season $(THROUGH)
 
-# Database operations
-db-backup:
-	./scripts/backup-db.sh
+weekly:
+	$(PY) scripts/run_weekly.py --dry-run
 
-db-restore:
-	./scripts/restore-db.sh
+api:
+	$(PY) -m uvicorn ffai.serve.app:app --host 127.0.0.1 --port 7860
 
-# ML operations
-train-models:
-	docker-compose run --rm backend python -m ml.train
+build:
+	docker build -t ffai-api .
 
-update-predictions:
-	docker-compose run --rm backend python -m data.update_predictions
+frontend:
+	cd frontend-next && npm run dev

@@ -9,6 +9,12 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        ink: '#101b19',
+        cream: '#f2f0e9',
+        sand: '#e5e5dd',
+        acid: '#c7f36b',
+        moss: '#176e5a',
+        ember: '#ff6b35',
         primary: {
           50: '#eff6ff',
           100: '#dbeafe',

@@ -16,7 +16,11 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Build the application
+# NEXT_PUBLIC_* values are inlined at build time; pass the deployed API URL as a build arg.
+ARG NEXT_PUBLIC_API_URL=http://localhost:7860
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+
+# Build the application (next.config.js sets output: 'standalone')
 RUN npm run build
 
 # Production image, copy all the files and run next

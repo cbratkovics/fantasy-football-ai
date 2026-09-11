@@ -40,3 +40,110 @@ Anthropic keys exist in the untracked `backend/.env.local`.
 credential is rotated by the rebuild; both actions require the owner's accounts and are listed in
 `docs/REBUILD_REPORT.md`. `.env*` files stay ignored; `*.env.example` files with placeholder values
 remain tracked.
+
+## ADR-0004 — Slim rebuild instead of a refactor (2026-09-10)
+
+**Context.** `AUDIT.md` found a backend that served constants and hash-seeded random numbers,
+four incompatible feature vocabularies, leakage in every tracked training path, 52 legacy
+launchers, no tests, no CI, and published metrics with no computational source.
+
+**Decision.** Rebuild around two seeds — the git-ignored production trainer's lagged feature
+scheme and the branch's decision evaluator — as a single package `ffai/` with committed,
+versioned artifacts. Everything else was deleted rather than repaired.
+
+**Consequences.** ~180 files removed; the repository now has one feature module, one trainer,
+one evaluator, one server, and one weekly job. Old branches remain on the remote for reference.
+
+## ADR-0005 — RandomForest champion, XGBoost challenger (2026-09-10)
+
+**Context.** The legacy production models were RandomForests selected over XGBoost by
+validation MAE. Re-running both candidates on the rebuilt nflverse data with the same
+hyper-parameters gave the same outcome at every position (`docs/MODEL_CARD.md`).
+
+**Decision.** Champion = lower validation-season MAE per position; the other candidate is
+persisted as the challenger and shadow-scored weekly. Promotion is a deterministic rule
+(`ffai/models/registry.py: should_promote`): the challenger must win each of the last four
+scored weeks *and* the frozen test set.
+
+**Consequences.** Both candidates ship in every model version (≈5 MB). No hyper-parameter
+search was performed; that is future work and must be evaluated with the same artifact.
+
+## ADR-0006 — No database, no cache, no queue (2026-09-10)
+
+**Context.** Runtime budget is $0/month and the audit showed Postgres/Redis/Celery added failure
+modes without adding served value.
+
+**Decision.** The server reads committed JSON/pickle artifacts at startup. State changes happen
+only through the weekly job committing new artifacts. History per player is served from the
+predictions files (with actuals attached after each week) and the frozen test predictions.
+
+**Consequences.** Every deploy is a git commit; the API is stateless and horizontally trivial;
+per-request latency is a dictionary lookup. There is no user state and no write path.
+
+## ADR-0007 — nflverse is the only data source (2026-09-10)
+
+**Context.** The old code touched Sleeper, ESPN (authenticated), sportsdata.io, OpenWeather,
+Open-Meteo, collegefootballdata, and scraped Pro-Football-Reference, mostly unreachably and
+with unresolved licence questions.
+
+**Decision.** Use nflverse releases through `nflreadpy` only (`docs/DATA_SOURCES.md`). Scoring
+rules are reconciled against nflverse's own points on every row.
+
+**Consequences.** No injury, weather, opponent, or market features in `asof_v1`; the model card
+lists them as absent. Adding a source requires a licence note in `DATA_SOURCES.md` and a
+contract check.
+
+## ADR-0008 — Draft-tier inputs are prior-season aggregates only (2026-09-10)
+
+**Context.** Preseason tiers are consumed before any current-season game is played; using
+in-season data would be leakage by construction.
+
+**Decision.** Tier inputs for season `S` are computed from season `S-1` rows only (PPR/game,
+its dispersion, games played, opportunity share, age when rosters provide it). Component count
+is chosen by BIC; tiers are evaluated honestly against realised season-`S` PPR/game and the
+numbers are recorded in the tiers metadata whatever they turn out to be.
+
+**Consequences.** Rookies and players without four prior games get no tier. The 2024 evaluation
+shows moderate rank correlation and low within-band rates for some positions; that is reported,
+not hidden.
+
+## ADR-0009 — Owner's local env files are preserved, not deleted (2026-09-10)
+
+**Context.** `backend/.env` and `backend/.env.local` (untracked) contained live-looking API keys.
+Phase 4 deletes `backend/`.
+
+**Decision.** The two files were moved to the repository root as `.env.backend` and
+`.env.backend.local`, both matched by the existing `.env.*` ignore rule, so the owner does not
+lose the only copy. The owner should rotate the keys and delete both files
+(`docs/REBUILD_REPORT.md`).
+
+## ADR-0010 — Drift HOLD is based on the median monitored PSI, not any single feature (2026-09-10)
+
+**Context.** The rebuild brief specified "PSI > 0.25 on any top-10-importance feature → HOLD".
+Measured on this data the rule is not usable: over 60 rolling four-week windows in 2021–2024
+(15 end-weeks × 4 seasons, four positions each, week-of-season-matched training reference,
+season-to-date and structural features excluded), **47 of 60 windows** had at least one monitored
+feature above 0.25 — including windows drawn from the training seasons themselves. Per-position
+samples are a few hundred rows (QB ≈ 145), ten-bin PSI is noisy at that size, and several
+features carry point masses at zero. A single-week comparison is worse still (a single position
+week is ≈ 40–150 rows).
+
+**Decision.** The weekly job measures PSI on the last four completed weeks of *played* rows (the
+population the training deciles describe) against the training deciles of the same
+week-of-season bucket (stored per bucket in `metadata.json` → `drift_reference.buckets`).
+`week_of_season`, `games_played_prior`, and every `*_season_avg` feature (which resets each
+season) are excluded from monitoring. Status per position:
+
+* **HOLD** — median PSI of the monitored features > 0.25 (broad shift), or ≥ 2 monitored features
+  > 0.50 (severe shift such as a schema or units change);
+* **WARN** — any monitored feature > 0.25, or median > 0.10;
+* **OK** otherwise.
+
+On the same 60-window scan this holds 2 windows (median rule) plus a small number of severe
+cases, all in the QB cohort, and warns on most weeks — which is the honest description of a
+noisy input stream.
+
+**Consequences.** The job publishes on ordinary weeks and still stops on a genuine population
+change. Every run log records the per-position median, the flagged features, and the severe
+features so the threshold can be revisited with evidence. This departs from the brief's literal
+rule and is flagged in `docs/REBUILD_REPORT.md`.

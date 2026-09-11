@@ -1,83 +1,332 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { ChartBarIcon, CircleStackIcon, ScaleIcon, ShieldCheckIcon } from '@heroicons/react/24/outline'
-import predictionsData from '@/data/predictions_2024.json'
+import { getPerformance } from '@/lib/api/players'
+import type { MetricBlock, PerformanceArtifact } from '@/lib/api/types'
+import { fmtInt, fmtNum, fmtPct, fmtUtc, shortHash } from '@/lib/format'
+import { ErrorState, LoadingState } from '@/components/ui/States'
+import { RollingOriginChart } from './RollingOriginChart'
 
-type Position = 'ALL' | 'QB' | 'RB' | 'WR' | 'TE'
-type Metric = 'accuracy' | 'tier' | 'error'
+type Cohort = 'ALL' | 'QB' | 'RB' | 'WR' | 'TE'
+type MetricKey = 'mae' | 'median_ae' | 'rmse' | 'within_3_rate' | 'within_5_rate'
 
-const metrics = [
-  { position: 'QB', mae: predictionsData.metadata.accuracy.QB.mae, accuracy: predictionsData.metadata.accuracy.QB.within_3_points, count: 544, tier: .89 },
-  { position: 'RB', mae: predictionsData.metadata.accuracy.RB.mae, accuracy: predictionsData.metadata.accuracy.RB.within_3_points, count: 1088, tier: .91 },
-  { position: 'WR', mae: predictionsData.metadata.accuracy.WR.mae, accuracy: predictionsData.metadata.accuracy.WR.within_3_points, count: 1632, tier: .90 },
-  { position: 'TE', mae: predictionsData.metadata.accuracy.TE.mae, accuracy: predictionsData.metadata.accuracy.TE.within_3_points, count: 544, tier: .94 },
-]
+const COHORTS: Cohort[] = ['ALL', 'QB', 'RB', 'WR', 'TE']
+const METRIC_KEYS: MetricKey[] = ['mae', 'median_ae', 'rmse', 'within_3_rate', 'within_5_rate']
+const METRIC_LABEL: Record<MetricKey, string> = {
+  mae: 'MAE',
+  median_ae: 'Median AE',
+  rmse: 'RMSE',
+  within_3_rate: 'Within ±3',
+  within_5_rate: 'Within ±5',
+}
+const isRate = (k: MetricKey) => k.endsWith('_rate')
+const show = (k: MetricKey, v: number | undefined) => (isRate(k) ? fmtPct(v) : fmtNum(v, 2))
 
-const metricCopy = {
-  accuracy: { label: 'Within ±3 points', note: 'Share of forecasts landing within three fantasy points of the observed result.' },
-  tier: { label: 'Tier agreement', note: 'Share of evaluated players assigned to the observed production tier.' },
-  error: { label: 'Mean absolute error', note: 'Average absolute distance between projected and observed fantasy points.' },
+interface CohortRow {
+  cohort: Cohort
+  model: MetricBlock
+  baseline: MetricBlock
+}
+
+function cohortRows(artifact: PerformanceArtifact): CohortRow[] {
+  const rows: CohortRow[] = [{ cohort: 'ALL', model: artifact.metrics, baseline: artifact.baseline }]
+  for (const c of COHORTS.slice(1)) {
+    const block = artifact.cohorts?.[c]
+    if (block) rows.push({ cohort: c, model: block, baseline: block.baseline })
+  }
+  return rows
 }
 
 export function PerformanceDashboard() {
-  const [selectedMetric, setSelectedMetric] = useState<Metric>('accuracy')
-  const [selectedPosition, setSelectedPosition] = useState<Position>('ALL')
-  const filtered = selectedPosition === 'ALL' ? metrics : metrics.filter((item) => item.position === selectedPosition)
-  const summary = useMemo(() => ({
-    accuracy: filtered.reduce((sum, item) => sum + item.accuracy, 0) / filtered.length,
-    mae: filtered.reduce((sum, item) => sum + item.mae, 0) / filtered.length,
-    tier: filtered.reduce((sum, item) => sum + item.tier, 0) / filtered.length,
-    count: filtered.reduce((sum, item) => sum + item.count, 0),
-  }), [filtered])
+  const perf = useQuery({ queryKey: ['performance'], queryFn: getPerformance })
+  const [metric, setMetric] = useState<MetricKey>('mae')
+  const [cohort, setCohort] = useState<Cohort>('ALL')
 
-  const chartValue = (item: typeof metrics[number]) => selectedMetric === 'accuracy' ? item.accuracy * 100 : selectedMetric === 'tier' ? item.tier * 100 : item.mae
-  const maxValue = selectedMetric === 'error' ? Math.max(...filtered.map(chartValue)) * 1.12 : 100
-  const format = (value: number) => selectedMetric === 'error' ? value.toFixed(2) : `${Math.round(value)}%`
+  const rows = useMemo(() => (perf.data ? cohortRows(perf.data) : []), [perf.data])
+  const selected = rows.find((r) => r.cohort === cohort) ?? rows[0]
+  const chartRows = cohort === 'ALL' ? rows.filter((r) => r.cohort !== 'ALL') : rows.filter((r) => r.cohort === cohort)
+
+  const a = perf.data
 
   return (
-    <section className="evaluation-dashboard" aria-label="Evaluation results">
-      <div className="evaluation-kpis">
-        <article><div><ChartBarIcon /><span>Accuracy</span></div><strong>{Math.round(summary.accuracy * 100)}<small>%</small></strong><p>within ±3 points</p></article>
-        <article><div><ScaleIcon /><span>Average MAE</span></div><strong>{summary.mae.toFixed(2)}</strong><p>fantasy points</p></article>
-        <article><div><CircleStackIcon /><span>Sample shown</span></div><strong>{summary.count.toLocaleString()}</strong><p>player-game records</p></article>
-        <article><div><ShieldCheckIcon /><span>Tier agreement</span></div><strong>{Math.round(summary.tier * 100)}<small>%</small></strong><p>GMM assignment</p></article>
-      </div>
-
-      <div className="evaluation-toolbar">
-        <div><small>Measure</small><div role="group" aria-label="Evaluation measure">{(['accuracy', 'tier', 'error'] as const).map(metric => <button key={metric} className={selectedMetric === metric ? 'active' : ''} onClick={() => setSelectedMetric(metric)}>{metric}</button>)}</div></div>
-        <div><small>Cohort</small><div role="group" aria-label="Position cohort">{(['ALL', 'QB', 'RB', 'WR', 'TE'] as const).map(position => <button key={position} className={selectedPosition === position ? 'active' : ''} onClick={() => setSelectedPosition(position)}>{position}</button>)}</div></div>
-      </div>
-
-      <div className="evaluation-grid">
-        <article className="evaluation-card chart-card">
-          <div className="card-heading"><div><small>01 / COHORT COMPARISON</small><h2>{metricCopy[selectedMetric].label}</h2></div><span>HIGHER IS {selectedMetric === 'error' ? 'WORSE' : 'BETTER'}</span></div>
-          <div className="bar-chart" role="img" aria-label={`${metricCopy[selectedMetric].label} by position`}>
-            {filtered.map(item => {
-              const value = chartValue(item)
-              return <div className="bar-column" key={item.position}><span>{format(value)}</span><div><i style={{ height: `${Math.max(4, value / maxValue * 100)}%` }} /></div><b>{item.position}</b></div>
-            })}
+    <>
+      <header className="evaluation-hero">
+        <div className="eyebrow">
+          <span /> Model evaluation · committed artifact
+        </div>
+        <div className="evaluation-title-row">
+          <h1>
+            Evidence, not
+            <br />
+            <em>just output.</em>
+          </h1>
+          <div>
+            <p>
+              The champion model is scored on a forward-time holdout against a causal baseline that only ever sees a player&apos;s earlier realised points.
+              Read every figure with its sample size and cohort in view.
+            </p>
+            {a && (
+              <span>
+                {a.split.strategy.replace(/_/g, ' ').toUpperCase()} · TEST FROM SEASON {a.split.test_start_season} WEEK {a.split.test_start_week}
+              </span>
+            )}
           </div>
-          <p className="chart-note">{metricCopy[selectedMetric].note}</p>
-        </article>
+        </div>
+      </header>
 
-        <article className="evaluation-card detail-card">
-          <div className="card-heading"><div><small>02 / POSITION DETAIL</small><h2>Cohort readout</h2></div><span>{filtered.length} COHORT{filtered.length > 1 ? 'S' : ''}</span></div>
-          <div className="metric-rows">
-            {filtered.map(item => <div key={item.position}>
-              <div className="metric-row-top"><b>{item.position}</b><span>{item.count.toLocaleString()} observations</span></div>
-              <dl><div><dt>MAE</dt><dd>{item.mae}</dd></div><div><dt>±3 points</dt><dd>{Math.round(item.accuracy * 100)}%</dd></div><div><dt>Tier</dt><dd>{Math.round(item.tier * 100)}%</dd></div></dl>
-              <div className="metric-track"><i style={{ width: `${item.accuracy * 100}%` }} /></div>
-            </div>)}
+      <section className="evaluation-dashboard" aria-label="Evaluation results">
+        {perf.isPending && <LoadingState label="Reading the evaluation artifact…" />}
+        {perf.isError && <ErrorState error={perf.error} context="GET /performance" />}
+
+        {a && selected && (
+          <>
+            <p className="my-6 border border-ink bg-acid px-4 py-3 font-mono text-[11px] font-bold text-ink">
+              Every figure on this page is read from the committed evaluation artifact {a.eval_id}.
+            </p>
+
+            <div className="evaluation-kpis">
+              <article>
+                <div>
+                  <ScaleIcon />
+                  <span>MAE · {selected.cohort}</span>
+                </div>
+                <strong>{fmtNum(selected.model.mae, 2)}</strong>
+                <p>baseline {fmtNum(selected.baseline.mae, 2)} · fantasy points</p>
+              </article>
+              <article>
+                <div>
+                  <ChartBarIcon />
+                  <span>Median AE · {selected.cohort}</span>
+                </div>
+                <strong>{fmtNum(selected.model.median_ae, 2)}</strong>
+                <p>baseline {fmtNum(selected.baseline.median_ae, 2)}</p>
+              </article>
+              <article>
+                <div>
+                  <ShieldCheckIcon />
+                  <span>Within ±3 · {selected.cohort}</span>
+                </div>
+                <strong>{fmtPct(selected.model.within_3_rate)}</strong>
+                <p>baseline {fmtPct(selected.baseline.within_3_rate)}</p>
+              </article>
+              <article>
+                <div>
+                  <CircleStackIcon />
+                  <span>Sample · {selected.cohort}</span>
+                </div>
+                <strong>{fmtInt(selected.model.n)}</strong>
+                <p>player-game rows in the holdout</p>
+              </article>
+            </div>
+
+            <div className="evaluation-toolbar">
+              <div>
+                <small>Measure</small>
+                <div role="group" aria-label="Evaluation measure">
+                  {METRIC_KEYS.map((k) => (
+                    <button key={k} className={metric === k ? 'active' : ''} onClick={() => setMetric(k)}>
+                      {METRIC_LABEL[k]}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <small>Cohort</small>
+                <div role="group" aria-label="Position cohort">
+                  {COHORTS.map((c) => (
+                    <button key={c} className={cohort === c ? 'active' : ''} onClick={() => setCohort(c)}>
+                      {c}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="evaluation-grid">
+              <article className="evaluation-card chart-card">
+                <div className="card-heading">
+                  <div>
+                    <small>01 / MODEL VS BASELINE</small>
+                    <h2>{METRIC_LABEL[metric]}</h2>
+                  </div>
+                  <span>HIGHER IS {isRate(metric) ? 'BETTER' : 'WORSE'}</span>
+                </div>
+                <PairedBars rows={chartRows} metric={metric} />
+                <p className="chart-note">
+                  <b>{METRIC_LABEL[metric]}</b> = <code>{a.metric_definitions[metric]}</code>. Dark bars are the champion ({a.rolling_origin.candidate}); light bars are the
+                  baseline ({a.baseline.name ?? 'baseline'}).
+                </p>
+              </article>
+
+              <article className="evaluation-card detail-card">
+                <div className="card-heading">
+                  <div>
+                    <small>02 / COHORT READOUT</small>
+                    <h2>All metrics, with baseline</h2>
+                  </div>
+                  <span>{rows.length} ROWS</span>
+                </div>
+                <div className="mt-6 overflow-x-auto">
+                  <table className="w-full min-w-[520px] text-left font-mono text-xs">
+                    <thead className="text-[9px] uppercase tracking-widest text-[#61706c]">
+                      <tr>
+                        <th className="py-2 pr-3">Cohort</th>
+                        <th className="py-2 pr-3 text-right">n</th>
+                        {METRIC_KEYS.map((k) => (
+                          <th key={k} className="py-2 pr-3 text-right">
+                            {METRIC_LABEL[k]}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {rows.map((r) => (
+                        <RowPair key={r.cohort} row={r} />
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </article>
+            </div>
+
+            <div className="method-grid">
+              <article>
+                <small>03 / ROLLING ORIGIN</small>
+                <h2>Refit before every scored week.</h2>
+                <p>{a.rolling_origin.strategy}</p>
+                <div className="callout">
+                  <span>!</span>
+                  <p>
+                    <b>Mean fold MAE {fmtNum(a.rolling_origin.mean_mae, 2)}</b> vs baseline {fmtNum(a.rolling_origin.mean_baseline_mae, 2)} across{' '}
+                    {a.rolling_origin.folds.length} folds for candidate {a.rolling_origin.candidate}.
+                  </p>
+                </div>
+                <RollingOriginChart folds={a.rolling_origin.folds} />
+                <div className="mt-4 max-h-64 overflow-auto border border-[#d1d3cd]">
+                  <table className="w-full text-left font-mono text-[11px]">
+                    <thead className="sticky top-0 bg-[#f8f7f2] text-[9px] uppercase tracking-widest text-[#61706c]">
+                      <tr>
+                        <th className="px-3 py-2">Season</th>
+                        <th className="px-3 py-2">Week</th>
+                        <th className="px-3 py-2 text-right">n</th>
+                        <th className="px-3 py-2 text-right">MAE</th>
+                        <th className="px-3 py-2 text-right">Baseline MAE</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {a.rolling_origin.folds.map((f) => (
+                        <tr key={`${f.season}-${f.week}`} className="border-t border-[#e4e5dd]">
+                          <td className="px-3 py-1.5">{f.season}</td>
+                          <td className="px-3 py-1.5">{f.week}</td>
+                          <td className="px-3 py-1.5 text-right">{fmtInt(f.n)}</td>
+                          <td className="px-3 py-1.5 text-right font-bold">{fmtNum(f.mae, 2)}</td>
+                          <td className="px-3 py-1.5 text-right">{fmtNum(f.baseline_mae, 2)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </article>
+              <article>
+                <small>04 / METRIC DEFINITIONS</small>
+                <h2>Verbatim from the artifact.</h2>
+                <ul>
+                  {Object.entries(a.metric_definitions).map(([k, v], i) => (
+                    <li key={k}>
+                      <span>{String(i + 1).padStart(2, '0')}</span>
+                      <div>
+                        <b>{k}</b>
+                        <p>{v}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            </div>
+
+            <div className="method-grid">
+              <article>
+                <small>05 / PROVENANCE</small>
+                <h2>What was evaluated.</h2>
+                <ul>
+                  <li><span>ID</span><div><b>eval_id</b><p className="break-all">{a.eval_id}</p></div></li>
+                  <li><span>MV</span><div><b>model version</b><p>{a.model.version} · features {a.model.feature_version}</p></div></li>
+                  <li><span>CH</span><div><b>champion / challenger</b><p>{describeCandidates(a.model.candidate)} / {describeCandidates(a.model.challenger)}</p></div></li>
+                  <li><span>GT</span><div><b>code commit</b><p>{shortHash(a.code_commit)}</p></div></li>
+                  <li><span>IN</span><div><b>input</b><p>sha256 {shortHash(a.input.sha256)} · {fmtInt(a.input.n_rows)} rows</p></div></li>
+                  <li><span>TS</span><div><b>trained / evaluated</b><p>{fmtUtc(a.model.trained_at_utc)} / {fmtUtc(a.generated_at_utc)}</p></div></li>
+                </ul>
+              </article>
+              <article>
+                <small>06 / HOW TO READ IT</small>
+                <h2>Compare to the baseline, not to zero.</h2>
+                <p>
+                  The baseline is the honest yardstick: a trailing mean of the player&apos;s own earlier realised points that never sees the week it is scored on. A
+                  model earns its place only where it beats that column for the cohort you care about.
+                </p>
+                <p>
+                  Positional cohorts share one model version and one split, so their figures can be compared directly. Sample sizes differ by position; use them
+                  when weighing the differences.
+                </p>
+                {a.policy_sweep.length === 0 && <p>The artifact&apos;s policy sweep is empty for this evaluation, so no threshold analysis is shown.</p>}
+              </article>
+            </div>
+            <p className="evaluation-disclaimer">Held-out evaluation of a committed artifact. Not a guarantee of future performance.</p>
+          </>
+        )}
+      </section>
+    </>
+  )
+}
+
+function describeCandidates(c: Record<string, string> | undefined) {
+  if (!c) return '—'
+  const values = Array.from(new Set(Object.values(c)))
+  return values.length === 1 ? values[0] : Object.entries(c).map(([k, v]) => `${k}:${v}`).join(' ')
+}
+
+function RowPair({ row }: { row: CohortRow }) {
+  return (
+    <>
+      <tr className="border-t border-[#d1d3cd]">
+        <td className="py-2 pr-3 font-bold">{row.cohort}</td>
+        <td className="py-2 pr-3 text-right">{fmtInt(row.model.n)}</td>
+        {METRIC_KEYS.map((k) => (
+          <td key={k} className="py-2 pr-3 text-right font-bold">
+            {show(k, row.model[k])}
+          </td>
+        ))}
+      </tr>
+      <tr className="text-[#6e7976]">
+        <td className="pb-2 pr-3 text-[9px] uppercase tracking-widest">baseline</td>
+        <td className="pb-2 pr-3 text-right">{fmtInt(row.baseline.n)}</td>
+        {METRIC_KEYS.map((k) => (
+          <td key={k} className="pb-2 pr-3 text-right">
+            {show(k, row.baseline[k])}
+          </td>
+        ))}
+      </tr>
+    </>
+  )
+}
+
+function PairedBars({ rows, metric }: { rows: CohortRow[]; metric: MetricKey }) {
+  const values = rows.flatMap((r) => [r.model[metric], r.baseline[metric]])
+  const max = isRate(metric) ? 1 : Math.max(...values, 0.01) * 1.12
+  return (
+    <div className="bar-chart" role="img" aria-label={`${METRIC_LABEL[metric]} by cohort, model versus baseline`}>
+      {rows.map((r) => (
+        <div className="bar-column" key={r.cohort}>
+          <span>{show(metric, r.model[metric])}</span>
+          <div style={{ gap: 4 }}>
+            <i style={{ height: `${Math.max(2, (r.model[metric] / max) * 100)}%` }} title={`model ${show(metric, r.model[metric])}`} />
+            <i style={{ height: `${Math.max(2, (r.baseline[metric] / max) * 100)}%`, background: '#b9d3c8' }} title={`baseline ${show(metric, r.baseline[metric])}`} />
           </div>
-        </article>
-      </div>
-
-      <div className="method-grid">
-        <article><small>03 / INTERPRETATION</small><h2>Read performance as a trade-off.</h2><p>Aggregate accuracy can hide meaningful differences between positions. Use the cohort control to isolate where errors concentrate before turning a score into a decision.</p><div className="callout"><span>!</span><p><b>Direction matters.</b> Higher is better for agreement measures; lower is better for MAE.</p></div></article>
-        <article><small>04 / METHODOLOGY</small><h2>What sits behind the view.</h2><ul><li><span>01</span><div><b>Historical window</b><p>2019–2024 player-game records</p></div></li><li><span>02</span><div><b>Features</b><p>Pre-game signals and position-specific inputs</p></div></li><li><span>03</span><div><b>Evaluation</b><p>Position cohorts with explicit denominators</p></div></li><li><span>04</span><div><b>Clustering</b><p>GMM-based production tiers</p></div></li></ul></article>
-      </div>
-      <p className="evaluation-disclaimer">Historical sample metrics shown for project demonstration. They are not a guarantee of future performance.</p>
-    </section>
+          <b>{r.cohort}</b>
+        </div>
+      ))}
+    </div>
   )
 }
