@@ -176,3 +176,14 @@ to 2024, scoring reconciliation exact) and a 2026 schedule whose first game day 
    stats and then publish week 2.
 4. Check the Vercel deploy of `main` (the `/performance` page now needs the list-shaped
    `/performance`, which the Space already serves).
+
+### Space upload behaviour (observed 2026-09-11)
+
+Three whole-tree `hf upload cbratkovics/fantasy-football-ai . .` attempts failed at the commit
+call (two `504 Gateway Time-out`, one SSL EOF), while uploading one directory per commit
+(`artifacts`, `ffai`, `docs`, `frontend-next/src`, `tests`, `scripts`, then single files)
+succeeded. The Space rebuilt and `/health` reported the new `tiers_version` within a minute. The
+workflows use the whole-tree command as specified; if the mirror step fails with a 504 in
+Actions, split it into per-directory uploads the same way. The live check after this session:
+`/health` lists both evaluations and `data_through` 2025 wk 18; `/performance` returns the frozen
+2024 and out-of-sample 2025 artifacts; `/predictions/2026/1` serves week 1.
