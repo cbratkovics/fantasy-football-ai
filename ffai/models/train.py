@@ -10,8 +10,8 @@ Design (frozen so results stay comparable with the legacy 2025-07-31 metadata):
   the challenger; both are persisted
 * intervals: validation residual quantiles (10th / 90th) per position and candidate, applied as
   ``prediction + q10`` / ``prediction + q90`` at serving time (floor clipped at 0)
-* drift reference: decile edges of every feature on the training rows, plus top-10 feature
-  importances per position (used by ``ffai.eval.drift``)
+* drift reference: decile edges of every feature on the training rows, globally and per
+  week-of-season bucket, plus top-10 feature importances per position (``ffai.eval.drift``)
 
 Everything the evaluator and the model card need is recorded in ``metadata.json``.
 """
@@ -44,6 +44,7 @@ from ffai.config import (
     VAL_SEASON,
 )
 from ffai.data import nflverse
+from ffai.eval import drift
 from ffai.features import asof
 
 CANDIDATES: tuple[str, ...] = ("rf", "xgb")
@@ -122,6 +123,19 @@ def _importances(pipe: Pipeline, features: list[str]) -> dict[str, float]:
 def _deciles(frame: pd.DataFrame, features: list[str]) -> dict[str, list[float]]:
     qs = np.linspace(0, 1, N_DECILES + 1)
     return {f: [float(v) for v in np.quantile(frame[f].to_numpy(), qs)] for f in features}
+
+
+def _drift_reference(frame: pd.DataFrame, features: list[str]) -> dict[str, Any]:
+    """Decile edges per week-of-season bucket (see ``ffai.eval.drift.week_bucket``) plus global."""
+    buckets = {}
+    b = frame["week"].astype(int).map(drift.week_bucket)
+    for k in sorted(b.unique()):
+        buckets[str(int(k))] = _deciles(frame[b == k], features)
+    return {
+        "bucket_weeks": drift.BUCKET_WEEKS,
+        "global": _deciles(frame, features),
+        "buckets": buckets,
+    }
 
 
 def _model_version(feature_version: str, sha: str, now: dt.datetime) -> str:
@@ -217,7 +231,7 @@ def train_all(
                 ),
             },
             "candidates": cand_meta,
-            "drift_reference_deciles": _deciles(tr, feats),
+            "drift_reference": _drift_reference(tr, feats),
         }
 
     preds = pd.concat(test_predictions, ignore_index=True)

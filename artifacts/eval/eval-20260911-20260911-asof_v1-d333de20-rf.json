@@ -1,8 +1,8 @@
 {
   "artifact_version": "2.0",
   "eval_id": "eval-20260911-20260911-asof_v1-d333de20-rf",
-  "generated_at_utc": "2026-09-11T01:44:18+00:00",
-  "code_commit": "d46a5a371cf021dcbff0ec5e5cfce49b8b111264",
+  "generated_at_utc": "2026-09-11T02:02:56+00:00",
+  "code_commit": "c0a47cc7e81af913a6c701286d8667d11375f7c9",
   "input": {
     "path": "/Users/christopherbratkovics/Desktop/portfolio_projects/fantasy-football-ai/artifacts/models/20260911-asof_v1-d333de20/test_predictions.csv",
     "sha256": "30cf233f8cd8e9083e00c2fac50b8cd65b24cf51cc07dbe30e3ad75af628b6f5",
@@ -23,7 +23,7 @@
       "WR": "xgb",
       "TE": "xgb"
     },
-    "trained_at_utc": "2026-09-11T01:33:03+00:00",
+    "trained_at_utc": "2026-09-11T02:01:34+00:00",
     "input_sha256": "d333de203dc465fb13928e910f3b684b0c530ea014c454e95ec4b6e3acbde853"
   },
   "metric_definitions": {

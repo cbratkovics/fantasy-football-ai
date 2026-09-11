@@ -1,6 +1,6 @@
 # Model card — 20260911-asof_v1-d333de20
 
-_Generated 2026-09-11T01:44:18+00:00 from committed artifacts; do not edit by hand. Regenerate with
+_Generated 2026-09-11T02:02:56+00:00 from committed artifacts; do not edit by hand. Regenerate with
 `python scripts/evaluate.py`._
 
 | Field | Value | Source key |
@@ -12,9 +12,9 @@ _Generated 2026-09-11T01:44:18+00:00 from committed artifacts; do not edit by ha
 | Data | nflverse weekly player stats via `nflreadpy==0.1.5`, 34293 rows, sha256 `d333de203dc4…` | `metadata.json: data_library, input_rows, input_sha256` |
 | Data through | season 2024, week 18 | `metadata.json: data_through` |
 | Split | train 2019, 2020, 2021, 2022 · validation 2023 · test 2024 (whole seasons, forward in time) | `metadata.json: seasons` |
-| Trained at | 2026-09-11T01:33:03+00:00 | `metadata.json: trained_at_utc` |
-| Code commit (training) | `d46a5a371cf021dcbff0ec5e5cfce49b8b111264` | `metadata.json: code_commit` |
-| Code commit (evaluation) | `d46a5a371cf021dcbff0ec5e5cfce49b8b111264` | `eval/eval-20260911-20260911-asof_v1-d333de20-rf.json: code_commit` |
+| Trained at | 2026-09-11T02:01:34+00:00 | `metadata.json: trained_at_utc` |
+| Code commit (training) | `c0a47cc7e81af913a6c701286d8667d11375f7c9` | `metadata.json: code_commit` |
+| Code commit (evaluation) | `c0a47cc7e81af913a6c701286d8667d11375f7c9` | `eval/eval-20260911-20260911-asof_v1-d333de20-rf.json: code_commit` |
 | Libraries | scikit-learn 1.9.1, xgboost 3.0.3 | `metadata.json: sklearn_version, xgboost_version` |
 | Interval method | validation-season residual quantiles (10th/90th) per position and candidate, added to the point prediction; floor clipped at 0 | `metadata.json: interval_method` |
 
