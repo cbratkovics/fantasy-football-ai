@@ -60,10 +60,14 @@ columns used and the licence statement.
 
 No performance figure is written by hand. `scripts/train.py` records dataset hash, seasons, and
 per-position validation/test MAE in `artifacts/models/<version>/metadata.json`;
-`scripts/evaluate.py` evaluates the champion on the frozen 2024 season against a causal
-trailing-mean baseline, runs rolling-origin folds, writes `artifacts/eval/<eval_id>.json`, and
-renders [`docs/MODEL_CARD.md`](docs/MODEL_CARD.md) with the JSON key next to every figure. The API's
-`/performance` endpoint returns that same artifact, and the frontend renders it.
+`scripts/evaluate.py` evaluates the champion on the frozen 2024 test season and, with
+`--kind out_of_sample_season --season 2025`, on the complete 2025 season the model never saw
+(same frozen artifact, same feature builder), each against a causal trailing-mean baseline with
+rolling-origin folds. Every evaluation is one `artifacts/eval/<eval_id>.json` (with `kind`,
+`season`, input hash, commit, and metric definitions) listed in `manifest.evaluations`;
+[`docs/MODEL_CARD.md`](docs/MODEL_CARD.md) renders all of them with the JSON key next to every
+figure and a delta paragraph composed from the artifacts. The API's `/performance` returns the
+same artifacts, `/performance/{eval_id}` one of them, and the frontend switches between them.
 
 Leakage is prevented by construction (every feature is computed on a series already shifted within
 the player's history) and verified on real data by `tests/test_asof_no_leakage.py`.
@@ -73,7 +77,7 @@ the player's history) and verified on real data by `tests/test_asof_no_leakage.p
 ```bash
 # Python 3.11
 make install                      # uv venv + training/dev deps + editable install
-make test                         # offline: committed 40-player fixture
+make test                         # offline: committed 40-player fixture + committed artifacts
 FFAI_TEST_DATA=full make test     # same tests on the full 2019-2024 pull (network on first run)
 
 make api                          # http://127.0.0.1:7860/health  (reads artifacts/manifest.json)
@@ -81,8 +85,8 @@ make frontend                     # http://localhost:3000  (NEXT_PUBLIC_API_URL=
 
 # Retrain / re-evaluate / score (all write to artifacts/)
 make train
-make tiers SEASON=2024
-make evaluate
+make tiers SEASON=2024            # compares against the manifest's tiers; --update-manifest to adopt
+make evaluate                     # frozen test; add --kind out_of_sample_season --season 2025
 make score SEASON=2025 WEEK=1 THROUGH=2024
 make weekly                       # dry-run of the autonomous job
 ```

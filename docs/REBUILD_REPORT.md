@@ -1,7 +1,7 @@
 # Rebuild report — 2026-09-10/11
 
-The slim rebuild described in `AUDIT.md` §12 was executed in six local commits on `main`
-(nothing pushed). This report says what was built, what was deleted, where every number in the
+The slim rebuild described in `AUDIT.md` §12 was executed in six local commits on `main`,
+then pushed and deployed (see *Post-launch session* at the end). This report says what was built, what was deleted, where every number in the
 model card comes from, what is still missing, and what only the owner can do.
 
 ## Commits
@@ -122,3 +122,57 @@ measured value is 44.9 %.
 8. Optionally trigger `weekly.yml` manually once to seed the current season
    (`Run workflow` → leave season/week blank).
 9. Re-check the nflverse data terms before redistributing derived data (`docs/DATA_SOURCES.md`).
+
+
+## Post-launch session (2026-09-11)
+
+State on entry: `main` at `8e22a47`, in sync with `origin/main`; API live on the Hugging Face
+Space `cbratkovics/fantasy-football-ai` (populated with `hf upload`); frontend on Vercel
+(`fantasy-football-ai.vercel.app`, `www.winmyleague.ai`); Railway and Supabase deleted.
+
+| Phase | Commit | Content |
+|---|---|---|
+| A | `03658fc` | 2025 out-of-sample evaluation of the frozen champion (`ffai/eval/oos.py`, `oos_predictions_2025.csv`, `eval-…-rf-oos2025.json`); `manifest.evaluations` with `kind`; repo-relative `input.path` (2024 artifact regenerated, metrics asserted identical); model card with a second table and a delta paragraph; `GET /`, `GET /performance` → list, `GET /performance/{eval_id}`; frontend evaluation selector |
+| B | `636d79e` | weekly job resolves 2026 week 1 from schedules, drops the target week's partial rows before contracts, names the missing (season, week) on a freshness HOLD; first real 2026 run (`predictions/2026/week_01.json`, 610 players, PUBLISH); `rolling_2026.json` created empty; `predictions/2025/week_01.json` removed (ADR-0011); Space mirror step in `weekly.yml` + manual `deploy-space` job in `ci.yml` |
+| C | `9e64c6d` | GMM component cap `n_players // 8` (ADR-0012); new `tiers_version …-2024-mpc8`; before/after comparison with a keep-previous rule; QB 10 → 4 components |
+| D | see git log | docs, tests (62), Space re-upload |
+
+### Numbers added to the model card (artifact keys)
+
+| Figure | Key |
+|---|---|
+| 2025 out-of-sample table (n, MAE, median AE, RMSE, within ±3/±5, baseline) for All and per position | `artifacts/eval/eval-20260911-20260911-asof_v1-d333de20-rf-oos2025.json: metrics.*, cohorts[pos].*, baseline.*` |
+| 2025 rolling-origin means and folds | same file: `rolling_origin.*` |
+| 2024 → 2025 delta paragraph | computed at render time from the two artifacts' `metrics`, `baseline`, `cohorts`, `rolling_origin` (no stored value) |
+| Tier before/after table | `artifacts/tiers/20260911-tiers_prevseason_v1-2024-mpc8/metadata.json: comparison_to_previous` |
+
+Headline values read from those keys at the time of writing: 2025 out of sample n = 5,914, MAE
+4.4909, within ±3 = 46.0 %, causal baseline MAE 4.8046 (2024 frozen: 5,747 / 4.5512 / 44.9 % /
+4.8589). The aggregate improvement (−0.060) is of the same size as the baseline's own move
+(−0.054); QB got harder for both (+0.50 model, +0.39 baseline). Not a leakage signal.
+
+### Verified facts about the data
+
+nflverse has the complete 2025 regular season (18 weeks, 6,037 QB/RB/WR/TE rows, columns identical
+to 2024, scoring reconciliation exact) and a 2026 schedule whose first game day is 2026-09-09; on
+2026-09-11 two games had results and 23 partial week-1 stat rows existed.
+
+### Departures / judgment calls
+
+* The brief said 2026 week-1 games were Sept 4–8; nflverse's schedule says Sept 9 onward. The
+  job trusts the schedule.
+* Partial rows of the week being scored are dropped before the contracts (otherwise every
+  in-progress week would HOLD on the row-count band).
+* The tier cap changed only QB; its Spearman fell while within-band rose, so the both-worse rule
+  kept the new tiers. Both numbers are in the card.
+
+### Owner TODO
+
+1. Push `main` (four new commits after `8e22a47`).
+2. Add the repository secret `HF_TOKEN` (Hugging Face token, **write** scope) so `weekly.yml`
+   can mirror the Space after each PUBLISH/PROMOTE and `ci.yml`'s `deploy-space` works.
+3. Trigger `weekly.yml` once by hand (`Run workflow`, leave inputs blank) to confirm the Actions
+   path end to end; next Tuesday's run will HOLD until nflverse publishes complete 2026 week 1
+   stats and then publish week 2.
+4. Check the Vercel deploy of `main` (the `/performance` page now needs the list-shaped
+   `/performance`, which the Space already serves).
