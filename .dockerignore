@@ -1,0 +1,18 @@
+# Only ffai/, artifacts/, and the requirement/metadata files are copied; keep the context small.
+.git
+.venv
+node_modules
+frontend-next
+data
+backend
+scripts
+tests
+docs
+*.md
+!README.md
+.github
+.claude
+.vscode
+.pytest_cache
+.ruff_cache
+__pycache__
