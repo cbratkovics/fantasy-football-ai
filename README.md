@@ -1,141 +1,144 @@
+# Fantasy Football Projections — an evidence-first ML pipeline
+
+[![CI](https://github.com/cbratkovics/fantasy-football-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/cbratkovics/fantasy-football-ai/actions/workflows/ci.yml)
+[![Weekly](https://github.com/cbratkovics/fantasy-football-ai/actions/workflows/weekly.yml/badge.svg)](https://github.com/cbratkovics/fantasy-football-ai/actions/workflows/weekly.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
+**Live demo:** [fantasy-football-ai.vercel.app](https://fantasy-football-ai.vercel.app) · **API:** [cbratkovics-fantasy-football-ai.hf.space/docs](https://cbratkovics-fantasy-football-ai.hf.space/docs) · **Model card:** [docs/MODEL_CARD.md](docs/MODEL_CARD.md)
+
+Weekly NFL fantasy-point projections for QB/RB/WR/TE, built so that every number can be traced to the artifact that produced it. A random-forest model per position, strictly lagged features with a leakage test, evaluation on two complete seasons the model never saw against a causal baseline, and a GitHub Actions job that re-scores each week and decides on its own whether to publish, hold, or promote a challenger. Runs at **$0/month**.
+
+The model is deliberately simple. The evaluation harness is the product.
+
 ---
-title: Fantasy Football AI
-emoji: 🏈
-colorFrom: green
-colorTo: gray
-sdk: docker
-app_port: 7860
-pinned: false
+
+## Results
+
+Both evaluations score the **same frozen artifact** (`20260911-asof_v1-d333de20`). 2024 was the held-out test season at training time; 2025 was scored afterwards with no training, tuning, or selection decision ever touching it. The baseline is a causal trailing mean of each player's earlier realized points — what a careful person with a spreadsheet would do.
+
+| Season · kind | n (player-games) | MAE model | MAE baseline | within ±3 model | within ±3 baseline | rolling-origin MAE (17 folds) |
+|---|---:|---:|---:|---:|---:|---:|
+| 2025 · out-of-sample season | 5,914 | **4.49** | 4.80 | **46.0%** | 43.2% | **4.44** vs 5.18 |
+| 2024 · frozen test season | 5,747 | **4.55** | 4.86 | **44.9%** | 42.4% | **4.52** vs 5.27 |
+
+By position, 2025: QB 6.63 vs 7.08 · RB 4.54 vs 4.79 · WR 4.36 vs 4.76 · TE 3.59 vs 3.75.
+
+This is a modest, consistent edge over a strong baseline on a noisy target, not a breakthrough — weekly fantasy points have a standard deviation around 7. Figures are copied from `artifacts/eval/eval-…-rf.json` and `…-rf-oos2025.json` as of 2026-09-11; [docs/MODEL_CARD.md](docs/MODEL_CARD.md) is regenerated from the artifacts and is canonical.
+
 ---
 
-# Fantasy Football AI — artifact-backed weekly projections
+## How the numbers are earned
 
-> **In one paragraph.** A weekly NFL fantasy projection system rebuilt around evidence: one as-of
-> feature module shared by training, evaluation, and serving; RandomForest champion models with an
-> XGBoost challenger per position; preseason GMM draft tiers; a forward-time evaluator with a causal
-> baseline and rolling-origin folds; a $0/month FastAPI server that only reads committed, versioned
-> artifacts; and an autonomous weekly GitHub Actions job that ingests nflverse data, checks contracts
-> and drift, scores the champion, shadow-scores the challenger, and publishes, holds, or promotes by a
-> deterministic rule. Every number in the docs and UI is read from a committed evaluation artifact
-> that records the dataset hash, split, baseline, metric definition, and code commit.
+**No leakage, by construction and by test.** Every feature for target week *t* is computed from games strictly before *t*, shifted inside the player's history. `tests/test_asof_no_leakage.py` recomputes 200 random real rows from scratch using only earlier games and asserts equality, then perturbs the target week's stats and asserts nothing changes.
 
-The audit that motivated this rebuild is in [`AUDIT.md`](AUDIT.md); the decisions are in
-[`docs/DECISIONS.md`](docs/DECISIONS.md); what was built and what remains is in
-[`docs/REBUILD_REPORT.md`](docs/REBUILD_REPORT.md).
+**One feature module.** Training, evaluation, and serving all call `ffai/features/asof.py` (`asof_v1`: 65 lagged features — QB 44 / RB 40 / WR 27 / TE 27). There is no second implementation to drift.
 
-## What it does
+**Scoring rules reconciled to the cent.** Standard, half-PPR, and PPR are computed from explicit rules and checked row-for-row against nflverse's own `fantasy_points` and `fantasy_points_ppr`: exact match on all 34,293 rows, 2019–2024. Half-PPR is derived from rules, not a multiplier.
 
-* Predicts regular-season **PPR points for a player's next game** (QB/RB/WR/TE) from that player's
-  own prior weeks only. Standard and half-PPR are derived by the same scoring rules, not multipliers.
-* Publishes **preseason draft tiers** per position from prior-season aggregates.
-* Serves predictions, tiers, player history, and the full evaluation artifact over a read-only API.
-* Re-scores itself every week in CI and commits the results.
+**Temporal validation only.** Train 2019–2022, validate 2023, test 2024; then rolling-origin folds inside each evaluated season (refit on everything strictly before a week, score that week). Never a random split.
+
+**A baseline that can't see the future.** The causal trailing mean adds a week's outcomes only after that week is scored. Beating a position mean is easy; beating this is meaningful.
+
+**Artifacts, not claims.** Each evaluation is one JSON with the input SHA-256, code commit, split, metric definitions, cohorts, and folds. The API serves it verbatim; the UI cannot display a figure that isn't in it. The model card is generated from the same files.
+
+---
+
+## What runs every Tuesday
+
+`.github/workflows/weekly.yml` runs during the season and commits its results:
+
+1. Pull the latest weekly stats from nflverse.
+2. **Data contracts** — grain uniqueness (player × season × week), freshness, null and range checks, row count vs prior week. Failure → `HOLD`.
+3. **Drift** — PSI per monitored feature over the last four played weeks against week-of-season-matched training deciles. Broad shift → `HOLD`; single-feature shift → warn. (The first rule I wrote held 47 of 60 normal backtest windows; the current thresholds were calibrated on those windows — see [ADR-0010](docs/DECISIONS.md).)
+4. Build as-of features for the upcoming week and score the champion.
+5. Score last week's actuals against last week's predictions; append to the season's rolling evaluation.
+6. Shadow-score the XGBoost challenger. **Promote** only if it beats the champion for four consecutive weeks *and* on the frozen test season.
+7. Write `artifacts/manifest.json` and `artifacts/predictions/<season>/week_NN.json`, regenerate the model card, commit, and mirror to the Hugging Face Space. A `HOLD` opens a GitHub Issue with the diagnosis.
+
+The policy is pure Python, unit-tested on synthetic run logs for the publish / hold-contract / hold-drift / promote cases. No LLM is involved anywhere.
+
+---
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-  N[nflverse · nflreadpy] --> C[contracts + drift]
-  C --> F[as-of features · asof_v1]
-  F --> T[train: RF champion · XGB challenger]
-  F --> S[score week]
-  T --> A[(artifacts/ · manifest, models, tiers, eval, predictions)]
+  N["nflverse via nflreadpy"] --> C["data contracts and drift"]
+  C --> F["as-of features (asof_v1)"]
+  F --> T["train: RF champion, XGB challenger"]
+  F --> S["score upcoming week"]
+  T --> A["artifacts: manifest, models, tiers, eval, predictions"]
   S --> A
-  A --> API[FastAPI · Docker :7860]
-  API --> UI[Next.js · frontend-next]
-  W[weekly.yml · Tuesdays] -. runs .-> C
+  A --> API["FastAPI on Hugging Face Space"]
+  API --> UI["Next.js on Vercel"]
+  W["weekly.yml (Tuesdays)"] -. runs .-> C
   W -. commits .-> A
 ```
 
-Details: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+- **`ffai/`** — single Python package: `data/` (loader + contracts), `features/asof.py`, `scoring.py`, `models/` (train, tiers, registry), `eval/` (evaluator, drift, model card), `pipeline/` (weekly job), `serve/` (FastAPI).
+- **`artifacts/`** — committed, versioned: `manifest.json`, `models/<version>/` (sklearn pipelines + metadata), `tiers/<version>/`, `eval/<eval_id>.json`, `predictions/<season>/`.
+- **`frontend-next/`** — Next.js 14, reads only the API.
+- **`tests/`** — 62 tests: leakage, grain, scoring reconciliation, contracts, evaluator, drift, registry, API contract, weekly policy.
+- **Serving** — `python:3.11-slim`, 8 runtime packages, no database, no cache, no secrets. Artifacts load from the repo at startup.
 
-## Data and licence
+Details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · decisions: [docs/DECISIONS.md](docs/DECISIONS.md)
 
-The only data source is nflverse (weekly player stats, schedules, rosters) via `nflreadpy`, cached
-locally as parquet. Scoring rules are reconciled row-for-row against nflverse's own
-`fantasy_points` / `fantasy_points_ppr`. See [`docs/DATA_SOURCES.md`](docs/DATA_SOURCES.md) for the
-columns used and the licence statement.
+---
 
-## How the numbers are produced
+## API
 
-No performance figure is written by hand. `scripts/train.py` records dataset hash, seasons, and
-per-position validation/test MAE in `artifacts/models/<version>/metadata.json`;
-`scripts/evaluate.py` evaluates the champion on the frozen 2024 test season and, with
-`--kind out_of_sample_season --season 2025`, on the complete 2025 season the model never saw
-(same frozen artifact, same feature builder), each against a causal trailing-mean baseline with
-rolling-origin folds. Every evaluation is one `artifacts/eval/<eval_id>.json` (with `kind`,
-`season`, input hash, commit, and metric definitions) listed in `manifest.evaluations`;
-[`docs/MODEL_CARD.md`](docs/MODEL_CARD.md) renders all of them with the JSON key next to every
-figure and a delta paragraph composed from the artifacts. The API's `/performance` returns the
-same artifacts, `/performance/{eval_id}` one of them, and the frontend switches between them.
+| Endpoint | Returns |
+|---|---|
+| `GET /health` | model, feature, and tier versions; data-through week; positions loaded |
+| `GET /predictions/{season}/{week}?scoring=ppr\|half\|standard&position=` | predictions with floor/ceiling (validation-residual quantiles) and model version |
+| `GET /players/{player_id}` | prediction vs actual history |
+| `GET /tiers/{position}` | preseason GMM draft tiers |
+| `GET /performance` · `GET /performance/{eval_id}` | the evaluation artifacts, verbatim |
+| `GET /manifest` | current champion/challenger/tier versions and last run |
 
-Leakage is prevented by construction (every feature is computed on a series already shifted within
-the player's history) and verified on real data by `tests/test_asof_no_leakage.py`.
+Interactive docs at `/docs`.
+
+---
 
 ## Run locally
 
 ```bash
-# Python 3.11
-make install                      # uv venv + training/dev deps + editable install
-make test                         # offline: committed 40-player fixture + committed artifacts
-FFAI_TEST_DATA=full make test     # same tests on the full 2019-2024 pull (network on first run)
-
-make api                          # http://127.0.0.1:7860/health  (reads artifacts/manifest.json)
-make frontend                     # http://localhost:3000  (NEXT_PUBLIC_API_URL=http://localhost:7860)
-
-# Retrain / re-evaluate / score (all write to artifacts/)
-make train
-make tiers SEASON=2024            # compares against the manifest's tiers; --update-manifest to adopt
-make evaluate                     # frozen test; add --kind out_of_sample_season --season 2025
-make score SEASON=2025 WEEK=1 THROUGH=2024
-make weekly                       # dry-run of the autonomous job
+make install                 # uv venv, training deps, editable install (Python 3.11)
+make test                    # 62 tests against a committed 40-player fixture, offline
+FFAI_TEST_DATA=full make test  # same tests on the full 2019–2024 pull
+make train && make evaluate  # retrain and write a new versioned artifact + evaluation
+make api                     # FastAPI on :7860, loading committed artifacts
+make weekly                  # dry run of the weekly job
 ```
 
-Docker: `docker build -t ffai-api . && docker run -p 7860:7860 ffai-api` (API only, non-root,
-port 7860 for Hugging Face Spaces). `docker compose up` runs API + frontend.
+Docker: `docker build -t ffai . && docker run -p 7860:7860 ffai`.
 
-## Deployment
+---
 
-* **API** — Hugging Face Space `cbratkovics/fantasy-football-ai` (Docker SDK, port 7860). The Space
-  is a **mirror of `main`'s working tree including `artifacts/`**, uploaded with `hf upload`
-  (the same exclusions live in `.github/workflows/weekly.yml`). The weekly job refreshes it after
-  every `PUBLISH`/`PROMOTE`; the `deploy-space` job in `ci.yml` does it on demand. Both need the
-  `HF_TOKEN` repository secret (write scope).
-* **Frontend** — Vercel project `fantasy-football-ai` (root `frontend-next`, production branch
-  `main`) with `NEXT_PUBLIC_API_URL` set to the Space URL.
-* Nothing else runs anywhere; there is no database, cache, or worker.
+## Draft tiers
 
-## The weekly job
+Per position, prior-season aggregates → StandardScaler → PCA (≥90% variance) → Gaussian mixture with components chosen by BIC, capped at one component per eight players. Tiers are evaluated by Spearman correlation between tier rank and realized rank and by within-band rate; a new tier artifact replaces the old one only if it is not worse on both. Numbers in the [model card](docs/MODEL_CARD.md).
 
-`.github/workflows/weekly.yml` runs `ffai/pipeline/weekly.py` on Tuesdays during the season
-(and on demand): load stats through the last completed week → data contracts → PSI drift check
-→ build as-of features → score the champion → attach last week's actuals and append to the rolling
-evaluation → shadow-score the challenger → apply the policy (`PUBLISH` / `HOLD` / `PROMOTE`) →
-update `artifacts/manifest.json` and regenerate the model card → commit. A `HOLD` opens a GitHub
-issue with the run log. The policy is pure Python and unit-tested (`tests/test_weekly_policy.py`).
+---
 
-## Repository layout
+## Limitations (honest list)
 
-```
-ffai/            package: config, data/, scoring, features/asof.py, models/, eval/, pipeline/, serve/
-artifacts/       committed, versioned: manifest.json, models/, tiers/, eval/, predictions/
-scripts/         thin CLIs: train, tiers, evaluate, score_week, run_weekly
-tests/           scoring reconciliation, leakage, grain, contracts, evaluator, drift, registry, API, policy
-docs/            ARCHITECTURE, DATA_SOURCES, DECISIONS, MODEL_CARD (generated), REBUILD_REPORT, case study
-frontend-next/   Next.js 14 app that only calls the API
-.github/         ci.yml (lint, tests, import check, docker build) · weekly.yml
-```
+- Features are the player's own prior production only: no opponent, injury, depth chart, weather, or market inputs. The model is blind to a Friday injury report.
+- Players with no prior stat row get no prediction; rookies get no tier.
+- Floor/ceiling are residual quantiles; their empirical coverage is not yet tracked weekly.
+- The weekly job scores, monitors, and promotes; it does not retrain. Retraining is `make train`.
+- Predictions depend on nflverse publishing; a late feed holds the run by design.
 
-## Limitations
+---
 
-* Features are the player's own production only; no opponent, injury, weather, depth-chart, or
-  market inputs. Players with no prior stat row get no prediction.
-* Weekly fantasy scores are noisy; see the model card for error magnitudes and the baseline
-  comparison before relying on any single projection.
-* Models are not retrained automatically; drift is monitored and the job holds publication when
-  inputs shift materially.
-* Not for betting.
+## Data
 
-## Licence
+nflverse weekly player stats, schedules, and rosters via `nflreadpy`, cached locally as parquet. No other source. Column usage and license notes: [docs/DATA_SOURCES.md](docs/DATA_SOURCES.md).
 
-MIT (see `LICENSE`). Data: nflverse, CC-BY-4.0.
+## Provenance
+
+This repository was rebuilt in September 2026 after a read-only audit of the previous version ([AUDIT.md](AUDIT.md)) found metrics that weren't traceable to code and models that weren't wired to the API. The rebuild put the evaluation layer first; what was built and what remains is in [docs/REBUILD_REPORT.md](docs/REBUILD_REPORT.md). The audit stays in the repo because finding and fixing that is the most useful thing the project demonstrates.
+
+## License
+
+MIT. Data © nflverse under its own terms.
