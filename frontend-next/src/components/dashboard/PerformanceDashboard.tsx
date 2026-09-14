@@ -8,6 +8,7 @@ import type { MetricBlock, PerformanceArtifact } from '@/lib/api/types'
 import { fmtInt, fmtNum, fmtPct, fmtUtc, shortHash } from '@/lib/format'
 import { ErrorState, LoadingState } from '@/components/ui/States'
 import { RollingOriginChart } from './RollingOriginChart'
+import { DecisionsPanel } from './DecisionsPanel'
 
 type Cohort = 'ALL' | 'QB' | 'RB' | 'WR' | 'TE'
 type MetricKey = 'mae' | 'median_ae' | 'rmse' | 'within_3_rate' | 'within_5_rate'
@@ -307,8 +308,10 @@ export function PerformanceDashboard() {
                 {a.policy_sweep.length === 0 && <p>The artifact&apos;s policy sweep is empty for this evaluation, so no threshold analysis is shown.</p>}
               </article>
             </div>
+            <DecisionsPanel seasons={Array.from(new Set(evaluations.map((e) => e.season))).sort()} />
             <p className="evaluation-disclaimer">
-              {a.kind === 'frozen_test' ? 'Held-out' : 'Out-of-sample'} evaluation of a committed artifact. Not a guarantee of future performance.
+              {a.kind === 'frozen_test' ? 'Held-out' : 'Out-of-sample'} evaluation of a committed artifact. Not a guarantee of future performance. The
+              decisions panel reads gold marts exported by the weekly build.
             </p>
           </>
         )}

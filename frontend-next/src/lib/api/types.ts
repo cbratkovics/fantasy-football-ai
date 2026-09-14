@@ -202,3 +202,122 @@ export interface PerformanceResponse {
   feature_version: string
   evaluations: PerformanceArtifact[]
 }
+
+// --- gold marts (parquet exported by the weekly dbt build; /marts/*; ADR-0018) ---
+
+export const MART_SOURCE = 'gold marts exported by the weekly build' as const
+
+export interface MartExport {
+  exported_at_utc: string | null
+  target: string | null
+  invocation_id: string | null
+  code_commit: string | null
+  row_counts: Record<string, number>
+}
+
+export interface WeeklyEvalRow {
+  eval_window: string
+  season: number
+  week: number
+  model_version: string
+  candidate: string
+  cohort: string
+  n: number
+  mae: number
+  median_ae: number | null
+  rmse: number | null
+  within_3_rate: number
+  within_5_rate: number | null
+  interval_coverage: number | null
+  baseline_mae: number | null
+  baseline_within_3_rate: number | null
+  mae_minus_baseline: number | null
+}
+
+export interface WeeklyEvalResponse {
+  source: typeof MART_SOURCE
+  mart: 'fct_weekly_eval'
+  export: MartExport
+  cohort: string
+  n: number
+  rows: WeeklyEvalRow[]
+}
+
+export interface PlayerWeekRow {
+  season: number
+  week: number
+  model_version: string
+  candidate: string
+  position: string
+  source: HistorySource
+  eval_window: string
+  prediction: number
+  prediction_floor: number | null
+  prediction_ceiling: number | null
+  actual: number | null
+  actual_source: 'stats' | 'artifact' | null
+  abs_error: number | null
+  within_3: boolean | null
+  within_5: boolean | null
+  interval_hit: boolean | null
+  baseline: number
+  baseline_abs_error: number | null
+}
+
+export interface PlayerWeekResponse {
+  source: typeof MART_SOURCE
+  mart: 'fct_player_week'
+  export: MartExport
+  player_id: string
+  name: string | null
+  team: string | null
+  position: string | null
+  candidate: string | Record<string, string>
+  n: number
+  rows: PlayerWeekRow[]
+}
+
+export interface DecisionPolicyRow {
+  season: number
+  week: number
+  position: string
+  model_version: string
+  candidate: string
+  min_floor: number
+  eligible_decisions: number
+  recommendations: number
+  reviews: number
+  recommendation_rate: number | null
+  review_rate: number | null
+  recommendations_with_outcome: number
+  recommendation_mae: number | null
+  review_mae: number | null
+  mean_regret: number | null
+  hit_rate: number | null
+  downside_rate: number | null
+}
+
+export interface DecisionSummaryRow {
+  cohort: string
+  eligible_decisions: number
+  recommendations: number
+  recommendation_rate: number | null
+  recommendation_mae: number | null
+  mean_regret: number | null
+  hit_rate: number | null
+  downside_rate: number | null
+  recommendations_with_outcome: number
+}
+
+export interface DecisionsResponse {
+  source: typeof MART_SOURCE
+  mart: 'fct_decision_policy'
+  export: MartExport
+  min_floor: number
+  available_min_floors: number[]
+  policy: string
+  replacement_level: string
+  n: number
+  summary: DecisionSummaryRow[]
+  rows: DecisionPolicyRow[]
+}

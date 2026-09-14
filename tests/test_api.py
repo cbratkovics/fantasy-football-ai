@@ -126,3 +126,90 @@ def test_performance_by_eval_id_keeps_the_single_artifact_shape(client) -> None:
         one = client.get(f"/performance/{art['eval_id']}").json()
         assert one["eval_id"] == art["eval_id"] and one["metrics"] == art["metrics"]
     assert client.get("/performance/does-not-exist").status_code == 404
+
+
+# --- gold marts (artifacts/marts/*.parquet exported by the dbt build; ADR-0018) ---
+
+marts_present = pytest.mark.skipif(
+    not (ARTIFACTS_DIR / "marts" / "_export_manifest.json").exists(), reason="no exported marts"
+)
+
+
+@marts_present
+def test_root_and_health_advertise_the_marts(client) -> None:
+    assert client.get("/").json()["marts"] == "/marts/weekly_eval"
+    assert client.get("/health").json()["marts_exported_at_utc"]
+
+
+@marts_present
+def test_marts_weekly_eval_reconciles_with_the_evaluation_artifacts(client) -> None:
+    """The API-level restatement of the dbt reconciliation test: the n-weighted MAE and
+    within-3 over a window's weeks equal the published artifact to 1e-4."""
+    evs = client.get("/performance").json()["evaluations"]
+    for art in evs:
+        cand = art["model"]["candidate"]["QB"]
+        body = client.get(
+            f"/marts/weekly_eval?season={art['season']}&candidate={cand}&model_version={art['model']['version']}"
+        ).json()
+        assert body["source"] == "gold marts exported by the weekly build"
+        assert (
+            body["mart"] == "fct_weekly_eval"
+            and body["export"]["row_counts"]["fct_weekly_eval"] > 0
+        )
+        rows = [r for r in body["rows"] if r["eval_window"] == f"{art['kind']}:{art['season']}"]
+        assert rows, "no mart rows for the evaluation window"
+        n = sum(r["n"] for r in rows)
+        mae = sum(r["mae"] * r["n"] for r in rows) / n
+        w3 = sum(r["within_3_rate"] * r["n"] for r in rows) / n
+        assert n == art["metrics"]["n"]
+        assert mae == pytest.approx(art["metrics"]["mae"], abs=1e-4)
+        assert w3 == pytest.approx(art["metrics"]["within_3_rate"], abs=1e-4)
+    assert client.get("/marts/weekly_eval?cohort=K").status_code == 422
+
+
+@marts_present
+def test_marts_player_week_history(client) -> None:
+    art = client.get("/performance").json()["evaluations"][0]
+    # any player from the frozen test: take the first row of fct_weekly_eval's season via /players
+    m = client.get("/manifest").json()["manifest"]
+    latest = m["predictions"]["latest"]
+    season, week = latest.split("/")[1], int(latest.rsplit("_", 1)[1].split(".")[0])
+    first = client.get(f"/predictions/{season}/{week}").json()["predictions"][0]
+    r = client.get(f"/marts/player_week/{first['player_id']}")
+    assert r.status_code == 200
+    body = schemas.PlayerWeekResponse.model_validate(r.json())
+    assert body.mart == "fct_player_week" and body.n == len(body.rows) > 0
+    keys = [(x.season, x.week) for x in body.rows]
+    assert keys == sorted(keys)
+    for x in body.rows:
+        if x.actual is not None:
+            assert x.abs_error == pytest.approx(abs(x.actual - x.prediction), abs=1e-9)
+            assert x.within_3 == (x.abs_error <= 3)
+            assert x.actual_source in ("stats", "artifact")
+    both = client.get(f"/marts/player_week/{first['player_id']}?candidate=all").json()
+    assert both["n"] >= body.n and both["candidate"] == "all"
+    assert client.get("/marts/player_week/does-not-exist").status_code == 404
+    assert art["eval_id"]  # the artifact is still what /performance serves
+
+
+@marts_present
+def test_marts_decisions_sweep(client) -> None:
+    r = client.get("/marts/decisions")
+    assert r.status_code == 200
+    body = schemas.DecisionsResponse.model_validate(r.json())
+    assert body.min_floor == 6.0 and 6.0 in body.available_min_floors
+    assert body.n == len(body.rows) > 0 and body.rows[0].min_floor == 6.0
+    cohorts = [s.cohort for s in body.summary]
+    assert cohorts[0] == "ALL" and set(cohorts[1:]) == set(POSITIONS)
+    overall = body.summary[0]
+    assert overall.eligible_decisions == sum(r.eligible_decisions for r in body.rows)
+    assert overall.recommendations == sum(r.recommendations for r in body.rows)
+    for s in body.summary:
+        if s.hit_rate is not None:
+            assert 0 <= s.hit_rate <= 1 and 0 <= (s.downside_rate or 0) <= 1
+    lowest = client.get(f"/marts/decisions?min_floor={body.available_min_floors[0]}").json()
+    assert lowest["summary"][0]["recommendation_rate"] == pytest.approx(1.0)
+    qb = client.get("/marts/decisions?min_floor=6&position=QB&candidate=rf").json()
+    assert qb["rows"] and all(r["position"] == "QB" for r in qb["rows"])
+    assert client.get("/marts/decisions?min_floor=6.37").status_code == 422
+    assert client.get("/marts/decisions?position=K").status_code == 422

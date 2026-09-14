@@ -26,7 +26,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from ffai import __version__
 from ffai.config import ARTIFACTS_DIR, POSITIONS
 from ffai.models import registry
-from ffai.serve import schemas
+from ffai.serve import marts, schemas
 
 log = logging.getLogger("ffai.serve")
 
@@ -52,6 +52,7 @@ class State:
     evaluations: dict[str, dict[str, Any]]  # eval_id -> artifact (insertion order = manifest)
     predictions: dict[tuple[int, int], dict[str, Any]]
     scored_seasons: list[tuple[str, pd.DataFrame]]  # (source, champion rows with actuals)
+    marts: marts.MartStore | None  # exported gold parquet, or None when not exported
     loaded_at_utc: str
 
 
@@ -103,6 +104,8 @@ def load_state(artifacts: Path = ARTIFACTS_DIR) -> State:
             ("out_of_sample_season", _champion_rows(pd.read_csv(f), s.candidate))
         )
 
+    s.marts = marts.load_marts(artifacts / "marts")
+
     s.loaded_at_utc = dt.datetime.now(dt.UTC).isoformat(timespec="seconds")
     return s
 
@@ -116,12 +119,13 @@ async def lifespan(app: FastAPI):
         raise RuntimeError(f"cannot start: {exc}") from exc
     st: State = app.state.s
     log.info(
-        "loaded model %s (%s) tiers=%s evaluations=%s predictions=%d",
+        "loaded model %s (%s) tiers=%s evaluations=%s predictions=%d marts=%s",
         st.model_version,
         st.candidate,
         st.manifest.get("tiers_version"),
         list(st.evaluations),
         len(st.predictions),
+        st.marts.export["exported_at_utc"] if st.marts else None,
     )
     yield
 
@@ -157,6 +161,7 @@ def root() -> schemas.Root:
         health="/health",
         performance="/performance",
         manifest="/manifest",
+        marts="/marts/weekly_eval" if _state().marts else None,
     )
 
 
@@ -173,6 +178,7 @@ def health() -> schemas.Health:
         data_through=s.manifest.get("data_through", s.metadata["data_through"]),
         loaded_at_utc=s.loaded_at_utc,
         positions_loaded=sorted(s.pipelines),
+        marts_exported_at_utc=s.marts.export["exported_at_utc"] if s.marts else None,
     )
 
 
@@ -325,3 +331,112 @@ def performance_one(eval_id: str) -> dict[str, Any]:
     if art is None:
         raise HTTPException(404, f"unknown eval_id {eval_id!r}; known: {list(s.evaluations)}")
     return art
+
+
+# --- gold marts: parquet exported by the weekly dbt build, read in-process (ADR-0018) ---
+
+MART_SOURCE = "gold marts exported by the weekly build"
+POLICY_TEXT = "recommend when prediction_floor >= min_floor, else review (dbt var min_floor_grid)"
+REPLACEMENT_TEXT = (
+    "prediction of the rank-k player at the position that week "
+    "(dbt var replacement_rank: QB 12, RB 24, WR 24, TE 12)"
+)
+
+
+def _marts() -> marts.MartStore:
+    m = _state().marts
+    if m is None:
+        raise HTTPException(
+            404,
+            "no gold marts exported (artifacts/marts/); run the weekly build or make dbt-export",
+        )
+    return m
+
+
+def _export(m: marts.MartStore) -> schemas.MartExport:
+    return schemas.MartExport(**m.export)
+
+
+@app.get("/marts/weekly_eval", response_model=schemas.WeeklyEvalResponse)
+def marts_weekly_eval(
+    cohort: Annotated[str, Query(pattern="^(ALL|QB|RB|WR|TE)$")] = "ALL",
+    season: Annotated[int | None, Query()] = None,
+    candidate: Annotated[str | None, Query(pattern="^(rf|xgb)$")] = None,
+    model_version: Annotated[str | None, Query()] = None,
+) -> schemas.WeeklyEvalResponse:
+    """Per-week evaluation from fct_weekly_eval (every window: frozen test, out of sample, weekly)."""
+    m = _marts()
+    rows = m.weekly_eval(
+        cohort=cohort, season=season, candidate=candidate, model_version=model_version
+    )
+    return schemas.WeeklyEvalResponse(
+        source=MART_SOURCE,
+        mart="fct_weekly_eval",
+        export=_export(m),
+        cohort=cohort,
+        n=len(rows),
+        rows=rows,
+    )
+
+
+@app.get("/marts/player_week/{player_id}", response_model=schemas.PlayerWeekResponse)
+def marts_player_week(
+    player_id: str,
+    candidate: Annotated[str | None, Query(pattern="^(rf|xgb|all)$")] = None,
+) -> schemas.PlayerWeekResponse:
+    """A player's rows from fct_player_week; the champion candidate per position unless ``candidate`` is given."""
+    s = _state()
+    m = _marts()
+    cand: str | dict[str, str] | None = s.candidate if candidate is None else candidate
+    if candidate == "all":
+        cand = None
+    rows = m.player_week(player_id, candidate=cand)
+    if not rows:
+        raise HTTPException(404, f"no mart rows for player {player_id}")
+    last = rows[-1]
+    dim = m._rows(
+        "select player_display_name, team, position from dim_player where player_id = ?",
+        [player_id],
+    )
+    name = dim[0]["player_display_name"] if dim else None
+    team = dim[0]["team"] if dim else None
+    position = dim[0]["position"] if dim else last["position"]
+    return schemas.PlayerWeekResponse(
+        source=MART_SOURCE,
+        mart="fct_player_week",
+        export=_export(m),
+        player_id=player_id,
+        name=name,
+        team=team,
+        position=position,
+        candidate=cand if cand is not None else "all",
+        n=len(rows),
+        rows=rows,
+    )
+
+
+@app.get("/marts/decisions", response_model=schemas.DecisionsResponse)
+def marts_decisions(
+    min_floor: Annotated[float, Query()] = 6.0,
+    season: Annotated[int | None, Query()] = None,
+    position: Annotated[str | None, Query(pattern="^(QB|RB|WR|TE)$")] = None,
+    candidate: Annotated[str | None, Query(pattern="^(rf|xgb)$")] = None,
+) -> schemas.DecisionsResponse:
+    """Floor-policy outcomes from fct_decision_policy for one min_floor of the sweep grid."""
+    m = _marts()
+    grid = m.min_floors()
+    if min_floor not in grid:
+        raise HTTPException(422, f"min_floor must be one of the exported grid {grid}")
+    result = m.decisions(min_floor=min_floor, season=season, position=position, candidate=candidate)
+    return schemas.DecisionsResponse(
+        source=MART_SOURCE,
+        mart="fct_decision_policy",
+        export=_export(m),
+        min_floor=min_floor,
+        available_min_floors=grid,
+        policy=POLICY_TEXT,
+        replacement_level=REPLACEMENT_TEXT,
+        n=len(result["rows"]),
+        summary=result["summary"],
+        rows=result["rows"],
+    )

@@ -17,6 +17,7 @@ class Root(BaseModel):
     health: str
     performance: str
     manifest: str
+    marts: str | None = Field(default=None, description="gold marts index, when exported")
 
 
 class Health(BaseModel):
@@ -29,6 +30,9 @@ class Health(BaseModel):
     data_through: dict[str, int]
     loaded_at_utc: str
     positions_loaded: list[str]
+    marts_exported_at_utc: str | None = Field(
+        default=None, description="when the gold marts being served were exported (null if none)"
+    )
 
 
 class PredictionRecord(BaseModel):
@@ -123,3 +127,123 @@ class EvaluationsResponse(BaseModel):
     evaluations: list[dict[str, Any]] = Field(
         description="full evaluation artifacts, each with eval_id, kind and season"
     )
+
+
+# --- gold marts (exported parquet, read in-process; ADR-0018) ---
+
+
+class MartExport(BaseModel):
+    """Provenance of the parquet files being served (from _export_manifest.json)."""
+
+    exported_at_utc: str | None
+    target: str | None = Field(description="dbt target the marts were built on (prod = MotherDuck)")
+    invocation_id: str | None
+    code_commit: str | None
+    row_counts: dict[str, int]
+
+
+class WeeklyEvalRow(BaseModel):
+    eval_window: str
+    season: int
+    week: int
+    model_version: str
+    candidate: str
+    cohort: str
+    n: int
+    mae: float
+    median_ae: float | None
+    rmse: float | None
+    within_3_rate: float
+    within_5_rate: float | None
+    interval_coverage: float | None
+    baseline_mae: float | None
+    baseline_within_3_rate: float | None
+    mae_minus_baseline: float | None
+
+
+class WeeklyEvalResponse(BaseModel):
+    source: Literal["gold marts exported by the weekly build"]
+    mart: Literal["fct_weekly_eval"]
+    export: MartExport
+    cohort: str
+    n: int
+    rows: list[WeeklyEvalRow]
+
+
+class PlayerWeekRow(BaseModel):
+    season: int
+    week: int
+    model_version: str
+    candidate: str
+    position: str
+    source: str
+    eval_window: str
+    prediction: float
+    prediction_floor: float | None
+    prediction_ceiling: float | None
+    actual: float | None
+    actual_source: str | None
+    abs_error: float | None
+    within_3: bool | None
+    within_5: bool | None
+    interval_hit: bool | None
+    baseline: float
+    baseline_abs_error: float | None
+
+
+class PlayerWeekResponse(BaseModel):
+    source: Literal["gold marts exported by the weekly build"]
+    mart: Literal["fct_player_week"]
+    export: MartExport
+    player_id: str
+    name: str | None
+    team: str | None
+    position: str | None
+    candidate: str | dict[str, str] = Field(description="champion candidate filter applied")
+    n: int
+    rows: list[PlayerWeekRow]
+
+
+class DecisionPolicyRow(BaseModel):
+    season: int
+    week: int
+    position: str
+    model_version: str
+    candidate: str
+    min_floor: float
+    eligible_decisions: int
+    recommendations: int
+    reviews: int
+    recommendation_rate: float | None
+    review_rate: float | None
+    recommendations_with_outcome: int
+    recommendation_mae: float | None
+    review_mae: float | None
+    mean_regret: float | None
+    hit_rate: float | None
+    downside_rate: float | None
+
+
+class DecisionSummaryRow(BaseModel):
+    cohort: str = Field(description="ALL or a position; count-weighted over the returned rows")
+    eligible_decisions: int
+    recommendations: int
+    recommendation_rate: float | None
+    recommendation_mae: float | None
+    mean_regret: float | None
+    hit_rate: float | None
+    downside_rate: float | None
+    recommendations_with_outcome: int
+
+
+class DecisionsResponse(BaseModel):
+    source: Literal["gold marts exported by the weekly build"]
+    mart: Literal["fct_decision_policy"]
+    export: MartExport
+    min_floor: float
+    available_min_floors: list[float]
+    policy: str = Field(description="how policy_action is decided")
+    replacement_level: str = Field(description="how replacement_level_points is defined")
+    n: int
+    summary: list[DecisionSummaryRow]
+    rows: list[DecisionPolicyRow]

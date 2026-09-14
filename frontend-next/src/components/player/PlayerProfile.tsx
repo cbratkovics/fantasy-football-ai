@@ -2,52 +2,57 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { getPlayer } from '@/lib/api/players'
-import { fmtNum, fmtUtc } from '@/lib/format'
+import { getPlayerWeek } from '@/lib/api/marts'
+import { fmtInt, fmtNum, fmtUtc, shortHash } from '@/lib/format'
 import { PageShell } from '@/components/ui/PageShell'
 import { ErrorState, LoadingState } from '@/components/ui/States'
 import { Provenance } from '@/components/ui/Provenance'
 import { PlayerHistoryChart, SOURCE_LABEL, SOURCE_STYLE } from './PlayerHistoryChart'
 
 export function PlayerProfile({ playerId }: { playerId: string }) {
+  // Identity from the artifact-backed route; the history itself from the gold mart.
   const player = useQuery({ queryKey: ['player', playerId], queryFn: () => getPlayer(playerId) })
+  const marts = useQuery({ queryKey: ['marts', 'player_week', playerId], queryFn: () => getPlayerWeek(playerId) })
   const data = player.data
+  const week = marts.data
+  const name = week?.name ?? data?.name ?? playerId
+  const position = week?.position ?? data?.position ?? ''
+  const team = week?.team ?? data?.team ?? null
 
   return (
     <PageShell
       wide
-      crumb={data?.name ?? playerId}
-      eyebrow="Player history · frozen test, out-of-sample and weekly rows"
+      crumb={name}
+      eyebrow="Player history · read from gold marts exported by the weekly build"
       title={
-        data ? (
-          <>
-            {data.name ?? playerId}{' '}
-            <em className="font-serif font-normal text-moss">
-              {data.position ?? ''} {data.team ? `· ${data.team}` : ''}
-            </em>
-          </>
-        ) : (
-          playerId
-        )
+        <>
+          {name}{' '}
+          <em className="font-serif font-normal text-moss">
+            {position} {team ? `· ${team}` : ''}
+          </em>
+        </>
       }
-      lede="Frozen-test rows are the champion's held-out test season and carry realised points. Out-of-sample rows are a later complete season the same frozen model scored without any selection decision touching it. Weekly rows come from published prediction files and gain an actual only once that week is scored."
+      lede="Each row is one scored player-week from fct_player_week: the prediction with its floor–ceiling band, the realised points once the week is played, the error, and the causal baseline (a trailing mean of the player's own earlier points that never sees the week it is scored on). Frozen-test rows are the held-out test season, out-of-sample rows a later complete season the same frozen model scored, weekly rows the live job's files."
     >
-      {player.isPending && <LoadingState label="Loading player history…" />}
+      {(player.isPending || marts.isPending) && <LoadingState label="Loading player history from the marts…" />}
       {player.isError && <ErrorState error={player.error} context={`GET /players/${playerId}`} />}
-      {data && (
+      {marts.isError && <ErrorState error={marts.error} context={`GET /marts/player_week/${playerId}`} />}
+      {week && (
         <div className="space-y-6">
           <Provenance
             items={[
-              ['Player id', data.player_id],
-              ['Model', data.model_version],
-              ['Features', data.feature_version],
-              ['Served', fmtUtc(data.generated_at_utc)],
+              ['Player id', week.player_id],
+              ['Mart', `${week.mart} · ${fmtInt(week.n)} rows`],
+              ['Candidate', typeof week.candidate === 'string' ? week.candidate : 'champion per position'],
+              ['Exported', `${fmtUtc(week.export.exported_at_utc)} · target ${week.export.target ?? '—'} · commit ${shortHash(week.export.code_commit)}`],
+              ['Model', data?.model_version ?? '—'],
             ]}
           />
 
-          <PlayerHistoryChart history={data.history} />
+          <PlayerHistoryChart history={week.rows} />
 
           <div className="overflow-x-auto border border-[#c5c7c0] bg-white">
-            <table className="w-full min-w-[640px] text-left text-sm">
+            <table className="w-full min-w-[760px] text-left text-sm">
               <thead className="bg-[#f8f7f2] font-mono text-[9px] uppercase tracking-widest text-[#61706c]">
                 <tr>
                   <th className="px-4 py-3">Season</th>
@@ -57,34 +62,44 @@ export function PlayerProfile({ playerId }: { playerId: string }) {
                   <th className="px-4 py-3 text-right">Ceiling</th>
                   <th className="px-4 py-3 text-right">Actual</th>
                   <th className="px-4 py-3 text-right">Error</th>
+                  <th className="px-4 py-3 text-right">Baseline</th>
+                  <th className="px-4 py-3">Within ±3</th>
                   <th className="px-4 py-3">Source</th>
                   <th className="px-4 py-3">Model</th>
                 </tr>
               </thead>
               <tbody>
-                {data.history.map((row) => {
-                  const err = row.actual !== null && row.prediction !== null ? row.actual - row.prediction : null
+                {week.rows.map((row) => {
+                  const err = row.actual !== null ? row.actual - row.prediction : null
                   return (
-                    <tr key={`${row.season}-${row.week}-${row.source}`} className="border-t border-[#e4e5dd] font-mono text-xs">
+                    <tr key={`${row.season}-${row.week}-${row.candidate}`} className="border-t border-[#e4e5dd] font-mono text-xs">
                       <td className="px-4 py-2.5">{row.season}</td>
                       <td className="px-4 py-2.5">{row.week}</td>
                       <td className="px-4 py-2.5 text-right font-bold">{fmtNum(row.prediction, 1)}</td>
-                      <td className="px-4 py-2.5 text-right text-[#52605d]">{fmtNum(row.floor, 1)}</td>
-                      <td className="px-4 py-2.5 text-right text-[#52605d]">{fmtNum(row.ceiling, 1)}</td>
-                      <td className="px-4 py-2.5 text-right">{row.actual === null ? <span className="text-[#8c9a96]">not scored</span> : fmtNum(row.actual, 1)}</td>
+                      <td className="px-4 py-2.5 text-right text-[#52605d]">{fmtNum(row.prediction_floor, 1)}</td>
+                      <td className="px-4 py-2.5 text-right text-[#52605d]">{fmtNum(row.prediction_ceiling, 1)}</td>
+                      <td className="px-4 py-2.5 text-right">
+                        {row.actual === null ? <span className="text-[#8c9a96]">not scored</span> : fmtNum(row.actual, 1)}
+                        {row.actual_source === 'artifact' && <span className="ml-1 text-[9px] text-[#8c9a96]" title="actual recorded in the prediction artifact">†</span>}
+                      </td>
                       <td className={`px-4 py-2.5 text-right ${err === null ? 'text-[#8c9a96]' : err < 0 ? 'text-ember' : 'text-moss'}`}>
                         {err === null ? '—' : `${err > 0 ? '+' : ''}${fmtNum(err, 1)}`}
                       </td>
+                      <td className="px-4 py-2.5 text-right text-[#52605d]">{fmtNum(row.baseline, 1)}</td>
+                      <td className="px-4 py-2.5">{row.within_3 === null ? '—' : row.within_3 ? 'yes' : 'no'}</td>
                       <td className="px-4 py-2.5">
                         <span className={`px-1.5 py-0.5 text-[10px] ${SOURCE_STYLE[row.source] ?? 'bg-ink text-acid'}`}>{SOURCE_LABEL[row.source] ?? row.source}</span>
                       </td>
-                      <td className="px-4 py-2.5 text-[#8c9a96]">{row.model_version ?? '—'}</td>
+                      <td className="px-4 py-2.5 text-[#8c9a96]">{row.model_version}</td>
                     </tr>
                   )
                 })}
               </tbody>
             </table>
           </div>
+          <p className="font-mono text-[9px] uppercase tracking-widest text-[#8c9a96]">
+            † actual taken from the prediction artifact where the stats row is not in the warehouse; the two agree wherever both exist.
+          </p>
         </div>
       )}
     </PageShell>

@@ -323,3 +323,29 @@ null outcomes.
 `fct_decision_policy`; the per-player rows stay in the warehouse and the parquet export. The
 league / lineup-slot dimensions of the sketch are not modelled (no league data exists).
 Replacement level is a modelling choice recorded here, not a published metric.
+
+## ADR-0018 — Serving reads exported gold parquet in-process; no MotherDuck token on the Space (2026-09-14)
+
+**Context.** The warehouse of record is MotherDuck, but the API runs on a public Hugging Face
+Space with no secrets, must cost $0, and must keep serving if MotherDuck is unreachable. The
+published numbers must stay the evaluation artifacts.
+
+**Decision.** After `dbt build --target prod`, the weekly job runs
+`dbt run-operation export_gold`, which `COPY`s every gold table to `artifacts/marts/<model>.parquet`
+(zstd) plus `_export_manifest.json` (row counts, export time, target, dbt invocation id, git
+commit). Those files are committed with the other artifacts and mirrored to the Space like
+everything else. The API opens them at startup with an in-memory DuckDB connection
+(`ffai/serve/marts.py`; `duckdb` added to `requirements-api.txt`) and serves three routes:
+`/marts/weekly_eval` (`fct_weekly_eval`), `/marts/player_week/{player_id}`
+(`fct_player_week`, champion candidate per position by default), and
+`/marts/decisions?min_floor=` (`fct_decision_policy`, one value of the exported grid, with
+count-weighted roll-ups computed in SQL). Every mart response carries
+`source: "gold marts exported by the weekly build"` and the export provenance. `/performance`
+and `/performance/{eval_id}` are unchanged and still return the artifacts verbatim; the site
+labels the marts panel accordingly. If `artifacts/marts/` is absent the mart routes answer 404
+and nothing else changes. A `TestClient` test restates the reconciliation at the API level (the
+n-weighted MAE / within-3 over a window's mart rows equals the artifact to 1e-4).
+
+**Consequences.** No MotherDuck token exists on the Space or in the image. The marts are
+~1.3 MB per week of git history. The frontend's player history chart and the new Decisions
+panel read the marts; the evaluation dashboard still reads the artifacts.
