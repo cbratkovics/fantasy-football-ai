@@ -176,3 +176,47 @@ stays committed.
 
 **Consequences.** The before/after table is in the model card. The cap is a structural
 constraint, not a tuned hyper-parameter; changing it requires the same comparison.
+
+## ADR-0013 — dbt Core + dbt-duckdb warehouse, developed on a DuckDB file, deployed to MotherDuck (2026-09-14)
+
+**Context.** The evaluation and decision analytics lived in Python (`ffai/eval`) and a SQL
+sketch (`analytics/sql/risk_strategy.sql`). The portfolio targets analytics-engineering roles,
+where dbt sources, tests, contracts, unit tests, exposures, and generated docs are the expected
+vocabulary. Runtime must stay $0/month and serving must never need a secret.
+
+**Decision.** A dbt project `dbt/` (`ffai_dbt`, dbt Core ≥ 1.9, adapter `dbt-duckdb`) with two
+targets in a committed `dbt/profiles.yml`: `dev` → `.duckdb/ffai_dev.duckdb` (git-ignored);
+`prod` → `md:ffai` on MotherDuck, token read from `MOTHERDUCK_TOKEN` via `env_var`. Four
+threads. The warehouse of record is MotherDuck (free tier: 10 GB, 10 compute-hours/month); the
+weekly job builds it once a week and CI builds only `dev`. Every dbt command runs from the
+repository root so the file-based sources resolve by relative path (Makefile `dbt-*` targets,
+CI, and the weekly wrapper all do this).
+
+**Consequences.** Local development needs no account; the prod target needs one environment
+variable. The API does not use dbt or MotherDuck at all (ADR-0018). Compute usage is one build
+per week, well inside the free tier.
+
+## ADR-0014 — Medallion layers as schemas; sources are the repository's own files, copied into bronze tables (2026-09-14)
+
+**Context.** dbt-duckdb can query files in place through `external_location`. If silver and gold
+read files directly, MotherDuck would hold no copy of the inputs and lineage would stop at a
+glob.
+
+**Decision.** Schemas are exactly `bronze`, `silver`, `gold` (custom `generate_schema_name`,
+no `main_` prefix), matching the model folders and tags. Sources are declared once in
+`models/bronze/_sources.yml` over the nflverse parquet cache (`data/cache/`), the prediction
+files, the frozen-test and out-of-sample CSVs, the evaluation JSONs, the rolling files, the
+tiers JSONs, the manifest, and the model metadata. Bronze models (`brz_*`) materialise each
+source as a **table**, typed, one-to-one with the file family; downstream layers never touch
+files. `brz_player_stats` keeps only the newest cache snapshot (max filename = widest season
+range at the latest load date). The JSON sources with optional keys (`actual` in weekly
+prediction records, an empty `weeks` list in a new rolling file) are read with explicit column
+types so a missing key is a NULL rather than a schema change. Because dbt-duckdb formats
+`external_location` with Python string formatting, the sources use `formatter: template` so
+DuckDB's `columns = {...}` specs survive; the stats path is a dbt var (`stats_path`) the
+weekly wrapper and CI override.
+
+**Consequences.** MotherDuck holds a copy of every input the marts depend on; `dbt docs`
+lineage starts at a named source with a description and freshness. `dbt source freshness` on
+the stats maps the newest `(season, week)` to an approximate game date (warn after 10 days);
+the HOLD-grade freshness contract is a var-driven test (ADR-0015).

@@ -1,0 +1,16 @@
+# Committed on purpose: no secret lives here. prod reads MOTHERDUCK_TOKEN from the environment
+# (GitHub Actions secret for the weekly job; exported locally by the owner). The API never
+# uses this file: it reads the parquet marts the weekly job exports (ADR-0018).
+ffai_dbt:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: ".duckdb/ffai_dev.duckdb"
+      schema: main
+      threads: 4
+    prod:
+      type: duckdb
+      path: "md:ffai?motherduck_token={{ env_var('MOTHERDUCK_TOKEN') }}"
+      schema: main
+      threads: 4

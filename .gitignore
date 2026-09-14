@@ -117,3 +117,14 @@ data/cache/
 
 # Placeholder-only example env file is tracked
 !.env.example
+
+# dbt local warehouse and build outputs
+.duckdb/
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+logs/
+# The owner's global gitignore excludes *.sql; the dbt project and the SQL sketch are source code
+!dbt/**/*.sql
+!analytics/**/*.sql
+dbt/.user.yml

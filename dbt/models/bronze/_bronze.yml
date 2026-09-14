@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: brz_player_stats
+    description: Newest nflverse weekly stats snapshot, typed, unfiltered (all positions and season types).
+    columns:
+      - name: source_file
+        description: cache file the row came from
+  - name: brz_predictions_weekly
+    description: Every record of every weekly predictions file, one row per (file, player).
+  - name: brz_predictions_test
+    description: Frozen-test predictions (both candidates) per model version.
+  - name: brz_predictions_oos
+    description: Out-of-sample season predictions (both candidates) per model version.
+  - name: brz_eval_artifacts
+    description: One row per evaluation artifact with nested blocks kept as structs.
+    columns:
+      - name: eval_id
+        data_tests: [unique, not_null]
+  - name: brz_eval_rolling
+    description: One row per scored in-season week from the rolling files.
+  - name: brz_tiers
+    description: One row per (tiers_version, position, tier, player).
+  - name: brz_manifest
+    description: The manifest as one row.
+    data_tests:
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "champion_model_version is not null"
+  - name: brz_model_metadata
+    description: One row per trained model version.
+    columns:
+      - name: model_version
+        data_tests: [unique, not_null]

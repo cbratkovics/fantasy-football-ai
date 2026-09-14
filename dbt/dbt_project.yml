@@ -1,0 +1,62 @@
+# ffai_dbt — medallion warehouse over the repository's own files.
+# bronze: typed one-to-one copies of source files; silver: cleaned, grain-enforced;
+# gold: contracted marts read by the API and the site. See docs/ARCHITECTURE.md.
+name: ffai_dbt
+version: "1.0.0"
+config-version: 2
+require-dbt-version: ">=1.9.0"
+
+profile: ffai_dbt
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+seed-paths: ["seeds"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+vars:
+  # Every path is relative to the repository root; run dbt from there (Makefile, CI, weekly job).
+  # The weekly wrapper (ffai/data/contracts.py) passes the exact nflverse cache file it loaded;
+  # CI points this at the committed fixture CSV.
+  stats_path: "data/cache/player_stats_*.parquet"
+  # Rows of the week being scored (and anything later) are incomplete while the week is played;
+  # the weekly job drops them before the contracts. Null = keep everything.
+  target_season: null
+  target_week: null
+  # Freshness contract: the newest complete (season, week) the stats must reach. Null = not checked.
+  expected_season: null
+  expected_week: null
+  # Row-count contract versus the previous run's snapshot (manifest.last_run.stats_rows).
+  prior_row_count: null
+  # Newest week's row count must be within this fraction of the prior week's.
+  row_count_tolerance_pct: 0.25
+  # False when the warehouse is built from the CI fixture instead of the full nflverse pull:
+  # the causal-baseline reconciliation needs the full history and is skipped.
+  full_stats: true
+  # Decision marts (ADR-0016): floor policy threshold and the sweep grid served by the API.
+  min_floor: 6.0
+  min_floor_grid: [0, 2, 4, 6, 8, 10, 12, 14]
+  replacement_rank: { QB: 12, RB: 24, WR: 24, TE: 12 }
+
+models:
+  ffai_dbt:
+    +materialized: table
+    bronze:
+      +schema: bronze
+      +tags: ["bronze"]
+    silver:
+      +schema: silver
+      +tags: ["silver"]
+    gold:
+      +schema: gold
+      +tags: ["gold"]
+      +contract:
+        enforced: true
+
+tests:
+  ffai_dbt:
+    +store_failures: false

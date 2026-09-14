@@ -1,4 +1,4 @@
-.PHONY: help install test lint format train tiers evaluate score weekly api build frontend
+.PHONY: help install test lint format train tiers evaluate score weekly api build frontend dbt-deps dbt-dev dbt-prod dbt-export dbt-docs dbt-lint
 
 PY ?= .venv/bin/python
 
@@ -15,6 +15,11 @@ help:
 	@echo "api       - run the API locally on :7860"
 	@echo "build     - build the API Docker image"
 	@echo "frontend  - run the Next.js dev server on :3000"
+	@echo "dbt-dev   - dbt deps + build the medallion warehouse locally (.duckdb/ffai_dev.duckdb)"
+	@echo "dbt-prod  - dbt build against MotherDuck (needs MOTHERDUCK_TOKEN in the environment)"
+	@echo "dbt-export - export gold marts to artifacts/marts/*.parquet (DBT_TARGET=dev|prod)"
+	@echo "dbt-docs  - generate the static dbt docs site into dbt/target"
+	@echo "dbt-lint  - sqlfluff over the dbt project"
 
 install:
 	uv venv --python 3.11 .venv
@@ -58,3 +63,26 @@ build:
 
 frontend:
 	cd frontend-next && npm run dev
+
+# --- dbt (analytics warehouse; run from the repo root so relative file paths resolve) ---
+DBT ?= .venv/bin/dbt
+DBT_FLAGS = --project-dir dbt --profiles-dir dbt
+DBT_TARGET ?= dev
+
+dbt-deps:
+	$(DBT) deps $(DBT_FLAGS)
+
+dbt-dev: dbt-deps
+	$(DBT) build $(DBT_FLAGS) --target dev
+
+dbt-prod: dbt-deps
+	$(DBT) build $(DBT_FLAGS) --target prod
+
+dbt-export:
+	$(DBT) run-operation export_gold $(DBT_FLAGS) --target $(DBT_TARGET)
+
+dbt-docs: dbt-deps
+	$(DBT) docs generate $(DBT_FLAGS) --target dev --static
+
+dbt-lint:
+	.venv/bin/sqlfluff lint dbt/models dbt/tests dbt/macros

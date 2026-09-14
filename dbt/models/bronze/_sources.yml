@@ -1,0 +1,121 @@
+version: 2
+
+# Every source is a file committed to (or cached by) this repository. dbt-duckdb reads them in
+# place through `external_location`; bronze models copy them into warehouse tables so MotherDuck
+# holds a typed copy and silver/gold never touch files. Paths are relative to the repo root.
+sources:
+  - name: repo_files
+    description: >
+      Files produced by the ffai package: the nflverse parquet cache (data/cache/, git-ignored,
+      refreshed by the weekly job) and the committed evaluation, prediction, tier, and manifest
+      artifacts under artifacts/.
+    loader: ffai (nflreadpy cache + committed artifacts)
+    meta:
+      owner: "Christopher Bratkovics"
+    tables:
+      - name: player_stats
+        description: >
+          nflverse weekly player stats (nflreadpy `load_player_stats(summary_level="week")`),
+          every position and season type, one parquet snapshot per (season range, load date).
+          The bronze model keeps the newest snapshot only.
+        meta:
+          formatter: template
+          external_location: "read_parquet('{{ var('stats_path') }}', filename = true, union_by_name = true)"
+        # The stats carry no load timestamp; the newest complete (season, week) is mapped onto an
+        # approximate game date (NFL weeks start in early September) so `dbt source freshness`
+        # can say how stale the pull is. warn only: the HOLD-grade freshness contract is the
+        # var-driven singular test assert_stats_fresh_through_expected_week (ADR-0015).
+        loaded_at_field: "make_timestamp(season, 9, 1, 0, 0, 0) + to_days(week * 7)"
+        freshness:
+          warn_after: { count: 10, period: day }
+        columns:
+          - name: player_id
+            description: nflverse GSIS id, e.g. 00-0034857
+          - name: season
+          - name: week
+          - name: season_type
+            description: REG, POST, or PRE
+          - name: position
+          - name: fantasy_points
+            description: nflverse's own standard-scoring points; used only to reconcile the rules macro
+          - name: fantasy_points_ppr
+            description: nflverse's own PPR points; used only to reconcile the rules macro
+
+      - name: predictions_weekly
+        description: >
+          artifacts/predictions/<season>/week_<ww>.json — one file per scored week, written by
+          the weekly job; `actual` is attached to each record once the week has been played.
+        meta:
+          formatter: template
+          external_location: >-
+            read_json('artifacts/predictions/*/week_*.json', filename = true, columns = {
+              'predictions_version': 'VARCHAR', 'season': 'INTEGER', 'week': 'INTEGER',
+              'model_version': 'VARCHAR', 'feature_version': 'VARCHAR',
+              'generated_at_utc': 'VARCHAR', 'actuals_attached_at_utc': 'VARCHAR',
+              'data_through': 'STRUCT(season INTEGER, week INTEGER)', 'n': 'INTEGER',
+              'predictions': 'STRUCT(player_id VARCHAR, name VARCHAR, team VARCHAR, position VARCHAR,
+                prediction DOUBLE, floor DOUBLE, ceiling DOUBLE, receptions_estimate DOUBLE,
+                candidate VARCHAR, actual DOUBLE)[]'})
+
+      - name: predictions_test
+        description: >
+          artifacts/models/<version>/test_predictions.csv — the frozen test season scored at
+          training time, both candidates, with realised PPR points.
+        meta:
+          formatter: template
+          external_location: "read_csv('artifacts/models/*/test_predictions.csv', filename = true, header = true)"
+
+      - name: predictions_oos
+        description: >
+          artifacts/models/<version>/oos_predictions_<season>.csv — a complete later season scored
+          with the frozen artifact (out-of-sample evaluation input).
+        meta:
+          formatter: template
+          external_location: "read_csv('artifacts/models/*/oos_predictions_*.csv', filename = true, header = true)"
+
+      - name: eval_artifacts
+        description: >
+          artifacts/eval/eval-*.json — evaluation artifacts (artifact_version 2.1): metrics,
+          causal baseline, position cohorts, rolling-origin folds, provenance. The published
+          numbers on the site come from these files; the gold marts must reconcile to them.
+        meta:
+          formatter: template
+          external_location: "read_json_auto('artifacts/eval/eval-*.json', filename = true)"
+
+      - name: eval_rolling
+        description: >
+          artifacts/eval/rolling_<season>.json — in-season champion vs challenger MAE per scored
+          week, appended by the weekly job (may hold zero weeks early in a season).
+        meta:
+          formatter: template
+          external_location: >-
+            read_json('artifacts/eval/rolling_*.json', filename = true, columns = {
+              'season': 'INTEGER',
+              'weeks': 'STRUCT(week INTEGER, n INTEGER,
+                champion STRUCT(n INTEGER, mae DOUBLE, within_3_rate DOUBLE, baseline_mae DOUBLE),
+                challenger STRUCT(n INTEGER, mae DOUBLE, within_3_rate DOUBLE, baseline_mae DOUBLE),
+                scored_at_utc VARCHAR)[]'})
+
+      - name: tiers
+        description: >
+          artifacts/tiers/<tiers_version>/tiers.json — preseason GMM draft tiers per position,
+          built from prior-season aggregates only (ADR-0008).
+        meta:
+          formatter: template
+          external_location: "read_json_auto('artifacts/tiers/*/tiers.json', filename = true)"
+
+      - name: manifest
+        description: >
+          artifacts/manifest.json — champion/challenger slots, registered evaluations, tiers
+          version, data_through, and the last weekly run.
+        meta:
+          formatter: template
+          external_location: "read_json_auto('artifacts/manifest.json', filename = true)"
+
+      - name: model_metadata
+        description: >
+          artifacts/models/<version>/metadata.json — training provenance per model version
+          (versions, split seasons, input hash, per-position sample sizes and candidate metrics).
+        meta:
+          formatter: template
+          external_location: "read_json_auto('artifacts/models/*/metadata.json', filename = true, maximum_object_size = 50000000)"
