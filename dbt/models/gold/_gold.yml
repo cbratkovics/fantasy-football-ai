@@ -1,0 +1,251 @@
+version: 2
+
+# Gold = the product. Every model has an enforced contract (types checked at build time, not-null
+# and primary-key constraints enforced by DuckDB), a description per column, and tests. The
+# weekly job exports these tables to artifacts/marts/*.parquet (macro export_gold) for the API.
+
+models:
+  - name: dim_player
+    description: One row per player with current (latest-seen) attributes; no history.
+    config:
+      contract: { enforced: true }
+    constraints:
+      - type: primary_key
+        columns: [player_id]
+    columns:
+      - { name: player_id, data_type: varchar, description: nflverse GSIS id, constraints: [{ type: not_null }] }
+      - { name: player_display_name, data_type: varchar, description: display name from the newest row seen }
+      - { name: position, data_type: varchar, description: QB / RB / WR / TE from the newest row seen, data_tests: [{ accepted_values: { arguments: { values: [QB, RB, WR, TE] } } }] }
+      - { name: team, data_type: varchar, description: team on the newest row seen }
+      - { name: first_stats_season, data_type: integer, description: first season with a stats row in the warehouse (null if only predicted or tiered) }
+      - { name: last_stats_season, data_type: integer, description: season of the newest stats row }
+      - { name: last_stats_week, data_type: integer, description: week of the newest stats row }
+      - { name: games_played, data_type: integer, description: stats rows (regular-season games) in the warehouse, constraints: [{ type: not_null }] }
+      - { name: attribute_source, data_type: varchar, description: which table supplied the attributes (stats > predictions > tiers), data_tests: [{ accepted_values: { arguments: { values: [stats, predictions, tiers] } } }] }
+
+  - name: dim_model_version
+    description: One row per trained model version with training provenance and the manifest's champion / challenger slots.
+    config:
+      contract: { enforced: true }
+    constraints:
+      - type: primary_key
+        columns: [model_version]
+    columns:
+      - { name: model_version, data_type: varchar, description: "<train date>-<feature version>-<input hash prefix>", constraints: [{ type: not_null }] }
+      - { name: feature_version, data_type: varchar, description: as-of feature module version (ffai.features.asof.FEATURE_VERSION) }
+      - { name: trained_at_utc, data_type: timestamp, description: training timestamp }
+      - { name: data_through_season, data_type: integer, description: last season in the training pull }
+      - { name: data_through_week, data_type: integer, description: last week in the training pull }
+      - { name: train_seasons, data_type: varchar, description: comma-separated training seasons }
+      - { name: val_season, data_type: integer, description: validation season (candidate selection) }
+      - { name: test_season, data_type: integer, description: frozen test season }
+      - { name: target, data_type: varchar, description: the model target as recorded at training }
+      - { name: input_sha256, data_type: varchar, description: sha256 of the training input frame }
+      - { name: input_rows, data_type: integer, description: rows in the training input frame }
+      - { name: code_commit, data_type: varchar, description: git commit that trained the model }
+      - { name: sklearn_version, data_type: varchar, description: scikit-learn version at training }
+      - { name: xgboost_version, data_type: varchar, description: xgboost version at training }
+      - { name: data_library, data_type: varchar, description: nflverse client and version used for the pull }
+      - { name: interval_method, data_type: varchar, description: how floor / ceiling were derived }
+      - { name: champion_qb, data_type: varchar, description: champion candidate for QB (rf or xgb) }
+      - { name: champion_rb, data_type: varchar, description: champion candidate for RB }
+      - { name: champion_wr, data_type: varchar, description: champion candidate for WR }
+      - { name: champion_te, data_type: varchar, description: champion candidate for TE }
+      - { name: n_features_qb, data_type: integer, description: features used by the QB models }
+      - { name: n_features_rb, data_type: integer, description: features used by the RB models }
+      - { name: n_features_wr, data_type: integer, description: features used by the WR models }
+      - { name: n_features_te, data_type: integer, description: features used by the TE models }
+      - { name: is_champion, data_type: boolean, description: true when the manifest's champion slot points at this version, constraints: [{ type: not_null }] }
+      - { name: is_challenger, data_type: boolean, description: true when the manifest's challenger slot points at this version, constraints: [{ type: not_null }] }
+
+  - name: fct_player_week
+    description: >
+      One row per (player, season, week, model_version, candidate): prediction, interval, realised
+      points, error metrics, and the causal trailing-mean baseline. Predictions are PPR (the model
+      target); half / standard predictions are derived from the as-of reception estimate where
+      the weekly file recorded one; actuals exist under all three formats.
+    config:
+      contract: { enforced: true }
+    constraints:
+      - type: primary_key
+        columns: [player_id, season, week, model_version, candidate]
+    data_tests:
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "abs_error is null or abs_error = abs(actual - prediction)"
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "actual is null or actual_source in ('stats', 'artifact')"
+    columns:
+      - { name: player_id, data_type: varchar, description: nflverse GSIS id, constraints: [{ type: not_null }] }
+      - { name: season, data_type: integer, description: NFL season, constraints: [{ type: not_null }] }
+      - { name: week, data_type: integer, description: regular-season week, constraints: [{ type: not_null }] }
+      - { name: period_key, data_type: integer, description: season * 100 + week, constraints: [{ type: not_null }] }
+      - { name: model_version, data_type: varchar, description: model version that produced the prediction, constraints: [{ type: not_null }], data_tests: [{ relationships: { arguments: { to: ref('dim_model_version'), field: model_version } } }] }
+      - { name: candidate, data_type: varchar, description: rf or xgb, constraints: [{ type: not_null }], data_tests: [{ accepted_values: { arguments: { values: [rf, xgb] } } }] }
+      - { name: position, data_type: varchar, description: position at prediction time, constraints: [{ type: not_null }], data_tests: [{ accepted_values: { arguments: { values: [QB, RB, WR, TE] } } }] }
+      - { name: source, data_type: varchar, description: frozen_test / out_of_sample_season / weekly, constraints: [{ type: not_null }] }
+      - { name: eval_window, data_type: varchar, description: evaluation window the row belongs to (drives the baseline), constraints: [{ type: not_null }] }
+      - { name: target_scoring_format, data_type: varchar, description: scoring format of prediction / actual (always ppr, the model target), constraints: [{ type: not_null }], data_tests: [{ accepted_values: { arguments: { values: [ppr, half, standard] } } }] }
+      - { name: prediction, data_type: double, description: predicted PPR points, constraints: [{ type: not_null }] }
+      - { name: prediction_floor, data_type: double, description: 10th-percentile residual bound, clipped at 0 }
+      - { name: prediction_ceiling, data_type: double, description: 90th-percentile residual bound }
+      - { name: receptions_estimate, data_type: double, description: as-of L3 average receptions (weekly files only) }
+      - { name: prediction_half, data_type: double, description: prediction - 0.5 * receptions_estimate (null without an estimate) }
+      - { name: prediction_standard, data_type: double, description: prediction - receptions_estimate (null without an estimate) }
+      - { name: actual, data_type: double, description: realised PPR points (rules macro over nflverse stats, else the artifact's recorded value); null until played }
+      - { name: actual_source, data_type: varchar, description: stats or artifact (see model description) }
+      - { name: actual_half, data_type: double, description: realised half-PPR points (rules macro) }
+      - { name: actual_standard, data_type: double, description: realised standard points (rules macro) }
+      - { name: abs_error, data_type: double, description: "|actual - prediction|" }
+      - { name: within_3, data_type: boolean, description: abs_error <= 3 }
+      - { name: within_5, data_type: boolean, description: abs_error <= 5 }
+      - { name: interval_hit, data_type: boolean, description: floor <= actual <= ceiling }
+      - { name: baseline, data_type: double, description: causal trailing-mean baseline (see model description), constraints: [{ type: not_null }] }
+      - { name: baseline_abs_error, data_type: double, description: "|actual - baseline|" }
+      - { name: baseline_within_3, data_type: boolean, description: baseline_abs_error <= 3 }
+
+  - name: fct_weekly_eval
+    description: >
+      Weekly evaluation computed in SQL from fct_player_week over rows with a realised actual,
+      per evaluation window, model version, candidate, and cohort ('ALL' or a position). The
+      n-weighted aggregate over a window's weeks reconciles to the committed evaluation artifact
+      (tests/gold/assert_marts_reconcile_to_eval_artifacts.sql).
+    config:
+      contract: { enforced: true }
+    constraints:
+      - type: primary_key
+        columns: [eval_window, season, week, model_version, candidate, cohort]
+    columns:
+      - { name: eval_window, data_type: varchar, description: evaluation window label, constraints: [{ type: not_null }] }
+      - { name: season, data_type: integer, description: NFL season, constraints: [{ type: not_null }] }
+      - { name: week, data_type: integer, description: regular-season week, constraints: [{ type: not_null }] }
+      - { name: period_key, data_type: integer, description: season * 100 + week, constraints: [{ type: not_null }] }
+      - { name: model_version, data_type: varchar, description: model version, constraints: [{ type: not_null }] }
+      - { name: candidate, data_type: varchar, description: rf or xgb, constraints: [{ type: not_null }] }
+      - { name: cohort, data_type: varchar, description: ALL or a position, constraints: [{ type: not_null }], data_tests: [{ accepted_values: { arguments: { values: [ALL, QB, RB, WR, TE] } } }] }
+      - { name: n, data_type: integer, description: rows with a realised actual, constraints: [{ type: not_null }], data_tests: [{ dbt_expectations.expect_column_values_to_be_between: { arguments: { min_value: 1 } } }] }
+      - { name: mae, data_type: double, description: "mean |actual - prediction|", constraints: [{ type: not_null }] }
+      - { name: median_ae, data_type: double, description: "median |actual - prediction|" }
+      - { name: rmse, data_type: double, description: root mean squared error }
+      - { name: within_3_rate, data_type: double, description: share of rows with abs_error <= 3, constraints: [{ type: not_null }], data_tests: [{ dbt_expectations.expect_column_values_to_be_between: { arguments: { min_value: 0, max_value: 1 } } }] }
+      - { name: within_5_rate, data_type: double, description: share of rows with abs_error <= 5 }
+      - { name: interval_coverage, data_type: double, description: share of rows whose actual fell inside floor..ceiling }
+      - { name: baseline_mae, data_type: double, description: "mean |actual - baseline| on the same rows" }
+      - { name: baseline_within_3_rate, data_type: double, description: baseline share within 3 }
+      - { name: mae_minus_baseline, data_type: double, description: negative when the model beats the baseline }
+
+  - name: fct_player_decisions
+    description: >
+      The floor policy from the retired risk_strategy.sql sketch applied to every scored
+      player-week: recommend when the prediction floor clears var min_floor, else review; with
+      replacement level, regret, hit, and downside outcomes once the week has an actual.
+    config:
+      contract: { enforced: true }
+    constraints:
+      - type: primary_key
+        columns: [player_id, season, week, model_version, candidate]
+      - type: check
+        expression: "policy_action in ('recommend', 'review')"
+    columns:
+      - { name: player_id, data_type: varchar, description: nflverse GSIS id, constraints: [{ type: not_null }] }
+      - { name: season, data_type: integer, description: NFL season, constraints: [{ type: not_null }] }
+      - { name: week, data_type: integer, description: regular-season week, constraints: [{ type: not_null }] }
+      - { name: period_key, data_type: integer, description: season * 100 + week, constraints: [{ type: not_null }] }
+      - { name: model_version, data_type: varchar, description: model version, constraints: [{ type: not_null }] }
+      - { name: candidate, data_type: varchar, description: rf or xgb, constraints: [{ type: not_null }] }
+      - { name: position, data_type: varchar, description: position, constraints: [{ type: not_null }] }
+      - { name: eval_window, data_type: varchar, description: evaluation window of the underlying row, constraints: [{ type: not_null }] }
+      - { name: prediction, data_type: double, description: predicted PPR points, constraints: [{ type: not_null }] }
+      - { name: prediction_floor, data_type: double, description: interval floor the policy tests }
+      - { name: prediction_ceiling, data_type: double, description: interval ceiling }
+      - { name: prediction_rank, data_type: integer, description: rank by prediction within (season, week, position, model, candidate), constraints: [{ type: not_null }] }
+      - { name: min_floor, data_type: double, description: the floor threshold this table was built with (var min_floor), constraints: [{ type: not_null }] }
+      - { name: policy_action, data_type: varchar, description: recommend or review, constraints: [{ type: not_null }] }
+      - { name: replacement_rank, data_type: integer, description: rank used as replacement level for the position (var replacement_rank) }
+      - { name: replacement_level_points, data_type: double, description: prediction of the replacement-rank player that week }
+      - { name: actual, data_type: double, description: realised PPR points (null until played) }
+      - { name: best_eligible_points, data_type: double, description: max realised points among the position's scored players that week }
+      - { name: regret, data_type: double, description: best_eligible_points - actual }
+      - { name: hit, data_type: boolean, description: actual >= replacement_level_points }
+      - { name: downside, data_type: boolean, description: actual < prediction_floor }
+      - { name: abs_error, data_type: double, description: "|actual - prediction|" }
+
+  - name: fct_decision_policy
+    description: >
+      Policy metrics per (season, week, position, model_version, candidate, min_floor) swept over
+      var min_floor_grid: recommendation and review counts and rates, recommendation MAE, mean
+      regret, hit rate, downside rate. Served by the API as /marts/decisions?min_floor=.
+    config:
+      contract: { enforced: true }
+    constraints:
+      - type: primary_key
+        columns: [season, week, position, model_version, candidate, min_floor]
+    columns:
+      - { name: season, data_type: integer, description: NFL season, constraints: [{ type: not_null }] }
+      - { name: week, data_type: integer, description: regular-season week, constraints: [{ type: not_null }] }
+      - { name: period_key, data_type: integer, description: season * 100 + week, constraints: [{ type: not_null }] }
+      - { name: position, data_type: varchar, description: position, constraints: [{ type: not_null }] }
+      - { name: model_version, data_type: varchar, description: model version, constraints: [{ type: not_null }] }
+      - { name: candidate, data_type: varchar, description: rf or xgb, constraints: [{ type: not_null }] }
+      - { name: min_floor, data_type: double, description: floor threshold of this row (one of var min_floor_grid), constraints: [{ type: not_null }] }
+      - { name: eligible_decisions, data_type: integer, description: scored players at the position that week, constraints: [{ type: not_null }] }
+      - { name: recommendations, data_type: integer, description: players whose floor cleared min_floor, constraints: [{ type: not_null }] }
+      - { name: reviews, data_type: integer, description: players below the threshold, constraints: [{ type: not_null }] }
+      - { name: recommendation_rate, data_type: double, description: recommendations / eligible_decisions }
+      - { name: review_rate, data_type: double, description: reviews / eligible_decisions }
+      - { name: recommendations_with_outcome, data_type: integer, description: recommended players with a realised actual, constraints: [{ type: not_null }] }
+      - { name: recommendation_mae, data_type: double, description: MAE over recommended players with outcomes }
+      - { name: review_mae, data_type: double, description: MAE over review players with outcomes }
+      - { name: mean_regret, data_type: double, description: mean(best_eligible_points - actual) over recommended players }
+      - { name: hit_rate, data_type: double, description: share of recommended players who beat replacement level, data_tests: [{ dbt_expectations.expect_column_values_to_be_between: { arguments: { min_value: 0, max_value: 1 } } }] }
+      - { name: downside_rate, data_type: double, description: share of recommended players who scored below their floor, data_tests: [{ dbt_expectations.expect_column_values_to_be_between: { arguments: { min_value: 0, max_value: 1 } } }] }
+
+  - name: fct_tier_outcomes
+    description: >
+      Preseason draft tier and rank per player next to the season they then played: PPR per
+      game (rules macro), realised rank among the tiered players of the position, and the delta.
+    config:
+      contract: { enforced: true }
+    constraints:
+      - type: primary_key
+        columns: [tiers_version, position, player_id]
+    columns:
+      - { name: tiers_version, data_type: varchar, description: tiers artifact version, constraints: [{ type: not_null }] }
+      - { name: season, data_type: integer, description: the season the tiers were built for, constraints: [{ type: not_null }] }
+      - { name: position, data_type: varchar, description: position, constraints: [{ type: not_null }] }
+      - { name: player_id, data_type: varchar, description: nflverse GSIS id, constraints: [{ type: not_null }] }
+      - { name: player_display_name, data_type: varchar, description: name recorded in the tiers file }
+      - { name: team, data_type: varchar, description: team recorded in the tiers file }
+      - { name: tier, data_type: integer, description: tier number (1 = best), constraints: [{ type: not_null }] }
+      - { name: tier_rank, data_type: integer, description: preseason rank within the position (by tier, then prior-season PPG), constraints: [{ type: not_null }] }
+      - { name: tier_probability, data_type: double, description: GMM membership probability of the assigned tier }
+      - { name: ppg_prev, data_type: double, description: prior-season PPR per game (a tier input) }
+      - { name: games_prev, data_type: integer, description: prior-season games (a tier input) }
+      - { name: games, data_type: integer, description: games played in the tier season (null if none in the warehouse) }
+      - { name: ppr_total, data_type: double, description: PPR points in the tier season }
+      - { name: ppr_per_game, data_type: double, description: PPR per game in the tier season }
+      - { name: realized_rank, data_type: integer, description: rank by ppr_per_game among tiered players of the position who played }
+      - { name: rank_delta, data_type: integer, description: tier_rank - realized_rank (positive = did better than ranked) }
+      - { name: n_tiered, data_type: integer, description: tiered players at the position for this version, constraints: [{ type: not_null }] }
+
+unit_tests:
+  - name: weekly_eval_mae_and_within_k
+    description: >
+      MAE and within-k on fixed rows: abs errors 1, 3, 4.5, 6 → mae 3.625, within_3 = 2/4
+      (an error of exactly 3 counts), within_5 = 3/4; baseline errors 2, 2, 2, 2 → 2.0.
+      A row without an actual is excluded; the cohort rows split by position.
+    model: fct_weekly_eval
+    given:
+      - input: ref('fct_player_week')
+        rows:
+          - { eval_window: "frozen_test:2024", season: 2024, week: 1, period_key: 202401, model_version: m1, candidate: rf, position: QB, source: frozen_test, target_scoring_format: ppr, prediction: 10.0, actual: 11.0, abs_error: 1.0, within_3: true, within_5: true, interval_hit: true, baseline: 9.0, baseline_abs_error: 2.0, baseline_within_3: true }
+          - { eval_window: "frozen_test:2024", season: 2024, week: 1, period_key: 202401, model_version: m1, candidate: rf, position: QB, source: frozen_test, target_scoring_format: ppr, prediction: 10.0, actual: 13.0, abs_error: 3.0, within_3: true, within_5: true, interval_hit: false, baseline: 11.0, baseline_abs_error: 2.0, baseline_within_3: true }
+          - { eval_window: "frozen_test:2024", season: 2024, week: 1, period_key: 202401, model_version: m1, candidate: rf, position: WR, source: frozen_test, target_scoring_format: ppr, prediction: 10.0, actual: 14.5, abs_error: 4.5, within_3: false, within_5: true, interval_hit: true, baseline: 12.5, baseline_abs_error: 2.0, baseline_within_3: true }
+          - { eval_window: "frozen_test:2024", season: 2024, week: 1, period_key: 202401, model_version: m1, candidate: rf, position: WR, source: frozen_test, target_scoring_format: ppr, prediction: 10.0, actual: 16.0, abs_error: 6.0, within_3: false, within_5: false, interval_hit: false, baseline: 14.0, baseline_abs_error: 2.0, baseline_within_3: true }
+          - { eval_window: "frozen_test:2024", season: 2024, week: 1, period_key: 202401, model_version: m1, candidate: rf, position: WR, source: frozen_test, target_scoring_format: ppr, prediction: 10.0, actual: null, abs_error: null, within_3: null, within_5: null, interval_hit: null, baseline: 10.0, baseline_abs_error: null, baseline_within_3: null }
+    expect:
+      rows:
+        - { cohort: ALL, n: 4, mae: 3.625, within_3_rate: 0.5, within_5_rate: 0.75, interval_coverage: 0.5, baseline_mae: 2.0, baseline_within_3_rate: 1.0, mae_minus_baseline: 1.625 }
+        - { cohort: QB, n: 2, mae: 2.0, within_3_rate: 1.0, within_5_rate: 1.0, interval_coverage: 0.5, baseline_mae: 2.0, baseline_within_3_rate: 1.0, mae_minus_baseline: 0.0 }
+        - { cohort: WR, n: 2, mae: 5.25, within_3_rate: 0.0, within_5_rate: 0.5, interval_coverage: 0.5, baseline_mae: 2.0, baseline_within_3_rate: 1.0, mae_minus_baseline: 3.25 }

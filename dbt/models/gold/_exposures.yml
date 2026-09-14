@@ -1,0 +1,37 @@
+version: 2
+
+exposures:
+  - name: api
+    label: ffai FastAPI service (Hugging Face Space)
+    type: application
+    maturity: high
+    url: https://cbratkovics-fantasy-football-ai.hf.space
+    description: >
+      The API serves the committed artifacts and, for the /marts/* routes, the parquet copies of
+      these gold tables exported by the weekly build (artifacts/marts/*.parquet) — it never
+      connects to MotherDuck. /performance still returns the evaluation artifacts verbatim.
+    depends_on:
+      - ref('fct_weekly_eval')
+      - ref('fct_player_week')
+      - ref('fct_decision_policy')
+      - ref('dim_model_version')
+    owner:
+      name: Christopher Bratkovics
+      email: cbratkovics@gmail.com
+
+  - name: decision_lab_site
+    label: Win My League Decision Lab (Next.js on Vercel)
+    type: dashboard
+    maturity: high
+    url: https://www.winmyleague.ai
+    description: >
+      The site reads only the API. Its Decisions panel (floor-policy sweep) and the player
+      history chart are driven by the gold marts through /marts/decisions and
+      /marts/player_week/{player_id}; the published evaluation numbers come from the artifacts.
+    depends_on:
+      - ref('fct_decision_policy')
+      - ref('fct_player_week')
+      - ref('fct_weekly_eval')
+    owner:
+      name: Christopher Bratkovics
+      email: cbratkovics@gmail.com

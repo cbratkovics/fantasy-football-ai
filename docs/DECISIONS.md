@@ -259,3 +259,67 @@ as the dbt test name plus its failing-row count; the freshness reason still name
 season and week. The scoring rules now exist twice by design — `ffai/scoring.py` for the
 trainer and `macros/fantasy_points.sql` for the warehouse — and both are reconciled row-for-row
 against nflverse, which is the guard against drift between them.
+
+## ADR-0016 — Gold marts with enforced contracts, and a reconciliation test against the evaluation artifacts (2026-09-14)
+
+**Context.** The published numbers live in `artifacts/eval/*.json` and must stay the source of
+truth (claim discipline). A warehouse that recomputes them is only trustworthy if it is forced to
+agree with them.
+
+**Decision.** Gold has seven contracted models (`contract: enforced`, DuckDB-enforced
+`not_null` / composite `primary_key` / `check` constraints, every column typed and described):
+`dim_player`, `dim_model_version`, `fct_player_week`, `fct_weekly_eval`,
+`fct_player_decisions`, `fct_decision_policy` (ADR-0017), `fct_tier_outcomes`. Grain
+interpretations that differ from the brief's shorthand:
+
+* `fct_player_week` is one row per (player, season, week, model_version, **candidate**): a model
+  version ships both candidates and the artifacts record both. "Per scoring format" is met by
+  realised points under all three formats (`actual`, `actual_half`, `actual_standard`, rules
+  macro) and by derived `prediction_half` / `prediction_standard` where the weekly file recorded
+  a reception estimate; the frozen-test and out-of-sample CSVs carry no estimate, so the
+  prediction row stays at the model target (`target_scoring_format = 'ppr'`) rather than
+  fabricating other formats.
+* `actual` comes from the warehouse stats when present, else from the value the artifact
+  recorded (`actual_source`); a singular test asserts the two agree wherever both exist. This is
+  what lets CI build gold from the 40-player fixture and still reconcile.
+* `baseline` reproduces the evaluator's causal trailing mean in SQL (seed = stats strictly before
+  the window; running = evaluated rows of the same window and candidate from earlier periods;
+  position fallback; prediction fallback), with `fsum` so exact-rational means and DuckDB
+  doubles agree.
+* `fct_weekly_eval` adds `eval_window` and a `cohort` column ('ALL' plus positions) to the
+  per-season-week-model grain so cohorts are pre-aggregated and the reconciliation can join.
+
+The reconciliation is a singular test, `assert_marts_reconcile_to_eval_artifacts`: for every
+committed artifact and cohort, the n-weighted aggregate of `fct_weekly_eval` over the window
+must match the published n exactly and MAE / within-3 / within-5 to 1e-4 (the artifacts are
+rounded to 4 dp). It passes with max |Δ| = 3.1e-5 on MAE and ≤ 4.3e-5 on the rates. A second
+test reconciles the baseline MAE to 1e-4 and the baseline within-3 rate to within one row,
+because an error of exactly 3.0 is decided by floating-point rounding (Python's exact-fraction
+mean vs `fsum(x)/n`; one WR row of 2,391 differs). That test needs the full stats history and is
+disabled under `full_stats: false` (CI).
+
+**Consequences.** A gold build that disagrees with a published artifact fails. The marts never
+replace the artifacts: `/performance` still serves the JSON verbatim, and the model card is
+unchanged. Unit tests (`weekly_eval_mae_and_within_k`) pin the metric definitions on fixed rows.
+
+## ADR-0017 — Decision marts replace the risk-strategy SQL sketch; replacement level is a rank (2026-09-14)
+
+**Context.** `analytics/sql/risk_strategy.sql` sketched a policy-metrics mart over decision and
+outcome facts that never existed (`fct_player_decisions`, `fct_player_outcomes`, league and
+lineup-slot columns). It was kept as a design note.
+
+**Decision.** The sketch is deleted and ported to two gold models. `fct_player_decisions` applies
+the floor policy to every scored player-week: `recommend` when the prediction floor clears the
+`min_floor` var (default 6.0), else `review`; `replacement_level_points` is the prediction of the
+rank-k player at the position that week (`replacement_rank` var: QB 12, RB 24, WR 24, TE 12 —
+twelve-team starters, no flex), `best_eligible_points` is the best realised score at the
+position that week (the sketch's per-slot maximum), and `regret`, `hit`, `downside` follow the
+sketch's definitions. `fct_decision_policy` is the sketch's aggregate (counts, rates,
+recommendation MAE, mean regret, hit and downside rates) swept over `min_floor_grid`
+(0–14 by 2) so the API can answer `?min_floor=` without a rebuild. Weeks without actuals keep
+null outcomes.
+
+**Consequences.** The Decisions panel on the site and `/marts/decisions` read
+`fct_decision_policy`; the per-player rows stay in the warehouse and the parquet export. The
+league / lineup-slot dimensions of the sketch are not modelled (no league data exists).
+Replacement level is a modelling choice recorded here, not a published metric.

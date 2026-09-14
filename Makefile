@@ -79,7 +79,7 @@ dbt-prod: dbt-deps
 	$(DBT) build $(DBT_FLAGS) --target prod
 
 dbt-export:
-	$(DBT) run-operation export_gold $(DBT_FLAGS) --target $(DBT_TARGET)
+	GITHUB_SHA=$${GITHUB_SHA:-$$(git rev-parse HEAD)} $(DBT) run-operation export_gold $(DBT_FLAGS) --target $(DBT_TARGET)
 
 dbt-docs: dbt-deps
 	$(DBT) docs generate $(DBT_FLAGS) --target dev --static
