@@ -1,0 +1,17 @@
+{
+  "metadata": {"dbt_schema_version": "https://schemas.getdbt.com/dbt/run-results/v6.json", "dbt_version": "1.12.4", "invocation_id": "fixture-0001"},
+  "results": [
+    {"status": "success", "unique_id": "model.ffai_dbt.brz_player_stats", "message": "OK", "failures": null},
+    {"status": "success", "unique_id": "model.ffai_dbt.slv_player_stats", "message": "OK", "failures": null},
+    {"status": "error", "unique_id": "model.ffai_dbt.slv_predictions", "message": "Binder Error: column \"receptions_estimate\" not found", "failures": null},
+    {"status": "pass", "unique_id": "test.ffai_dbt.dbt_utils_unique_combination_of_columns_slv_player_stats_player_id__season__week.3f1a2b", "message": null, "failures": 0},
+    {"status": "pass", "unique_id": "test.ffai_dbt.not_null_slv_player_stats_player_id.9c8d7e", "message": null, "failures": 0},
+    {"status": "fail", "unique_id": "test.ffai_dbt.assert_stats_fresh_through_expected_week", "message": "Got 1 result, configured to fail if != 0", "failures": 1},
+    {"status": "fail", "unique_id": "test.ffai_dbt.row_count_within_pct_of_prior_period_slv_player_stats_season__week.a1b2c3", "message": "Got 1 result, configured to fail if != 0", "failures": 1},
+    {"status": "warn", "unique_id": "test.ffai_dbt.dbt_expectations_expect_column_values_to_be_between_slv_player_stats_week__22__1.ff00aa", "message": "Got 2 results, configured to warn if != 0", "failures": 2},
+    {"status": "skipped", "unique_id": "test.ffai_dbt.accepted_values_slv_predictions_candidate__rf__xgb.77aa88", "message": null, "failures": null},
+    {"status": "pass", "unique_id": "unit_test.ffai_dbt.slv_player_stats.scoring_rules_standard_half_ppr", "message": null, "failures": null}
+  ],
+  "elapsed_time": 3.21,
+  "args": {"select": ["+tag:silver"], "target": "dev"}
+}

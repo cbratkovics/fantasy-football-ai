@@ -1,0 +1,353 @@
+version: 2
+
+# Silver = the data contracts. Every check of the retired ffai/data/contracts.py Python module
+# is a dbt test here (mapping in docs/DECISIONS.md, ADR-0015):
+#   required_columns              -> expect_table_columns_to_contain_set on slv_player_stats
+#   grain_unique_player_season_week -> dbt_utils.unique_combination_of_columns
+#   value_ranges                  -> expect_column_values_to_be_between on season / week
+#   non_negative_counting_stats   -> expect_column_values_to_be_between(min 0) per counting stat
+#   positions_in_scope            -> accepted_values on position
+#   null_rates                    -> not_null on fantasy_points_ppr / position / team (the real
+#                                    data has zero nulls, so the 2 % tolerance became exact)
+#   freshness                     -> tests/silver/assert_stats_fresh_through_expected_week (vars)
+#   newest_week_row_count         -> row_count_within_pct_of_prior_period (custom generic test)
+#   row_count_monotonic           -> tests/silver/assert_stats_row_count_not_below_prior_run (vars)
+# plus the scoring reconciliation (tests/silver/assert_scoring_rules_reconcile_to_nflverse).
+
+models:
+  - name: slv_player_stats
+    description: >
+      Cleaned weekly stats at the (player_id, season, week) grain: regular season, QB/RB/WR/TE,
+      deduplicated (higher PPR points wins, then team), rows of the week being scored dropped,
+      with rules-based points under every scoring format.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [player_id, season, week]
+      - dbt_expectations.expect_table_columns_to_contain_set:
+          arguments:
+            column_list: [player_id, player_display_name, position, season, week, team, opponent_team, completions, attempts, passing_yards, passing_tds, passing_interceptions, passing_air_yards, passing_2pt_conversions, sack_fumbles_lost, carries, rushing_yards, rushing_tds, rushing_fumbles_lost, rushing_2pt_conversions, receptions, targets, receiving_yards, receiving_tds, receiving_air_yards, receiving_fumbles_lost, receiving_2pt_conversions, special_teams_tds, fantasy_points, fantasy_points_ppr]
+      - row_count_within_pct_of_prior_period:
+          arguments:
+            period_columns: [season, week]
+            tolerance_pct: "{{ var('row_count_tolerance_pct') }}"
+    columns:
+      - name: player_id
+        description: nflverse GSIS id
+        data_tests: [not_null]
+      - name: season
+        description: NFL season (>= 2019, the first season in scope)
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 2019
+      - name: week
+        description: regular-season week 1..22 (18 games weeks since 2021; the bound leaves room)
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 1
+                max_value: 22
+      - name: period_key
+        description: season * 100 + week; monotonic in time, used for window frames
+      - name: position
+        description: fantasy position in scope
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [QB, RB, WR, TE]
+      - name: team
+        data_tests: [not_null]
+      - name: player_display_name
+      - name: opponent_team
+      - name: fantasy_points_ppr
+        description: nflverse's own PPR points (reconciliation only; never a feature)
+        data_tests: [not_null]
+      - name: fantasy_points
+        description: nflverse's own standard points (reconciliation only)
+      - name: points_standard
+        description: rules-based standard points (fantasy_points macro)
+        data_tests: [not_null]
+      - name: points_half
+        description: rules-based half-PPR points (0.5 per reception)
+        data_tests: [not_null]
+      - name: points_ppr
+        description: rules-based PPR points; the model target
+        data_tests: [not_null]
+      - name: completions
+        description: counting stat; never negative (Python contract NON_NEGATIVE)
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+      - name: attempts
+        description: counting stat; never negative (Python contract NON_NEGATIVE)
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+      - name: passing_tds
+        description: counting stat; never negative (Python contract NON_NEGATIVE)
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+      - name: passing_interceptions
+        description: counting stat; never negative (Python contract NON_NEGATIVE)
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+      - name: passing_2pt_conversions
+        description: counting stat; never negative (Python contract NON_NEGATIVE)
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+      - name: sack_fumbles_lost
+        description: counting stat; never negative (Python contract NON_NEGATIVE)
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+      - name: carries
+        description: counting stat; never negative (Python contract NON_NEGATIVE)
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+      - name: rushing_tds
+        description: counting stat; never negative (Python contract NON_NEGATIVE)
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+      - name: rushing_fumbles_lost
+        description: counting stat; never negative (Python contract NON_NEGATIVE)
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+      - name: rushing_2pt_conversions
+        description: counting stat; never negative (Python contract NON_NEGATIVE)
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+      - name: receptions
+        description: counting stat; never negative (Python contract NON_NEGATIVE)
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+      - name: targets
+        description: counting stat; never negative (Python contract NON_NEGATIVE)
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+      - name: receiving_tds
+        description: counting stat; never negative (Python contract NON_NEGATIVE)
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+      - name: receiving_fumbles_lost
+        description: counting stat; never negative (Python contract NON_NEGATIVE)
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+      - name: receiving_2pt_conversions
+        description: counting stat; never negative (Python contract NON_NEGATIVE)
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+      - name: special_teams_tds
+        description: counting stat; never negative (Python contract NON_NEGATIVE)
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+
+  - name: slv_actuals
+    description: Realised points per (player_id, season, week, scoring_format), long by format.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [player_id, season, week, scoring_format]
+    columns:
+      - name: scoring_format
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [standard, half, ppr]
+      - name: actual
+        data_tests: [not_null]
+
+  - name: slv_predictions
+    description: >
+      Every recorded prediction at the (player_id, season, week, model_version, candidate) grain,
+      unioned from the frozen-test CSV, the out-of-sample CSVs, and the weekly files, with the
+      documented deduplication rule and the evaluation window each row belongs to.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [player_id, season, week, model_version, candidate]
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "prediction_floor <= prediction and prediction <= prediction_ceiling"
+    columns:
+      - name: player_id
+        data_tests: [not_null]
+      - name: season
+        data_tests: [not_null]
+      - name: week
+        data_tests: [not_null]
+      - name: model_version
+        data_tests: [not_null]
+      - name: candidate
+        description: rf (RandomForest) or xgb (XGBoost)
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [rf, xgb]
+      - name: position
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [QB, RB, WR, TE]
+      - name: prediction
+        description: predicted PPR points (the model target)
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: -10
+                max_value: 80
+      - name: prediction_floor
+        description: 10th residual-quantile interval bound, clipped at 0
+      - name: prediction_ceiling
+        description: 90th residual-quantile interval bound
+      - name: receptions_estimate
+        description: as-of L3 average receptions (weekly files only); used to derive standard/half
+      - name: actual_recorded
+        description: realised PPR points as recorded in the artifact (null until attached)
+      - name: source
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [frozen_test, out_of_sample_season, weekly]
+      - name: eval_window
+        description: evaluation window label (e.g. frozen_test:2024, weekly:2026-01)
+        data_tests: [not_null]
+      - name: window_start_key
+        description: period_key of the window's first evaluated period
+
+  - name: slv_eval_metrics
+    description: Published evaluation numbers per (eval_id, cohort), verbatim from the artifacts.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [eval_id, cohort]
+    columns:
+      - name: cohort
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [ALL, QB, RB, WR, TE]
+      - name: mae
+        data_tests: [not_null]
+
+  - name: slv_eval_folds
+    description: Rolling-origin folds per (eval_id, season, week).
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [eval_id, season, week]
+
+  - name: slv_rolling_weeks
+    description: In-season champion vs challenger shadow metrics per (season, week).
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [season, week]
+
+  - name: slv_tiers
+    description: Preseason draft tiers per (tiers_version, position, player_id) with a rank within the position.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [tiers_version, position, player_id]
+    columns:
+      - name: tier
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 1
+      - name: position
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [QB, RB, WR, TE]
+
+unit_tests:
+  - name: scoring_rules_standard_half_ppr
+    description: >
+      The fantasy_points macro on fixed rows: a passing line, a receiving line with a fumble and
+      a 2-pt conversion, and a null-heavy line (nulls count as zero). Expected values are computed
+      by hand from the rules in the macro docstring.
+    model: slv_player_stats
+    given:
+      - input: ref('brz_player_stats')
+        rows:
+          # QB: 300 yds (12) + 2 TD (8) - 1 INT (-2) + 20 rush yds (2) = 20.0; no receptions
+          - {player_id: qb1, player_display_name: QB One, position: QB, season: 2024, week: 3, season_type: REG, team: BUF, opponent_team: MIA,
+             passing_yards: 300, passing_tds: 2, passing_interceptions: 1, rushing_yards: 20, receptions: 0, fantasy_points_ppr: 20.0}
+          # WR: 90 rec yds (9) + 1 TD (6) + 2pt (2) - fumble (-2) = 15.0 standard; 6 rec -> 18.0 half, 21.0 ppr
+          - {player_id: wr1, player_display_name: WR One, position: WR, season: 2024, week: 3, season_type: REG, team: MIA, opponent_team: BUF,
+             receptions: 6, targets: 9, receiving_yards: 90, receiving_tds: 1, receiving_2pt_conversions: 1, receiving_fumbles_lost: 1, fantasy_points_ppr: 21.0}
+          # TE with every stat null except one reception: 0 standard, 0.5 half, 1.0 ppr
+          - {player_id: te1, player_display_name: TE One, position: TE, season: 2024, week: 3, season_type: REG, team: KC, opponent_team: DEN,
+             receptions: 1, fantasy_points_ppr: 1.0}
+          # Postseason row must be excluded
+          - {player_id: qb1, player_display_name: QB One, position: QB, season: 2024, week: 19, season_type: POST, team: BUF, opponent_team: KC,
+             passing_yards: 100, fantasy_points_ppr: 4.0}
+    expect:
+      rows:
+        - {player_id: qb1, points_standard: 20.0, points_half: 20.0, points_ppr: 20.0}
+        - {player_id: wr1, points_standard: 15.0, points_half: 18.0, points_ppr: 21.0}
+        - {player_id: te1, points_standard: 0.0, points_half: 0.5, points_ppr: 1.0}
+
+  - name: predictions_dedup_prefers_weekly_then_latest
+    description: >
+      The same (player, season, week, model_version, candidate) in the frozen-test CSV and in a
+      weekly file keeps the weekly row; two weekly rows keep the later generated_at_utc.
+    model: slv_predictions
+    given:
+      - input: ref('brz_predictions_test')
+        rows:
+          - {source_file: t.csv, model_version: m1, candidate: rf, player_id: p1, season: 2026, week: 1, position: RB, player_display_name: P, team: X,
+             prediction: 10.0, prediction_floor: 5.0, prediction_ceiling: 15.0, actual: 9.0}
+      - input: ref('brz_predictions_oos')
+        rows: []
+      - input: ref('brz_predictions_weekly')
+        rows:
+          - {source_file: w_a.json, model_version: m1, candidate: rf, player_id: p1, season: 2026, week: 1, position: RB, player_display_name: P, team: X,
+             prediction: 11.0, prediction_floor: 6.0, prediction_ceiling: 16.0, receptions_estimate: 2.0, actual: null, generated_at_utc: "2026-09-01 00:00:00"}
+          - {source_file: w_b.json, model_version: m1, candidate: rf, player_id: p1, season: 2026, week: 1, position: RB, player_display_name: P, team: X,
+             prediction: 12.0, prediction_floor: 7.0, prediction_ceiling: 17.0, receptions_estimate: 2.5, actual: null, generated_at_utc: "2026-09-02 00:00:00"}
+          - {source_file: w_b.json, model_version: m1, candidate: xgb, player_id: p1, season: 2026, week: 1, position: RB, player_display_name: P, team: X,
+             prediction: 13.0, prediction_floor: 8.0, prediction_ceiling: 18.0, receptions_estimate: 2.5, actual: null, generated_at_utc: "2026-09-02 00:00:00"}
+    expect:
+      rows:
+        - {player_id: p1, candidate: rf, prediction: 12.0, source: weekly, source_file: w_b.json, eval_window: "weekly:2026-01", window_start_key: 202601}
+        - {player_id: p1, candidate: xgb, prediction: 13.0, source: weekly, source_file: w_b.json, eval_window: "weekly:2026-01", window_start_key: 202601}

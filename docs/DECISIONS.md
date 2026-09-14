@@ -220,3 +220,42 @@ weekly wrapper and CI override.
 lineage starts at a named source with a description and freshness. `dbt source freshness` on
 the stats maps the newest `(season, week)` to an approximate game date (warn after 10 days);
 the HOLD-grade freshness contract is a var-driven test (ADR-0015).
+
+## ADR-0015 — Data contracts are dbt tests on the silver layer; Python keeps a thin wrapper (2026-09-14)
+
+**Context.** `ffai/data/contracts.py` implemented nine checks in pandas. dbt has first-class
+equivalents (generic tests, packages, singular tests, unit tests) and running them in the
+warehouse means the same tests guard MotherDuck and the local build. The weekly policy must
+still HOLD on a failure.
+
+**Decision.** Each Python check has one dbt test; the Python module now only runs
+`dbt build --select +tag:silver --indirect-selection cautious` with the run's parameters as
+dbt vars (`stats_path`, `target_season`/`target_week`, `expected_season`/`expected_week`,
+`prior_row_count`) and maps `target/run_results.json` into the same report shape
+(`{"ok", "checks", "summary"}`) the policy consumed before. Nothing was lost; two checks got
+stricter because the data allows it:
+
+| Python check (deleted) | dbt test (now) |
+|---|---|
+| `required_columns` | `dbt_expectations.expect_table_columns_to_contain_set` on `slv_player_stats` (a missing column also fails the bronze cast at build time, reported as `model:brz_player_stats`) |
+| `grain_unique_player_season_week` | `dbt_utils.unique_combination_of_columns(player_id, season, week)` |
+| `value_ranges` (season ≥ 2019, 1 ≤ week ≤ 22) | `dbt_expectations.expect_column_values_to_be_between` on `season` and `week` |
+| `non_negative_counting_stats` (16 columns) | `expect_column_values_to_be_between(min_value: 0)` per column |
+| `positions_in_scope` | `accepted_values` on `position` |
+| `null_rates` (≤ 2 % on `fantasy_points_ppr`, `position`, `team`) | `not_null` on the same three columns — the 2019–2025 pull has zero nulls, so the tolerance became exact |
+| `freshness` (latest ≥ expected (season, week)) | singular `assert_stats_fresh_through_expected_week` driven by vars; `dbt source freshness` (date-mapped, warn-only) is declared separately |
+| `newest_week_row_count` (absolute 200–600 band) | custom generic `row_count_within_pct_of_prior_period(period_columns=[season, week], tolerance_pct=0.35)` — relative, so it also holds on the CI fixture; the largest real consecutive-week swing is 23 % |
+| `row_count_monotonic` (rows never shrink vs the prior run) | singular `assert_stats_row_count_not_below_prior_run` driven by `prior_row_count` |
+| — (was `tests/test_scoring_reconciliation.py` only) | singular `assert_scoring_rules_reconcile_to_nflverse` (max abs diff ≤ 0.01 on every row) + unit test `scoring_rules_standard_half_ppr` |
+
+The weekly job drops the target week's partial rows through the `target_season`/`target_week`
+vars (same rule as before). Drift stays in Python (`ffai/eval/drift.py`): it is a statistical
+monitor, not a contract. `tests/test_contracts.py` tests the mapping on a fixture
+`run_results.json` (fail/error → HOLD reasons; warn/skipped → not failures).
+
+**Consequences.** The contracts run needs dbt in the weekly environment (added to
+`requirements-train.txt`; the API image is unchanged). A contract failure appears in the run log
+as the dbt test name plus its failing-row count; the freshness reason still names the expected
+season and week. The scoring rules now exist twice by design — `ffai/scoring.py` for the
+trainer and `macros/fantasy_points.sql` for the warehouse — and both are reconciled row-for-row
+against nflverse, which is the guard against drift between them.

@@ -3,7 +3,8 @@
 Steps (each appends to the run log):
 
 1. Determine the current season / next week from nflverse schedules (or the CLI overrides).
-2. Load stats through the last completed week; run the data contracts; failure → HOLD.
+2. Load stats through the last completed week; run the data contracts (dbt silver tests via
+   ``ffai.data.contracts``); failure → HOLD.
 3. Drift: PSI of the last four completed weeks of played rows against the week-of-season
    matched training deciles; median monitored PSI > 0.25 (or ≥ 2 features > 0.5) → HOLD,
    any feature > 0.25 → warn (``ffai.eval.drift.drift_status``, ADR-0010).
@@ -70,16 +71,19 @@ def decide(
 
 
 def _describe_failure(check: dict[str, Any]) -> str:
-    """Human-readable contract failure naming the missing (season, week) where relevant."""
+    """Human-readable contract failure from a dbt test result (name, status, failing rows)."""
     d = check.get("detail") or {}
+    status, failures = d.get("status"), d.get("failures")
     if check["name"] == "freshness":
-        exp, latest = d.get("expected_through", []), d.get("latest", [])
+        exp = d.get("expected_through") or ["?", "?"]
         return (
             f"freshness: nflverse has no complete stats through season {exp[0]} week {exp[1]} "
-            f"(latest available: season {latest[0]} week {latest[1]})"
+            "(dbt test assert_stats_fresh_through_expected_week failed)"
         )
-    if check["name"] == "newest_week_row_count":
-        return f"newest_week_row_count: {d.get('rows')} rows, expected within {d.get('band')}"
+    if status == "error":
+        return f"{check['name']}: dbt error: {str(d.get('message') or '').strip()[:200]}"
+    if failures:
+        return f"{check['name']}: {failures} failing row(s)"
     return check["name"]
 
 
@@ -176,8 +180,29 @@ def run_weekly(
     else:
         expected_through = (season - 1, regular_season_weeks(season - 1))
     prior_rows = (manifest.get("last_run") or {}).get("stats_rows")
-    report = contracts.check_stats_contract(
-        stats, expected_through=expected_through, prior_row_count=prior_rows
+    # The contracts are dbt tests on the silver layer (ADR-0015); the wrapper passes the exact
+    # cache file just loaded, the target week to drop, the expected freshness, and the prior
+    # row count as dbt vars and maps the run results back into this report.
+    report = contracts.run_silver_contracts(
+        stats_path=nflverse.cache_path_for("player_stats", range(MIN_SEASON, season + 1)),
+        target_season=season,
+        target_week=week,
+        expected_through=expected_through,
+        prior_row_count=prior_rows,
+    )
+    report["summary"].update(
+        {
+            "rows": int(len(stats)),
+            "players": int(stats["player_id"].nunique()) if len(stats) else 0,
+            "latest": (
+                [
+                    int(stats["season"].max()),
+                    int(stats[stats["season"] == stats["season"].max()]["week"].max()),
+                ]
+                if len(stats)
+                else [0, 0]
+            ),
+        }
     )
     failures = [_describe_failure(c) for c in report["checks"] if not c["ok"]]
     step(

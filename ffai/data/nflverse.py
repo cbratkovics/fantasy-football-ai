@@ -91,6 +91,11 @@ def _cache_path(name: str, seasons: list[int], load_date: dt.date | None = None)
     return CACHE_DIR / f"{name}_{seasons[0]}-{seasons[-1]}_{load_date.isoformat()}.parquet"
 
 
+def cache_path_for(name: str, seasons: int | Iterable[int]) -> Path:
+    """The cache file a same-day ``load_*`` call reads or writes (e.g. for dbt's stats source)."""
+    return _cache_path(name, _seasons_list(seasons))
+
+
 def _to_pandas(frame) -> pd.DataFrame:  # noqa: ANN001 - polars or pandas
     if isinstance(frame, pd.DataFrame):
         return frame

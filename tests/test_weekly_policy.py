@@ -75,7 +75,17 @@ def _relax_for_fixture(monkeypatch, stats) -> None:
 
     monkeypatch.setattr(registry, "read_manifest", read_without_last_run)
     monkeypatch.setattr(nflverse, "load_weekly_stats", lambda seasons, **kw: stats)
-    monkeypatch.setattr(contracts, "WEEK_ROWS_MIN", 1)
+
+    # The contracts are dbt tests (ADR-0015); the offline suite stubs the dbt invocation and
+    # records the vars the job hands to it (tests/test_contracts.py covers the mapping).
+    calls: list[dict] = []
+
+    def fake_dbt(**kwargs):
+        calls.append(kwargs)
+        return {"ok": True, "checks": [], "summary": {"dbt": {"stubbed": True}}}
+
+    monkeypatch.setattr(contracts, "run_silver_contracts", fake_dbt)
+    monkeypatch.setattr(weekly, "_dbt_calls", calls, raising=False)
     monkeypatch.setattr(drift, "HOLD_PSI", 99.0)
     monkeypatch.setattr(drift, "SEVERE_PSI", 99.0)
 
@@ -92,6 +102,10 @@ def test_first_week_of_a_season_has_nothing_to_score(monkeypatch, stats) -> None
     log = weekly.run_weekly(season=season, week=1, dry_run=True, write_model_card=False)
     steps = {s["step"]: s for s in log["steps"]}
     assert steps["contracts"]["ok"]
+    call = weekly._dbt_calls[0]
+    assert (call["target_season"], call["target_week"]) == (season, 1)
+    assert call["expected_through"] == (season - 1, 18)
+    assert str(call["stats_path"]).endswith(".parquet")
     assert steps["rolling_eval"]["week"] is None and "week 1" in steps["rolling_eval"]["note"]
     assert log["action"] == weekly.ACTION_PUBLISH
     assert steps["score"]["week"] == 1 and steps["score"]["n"] > 0
@@ -113,6 +127,10 @@ def test_partial_target_week_rows_are_dropped_before_contracts(monkeypatch, stat
         ((stats.season == season) & (stats.week == week)).sum()
     )
     assert st["rows_before_target_week"] + st["dropped_partial_rows"] == st["loaded_rows"]
+    # dbt drops the same rows through the target_season / target_week vars.
+    call = weekly._dbt_calls[0]
+    assert (call["target_season"], call["target_week"]) == (season, week)
+    assert call["expected_through"] == (season, week - 1)
 
 
 def test_describe_failure_names_the_missing_week() -> None:
@@ -120,10 +138,10 @@ def test_describe_failure_names_the_missing_week() -> None:
         {
             "name": "freshness",
             "ok": False,
-            "detail": {"expected_through": [2026, 2], "latest": [2026, 1]},
+            "detail": {"status": "fail", "failures": 1, "expected_through": [2026, 2]},
         }
     )
-    assert "season 2026 week 2" in msg and "season 2026 week 1" in msg
+    assert "season 2026 week 2" in msg and "assert_stats_fresh_through_expected_week" in msg
     assert weekly._describe_failure({"name": "grain_unique_player_season_week", "ok": False}) == (
         "grain_unique_player_season_week"
     )
