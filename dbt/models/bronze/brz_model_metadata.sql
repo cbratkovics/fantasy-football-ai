@@ -21,10 +21,11 @@ select
     cast(input_rows as integer) as input_rows,
     cast(code_commit as varchar) as code_commit,
     cast(interval_method as varchar) as interval_method,
-    {% for pos in ['QB', 'RB', 'WR', 'TE'] -%}
-    cast(positions.{{ pos }}.champion as varchar) as champion_{{ pos | lower }},
-    cast(positions.{{ pos }}.n_features as integer) as n_features_{{ pos | lower }},
-    cast(positions.{{ pos }}.n_train as integer) as n_train_{{ pos | lower }},
-    cast(positions.{{ pos }}.n_test as integer) as n_test_{{ pos | lower }}{{ "," if not loop.last }}
-    {% endfor %}
+{% for pos in ['QB', 'RB', 'WR', 'TE'] -%}
+cast(positions.{{ pos }}.champion as varchar) as champion_{{ pos | lower }},
+cast(positions.{{ pos }}.n_features as integer) as n_features_{{ pos | lower }},
+cast(positions.{{ pos }}.n_train as integer) as n_train_{{ pos | lower }},
+cast(positions.{{ pos }}.n_test as integer) as n_test_{{ pos | lower }}{{ "," if not loop.last }}  -- noqa: LT02
+
+{% endfor %}
 from {{ source('repo_files', 'model_metadata') }}

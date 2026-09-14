@@ -83,7 +83,7 @@ ranked as (
         *,
         row_number() over (
             partition by player_id, season, week, model_version, candidate
-            order by source_priority, generated_at_utc desc nulls last, source_file desc
+            order by source_priority asc, generated_at_utc desc nulls last, source_file desc
         ) as dedup_rank
     from unioned
 )

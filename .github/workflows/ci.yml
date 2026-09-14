@@ -13,6 +13,8 @@ on:
 
 permissions:
   contents: read
+  pages: write
+  id-token: write
 
 jobs:
   python:
@@ -46,13 +48,64 @@ jobs:
       - name: Build API image
         run: docker build -t ffai-api:ci .
       - name: Report image size
-        run: docker image inspect ffai-api:ci --format 'ffai-api image size: {{.Size}} bytes'
+        run: "docker image inspect ffai-api:ci --format 'ffai-api image size: {{.Size}} bytes'"
       - name: Smoke test /health
         run: |
           docker run -d --rm -p 7860:7860 --name ffai ffai-api:ci
           for i in $(seq 1 30); do curl -sf http://127.0.0.1:7860/health && break; sleep 2; done
           curl -sf http://127.0.0.1:7860/health
           docker stop ffai
+
+  dbt:
+    # The analytics warehouse on the dev target only (a DuckDB file built from the committed
+    # 40-player fixture and the committed artifacts). Never a prod / MotherDuck build here.
+    runs-on: ubuntu-latest
+    env:
+      DBT_PROJECT_DIR: dbt
+      DBT_PROFILES_DIR: dbt
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-train.txt
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-train.txt
+      - name: dbt deps
+        run: dbt deps
+      - name: dbt build (dev, fixture stats)
+        # full_stats=false disables the baseline reconciliation, which needs the full nflverse
+        # history; every other test, contract, unit test, and the artifact reconciliation run.
+        run: >-
+          dbt build --target dev
+          --vars '{"stats_path": "tests/fixtures/player_stats_sample.csv", "full_stats": false}'
+      - name: dbt source freshness (informational)
+        run: dbt source freshness --target dev || true
+      - name: sqlfluff
+        run: sqlfluff lint dbt/models dbt/tests dbt/macros
+      - name: dbt docs generate
+        run: |
+          dbt docs generate --target dev --static
+          mkdir -p site && cp dbt/target/static_index.html site/index.html
+      - name: Upload docs site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  pages:
+    # Publishes the dbt docs to GitHub Pages (Settings -> Pages -> Source: GitHub Actions).
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    needs: dbt
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
 
   frontend:
     runs-on: ubuntu-latest

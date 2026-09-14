@@ -15,7 +15,7 @@ with in_scope as (
     where
         season_type = 'REG'
         and position in ('QB', 'RB', 'WR', 'TE')
-        {% if target_season is not none and target_week is not none %}
+    {% if target_season is not none and target_week is not none %}
         and not (season = {{ target_season }} and week >= {{ target_week }})
         and season <= {{ target_season }}
         {% endif %}
@@ -26,7 +26,7 @@ ranked as (
         *,
         row_number() over (
             partition by player_id, season, week
-            order by fantasy_points_ppr desc nulls last, team
+            order by fantasy_points_ppr desc nulls last, team asc
         ) as dedup_rank
     from in_scope
 )

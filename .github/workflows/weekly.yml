@@ -1,7 +1,11 @@
 name: weekly
 
-# Autonomous weekly job: ingest nflverse -> contracts -> drift -> score champion ->
-# shadow-evaluate challenger -> publish / hold / promote -> commit artifacts.
+# Autonomous weekly job: ingest nflverse -> contracts (dbt silver tests on MotherDuck) -> drift ->
+# score champion -> shadow-evaluate challenger -> publish / hold / promote -> dbt build on
+# MotherDuck -> export gold marts -> commit artifacts (incl. artifacts/marts) -> mirror the Space.
+#
+# MOTHERDUCK_TOKEN is a repository secret; it is used only here (one prod build per week, well
+# inside the free tier's 10 compute-hours/month). The Space never receives it.
 #
 # NOTE: GitHub disables scheduled workflows after 60 days without repository activity. The commit
 # this job makes on every PUBLISH/PROMOTE run is what keeps the schedule alive during the season.
@@ -49,9 +53,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-train.txt
           pip install -e .
+      - name: dbt deps
+        run: dbt deps --project-dir dbt --profiles-dir dbt
       - name: Run the weekly job
         id: run
         continue-on-error: true
+        env:
+          MOTHERDUCK_TOKEN: ${{ secrets.MOTHERDUCK_TOKEN }}
+          FFAI_DBT_TARGET: prod
         run: |
           ARGS=""
           if [ -n "${{ inputs.season }}" ] && [ -n "${{ inputs.week }}" ]; then
@@ -76,6 +85,20 @@ jobs:
           else:
               print("action=DRY_RUN"); print("season=0"); print("week=00"); print("run_id=none")
           EOF
+      - name: Build the warehouse on MotherDuck and export the gold marts
+        # After scoring, before the commit: the full medallion build with every test (the silver
+        # contracts already ran inside the job; gold adds the contracts, the reconciliation to
+        # the evaluation artifacts, and the unit tests), then COPY of every gold table to
+        # artifacts/marts/*.parquet for the API. A failure here fails the run before anything is
+        # committed, so a week is never published with marts that disagree with the artifacts.
+        id: dbt
+        if: ${{ inputs.dry_run != true && (steps.outcome.outputs.action == 'PUBLISH' || steps.outcome.outputs.action == 'PROMOTE') }}
+        env:
+          MOTHERDUCK_TOKEN: ${{ secrets.MOTHERDUCK_TOKEN }}
+        run: |
+          VARS="{\"target_season\": ${{ steps.outcome.outputs.season }}, \"target_week\": $((10#${{ steps.outcome.outputs.week }}))}"
+          dbt build --project-dir dbt --profiles-dir dbt --target prod --vars "$VARS"
+          dbt run-operation export_gold --project-dir dbt --profiles-dir dbt --target prod
       - name: Commit artifacts
         if: ${{ inputs.dry_run != true && steps.outcome.outputs.action != 'DRY_RUN' }}
         run: |
@@ -98,6 +121,15 @@ jobs:
             --exclude ".mypy_cache/*" --exclude ".ruff_cache/*" --exclude ".pytest_cache/*" \
             --exclude ".vscode/*" --exclude ".claude/*" --exclude "*.env*" \
             --exclude "frontend-next/node_modules/*" --exclude "frontend-next/.next/*"
+      - name: Open an issue if the warehouse build failed
+        if: ${{ failure() && steps.dbt.outcome == 'failure' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create \
+            --title "weekly: warehouse build failed for ${{ steps.outcome.outputs.season }} wk${{ steps.outcome.outputs.week }} (${{ steps.outcome.outputs.run_id }})" \
+            --label "weekly-hold" \
+            --body "dbt build --target prod (or export_gold) failed after scoring; nothing was committed. See the run log: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
       - name: Open an issue on HOLD
         if: ${{ steps.outcome.outputs.action == 'HOLD' }}
         env:

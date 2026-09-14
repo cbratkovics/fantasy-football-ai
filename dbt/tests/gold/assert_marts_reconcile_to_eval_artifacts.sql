@@ -30,10 +30,11 @@ by_position as (
         sum(w.within_5_rate * w.n) / sum(w.n) as within_5_rate
     from published as p
     inner join {{ ref('fct_weekly_eval') }} as w
-        on p.eval_window = w.eval_window
-        and p.model_version = w.model_version
-        and p.cohort = w.cohort
-        and p.candidate = w.candidate
+        on
+            p.eval_window = w.eval_window
+            and p.model_version = w.model_version
+            and p.cohort = w.cohort
+            and p.candidate = w.candidate
     where p.cohort <> 'ALL'
     group by 1, 2
 ),

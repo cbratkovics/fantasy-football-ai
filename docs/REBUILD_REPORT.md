@@ -187,3 +187,23 @@ workflows use the whole-tree command as specified; if the mirror step fails with
 Actions, split it into per-directory uploads the same way. The live check after this session:
 `/health` lists both evaluations and `data_through` 2025 wk 18; `/performance` returns the frozen
 2024 and out-of-sample 2025 artifacts; `/predictions/2026/1` serves week 1.
+
+## Warehouse session (2026-09-14)
+
+Added the dbt medallion warehouse (`dbt/`, ADR-0013 … ADR-0020) in five local commits: bronze
+over the repo's own files, silver with the contracts as dbt tests (the pandas checks deleted),
+contracted gold marts reconciled to the evaluation artifacts, `/marts/*` API routes over
+exported parquet, a Decisions panel and mart-driven player history on the site, MotherDuck
+prod build, CI dev build + sqlfluff + docs on GitHub Pages. Model card unchanged.
+
+### Owner TODO
+
+1. MotherDuck: the account and access token exist; the database `ffai` was created by this
+   session. Keep `MOTHERDUCK_TOKEN` exported locally for `make dbt-prod`.
+2. Add the repository secret `MOTHERDUCK_TOKEN` (Settings → Secrets → Actions).
+3. Settings → Pages → Source: **GitHub Actions** (the `pages` job in `ci.yml` deploys the dbt docs).
+4. Push `main`; CI runs the dbt job (dev target, fixture) and publishes the docs.
+5. Trigger `weekly.yml` once by hand to confirm the MotherDuck build, the export, and the commit
+   of `artifacts/marts/`.
+6. The `hf` git remote in `.git/config` carries a Hugging Face token in its URL; replace it with
+   a credential helper (`git remote set-url hf https://huggingface.co/spaces/cbratkovics/fantasy-football-ai`).

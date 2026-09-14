@@ -42,9 +42,9 @@ metrics as (
         avg(abs(prediction - actual)) filter (where policy_action = 'review') as review_mae,
         avg(best_eligible_points - actual) filter (where policy_action = 'recommend') as mean_regret,
         avg(case when actual >= replacement_level_points then 1.0 else 0.0 end)
-            filter (where policy_action = 'recommend' and actual is not null and replacement_level_points is not null) as hit_rate,
+        filter (where policy_action = 'recommend' and actual is not null and replacement_level_points is not null) as hit_rate,
         avg(case when actual < prediction_floor then 1.0 else 0.0 end)
-            filter (where policy_action = 'recommend' and actual is not null) as downside_rate
+        filter (where policy_action = 'recommend' and actual is not null) as downside_rate
     from decisions
     group by 1, 2, 3, 4, 5, 6
 )

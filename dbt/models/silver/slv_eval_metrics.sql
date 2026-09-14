@@ -7,41 +7,41 @@ with artifacts as (
 
 cohorts as (
     select
-        eval_id,
+        a.eval_id,
         'ALL' as cohort,
         cast(null as varchar) as candidate,
-        metrics.n as n,
-        metrics.mae as mae,
-        metrics.median_ae as median_ae,
-        metrics.rmse as rmse,
-        metrics.within_3_rate as within_3_rate,
-        metrics.within_5_rate as within_5_rate,
-        baseline.n as baseline_n,
-        baseline.mae as baseline_mae,
-        baseline.median_ae as baseline_median_ae,
-        baseline.rmse as baseline_rmse,
-        baseline.within_3_rate as baseline_within_3_rate,
-        baseline.within_5_rate as baseline_within_5_rate
-    from artifacts
+        a.metrics.n as n,
+        a.metrics.mae as mae,
+        a.metrics.median_ae as median_ae,
+        a.metrics.rmse as rmse,
+        a.metrics.within_3_rate as within_3_rate,
+        a.metrics.within_5_rate as within_5_rate,
+        a.baseline.n as baseline_n,
+        a.baseline.mae as baseline_mae,
+        a.baseline.median_ae as baseline_median_ae,
+        a.baseline.rmse as baseline_rmse,
+        a.baseline.within_3_rate as baseline_within_3_rate,
+        a.baseline.within_5_rate as baseline_within_5_rate
+    from artifacts as a
     {% for pos in ['QB', 'RB', 'WR', 'TE'] %}
     union all
     select
-        eval_id,
+        a.eval_id,
         '{{ pos }}' as cohort,
-        model.candidate.{{ pos }} as candidate,
-        cohorts.{{ pos }}.n,
-        cohorts.{{ pos }}.mae,
-        cohorts.{{ pos }}.median_ae,
-        cohorts.{{ pos }}.rmse,
-        cohorts.{{ pos }}.within_3_rate,
-        cohorts.{{ pos }}.within_5_rate,
-        cohorts.{{ pos }}.baseline.n,
-        cohorts.{{ pos }}.baseline.mae,
-        cohorts.{{ pos }}.baseline.median_ae,
-        cohorts.{{ pos }}.baseline.rmse,
-        cohorts.{{ pos }}.baseline.within_3_rate,
-        cohorts.{{ pos }}.baseline.within_5_rate
-    from artifacts
+        a.model.candidate.{{ pos }} as candidate,
+        a.cohorts.{{ pos }}.n as n,
+        a.cohorts.{{ pos }}.mae as mae,
+        a.cohorts.{{ pos }}.median_ae as median_ae,
+        a.cohorts.{{ pos }}.rmse as rmse,
+        a.cohorts.{{ pos }}.within_3_rate as within_3_rate,
+        a.cohorts.{{ pos }}.within_5_rate as within_5_rate,
+        a.cohorts.{{ pos }}.baseline.n as baseline_n,
+        a.cohorts.{{ pos }}.baseline.mae as baseline_mae,
+        a.cohorts.{{ pos }}.baseline.median_ae as baseline_median_ae,
+        a.cohorts.{{ pos }}.baseline.rmse as baseline_rmse,
+        a.cohorts.{{ pos }}.baseline.within_3_rate as baseline_within_3_rate,
+        a.cohorts.{{ pos }}.baseline.within_5_rate as baseline_within_5_rate
+    from artifacts as a
     {% endfor %}
 )
 
@@ -50,7 +50,7 @@ select
     a.kind,
     a.season,
     a.model.version as model_version,
-    a.model.feature_version as feature_version,
+    a.model.feature_version,
     a.code_commit,
     a.generated_at_utc,
     a.input.path as input_path,

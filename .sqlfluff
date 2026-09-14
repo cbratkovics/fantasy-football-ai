@@ -1,0 +1,38 @@
+[sqlfluff]
+dialect = duckdb
+templater = dbt
+max_line_length = 120
+# RF01 and AL09 misread DuckDB struct access (a.metrics.n as n) as table references / self-aliases.
+exclude_rules = LT05, ST06, AM04, RF04, CV03, RF01, AL09
+large_file_skip_byte_limit = 0
+
+[sqlfluff:templater:dbt]
+project_dir = dbt
+profiles_dir = dbt
+target = dev
+
+[sqlfluff:indentation]
+indented_joins = false
+indented_using_on = true
+template_blocks_indent = false
+
+[sqlfluff:rules:capitalisation.keywords]
+capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.identifiers]
+extended_capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.functions]
+extended_capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.literals]
+capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.types]
+extended_capitalisation_policy = lower
+
+[sqlfluff:rules:aliasing.table]
+aliasing = explicit
+
+[sqlfluff:rules:references.qualification]
+ignore_words = None

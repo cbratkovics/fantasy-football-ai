@@ -33,18 +33,24 @@ joined as (
         s.games,
         s.ppr_total,
         s.ppr_per_game,
-        case when s.games is not null then
-            rank() over (
-                partition by t.tiers_version, t.position, (s.games is not null)
-                order by s.ppr_per_game desc, t.player_id
-            )
+        case
+            when s.games is not null then
+                rank() over (
+                    partition by t.tiers_version, t.position, (s.games is not null)
+                    order by s.ppr_per_game desc, t.player_id asc
+                )
         end as realized_rank
     from tiers as t
     left join season_totals as s on t.player_id = s.player_id and t.season = s.season
 ),
 
 tier_sizes as (
-    select tiers_version, position, count(*) as n_tiered from tiers group by 1, 2
+    select
+        tiers_version,
+        position,
+        count(*) as n_tiered
+    from tiers
+    group by 1, 2
 )
 
 select

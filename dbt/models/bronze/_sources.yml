@@ -20,7 +20,11 @@ sources:
           The bronze model keeps the newest snapshot only.
         meta:
           formatter: template
-          external_location: "read_parquet('{{ var('stats_path') }}', filename = true, union_by_name = true)"
+          # The parquet cache locally and in the weekly job; the committed CSV fixture in CI
+          # (stats_path: tests/fixtures/player_stats_sample.csv).
+          external_location: >-
+            {% if var('stats_path').endswith('.csv') %}read_csv('{{ var('stats_path') }}', filename = true, header = true)
+            {%- else %}read_parquet('{{ var('stats_path') }}', filename = true, union_by_name = true){% endif %}
         # The stats carry no load timestamp; the newest complete (season, week) is mapped onto an
         # approximate game date (NFL weeks start in early September) so `dbt source freshness`
         # can say how stale the pull is. warn only: the HOLD-grade freshness contract is the

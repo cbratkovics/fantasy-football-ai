@@ -31,7 +31,10 @@ actual_by_format as (
 ),
 
 windows as (
-    select distinct eval_window, window_start_key from predictions
+    select distinct
+        eval_window,
+        window_start_key
+    from predictions
 ),
 
 -- (a) seeds: everything realised strictly before each window began, per player and per position
@@ -42,7 +45,7 @@ seed_player as (
         fsum(a.actual_ppr) as seed_sum,
         count(a.actual_ppr) as seed_cnt
     from windows as w
-    inner join actual_by_format as a on a.period_key < w.window_start_key
+    inner join actual_by_format as a on w.window_start_key > a.period_key
     group by 1, 2
 ),
 
@@ -53,7 +56,7 @@ seed_position as (
         fsum(a.actual_ppr) as seed_sum,
         count(a.actual_ppr) as seed_cnt
     from windows as w
-    inner join actual_by_format as a on a.period_key < w.window_start_key
+    inner join actual_by_format as a on w.window_start_key > a.period_key
     group by 1, 2
 ),
 

@@ -12,9 +12,10 @@ select
     a.actual as actual_from_stats
 from {{ ref('slv_predictions') }} as p
 inner join {{ ref('slv_actuals') }} as a
-    on p.player_id = a.player_id
-    and p.period_key = a.period_key
-    and a.scoring_format = 'ppr'
+    on
+        p.player_id = a.player_id
+        and p.period_key = a.period_key
+        and a.scoring_format = 'ppr'
 where
     p.actual_recorded is not null
     and abs(p.actual_recorded - a.actual) > 0.01

@@ -6,7 +6,7 @@ with ranked as (
         *,
         row_number() over (
             partition by tiers_version, position, player_id
-            order by tier_probability desc, tier
+            order by tier_probability desc, tier asc
         ) as dedup_rank
     from {{ ref('brz_tiers') }}
 )
@@ -22,6 +22,6 @@ select
     tier_probability,
     ppg_prev,
     games_prev,
-    row_number() over (partition by tiers_version, position order by tier, ppg_prev desc, player_id) as tier_rank
+    row_number() over (partition by tiers_version, position order by tier asc, ppg_prev desc, player_id asc) as tier_rank
 from ranked
 where dedup_rank = 1

@@ -22,8 +22,9 @@ select
     cast(s.season_type as varchar) as season_type,
     cast(s.team as varchar) as team,
     cast(s.opponent_team as varchar) as opponent_team,
-    {% for col in stat_columns() -%}
-    cast(s.{{ col }} as double) as {{ col }}{{ "," if not loop.last }}
-    {% endfor %}
+{% for col in stat_columns() -%}
+cast(s.{{ col }} as double) as {{ col }}{{ "," if not loop.last }}  -- noqa: LT02
+
+{% endfor %}
 from snapshots as s
 inner join newest as n on s.filename = n.filename

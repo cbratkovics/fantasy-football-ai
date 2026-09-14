@@ -4,11 +4,11 @@
 
 select
     count(*) as row_count,
-    {% if prior is none %}
-    cast(null as integer) as prior_row_count
+{% if prior is none %}
+cast(null as integer) as prior_row_count
 from {{ ref('slv_player_stats') }}
 having false
-    {% else %}
+{% else %}
     {{ prior }} as prior_row_count
 from {{ ref('slv_player_stats') }}
 having count(*) < {{ prior }}

@@ -4,13 +4,20 @@
 -- prediction|, within_k = share with |error| <= k on the same rows). Weeks with no actual yet
 -- produce no row.
 with rows_with_actual as (
-    select * from {{ ref('fct_player_week') }} where actual is not null
+    select * from {{ ref('fct_player_week') }}
+    where actual is not null
 ),
 
 cohorts as (
-    select 'ALL' as cohort, * from rows_with_actual
+    select
+        'ALL' as cohort,
+        *
+    from rows_with_actual
     union all
-    select position as cohort, * from rows_with_actual
+    select
+        position as cohort,
+        *
+    from rows_with_actual
 )
 
 select

@@ -31,13 +31,23 @@ reception weight.
 
 ## Grain, seasons, refresh
 
-* Grain: one row per `(player_id, season, week)`; `ffai/data/contracts.py` checks uniqueness and
-  value ranges on every load in the weekly job.
+* Grain: one row per `(player_id, season, week)`; the dbt silver tests
+  (`dbt/models/silver/_silver.yml`, run by `ffai/data/contracts.py` in the weekly job) check
+  uniqueness, value ranges, nulls, freshness, and row counts on every load.
 * Historical window for the frozen evaluation: 2019–2024 regular seasons (train 2019–2022,
   validation 2023, test 2024). The weekly job loads through the current season.
 * Refresh cadence: nflverse republishes player stats after each game day; the weekly job
   (`.github/workflows/weekly.yml`) runs on Tuesdays and loads the latest release. There is no
   intra-week or real-time ingestion.
+
+## The warehouse copy
+
+The dbt project (`dbt/`) declares the parquet cache as a source (`repo_files.player_stats`) and
+copies the newest snapshot into the MotherDuck database `ffai` as `bronze.brz_player_stats`
+(all positions and season types, typed, unfiltered); `silver.slv_player_stats` narrows it to
+regular-season QB/RB/WR/TE rows. The same licence and attribution apply to that copy; it is a
+private database in the owner's MotherDuck account, not a redistribution. In CI the source is
+the committed 40-player fixture (`tests/fixtures/player_stats_sample.csv`).
 
 ## Licence
 

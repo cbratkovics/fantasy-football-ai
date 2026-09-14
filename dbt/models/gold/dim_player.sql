@@ -20,7 +20,7 @@ from_predictions as (
         player_display_name,
         position,
         team,
-        row_number() over (partition by player_id order by period_key desc, candidate) as rn
+        row_number() over (partition by player_id order by period_key desc, candidate asc) as rn
     from {{ ref('slv_predictions') }}
 ),
 

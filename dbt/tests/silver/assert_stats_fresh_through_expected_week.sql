@@ -10,11 +10,11 @@ with latest as (
 
 select
     latest_period_key,
-    {% if season is none or week is none %}
-    cast(null as integer) as expected_period_key
+{% if season is none or week is none %}
+cast(null as integer) as expected_period_key
 from latest
 where false
-    {% else %}
+{% else %}
     {{ season }} * 100 + {{ week }} as expected_period_key
 from latest
 where latest_period_key is null or latest_period_key < {{ season }} * 100 + {{ week }}

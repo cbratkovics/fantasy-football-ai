@@ -293,9 +293,10 @@ The reconciliation is a singular test, `assert_marts_reconcile_to_eval_artifacts
 committed artifact and cohort, the n-weighted aggregate of `fct_weekly_eval` over the window
 must match the published n exactly and MAE / within-3 / within-5 to 1e-4 (the artifacts are
 rounded to 4 dp). It passes with max |Δ| = 3.1e-5 on MAE and ≤ 4.3e-5 on the rates. A second
-test reconciles the baseline MAE to 1e-4 and the baseline within-3 rate to within one row,
+test reconciles the baseline MAE to 1e-4 and the baseline within-3 rate to within three rows,
 because an error of exactly 3.0 is decided by floating-point rounding (Python's exact-fraction
-mean vs `fsum(x)/n`; one WR row of 2,391 differs). That test needs the full stats history and is
+mean vs `fsum(x)/n`): one WR row of 2,391 differs on local DuckDB and two on MotherDuck, whose
+summation order differs. That test needs the full stats history and is
 disabled under `full_stats: false` (CI).
 
 **Consequences.** A gold build that disagrees with a published artifact fails. The marts never
@@ -349,3 +350,36 @@ n-weighted MAE / within-3 over a window's mart rows equals the artifact to 1e-4)
 **Consequences.** No MotherDuck token exists on the Space or in the image. The marts are
 ~1.3 MB per week of git history. The frontend's player history chart and the new Decisions
 panel read the marts; the evaluation dashboard still reads the artifacts.
+
+## ADR-0019 — dbt docs on GitHub Pages from a CI artifact, not a branch or a committed folder (2026-09-14)
+
+**Context.** The brief offered two publishing routes: a `gh-pages` branch or a committed
+`docs/dbt/` folder. Both put ~3.6 MB of generated HTML into git on every change.
+
+**Decision.** `ci.yml` runs `dbt docs generate --static` on the `dev` build and publishes the
+single-file site with `actions/upload-pages-artifact` + `actions/deploy-pages` (Pages source
+"GitHub Actions") on every push to `main`. No generated HTML is committed and no extra branch
+exists. The catalog statistics on the site describe the CI build (fixture stats, committed
+artifacts); model, column, test, and exposure documentation is identical to prod.
+
+**Consequences.** The owner must set Settings → Pages → Source to "GitHub Actions" once. The
+site URL is `https://cbratkovics.github.io/fantasy-football-ai/`. This departs from the two
+listed options for the reasons above.
+
+## ADR-0020 — CI builds the dev target from the committed fixture; prod builds happen only in the weekly job (2026-09-14)
+
+**Context.** MotherDuck's free tier allows 10 compute-hours a month; the nflverse cache is
+git-ignored; CI must stay offline and secret-free.
+
+**Decision.** CI runs `dbt build --target dev` with `stats_path` pointing at
+`tests/fixtures/player_stats_sample.csv` (the stats source reads CSV or parquet by extension)
+and `full_stats: false`, which disables only the baseline reconciliation (it needs every
+player's full history). Everything else — contracts, generic and singular tests, unit tests,
+the artifact reconciliation — runs on the fixture plus the committed artifacts because
+`fct_player_week.actual` falls back to the artifact-recorded value (ADR-0016). Prod builds run
+only in `weekly.yml` (one per week). `sqlfluff` with the dbt templater lints the project in CI;
+`RF01` and `AL09` are excluded because they misread DuckDB struct access (`a.metrics.n`) as
+table references and self-aliases.
+
+**Consequences.** CI cannot catch a stats-only regression that the fixture does not contain;
+the weekly job can, and HOLDs. Compute on MotherDuck stays at minutes per month.

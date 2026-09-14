@@ -18,7 +18,7 @@ with scored as (
         *,
         row_number() over (
             partition by season, week, position, model_version, candidate
-            order by prediction desc, player_id
+            order by prediction desc, player_id asc
         ) as prediction_rank,
         max(actual) over (partition by season, week, position, model_version, candidate) as best_eligible_points,
         case position
@@ -66,8 +66,9 @@ select
     cast(s.abs_error as double) as abs_error
 from scored as s
 left join replacement as r
-    on s.season = r.season
-    and s.week = r.week
-    and s.position = r.position
-    and s.model_version = r.model_version
-    and s.candidate = r.candidate
+    on
+        s.season = r.season
+        and s.week = r.week
+        and s.position = r.position
+        and s.model_version = r.model_version
+        and s.candidate = r.candidate
