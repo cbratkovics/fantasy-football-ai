@@ -60,9 +60,12 @@ models:
               arguments:
                 values: [QB, RB, WR, TE]
       - name: team
+        description: team abbreviation the player was on for this week
         data_tests: [not_null]
       - name: player_display_name
+        description: player name as nflverse displays it
       - name: opponent_team
+        description: opponent team abbreviation for this week
       - name: fantasy_points_ppr
         description: nflverse's own PPR points (reconciliation only; never a feature)
         data_tests: [not_null]
@@ -173,6 +176,16 @@ models:
           - dbt_expectations.expect_column_values_to_be_between:
               arguments:
                 min_value: 0
+      - name: passing_yards
+        description: passing yards, as defined by nflverse
+      - name: passing_air_yards
+        description: passing air yards, as defined by nflverse
+      - name: rushing_yards
+        description: rushing yards, as defined by nflverse
+      - name: receiving_yards
+        description: receiving yards, as defined by nflverse
+      - name: receiving_air_yards
+        description: receiving air yards, as defined by nflverse
 
   - name: slv_actuals
     description: Realised points per (player_id, season, week, scoring_format), long by format.
@@ -182,13 +195,25 @@ models:
             combination_of_columns: [player_id, season, week, scoring_format]
     columns:
       - name: scoring_format
+        description: "which rules the points are under: standard, half, or ppr"
         data_tests:
           - not_null
           - accepted_values:
               arguments:
                 values: [standard, half, ppr]
       - name: actual
+        description: realised points under the scoring format, from the rules macro on the nflverse stats
         data_tests: [not_null]
+      - name: player_id
+        description: nflverse GSIS player id
+      - name: season
+        description: NFL season year
+      - name: week
+        description: regular-season week
+      - name: period_key
+        description: season * 100 + week; monotonic in time
+      - name: position
+        description: fantasy position, QB/RB/WR/TE
 
   - name: slv_predictions
     description: >
@@ -204,12 +229,16 @@ models:
             expression: "prediction_floor <= prediction and prediction <= prediction_ceiling"
     columns:
       - name: player_id
+        description: nflverse GSIS player id
         data_tests: [not_null]
       - name: season
+        description: season the prediction is for
         data_tests: [not_null]
       - name: week
+        description: week the prediction is for
         data_tests: [not_null]
       - name: model_version
+        description: model version that produced the prediction
         data_tests: [not_null]
       - name: candidate
         description: rf (RandomForest) or xgb (XGBoost)
@@ -219,6 +248,7 @@ models:
               arguments:
                 values: [rf, xgb]
       - name: position
+        description: fantasy position, QB/RB/WR/TE
         data_tests:
           - not_null
           - accepted_values:
@@ -241,6 +271,7 @@ models:
       - name: actual_recorded
         description: realised PPR points as recorded in the artifact (null until attached)
       - name: source
+        description: "artifact family the row survived deduplication from: frozen_test, out_of_sample_season, or weekly"
         data_tests:
           - accepted_values:
               arguments:
@@ -250,6 +281,16 @@ models:
         data_tests: [not_null]
       - name: window_start_key
         description: period_key of the window's first evaluated period
+      - name: period_key
+        description: season * 100 + week; monotonic in time
+      - name: player_display_name
+        description: player name as recorded in the artifact
+      - name: team
+        description: team abbreviation as recorded in the artifact
+      - name: source_file
+        description: repo-relative path of the artifact file the surviving row came from
+      - name: generated_at_utc
+        description: when the weekly job wrote the prediction (UTC); null for the frozen-test and out-of-sample CSVs
 
   - name: slv_eval_metrics
     description: Published evaluation numbers per (eval_id, cohort), verbatim from the artifacts.
@@ -259,12 +300,58 @@ models:
             combination_of_columns: [eval_id, cohort]
     columns:
       - name: cohort
+        description: ALL for the whole window, or the position (QB/RB/WR/TE)
         data_tests:
           - accepted_values:
               arguments:
                 values: [ALL, QB, RB, WR, TE]
       - name: mae
+        description: mean absolute error in PPR points, verbatim from the artifact
         data_tests: [not_null]
+      - name: eval_id
+        description: evaluation id of the artifact the row is copied from
+      - name: kind
+        description: evaluation window kind, frozen_test or out_of_sample_season
+      - name: season
+        description: season the evaluation window covers
+      - name: model_version
+        description: evaluated model version
+      - name: feature_version
+        description: feature-module version of the evaluated model
+      - name: code_commit
+        description: git commit that produced the artifact
+      - name: generated_at_utc
+        description: when the artifact was written (UTC)
+      - name: input_path
+        description: repo-relative path of the scored predictions file
+      - name: input_sha256
+        description: sha256 of the scored predictions file
+      - name: baseline_name
+        description: name of the baseline in the artifact (causal_trailing_mean)
+      - name: candidate
+        description: candidate evaluated for the position cohort (rf or xgb); null on the ALL row
+      - name: n
+        description: scored player-weeks in the cohort
+      - name: median_ae
+        description: median absolute error, verbatim from the artifact
+      - name: rmse
+        description: root mean squared error, verbatim from the artifact
+      - name: within_3_rate
+        description: share of predictions within 3 points of the actual, verbatim from the artifact
+      - name: within_5_rate
+        description: share of predictions within 5 points of the actual, verbatim from the artifact
+      - name: baseline_n
+        description: rows the baseline was scored on
+      - name: baseline_mae
+        description: causal trailing-mean baseline MAE on the same rows
+      - name: baseline_median_ae
+        description: baseline median absolute error
+      - name: baseline_rmse
+        description: baseline root mean squared error
+      - name: baseline_within_3_rate
+        description: baseline share within 3 points
+      - name: baseline_within_5_rate
+        description: baseline share within 5 points
 
   - name: slv_eval_folds
     description: Rolling-origin folds per (eval_id, season, week).
@@ -272,6 +359,31 @@ models:
       - dbt_utils.unique_combination_of_columns:
           arguments:
             combination_of_columns: [eval_id, season, week]
+    columns:
+      - name: eval_id
+        description: evaluation id of the artifact the fold belongs to
+      - name: kind
+        description: evaluation window kind, frozen_test or out_of_sample_season
+      - name: model_version
+        description: evaluated model version
+      - name: candidate
+        description: candidate the rolling-origin refits used (rf or xgb)
+      - name: strategy
+        description: "fold strategy text from the artifact: refit on all rows strictly before the week, score that week"
+      - name: season
+        description: season of the scored fold week
+      - name: week
+        description: the scored fold week
+      - name: n
+        description: scored player-weeks in the fold
+      - name: mae
+        description: fold MAE in PPR points
+      - name: baseline_mae
+        description: causal trailing-mean baseline MAE on the fold rows
+      - name: window_mean_mae
+        description: mean of the fold MAEs over the whole window, as published in the artifact
+      - name: window_mean_baseline_mae
+        description: mean of the fold baseline MAEs over the whole window, as published
 
   - name: slv_rolling_weeks
     description: In-season champion vs challenger shadow metrics per (season, week).
@@ -279,6 +391,29 @@ models:
       - dbt_utils.unique_combination_of_columns:
           arguments:
             combination_of_columns: [season, week]
+    columns:
+      - name: season
+        description: in-season year
+      - name: week
+        description: scored week
+      - name: period_key
+        description: season * 100 + week; monotonic in time
+      - name: n
+        description: scored player-weeks in the week
+      - name: champion_mae
+        description: champion MAE on the week (PPR points)
+      - name: champion_within_3_rate
+        description: share of the champion's predictions within 3 points of the actual
+      - name: champion_baseline_mae
+        description: causal trailing-mean baseline MAE on the champion's rows
+      - name: challenger_mae
+        description: challenger (shadow) MAE on the week
+      - name: challenger_within_3_rate
+        description: share of the challenger's predictions within 3 points of the actual
+      - name: challenger_baseline_mae
+        description: causal trailing-mean baseline MAE on the challenger's rows
+      - name: scored_at_utc
+        description: when the weekly job scored the week (UTC)
 
   - name: slv_tiers
     description: Preseason draft tiers per (tiers_version, position, player_id) with a rank within the position.
@@ -288,16 +423,36 @@ models:
             combination_of_columns: [tiers_version, position, player_id]
     columns:
       - name: tier
+        description: tier number, 1 is the top tier; a player listed twice keeps the tier with the higher membership probability
         data_tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_between:
               arguments:
                 min_value: 1
       - name: position
+        description: position the tier belongs to, QB/RB/WR/TE
         data_tests:
           - accepted_values:
               arguments:
                 values: [QB, RB, WR, TE]
+      - name: tiers_version
+        description: tiers artifact version
+      - name: season
+        description: the prior season the tiers were built from
+      - name: player_id
+        description: nflverse GSIS player id
+      - name: player_display_name
+        description: player name as recorded in the tiers file
+      - name: team
+        description: team abbreviation at tiering time
+      - name: tier_probability
+        description: Gaussian-mixture membership probability of the kept tier
+      - name: ppg_prev
+        description: mean PPR points per game over the prior season
+      - name: games_prev
+        description: games played (stat rows) in the prior season
+      - name: tier_rank
+        description: rank within (tiers_version, position) ordered by tier, then ppg_prev descending
 
 unit_tests:
   - name: scoring_rules_standard_half_ppr

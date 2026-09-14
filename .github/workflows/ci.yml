@@ -91,6 +91,8 @@ jobs:
         run: |
           dbt docs generate --target dev --static
           mkdir -p site && cp dbt/target/static_index.html site/index.html
+      - name: Every model, column, source, and exposure is described (ADR-0021)
+        run: python scripts/check_dbt_descriptions.py
       - name: Upload docs site
         uses: actions/upload-pages-artifact@v3
         with:

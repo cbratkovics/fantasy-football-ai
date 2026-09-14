@@ -383,3 +383,21 @@ table references and self-aliases.
 
 **Consequences.** CI cannot catch a stats-only regression that the fixture does not contain;
 the weekly job can, and HOLDs. Compute on MotherDuck stays at minutes per month.
+
+## ADR-0021 — Description coverage is enforced by a manifest/catalog script in CI, not a pre-commit hook (2026-09-14)
+
+**Context.** Every bronze model shipped with undocumented columns and most silver columns had no
+description; the docs site's Columns tab was empty for them. The brief offered `dbt-checkpoint`
+hooks (`check-model-columns-have-desc`, `check-model-has-all-columns`) in a pre-commit config, or
+a script over `target/manifest.json` run in CI.
+
+**Decision.** `scripts/check_dbt_descriptions.py` reads `dbt/target/manifest.json` and
+`dbt/target/catalog.json` after `dbt docs generate` and exits 1 if any model, source table,
+exposure, or model column lacks a description, if a built column has no YAML entry, or if YAML
+documents a column the model no longer has. The CI `dbt` job runs it right after docs generate.
+No pre-commit framework is introduced: the repo has none today, `dbt-checkpoint` needs its own
+hook environment and a parsed manifest at commit time, and the catalog comparison (columns that
+exist versus columns that are documented) needs a built warehouse, which CI already has.
+
+**Consequences.** A new column without a description fails CI, not the commit. The check
+covers models, sources, and exposures; it does not require descriptions on tests or macros.

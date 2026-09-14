@@ -1,34 +1,386 @@
 version: 2
 
+# Bronze = typed one-to-one copies of the source files (docs/ARCHITECTURE.md). Every model keeps a
+# `source_file` provenance column; nothing is filtered, deduplicated, or derived here beyond the
+# unnesting of JSON lists and the model_version parsed from a file path. Column meanings for the
+# nflverse stats follow the nflverse data dictionary
+# (https://nflreadr.nflverse.com/articles/dictionary_player_stats.html).
+
 models:
   - name: brz_player_stats
     description: Newest nflverse weekly stats snapshot, typed, unfiltered (all positions and season types).
     columns:
       - name: source_file
-        description: cache file the row came from
+        description: repo-relative path of the file this row was loaded from; provenance for reconciliation
+      - name: player_id
+        description: nflverse GSIS player id (e.g. 00-0034857); the player key everywhere in the warehouse
+      - name: player_display_name
+        description: player name as nflverse displays it
+      - name: position
+        description: roster position as reported by nflverse; every position is kept here, silver keeps QB/RB/WR/TE
+      - name: season
+        description: NFL season year
+      - name: week
+        description: NFL week number within the season (regular season 1-18 since 2021; postseason weeks continue the count)
+      - name: season_type
+        description: nflverse season type, REG, POST, or PRE; silver keeps REG only
+      - name: team
+        description: team abbreviation the player was on for this week
+      - name: opponent_team
+        description: opponent team abbreviation for this week
+      - name: completions
+        description: pass completions, as defined by nflverse
+      - name: attempts
+        description: pass attempts, as defined by nflverse
+      - name: passing_yards
+        description: passing yards, as defined by nflverse
+      - name: passing_tds
+        description: passing touchdowns thrown, as defined by nflverse
+      - name: passing_interceptions
+        description: interceptions thrown, as defined by nflverse
+      - name: passing_air_yards
+        description: passing air yards (yards the ball travelled in the air on attempts), as defined by nflverse
+      - name: passing_2pt_conversions
+        description: two-point conversion passes completed, as defined by nflverse
+      - name: sack_fumbles_lost
+        description: fumbles lost on sacks, as defined by nflverse
+      - name: carries
+        description: rushing attempts, as defined by nflverse
+      - name: rushing_yards
+        description: rushing yards, as defined by nflverse
+      - name: rushing_tds
+        description: rushing touchdowns, as defined by nflverse
+      - name: rushing_fumbles_lost
+        description: fumbles lost on rushing plays, as defined by nflverse
+      - name: rushing_2pt_conversions
+        description: two-point conversions rushed in, as defined by nflverse
+      - name: receptions
+        description: receptions, as defined by nflverse
+      - name: targets
+        description: pass targets, as defined by nflverse
+      - name: receiving_yards
+        description: receiving yards, as defined by nflverse
+      - name: receiving_tds
+        description: receiving touchdowns, as defined by nflverse
+      - name: receiving_air_yards
+        description: receiving air yards (air yards on targets to this player), as defined by nflverse
+      - name: receiving_fumbles_lost
+        description: fumbles lost after a reception, as defined by nflverse
+      - name: receiving_2pt_conversions
+        description: two-point conversions caught, as defined by nflverse
+      - name: special_teams_tds
+        description: special-teams touchdowns, as defined by nflverse
+      - name: fantasy_points
+        description: nflverse's own standard-scoring fantasy points; kept only to reconcile the rules macro, never a feature
+      - name: fantasy_points_ppr
+        description: nflverse's own PPR fantasy points; kept only to reconcile the rules macro, never a feature
+
   - name: brz_predictions_weekly
     description: Every record of every weekly predictions file, one row per (file, player).
+    columns:
+      - name: source_file
+        description: repo-relative path of the file this row was loaded from; provenance for reconciliation
+      - name: season
+        description: season the file's predictions are for
+      - name: week
+        description: week the file's predictions are for
+      - name: model_version
+        description: model version that produced the file's predictions
+      - name: feature_version
+        description: feature-module version the predictions were built with
+      - name: generated_at_utc
+        description: when the weekly job wrote the predictions (UTC)
+      - name: actuals_attached_at_utc
+        description: when the weekly job attached realised points to the file (UTC); null until the week was scored
+      - name: data_through_season
+        description: season of the newest complete week the features were built from
+      - name: data_through_week
+        description: week of the newest complete week the features were built from
+      - name: player_id
+        description: nflverse GSIS player id
+      - name: player_display_name
+        description: player name as recorded in the file (the file's `name` field)
+      - name: team
+        description: team abbreviation at prediction time
+      - name: position
+        description: fantasy position, QB/RB/WR/TE
+      - name: candidate
+        description: which candidate produced the row, rf (RandomForest) or xgb (XGBoost)
+      - name: prediction
+        description: predicted PPR fantasy points for the week
+      - name: prediction_floor
+        description: lower interval bound (the file's `floor`, 10th residual quantile, clipped at 0)
+      - name: prediction_ceiling
+        description: upper interval bound (the file's `ceiling`, 90th residual quantile)
+      - name: receptions_estimate
+        description: as-of trailing-3-week average receptions used to derive half and standard points from the PPR prediction
+      - name: actual
+        description: realised PPR points attached after the week was played; null until then
+
   - name: brz_predictions_test
     description: Frozen-test predictions (both candidates) per model version.
+    columns:
+      - name: source_file
+        description: repo-relative path of the file this row was loaded from; provenance for reconciliation
+      - name: model_version
+        description: model version, parsed from the artifacts/models/<version>/ path
+      - name: player_id
+        description: nflverse GSIS player id
+      - name: season
+        description: frozen test season
+      - name: week
+        description: week within the test season
+      - name: position
+        description: fantasy position, QB/RB/WR/TE
+      - name: player_display_name
+        description: player name as recorded in the CSV
+      - name: team
+        description: team abbreviation for the week
+      - name: candidate
+        description: which candidate produced the row, rf (RandomForest) or xgb (XGBoost)
+      - name: prediction
+        description: predicted PPR fantasy points, scored at training time with the frozen artifact
+      - name: prediction_floor
+        description: lower interval bound (10th validation-residual quantile, clipped at 0)
+      - name: prediction_ceiling
+        description: upper interval bound (90th validation-residual quantile)
+      - name: actual
+        description: realised PPR points for the row (the test season is fully played)
+
   - name: brz_predictions_oos
     description: Out-of-sample season predictions (both candidates) per model version.
+    columns:
+      - name: source_file
+        description: repo-relative path of the file this row was loaded from; provenance for reconciliation
+      - name: model_version
+        description: model version, parsed from the artifacts/models/<version>/ path
+      - name: player_id
+        description: nflverse GSIS player id
+      - name: season
+        description: the out-of-sample season (a complete season after the frozen test season)
+      - name: week
+        description: week within the out-of-sample season
+      - name: position
+        description: fantasy position, QB/RB/WR/TE
+      - name: player_display_name
+        description: player name as recorded in the CSV
+      - name: team
+        description: team abbreviation for the week
+      - name: candidate
+        description: which candidate produced the row, rf (RandomForest) or xgb (XGBoost)
+      - name: prediction
+        description: predicted PPR fantasy points from the frozen artifact scored over a later season
+      - name: prediction_floor
+        description: lower interval bound (10th validation-residual quantile, clipped at 0)
+      - name: prediction_ceiling
+        description: upper interval bound (90th validation-residual quantile)
+      - name: actual
+        description: realised PPR points for the row
+
   - name: brz_eval_artifacts
     description: One row per evaluation artifact with nested blocks kept as structs.
     columns:
+      - name: source_file
+        description: repo-relative path of the file this row was loaded from; provenance for reconciliation
+      - name: artifact_version
+        description: schema version of the evaluation artifact (2.1 for the committed files)
       - name: eval_id
+        description: evaluation id; the key the site, model card, and manifest cite
         data_tests: [unique, not_null]
+      - name: kind
+        description: evaluation window kind, frozen_test or out_of_sample_season
+      - name: season
+        description: season the evaluation window covers
+      - name: generated_at_utc
+        description: when the evaluator wrote the artifact (UTC)
+      - name: code_commit
+        description: git commit of the ffai package that produced the artifact
+      - name: input
+        description: provenance of the scored predictions file - path (repo-relative), sha256, n_rows
+      - name: model
+        description: the evaluated model - version, feature_version, candidate and challenger per position (QB/RB/WR/TE), trained_at_utc, input_sha256
+      - name: split
+        description: how the window was chosen - strategy (forward_time_holdout), test_start_season, test_start_week
+      - name: metric_definitions
+        description: the formula text for each metric as published - mae, median_ae, rmse, within_3_rate, within_5_rate, baseline
+      - name: metrics
+        description: aggregate metrics for the evaluation window - n, mae, median_ae, rmse, within_3_rate, within_5_rate
+      - name: baseline
+        description: the causal trailing-mean baseline over the same rows - name, n, mae, median_ae, rmse, within_3_rate, within_5_rate
+      - name: cohorts
+        description: per-position metrics (QB, RB, WR, TE), each with n, mae, median_ae, rmse, within_3_rate, within_5_rate and a nested baseline block of the same fields
+      - name: rolling_origin
+        description: rolling-origin folds - candidate, strategy, folds (season, week, n, mae, baseline_mae per fold), mean_mae, mean_baseline_mae
+
   - name: brz_eval_rolling
     description: One row per scored in-season week from the rolling files.
+    columns:
+      - name: source_file
+        description: repo-relative path of the file this row was loaded from; provenance for reconciliation
+      - name: season
+        description: in-season year of the rolling file
+      - name: week
+        description: scored week
+      - name: n
+        description: number of scored player-weeks in the week
+      - name: champion_mae
+        description: champion MAE on the week (PPR points)
+      - name: champion_within_3_rate
+        description: share of the champion's predictions within 3 points of the actual
+      - name: champion_baseline_mae
+        description: causal trailing-mean baseline MAE on the champion's rows
+      - name: challenger_mae
+        description: challenger (shadow) MAE on the week
+      - name: challenger_within_3_rate
+        description: share of the challenger's predictions within 3 points of the actual
+      - name: challenger_baseline_mae
+        description: causal trailing-mean baseline MAE on the challenger's rows
+      - name: scored_at_utc
+        description: when the weekly job scored the week (UTC)
+
   - name: brz_tiers
     description: One row per (tiers_version, position, tier, player).
+    columns:
+      - name: source_file
+        description: repo-relative path of the file this row was loaded from; provenance for reconciliation
+      - name: tiers_version
+        description: tiers artifact version (the file's tier_version), e.g. 20260911-tiers_prevseason_v1-2024-mpc8
+      - name: season
+        description: the prior season the tiers were built from (tiers are preseason, prior-season aggregates only)
+      - name: position
+        description: position the tier list belongs to, QB/RB/WR/TE
+      - name: tier
+        description: tier number, 1 is the top tier
+      - name: player_id
+        description: nflverse GSIS player id
+      - name: player_display_name
+        description: player name as recorded in the file (the file's `name` field)
+      - name: team
+        description: team abbreviation at tiering time
+      - name: ppg_prev
+        description: mean PPR points per game over the prior season (ffai.models.tiers)
+      - name: games_prev
+        description: games played (stat rows) in the prior season
+      - name: tier_probability
+        description: Gaussian-mixture membership probability of the assigned tier
+
   - name: brz_manifest
     description: The manifest as one row.
     data_tests:
       - dbt_utils.expression_is_true:
           arguments:
             expression: "champion_model_version is not null"
+    columns:
+      - name: source_file
+        description: repo-relative path of the file this row was loaded from; provenance for reconciliation
+      - name: manifest_version
+        description: schema version of the manifest file
+      - name: feature_version
+        description: feature-module version the served predictions use
+      - name: champion_model_version
+        description: model version in the champion slot
+      - name: champion_candidate
+        description: champion candidate per position - QB, RB, WR, TE, each rf or xgb
+      - name: challenger_model_version
+        description: model version in the challenger (shadow) slot
+      - name: challenger_candidate
+        description: challenger candidate per position - QB, RB, WR, TE, each rf or xgb
+      - name: tiers_version
+        description: tiers artifact version currently served
+      - name: eval_id
+        description: the primary (frozen-test) evaluation id the site cites
+      - name: evaluations
+        description: list of registered evaluations - eval_id, generated_at_utc, kind, path, season
+      - name: data_through_season
+        description: season of the newest complete week the served predictions were built from
+      - name: data_through_week
+        description: week of the newest complete week the served predictions were built from
+      - name: predictions_latest
+        description: repo-relative path of the newest weekly predictions file
+      - name: last_run_id
+        description: id of the last weekly job run
+      - name: last_run_at_utc
+        description: when the last weekly job ran (UTC)
+      - name: last_run_action
+        description: what the last weekly run decided, PUBLISH, HOLD, or PROMOTE
+      - name: last_run_season
+        description: season the last weekly run scored
+      - name: last_run_week
+        description: week the last weekly run scored
+      - name: last_run_stats_rows
+        description: row count of the stats pull in the last run; the prior value for the row-count contract
+      - name: updated_at_utc
+        description: when the manifest was last written (UTC)
+
   - name: brz_model_metadata
     description: One row per trained model version.
     columns:
+      - name: source_file
+        description: repo-relative path of the file this row was loaded from; provenance for reconciliation
       - name: model_version
+        description: model version, e.g. 20260911-asof_v1-d333de20 (train date, feature version, input hash prefix)
         data_tests: [unique, not_null]
+      - name: feature_version
+        description: feature-module version the model was trained with
+      - name: ffai_version
+        description: ffai package version at training time
+      - name: sklearn_version
+        description: scikit-learn version at training time
+      - name: xgboost_version
+        description: xgboost version at training time
+      - name: data_library
+        description: data loader and version used for the training pull (e.g. nflreadpy==0.1.5)
+      - name: trained_at_utc
+        description: when training finished (UTC)
+      - name: data_through_season
+        description: season of the newest week in the training input
+      - name: data_through_week
+        description: week of the newest week in the training input
+      - name: train_seasons
+        description: list of seasons in the training window
+      - name: val_season
+        description: season used for candidate selection and interval residuals
+      - name: test_season
+        description: frozen test season, never used for training or selection
+      - name: target
+        description: the modelled target as recorded at training time (fantasy_points_ppr, regular season)
+      - name: input_sha256
+        description: sha256 of the training input frame
+      - name: input_rows
+        description: row count of the training input frame
+      - name: code_commit
+        description: git commit of the ffai package that trained the model
+      - name: interval_method
+        description: how the floor and ceiling are built, as recorded at training time
+      - name: champion_qb
+        description: candidate selected on the validation season for QB, rf or xgb
+      - name: n_features_qb
+        description: number of features in the QB model
+      - name: n_train_qb
+        description: QB training rows
+      - name: n_test_qb
+        description: QB frozen-test rows
+      - name: champion_rb
+        description: candidate selected on the validation season for RB, rf or xgb
+      - name: n_features_rb
+        description: number of features in the RB model
+      - name: n_train_rb
+        description: RB training rows
+      - name: n_test_rb
+        description: RB frozen-test rows
+      - name: champion_wr
+        description: candidate selected on the validation season for WR, rf or xgb
+      - name: n_features_wr
+        description: number of features in the WR model
+      - name: n_train_wr
+        description: WR training rows
+      - name: n_test_wr
+        description: WR frozen-test rows
+      - name: champion_te
+        description: candidate selected on the validation season for TE, rf or xgb
+      - name: n_features_te
+        description: number of features in the TE model
+      - name: n_train_te
+        description: TE training rows
+      - name: n_test_te
+        description: TE frozen-test rows
