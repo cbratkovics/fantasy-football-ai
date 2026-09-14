@@ -73,6 +73,7 @@ dbt-deps:
 	$(DBT) deps $(DBT_FLAGS)
 
 dbt-dev: dbt-deps
+	mkdir -p .duckdb
 	$(DBT) build $(DBT_FLAGS) --target dev
 
 dbt-prod: dbt-deps

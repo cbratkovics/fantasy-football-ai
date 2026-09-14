@@ -79,9 +79,10 @@ jobs:
       - name: dbt build (dev, fixture stats)
         # full_stats=false disables the baseline reconciliation, which needs the full nflverse
         # history; every other test, contract, unit test, and the artifact reconciliation run.
-        run: >-
-          dbt build --target dev
-          --vars '{"stats_path": "tests/fixtures/player_stats_sample.csv", "full_stats": false}'
+        # The dev target is a DuckDB file under .duckdb/ (git-ignored), so the directory must exist.
+        run: |
+          mkdir -p .duckdb
+          dbt build --target dev --vars '{"stats_path": "tests/fixtures/player_stats_sample.csv", "full_stats": false}'
       - name: dbt source freshness (informational)
         run: dbt source freshness --target dev || true
       - name: sqlfluff
