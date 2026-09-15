@@ -414,3 +414,4 @@ covers models, sources, and exposures; it does not require descriptions on tests
 - [ADR-0027](adr/0027-single-constraints-file-for-the-dbt-toolchain.md) — One `constraints.txt` pins dbt-core, dbt-duckdb, and DuckDB for CI and the weekly job (2026-09-15)
 - [ADR-0028](adr/0028-single-project-config-and-interfaces.md) — One project config, three named seams, and JSON Schemas for the artifacts (2026-09-15)
 - [ADR-0029](adr/0029-reusable-stack-template-extracted.md) — The stack is extracted into a private copier template; this repository keeps its names (2026-09-15)
+- [ADR-0030](adr/0030-tests-that-shell-out-to-dbt-own-their-dependencies.md) — A test that shells out to dbt installs its own packages; CI job boundaries are not a dependency manager (2026-09-15)

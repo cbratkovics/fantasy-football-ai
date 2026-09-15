@@ -37,13 +37,67 @@ FIXTURE = Path(__file__).parent / "fixtures" / "player_stats_sample.csv"
 MODEL = "slv_player_stats"
 KEYS = ["player_id", "season", "week"]
 LOOKBACK = 2  # periods; smaller than the project default so case 3 fits in the fixture
+DBT_DIR = REPO_ROOT / "dbt"
+PACKAGES_DIR = DBT_DIR / "dbt_packages"
+
+
+def _dbt_bin() -> list[str]:
+    """The dbt console script next to the current interpreter, else ``python -m dbt``."""
+    script = Path(sys.executable).parent / "dbt"
+    if script.exists():
+        return [str(script)]
+    return [sys.executable, "-m", "dbt"]
+
+
+def _required_packages() -> list[str]:
+    """Package directory names dbt expects: every entry of package-lock.yml (transitive
+    dependencies included), else packages.yml."""
+    import yaml
+
+    for name in ("package-lock.yml", "packages.yml"):
+        path = DBT_DIR / name
+        if path.exists():
+            entries = yaml.safe_load(path.read_text(encoding="utf-8")).get("packages", [])
+            names = [e["package"].split("/")[-1] for e in entries if "package" in e]
+            if names:
+                return names
+    return []
+
+
+def _packages_installed() -> bool:
+    required = _required_packages()
+    return bool(required) and all(
+        (PACKAGES_DIR / name).is_dir() and any((PACKAGES_DIR / name).iterdir()) for name in required
+    )
+
+
+@pytest.fixture(scope="session", autouse=True)
+def dbt_packages() -> None:
+    """Install the dbt packages once per session, exactly like ``make dbt-deps``.
+
+    A test that shells out to dbt owns its dependency install (ADR-0030): CI job boundaries are
+    not a test's dependency manager. Never skipped: a missing package directory must fail loudly.
+    """
+    if _packages_installed():
+        return
+    cmd = [*_dbt_bin(), "deps", "--project-dir", str(DBT_DIR), "--profiles-dir", str(DBT_DIR)]
+    proc = subprocess.run(cmd, cwd=REPO_ROOT, capture_output=True, text=True)
+    # macOS occasionally leaves empty "<pkg> 2" copies next to the installed packages, which makes
+    # dbt refuse to run ("expects 3 package(s) ... found 6"); empty directories are safe to drop.
+    for d in PACKAGES_DIR.iterdir() if PACKAGES_DIR.exists() else []:
+        if d.is_dir() and not any(d.iterdir()):
+            d.rmdir()
+    if proc.returncode != 0 or not _packages_installed():
+        pytest.fail(
+            "dbt deps failed or left packages missing\n"
+            f"required: {_required_packages()}\nstdout:\n{proc.stdout[-3000:]}\nstderr:\n{proc.stderr[-3000:]}",
+            pytrace=False,
+        )
 
 
 def _dbt_run(db_path: Path, stats_path: Path, *, full_refresh: bool) -> None:
     cmd = [
-        sys.executable,
-        "-m",
-        "dbt.cli.main",
+        *_dbt_bin(),
         "run",
         "--select",
         f"+{MODEL}",

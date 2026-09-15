@@ -31,6 +31,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install -c constraints.txt -r requirements-train.txt
           pip install -e .
+      - name: Cache dbt packages (shared with the dbt job)
+        uses: actions/cache@v5
+        with:
+          path: dbt/dbt_packages
+          key: dbt-packages-${{ hashFiles('dbt/packages.yml', 'dbt/package-lock.yml') }}
+      - name: dbt deps
+        # tests/test_dbt_incremental.py shells out to dbt and installs the packages itself if they
+        # are missing (ADR-0030); this step keeps the job fast by hitting the shared cache.
+        run: make dbt-deps DBT=dbt
       - name: Lint
         run: |
           ruff check ffai tests scripts
@@ -83,8 +92,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -c constraints.txt -r requirements-train.txt
+      - name: Cache dbt packages (shared with the python job)
+        uses: actions/cache@v5
+        with:
+          path: dbt/dbt_packages
+          key: dbt-packages-${{ hashFiles('dbt/packages.yml', 'dbt/package-lock.yml') }}
       - name: dbt deps
-        run: dbt deps
+        run: make dbt-deps DBT=dbt
       - name: Restore the last main dev build (slim-CI state)
         if: ${{ github.ref != 'refs/heads/main' }}
         uses: actions/cache/restore@v5
