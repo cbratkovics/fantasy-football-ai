@@ -149,7 +149,7 @@ ffai/            data/ (loader, contracts wrapper) · features/asof.py · scorin
 dbt/             ffai_dbt — bronze / silver / gold models, tests, macros, exposures (dbt Core + dbt-duckdb)
 artifacts/       committed, versioned: manifest.json · models/<version>/ · tiers/<version>/ · eval/<eval_id>.json · predictions/<season>/ · marts/*.parquet
 frontend-next/   Next.js 14 — reads only the API
-tests/           72 tests: leakage, grain, scoring, contracts wrapper, evaluator, drift, registry, tiers, API contract (incl. marts), weekly policy
+tests/           88 tests: leakage, grain, scoring, contracts wrapper, evaluator, drift, registry, tiers, API contract (incl. marts), weekly policy, interfaces + schemas, config mirrors, dbt incremental equivalence
 docs/            MODEL_CARD (generated) · ARCHITECTURE · DECISIONS · DATA_SOURCES · REBUILD_REPORT · case study
 ```
 
