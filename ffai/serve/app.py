@@ -426,6 +426,7 @@ def marts_decisions(
     return schemas.DecisionsResponse(
         source=MART_SOURCE,
         mart="fct_decision_policy",
+        mart_version=marts.DECISIONS_MART_VERSION,
         export=_export(m),
         min_floor=min_floor,
         available_min_floors=grid,

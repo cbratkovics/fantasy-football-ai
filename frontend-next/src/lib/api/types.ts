@@ -315,6 +315,8 @@ export interface DecisionSummaryRow {
 export interface DecisionsResponse {
   source: typeof MART_SOURCE
   mart: 'fct_decision_policy'
+  /** Explicit dbt model contract version pinned by the serving layer. */
+  mart_version: number
   export: MartExport
   min_floor: number
   available_min_floors: number[]

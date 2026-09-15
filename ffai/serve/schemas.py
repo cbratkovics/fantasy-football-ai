@@ -239,6 +239,7 @@ class DecisionSummaryRow(BaseModel):
 class DecisionsResponse(BaseModel):
     source: Literal["gold marts exported by the weekly build"]
     mart: Literal["fct_decision_policy"]
+    mart_version: int = Field(description="explicit dbt model version served by the API")
     export: MartExport
     min_floor: float
     available_min_floors: list[float]

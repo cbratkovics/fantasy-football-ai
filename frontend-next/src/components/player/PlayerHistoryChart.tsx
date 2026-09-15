@@ -3,6 +3,7 @@
 import { useMemo } from 'react'
 import { area, line, scaleLinear, scalePoint } from 'd3'
 import type { HistorySource, PlayerWeekRow } from '@/lib/api/types'
+import Link from 'next/link'
 
 /** Human label per history source. Mirrors fct_player_week.source. */
 export const SOURCE_LABEL: Record<HistorySource, string> = {
@@ -91,6 +92,7 @@ export function PlayerHistoryChart({ history }: { history: PlayerWeekRow[] }) {
           <span><i className="mr-1 inline-block h-2 w-4 bg-[#cfe3d9] align-middle" />floor–ceiling</span>
         </span>
       </figcaption>
+      <p className="mb-3 text-xs text-[#61706c]">Rows retain model version and candidate identity. Player labels come from the latest-seen dimension, not the snapshot-backed as-of views. <Link className="font-bold underline" href="/data-platform?model=model.ffai_dbt.fct_player_week#model-inspector">Inspect this model</Link></p>
       <div className="mb-2 flex flex-wrap items-center gap-3 font-mono text-[9px] uppercase tracking-widest text-[#61706c]" aria-label="Row sources">
         <span>Source</span>
         {model.sources.map((s) => (

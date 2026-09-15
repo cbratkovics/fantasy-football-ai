@@ -77,7 +77,7 @@ export function PlayerProfile({ playerId }: { playerId: string }) {
                 {week.rows.map((row) => {
                   const err = row.actual !== null ? row.actual - row.prediction : null
                   return (
-                    <tr key={`${row.season}-${row.week}-${row.candidate}`} className="border-t border-[#e4e5dd] font-mono text-xs">
+                    <tr key={`${row.season}-${row.week}-${row.model_version}-${row.candidate}`} className="border-t border-[#e4e5dd] font-mono text-xs">
                       <td className="px-4 py-2.5">{row.season}</td>
                       <td className="px-4 py-2.5">{row.week}</td>
                       <td className="px-4 py-2.5 text-right font-bold">{fmtNum(row.prediction, 1)}</td>

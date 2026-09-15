@@ -18,6 +18,7 @@ export const ROUTES = {
   draft: '/draft',
   startSit: '/start-sit',
   performance: '/performance',
+  dataPlatform: '/data-platform',
   howItWorks: '/how-it-works',
   learn: '/learn',
   help: '/help',

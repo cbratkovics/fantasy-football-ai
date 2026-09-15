@@ -8,6 +8,7 @@ import { fmtInt, fmtNum, fmtPct, fmtUtc, shortHash } from '@/lib/format'
 import { COHORTS, UNITS } from '@/lib/project'
 import { PERFORMANCE_COPY } from '@/content/performance'
 import { ErrorState, LoadingState } from '@/components/ui/States'
+import Link from 'next/link'
 
 const DEFAULT_MIN_FLOOR = 6
 const SUMMARY_ORDER = COHORTS
@@ -31,13 +32,14 @@ export function DecisionsPanel({ seasons }: { seasons: number[] }) {
   const overall = summary.find((s) => s.cohort === 'ALL')
 
   return (
-    <section className="method-grid" aria-label="Decision policy from the gold marts">
+    <section id="decision-policy" className="method-grid scroll-mt-24" aria-label="Decision policy from the gold marts">
       <article style={{ gridColumn: '1 / -1' }}>
         <small>07 / DECISIONS · READ FROM GOLD MARTS EXPORTED BY THE WEEKLY BUILD</small>
         <h2>{COPY.title}</h2>
         <p>
           {COPY.intro} <code>fct_decision_policy</code>, a gold table built by dbt and exported to parquet by the weekly job; the API
           serves it in-process. The evaluation figures above still come from the committed artifacts.
+          {' '}<Link className="font-bold underline" href="/data-platform?model=model.ffai_dbt.fct_decision_policy.v1#model-inspector">Inspect this model</Link>.
         </p>
 
         <div className="evaluation-toolbar">
@@ -135,7 +137,7 @@ export function DecisionsPanel({ seasons }: { seasons: number[] }) {
                 <div>
                   <b>export</b>
                   <p>
-                    {d.mart} · {fmtInt(d.export.row_counts[d.mart])} rows · exported {fmtUtc(d.export.exported_at_utc)} from target {d.export.target ?? '—'} ·
+                    {d.mart} v{d.mart_version} · {fmtInt(d.export.row_counts[d.mart])} rows · exported {fmtUtc(d.export.exported_at_utc)} from target {d.export.target ?? '—'} ·
                     commit {shortHash(d.export.code_commit)} · {fmtInt(d.n)} season-week-position rows at this threshold
                   </p>
                 </div>
