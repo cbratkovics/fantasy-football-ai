@@ -69,14 +69,24 @@ export default function HowItWorksPage() {
 
       <Section number="06" title="Weekly job">
         <p>
-          A scheduled GitHub Actions workflow pulls the latest nflverse data, rebuilds features, scores the champion and challenger, and applies a
+          A scheduled GitHub Actions workflow pulls the latest nflverse data, rebuilds features, scores the existing champion and challenger, and applies a
           policy: <b>publish</b> the new predictions file, <b>hold</b> if the evaluation regressed or the data is incomplete, or <b>promote</b> the
           challenger when it beats the champion on the agreed metrics. The decision, its reasons, and the resulting versions are written to a
-          manifest that the API reads at startup.
+          manifest that the API reads at startup. Model training is a separate, manually initiated workflow; the weekly schedule does not silently retrain.
         </p>
       </Section>
 
-      <Section number="07" title="What the site does">
+      <Section number="07" title="Warehouse and serving">
+        <p>
+          dbt loads statistics and Python-produced artifact families into bronze, applies silver quality and deduplication contracts, then builds gold
+          player-week, evaluation, tier, and decision marts in DuckDB/MotherDuck. A snapshot captures player attributes from the first warehouse capture
+          onward; the as-of views explicitly flag periods that must fall back to current attributes. The weekly build exports an allow-listed set of gold
+          relations to Parquet, which FastAPI serves under <code>/marts/*</code>. Evaluation artifacts remain independently served by <code>/performance</code>.
+        </p>
+        <p><Link href={ROUTES.dataPlatform} className="underline">Inspect the model grains, SQL, tests, and limits on the Data Platform page.</Link></p>
+      </Section>
+
+      <Section number="08" title="What the site does">
         <Cards
           items={[
             { title: 'Predictions', text: 'The latest published week with point, floor, ceiling, and the scoring derivation.' },

@@ -75,14 +75,13 @@ export function PortfolioHome() {
         <section className="portfolio-hero">
           <div className="hero-copy">
             <div className="eyebrow">
-              <span /> Applied data science · end-to-end case study
+              <span /> Applied data science + analytics engineering
             </div>
             <h1>
-              Better predictions are only useful when they produce <em>better decisions.</em>
+              Football predictions, backed by <em>inspectable data models.</em>
             </h1>
             <p className="hero-lede">
-              I built a weekly fantasy football projection system that turns a player&apos;s own history into a point estimate with a floor and a ceiling, then
-              evaluates it against an honest baseline before anything is published.
+              Explore how raw statistics and model artifacts become tested player-week facts, versioned decision metrics, and useful football features.
             </p>
             <div className="hero-actions">
               <Link href={ROUTES.predictions} className="portfolio-button primary">
@@ -90,6 +89,9 @@ export function PortfolioHome() {
               </Link>
               <Link href={ROUTES.performance} className="portfolio-button secondary">
                 Review evaluation
+              </Link>
+              <Link href={ROUTES.dataPlatform} className="portfolio-button secondary">
+                Explore the data platform
               </Link>
             </div>
             <div className="hero-proof">
@@ -170,8 +172,14 @@ export function PortfolioHome() {
           <i /> <span>SCIKIT-LEARN</span>
           <i /> <span>XGBOOST</span>
           <i /> <span>FASTAPI</span>
+          <i /> <span>SQL · DBT · DUCKDB</span>
           <i /> <span>NEXT.JS</span>
           <i /> <span>GITHUB ACTIONS</span>
+        </section>
+
+        <section className="case-section" aria-labelledby="platform-preview-title">
+          <div className="section-heading compact"><div><span className="section-number">DP</span><p>DATA PLATFORM</p></div><h2 id="platform-preview-title">Follow one metric all the way into the product.</h2><p>Start with a player-week key, inspect the SQL that computes error, open the reconciliation test, and see which API and football component consumes the result—even when the live prediction API is unavailable.</p></div>
+          <div className="problem-grid"><article className="statement-card dark-card"><span>METRIC TRACE</span><h3>Question → grain → transformation → test → API → Evaluation</h3><p><code>fct_player_week</code> retains model and candidate identity; <code>fct_weekly_eval</code> aggregates only outcome-bearing rows at an explicit evaluation-window grain.</p><Link href={`${ROUTES.dataPlatform}#trace`} className="portfolio-button primary mt-5">Trace within ±3 <ArrowRightIcon /></Link></article><article className="statement-card"><span>MODELING JUDGMENT</span><h3>Corrections, captured history, and compatible contracts</h3><p>Inspect the four-period incremental lookback, the honest pre-capture fallback, and both decision-policy versions without mistaking exported v2 for served v1.</p><Link href={`${ROUTES.dataPlatform}#decisions`} className="mt-5 inline-block font-bold underline">Read the decisions</Link></article></div>
         </section>
 
         <section className="case-section" id="case-study">

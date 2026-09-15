@@ -13,6 +13,7 @@ const primary = [
   { name: 'Draft', href: ROUTES.draft },
   { name: 'Start/Sit', href: ROUTES.startSit },
   { name: 'Evaluation', href: ROUTES.performance },
+  { name: 'Data Platform', href: ROUTES.dataPlatform },
 ]
 
 const secondary = [

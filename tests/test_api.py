@@ -197,6 +197,7 @@ def test_marts_decisions_sweep(client) -> None:
     r = client.get("/marts/decisions")
     assert r.status_code == 200
     body = schemas.DecisionsResponse.model_validate(r.json())
+    assert body.mart_version == 1
     assert body.min_floor == 6.0 and 6.0 in body.available_min_floors
     assert body.n == len(body.rows) > 0 and body.rows[0].min_floor == 6.0
     cohorts = [s.cohort for s in body.summary]
@@ -231,5 +232,6 @@ def test_decisions_mart_is_read_at_an_explicit_version(client) -> None:
         marts.mart_table("fct_decision_policy", 3)
     body = client.get("/marts/decisions").json()
     assert body["mart"] == "fct_decision_policy"
+    assert body["mart_version"] == marts.DECISIONS_MART_VERSION
     served = set(body["rows"][0])
     assert "recommendation_interval_coverage" not in served, "v1 must not carry v2 columns"

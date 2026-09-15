@@ -12,7 +12,7 @@ export function Footer() {
             <b>
               {SITE.name} · {SITE.tagline}
             </b>
-            <p>An applied data science portfolio project by Christopher Bratkovics. Every figure on this site is read from a committed evaluation artifact.</p>
+            <p>An applied data science and analytics engineering project. Evaluation artifacts and exported warehouse marts retain distinct provenance.</p>
           </div>
         </div>
         <nav aria-label="Footer navigation">
@@ -23,6 +23,7 @@ export function Footer() {
             <Link href={ROUTES.draft}>Draft board</Link>
             <Link href={ROUTES.startSit}>Start/Sit</Link>
             <Link href={ROUTES.performance}>Evaluation</Link>
+            <Link href={ROUTES.dataPlatform}>Data platform</Link>
           </div>
           <div>
             <small>Read</small>
@@ -38,6 +39,9 @@ export function Footer() {
             </a>
             <a href={SITE.repoUrl} target="_blank" rel="noreferrer">
               GitHub <ArrowUpRightIcon />
+            </a>
+            <a href="https://cbratkovics.github.io/fantasy-football-ai/#!/overview" target="_blank" rel="noreferrer">
+              dbt documentation <ArrowUpRightIcon />
             </a>
             <a href={SITE.authorLinkedin} target="_blank" rel="noreferrer">
               LinkedIn <ArrowUpRightIcon />

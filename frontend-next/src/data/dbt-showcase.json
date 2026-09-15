@@ -1,0 +1,2930 @@
+{
+  "schemaVersion": 1,
+  "sourceFingerprint": "6048b0333c8aeae1bdc74dce0fa849b4fda674e6cb8987e526bbf0dd45e20f1b",
+  "inventory": {
+    "executableModelNodes": 26,
+    "logicalModelNames": 25,
+    "snapshotNodes": 1,
+    "layers": {
+      "bronze": 9,
+      "silver": 7,
+      "gold": 10
+    }
+  },
+  "nodes": [
+    {
+      "uniqueId": "model.ffai_dbt.brz_eval_artifacts",
+      "name": "brz_eval_artifacts",
+      "version": null,
+      "alias": "brz_eval_artifacts",
+      "resourceType": "model",
+      "layer": "bronze",
+      "materialization": "table",
+      "description": "One row per evaluation artifact with nested blocks kept as structs.",
+      "grain": "See model SQL and contract",
+      "columns": [
+        {
+          "name": "source_file",
+          "description": "repo-relative path of the file this row was loaded from; provenance for reconciliation"
+        },
+        {
+          "name": "artifact_version",
+          "description": "schema version of the evaluation artifact (2.1 for the committed files)"
+        },
+        {
+          "name": "eval_id",
+          "description": "evaluation id; the key the site, model card, and manifest cite"
+        },
+        {
+          "name": "kind",
+          "description": "evaluation window kind, frozen_test or out_of_sample_season"
+        },
+        {
+          "name": "season",
+          "description": "season the evaluation window covers"
+        },
+        {
+          "name": "generated_at_utc",
+          "description": "when the evaluator wrote the artifact (UTC)"
+        },
+        {
+          "name": "code_commit",
+          "description": "git commit of the ffai package that produced the artifact"
+        },
+        {
+          "name": "input",
+          "description": "provenance of the scored predictions file - path (repo-relative), sha256, n_rows"
+        },
+        {
+          "name": "model",
+          "description": "the evaluated model - version, feature_version, candidate and challenger per position (QB/RB/WR/TE), trained_at_utc, input_sha256"
+        },
+        {
+          "name": "split",
+          "description": "how the window was chosen - strategy (forward_time_holdout), test_start_season, test_start_week"
+        },
+        {
+          "name": "metric_definitions",
+          "description": "the formula text for each metric as published - mae, median_ae, rmse, within_3_rate, within_5_rate, baseline"
+        },
+        {
+          "name": "metrics",
+          "description": "aggregate metrics for the evaluation window - n, mae, median_ae, rmse, within_3_rate, within_5_rate"
+        },
+        {
+          "name": "baseline",
+          "description": "the causal trailing-mean baseline over the same rows - name, n, mae, median_ae, rmse, within_3_rate, within_5_rate"
+        },
+        {
+          "name": "cohorts",
+          "description": "per-position metrics (QB, RB, WR, TE), each with n, mae, median_ae, rmse, within_3_rate, within_5_rate and a nested baseline block of the same fields"
+        },
+        {
+          "name": "rolling_origin",
+          "description": "rolling-origin folds - candidate, strategy, folds (season, week, n, mae, baseline_mae per fold), mean_mae, mean_baseline_mae"
+        }
+      ],
+      "upstream": [],
+      "constraints": [],
+      "tests": [],
+      "sqlPath": "dbt/models/bronze/brz_eval_artifacts.sql",
+      "yamlPath": "dbt/models/bronze/_bronze.yml",
+      "sqlExcerpt": "{{ config(materialized='table') }}\n\n-- One row per evaluation artifact; nested blocks kept as structs (silver flattens them).\nselect\n    filename as source_file,\n    cast(artifact_version as varchar) as artifact_version,\n    cast(eval_id as varchar) as eval_id,\n    cast(kind as varchar) as kind,\n    cast(season as integer) as season,\n    cast(generated_at_utc as timestamp) as generated_at_utc,\n    cast(code_commit as varchar) as code_commit,\n    input,\n    model,\n    split,\n    metric_definitions,\n    metrics,\n    baseline,\n    cohorts,\n    rolling_origin\nfrom {{ source('repo_files', 'eval_artifacts') }}",
+      "exported": false,
+      "consumer": "No direct application consumer documented"
+    },
+    {
+      "uniqueId": "model.ffai_dbt.brz_eval_rolling",
+      "name": "brz_eval_rolling",
+      "version": null,
+      "alias": "brz_eval_rolling",
+      "resourceType": "model",
+      "layer": "bronze",
+      "materialization": "table",
+      "description": "One row per scored in-season week from the rolling files.",
+      "grain": "See model SQL and contract",
+      "columns": [
+        {
+          "name": "source_file",
+          "description": "repo-relative path of the file this row was loaded from; provenance for reconciliation"
+        },
+        {
+          "name": "season",
+          "description": "in-season year of the rolling file"
+        },
+        {
+          "name": "week",
+          "description": "scored week"
+        },
+        {
+          "name": "n",
+          "description": "number of scored player-weeks in the week"
+        },
+        {
+          "name": "champion_mae",
+          "description": "champion MAE on the week (PPR points)"
+        },
+        {
+          "name": "champion_within_3_rate",
+          "description": "share of the champion's predictions within 3 points of the actual"
+        },
+        {
+          "name": "champion_baseline_mae",
+          "description": "causal trailing-mean baseline MAE on the champion's rows"
+        },
+        {
+          "name": "challenger_mae",
+          "description": "challenger (shadow) MAE on the week"
+        },
+        {
+          "name": "challenger_within_3_rate",
+          "description": "share of the challenger's predictions within 3 points of the actual"
+        },
+        {
+          "name": "challenger_baseline_mae",
+          "description": "causal trailing-mean baseline MAE on the challenger's rows"
+        },
+        {
+          "name": "scored_at_utc",
+          "description": "when the weekly job scored the week (UTC)"
+        }
+      ],
+      "upstream": [],
+      "constraints": [],
+      "tests": [],
+      "sqlPath": "dbt/models/bronze/brz_eval_rolling.sql",
+      "yamlPath": "dbt/models/bronze/_bronze.yml",
+      "sqlExcerpt": "{{ config(materialized='table') }}\n\n-- One row per scored in-season week from artifacts/eval/rolling_<season>.json (zero rows while a\n-- season has no scored week yet).\nwith files as (\n    select * from {{ source('repo_files', 'eval_rolling') }}\n)\n\nselect\n    f.filename as source_file,\n    cast(f.season as integer) as season,\n    cast(w.week as integer) as week,\n    cast(w.n as integer) as n,\n    cast(w.champion.mae as double) as champion_mae,\n    cast(w.champion.within_3_rate as double) as champion_within_3_rate,\n    cast(w.champion.baseline_mae as double) as champion_baseline_mae,\n    cast(w.challenger.mae as double) as challenger_mae,\n    cast(w.challenger.within_3_rate as double) as challenger_within_3_rate,\n    cast(w.challenger.baseline_mae as double) as challenger_baseline_mae,\n    cast(w.scored_at_utc as timestamp) as scored_at_utc\nfrom files as f, unnest(f.weeks) as u (w)",
+      "exported": false,
+      "consumer": "No direct application consumer documented"
+    },
+    {
+      "uniqueId": "model.ffai_dbt.brz_manifest",
+      "name": "brz_manifest",
+      "version": null,
+      "alias": "brz_manifest",
+      "resourceType": "model",
+      "layer": "bronze",
+      "materialization": "table",
+      "description": "The manifest as one row.",
+      "grain": "See model SQL and contract",
+      "columns": [
+        {
+          "name": "source_file",
+          "description": "repo-relative path of the file this row was loaded from; provenance for reconciliation"
+        },
+        {
+          "name": "manifest_version",
+          "description": "schema version of the manifest file"
+        },
+        {
+          "name": "feature_version",
+          "description": "feature-module version the served predictions use"
+        },
+        {
+          "name": "champion_model_version",
+          "description": "model version in the champion slot"
+        },
+        {
+          "name": "champion_candidate",
+          "description": "champion candidate per position - QB, RB, WR, TE, each rf or xgb"
+        },
+        {
+          "name": "challenger_model_version",
+          "description": "model version in the challenger (shadow) slot"
+        },
+        {
+          "name": "challenger_candidate",
+          "description": "challenger candidate per position - QB, RB, WR, TE, each rf or xgb"
+        },
+        {
+          "name": "tiers_version",
+          "description": "tiers artifact version currently served"
+        },
+        {
+          "name": "eval_id",
+          "description": "the primary (frozen-test) evaluation id the site cites"
+        },
+        {
+          "name": "evaluations",
+          "description": "list of registered evaluations - eval_id, generated_at_utc, kind, path, season"
+        },
+        {
+          "name": "data_through_season",
+          "description": "season of the newest complete week the served predictions were built from"
+        },
+        {
+          "name": "data_through_week",
+          "description": "week of the newest complete week the served predictions were built from"
+        },
+        {
+          "name": "predictions_latest",
+          "description": "repo-relative path of the newest weekly predictions file"
+        },
+        {
+          "name": "last_run_id",
+          "description": "id of the last weekly job run"
+        },
+        {
+          "name": "last_run_at_utc",
+          "description": "when the last weekly job ran (UTC)"
+        },
+        {
+          "name": "last_run_action",
+          "description": "what the last weekly run decided, PUBLISH, HOLD, or PROMOTE"
+        },
+        {
+          "name": "last_run_season",
+          "description": "season the last weekly run scored"
+        },
+        {
+          "name": "last_run_week",
+          "description": "week the last weekly run scored"
+        },
+        {
+          "name": "last_run_stats_rows",
+          "description": "row count of the stats pull in the last run; the prior value for the row-count contract"
+        },
+        {
+          "name": "updated_at_utc",
+          "description": "when the manifest was last written (UTC)"
+        }
+      ],
+      "upstream": [],
+      "constraints": [],
+      "tests": [
+        {
+          "dbt_utils.expression_is_true": {
+            "arguments": {
+              "expression": "champion_model_version is not null"
+            }
+          }
+        }
+      ],
+      "sqlPath": "dbt/models/bronze/brz_manifest.sql",
+      "yamlPath": "dbt/models/bronze/_bronze.yml",
+      "sqlExcerpt": "{{ config(materialized='table') }}\n\n-- artifacts/manifest.json as one row (the registered evaluations list is kept as a struct list).\nselect\n    filename as source_file,\n    cast(manifest_version as varchar) as manifest_version,\n    cast(feature_version as varchar) as feature_version,\n    cast(champion.model_version as varchar) as champion_model_version,\n    champion.candidate as champion_candidate,\n    cast(challenger.model_version as varchar) as challenger_model_version,\n    challenger.candidate as challenger_candidate,\n    cast(tiers_version as varchar) as tiers_version,\n    cast(eval_id as varchar) as eval_id,\n    evaluations,\n    cast(data_through.season as integer) as data_through_season,\n    cast(data_through.week as integer) as data_through_week,\n    cast(predictions.latest as varchar) as predictions_latest,\n    cast(last_run.run_id as varchar) as last_run_id,\n    cast(last_run.at_utc as timestamp) as last_run_at_utc,\n    cast(last_run.action as varchar) as last_run_action,\n    cast(last_run.season as integer) as last_run_season,\n    cast(last_run.week as integer) as last_run_week,\n    cast(last_run.stats_rows as integer) as last_run_stats_rows,\n    cast(updated_at_utc as timestamp) as updated_at_utc",
+      "exported": false,
+      "consumer": "No direct application consumer documented"
+    },
+    {
+      "uniqueId": "model.ffai_dbt.brz_model_metadata",
+      "name": "brz_model_metadata",
+      "version": null,
+      "alias": "brz_model_metadata",
+      "resourceType": "model",
+      "layer": "bronze",
+      "materialization": "table",
+      "description": "One row per trained model version.",
+      "grain": "See model SQL and contract",
+      "columns": [
+        {
+          "name": "source_file",
+          "description": "repo-relative path of the file this row was loaded from; provenance for reconciliation"
+        },
+        {
+          "name": "model_version",
+          "description": "model version, e.g. 20260911-asof_v1-d333de20 (train date, feature version, input hash prefix)"
+        },
+        {
+          "name": "feature_version",
+          "description": "feature-module version the model was trained with"
+        },
+        {
+          "name": "ffai_version",
+          "description": "ffai package version at training time"
+        },
+        {
+          "name": "sklearn_version",
+          "description": "scikit-learn version at training time"
+        },
+        {
+          "name": "xgboost_version",
+          "description": "xgboost version at training time"
+        },
+        {
+          "name": "data_library",
+          "description": "data loader and version used for the training pull (e.g. nflreadpy==0.1.5)"
+        },
+        {
+          "name": "trained_at_utc",
+          "description": "when training finished (UTC)"
+        },
+        {
+          "name": "data_through_season",
+          "description": "season of the newest week in the training input"
+        },
+        {
+          "name": "data_through_week",
+          "description": "week of the newest week in the training input"
+        },
+        {
+          "name": "train_seasons",
+          "description": "list of seasons in the training window"
+        },
+        {
+          "name": "val_season",
+          "description": "season used for candidate selection and interval residuals"
+        },
+        {
+          "name": "test_season",
+          "description": "frozen test season, never used for training or selection"
+        },
+        {
+          "name": "target",
+          "description": "the modelled target as recorded at training time (fantasy_points_ppr, regular season)"
+        },
+        {
+          "name": "input_sha256",
+          "description": "sha256 of the training input frame"
+        },
+        {
+          "name": "input_rows",
+          "description": "row count of the training input frame"
+        },
+        {
+          "name": "code_commit",
+          "description": "git commit of the ffai package that trained the model"
+        },
+        {
+          "name": "interval_method",
+          "description": "how the floor and ceiling are built, as recorded at training time"
+        },
+        {
+          "name": "champion_qb",
+          "description": "candidate selected on the validation season for QB, rf or xgb"
+        },
+        {
+          "name": "n_features_qb",
+          "description": "number of features in the QB model"
+        },
+        {
+          "name": "n_train_qb",
+          "description": "QB training rows"
+        },
+        {
+          "name": "n_test_qb",
+          "description": "QB frozen-test rows"
+        },
+        {
+          "name": "champion_rb",
+          "description": "candidate selected on the validation season for RB, rf or xgb"
+        },
+        {
+          "name": "n_features_rb",
+          "description": "number of features in the RB model"
+        },
+        {
+          "name": "n_train_rb",
+          "description": "RB training rows"
+        },
+        {
+          "name": "n_test_rb",
+          "description": "RB frozen-test rows"
+        },
+        {
+          "name": "champion_wr",
+          "description": "candidate selected on the validation season for WR, rf or xgb"
+        },
+        {
+          "name": "n_features_wr",
+          "description": "number of features in the WR model"
+        },
+        {
+          "name": "n_train_wr",
+          "description": "WR training rows"
+        },
+        {
+          "name": "n_test_wr",
+          "description": "WR frozen-test rows"
+        },
+        {
+          "name": "champion_te",
+          "description": "candidate selected on the validation season for TE, rf or xgb"
+        },
+        {
+          "name": "n_features_te",
+          "description": "number of features in the TE model"
+        },
+        {
+          "name": "n_train_te",
+          "description": "TE training rows"
+        },
+        {
+          "name": "n_test_te",
+          "description": "TE frozen-test rows"
+        }
+      ],
+      "upstream": [],
+      "constraints": [],
+      "tests": [],
+      "sqlPath": "dbt/models/bronze/brz_model_metadata.sql",
+      "yamlPath": "dbt/models/bronze/_bronze.yml",
+      "sqlExcerpt": "{{ config(materialized='table') }}\n\n-- One row per trained model version (artifacts/models/<version>/metadata.json); the large\n-- per-position blocks (feature lists, drift references) are not copied.\nselect\n    filename as source_file,\n    cast(model_version as varchar) as model_version,\n    cast(feature_version as varchar) as feature_version,\n    cast(ffai_version as varchar) as ffai_version,\n    cast(sklearn_version as varchar) as sklearn_version,\n    cast(xgboost_version as varchar) as xgboost_version,\n    cast(data_library as varchar) as data_library,\n    cast(trained_at_utc as timestamp) as trained_at_utc,\n    cast(data_through.season as integer) as data_through_season,\n    cast(data_through.week as integer) as data_through_week,\n    seasons.train as train_seasons,\n    cast(seasons.val as integer) as val_season,\n    cast(seasons.test as integer) as test_season,\n    cast(target as varchar) as target,\n    cast(input_sha256 as varchar) as input_sha256,\n    cast(input_rows as integer) as input_rows,\n    cast(code_commit as varchar) as code_commit,\n    cast(interval_method as varchar) as interval_method,\n{% for pos in var('cohorts') -%}",
+      "exported": false,
+      "consumer": "No direct application consumer documented"
+    },
+    {
+      "uniqueId": "model.ffai_dbt.brz_player_stats",
+      "name": "brz_player_stats",
+      "version": null,
+      "alias": "brz_player_stats",
+      "resourceType": "model",
+      "layer": "bronze",
+      "materialization": "table",
+      "description": "Newest nflverse weekly stats snapshot, typed, unfiltered (all positions and season types).",
+      "grain": "See model SQL and contract",
+      "columns": [
+        {
+          "name": "source_file",
+          "description": "repo-relative path of the file this row was loaded from; provenance for reconciliation"
+        },
+        {
+          "name": "player_id",
+          "description": "nflverse GSIS player id (e.g. 00-0034857); the player key everywhere in the warehouse"
+        },
+        {
+          "name": "player_display_name",
+          "description": "player name as nflverse displays it"
+        },
+        {
+          "name": "position",
+          "description": "roster position as reported by nflverse; every position is kept here, silver keeps QB/RB/WR/TE"
+        },
+        {
+          "name": "season",
+          "description": "NFL season year"
+        },
+        {
+          "name": "week",
+          "description": "NFL week number within the season (regular season 1-18 since 2021; postseason weeks continue the count)"
+        },
+        {
+          "name": "season_type",
+          "description": "nflverse season type, REG, POST, or PRE; silver keeps REG only"
+        },
+        {
+          "name": "team",
+          "description": "team abbreviation the player was on for this week"
+        },
+        {
+          "name": "opponent_team",
+          "description": "opponent team abbreviation for this week"
+        },
+        {
+          "name": "completions",
+          "description": "pass completions, as defined by nflverse"
+        },
+        {
+          "name": "attempts",
+          "description": "pass attempts, as defined by nflverse"
+        },
+        {
+          "name": "passing_yards",
+          "description": "passing yards, as defined by nflverse"
+        },
+        {
+          "name": "passing_tds",
+          "description": "passing touchdowns thrown, as defined by nflverse"
+        },
+        {
+          "name": "passing_interceptions",
+          "description": "interceptions thrown, as defined by nflverse"
+        },
+        {
+          "name": "passing_air_yards",
+          "description": "passing air yards (yards the ball travelled in the air on attempts), as defined by nflverse"
+        },
+        {
+          "name": "passing_2pt_conversions",
+          "description": "two-point conversion passes completed, as defined by nflverse"
+        },
+        {
+          "name": "sack_fumbles_lost",
+          "description": "fumbles lost on sacks, as defined by nflverse"
+        },
+        {
+          "name": "carries",
+          "description": "rushing attempts, as defined by nflverse"
+        },
+        {
+          "name": "rushing_yards",
+          "description": "rushing yards, as defined by nflverse"
+        },
+        {
+          "name": "rushing_tds",
+          "description": "rushing touchdowns, as defined by nflverse"
+        },
+        {
+          "name": "rushing_fumbles_lost",
+          "description": "fumbles lost on rushing plays, as defined by nflverse"
+        },
+        {
+          "name": "rushing_2pt_conversions",
+          "description": "two-point conversions rushed in, as defined by nflverse"
+        },
+        {
+          "name": "receptions",
+          "description": "receptions, as defined by nflverse"
+        },
+        {
+          "name": "targets",
+          "description": "pass targets, as defined by nflverse"
+        },
+        {
+          "name": "receiving_yards",
+          "description": "receiving yards, as defined by nflverse"
+        },
+        {
+          "name": "receiving_tds",
+          "description": "receiving touchdowns, as defined by nflverse"
+        },
+        {
+          "name": "receiving_air_yards",
+          "description": "receiving air yards (air yards on targets to this player), as defined by nflverse"
+        },
+        {
+          "name": "receiving_fumbles_lost",
+          "description": "fumbles lost after a reception, as defined by nflverse"
+        },
+        {
+          "name": "receiving_2pt_conversions",
+          "description": "two-point conversions caught, as defined by nflverse"
+        },
+        {
+          "name": "special_teams_tds",
+          "description": "special-teams touchdowns, as defined by nflverse"
+        },
+        {
+          "name": "fantasy_points",
+          "description": "nflverse's own standard-scoring fantasy points; kept only to reconcile the rules macro, never a feature"
+        },
+        {
+          "name": "fantasy_points_ppr",
+          "description": "nflverse's own PPR fantasy points; kept only to reconcile the rules macro, never a feature"
+        }
+      ],
+      "upstream": [],
+      "constraints": [],
+      "tests": [],
+      "sqlPath": "dbt/models/bronze/brz_player_stats.sql",
+      "yamlPath": "dbt/models/bronze/_bronze.yml",
+      "sqlExcerpt": "{{ config(materialized='table') }}\n\n-- Newest nflverse snapshot only. Cache files are named\n-- player_stats_<first>-<last>_<load-date>.parquet, so the lexicographically greatest filename is\n-- the widest season range at the latest load date. Columns: the id + raw stat columns the\n-- package keeps (ffai.data.nflverse.ID_COLUMNS / STAT_COLUMNS), typed; nothing filtered.\nwith snapshots as (\n    select * from {{ source('repo_files', 'player_stats') }}\n),\n\nnewest as (\n    select max(filename) as filename from snapshots\n)\n\nselect\n    s.filename as source_file,\n    cast(s.player_id as varchar) as player_id,\n    cast(s.player_display_name as varchar) as player_display_name,\n    cast(s.position as varchar) as position,\n    cast(s.season as integer) as season,\n    cast(s.week as integer) as week,\n    cast(s.season_type as varchar) as season_type,\n    cast(s.team as varchar) as team,\n    cast(s.opponent_team as varchar) as opponent_team,",
+      "exported": false,
+      "consumer": "No direct application consumer documented"
+    },
+    {
+      "uniqueId": "model.ffai_dbt.brz_predictions_oos",
+      "name": "brz_predictions_oos",
+      "version": null,
+      "alias": "brz_predictions_oos",
+      "resourceType": "model",
+      "layer": "bronze",
+      "materialization": "table",
+      "description": "Out-of-sample season predictions (both candidates) per model version.",
+      "grain": "See model SQL and contract",
+      "columns": [
+        {
+          "name": "source_file",
+          "description": "repo-relative path of the file this row was loaded from; provenance for reconciliation"
+        },
+        {
+          "name": "model_version",
+          "description": "model version, parsed from the artifacts/models/<version>/ path"
+        },
+        {
+          "name": "player_id",
+          "description": "nflverse GSIS player id"
+        },
+        {
+          "name": "season",
+          "description": "the out-of-sample season (a complete season after the frozen test season)"
+        },
+        {
+          "name": "week",
+          "description": "week within the out-of-sample season"
+        },
+        {
+          "name": "position",
+          "description": "fantasy position, QB/RB/WR/TE"
+        },
+        {
+          "name": "player_display_name",
+          "description": "player name as recorded in the CSV"
+        },
+        {
+          "name": "team",
+          "description": "team abbreviation for the week"
+        },
+        {
+          "name": "candidate",
+          "description": "which candidate produced the row, rf (RandomForest) or xgb (XGBoost)"
+        },
+        {
+          "name": "prediction",
+          "description": "predicted PPR fantasy points from the frozen artifact scored over a later season"
+        },
+        {
+          "name": "prediction_floor",
+          "description": "lower interval bound (10th validation-residual quantile, clipped at 0)"
+        },
+        {
+          "name": "prediction_ceiling",
+          "description": "upper interval bound (90th validation-residual quantile)"
+        },
+        {
+          "name": "actual",
+          "description": "realised PPR points for the row"
+        }
+      ],
+      "upstream": [],
+      "constraints": [],
+      "tests": [],
+      "sqlPath": "dbt/models/bronze/brz_predictions_oos.sql",
+      "yamlPath": "dbt/models/bronze/_bronze.yml",
+      "sqlExcerpt": "{{ config(materialized='table') }}\n\n-- artifacts/models/<version>/oos_predictions_<season>.csv, typed. model_version from the path.\nselect\n    filename as source_file,\n    regexp_extract(filename, 'models/([^/]+)/oos_predictions_\\d+\\.csv$', 1) as model_version,\n    cast(player_id as varchar) as player_id,\n    cast(season as integer) as season,\n    cast(week as integer) as week,\n    cast(position as varchar) as position,\n    cast(player_display_name as varchar) as player_display_name,\n    cast(team as varchar) as team,\n    cast(candidate as varchar) as candidate,\n    cast(prediction as double) as prediction,\n    cast(prediction_floor as double) as prediction_floor,\n    cast(prediction_ceiling as double) as prediction_ceiling,\n    cast(actual as double) as actual\nfrom {{ source('repo_files', 'predictions_oos') }}",
+      "exported": false,
+      "consumer": "No direct application consumer documented"
+    },
+    {
+      "uniqueId": "model.ffai_dbt.brz_predictions_test",
+      "name": "brz_predictions_test",
+      "version": null,
+      "alias": "brz_predictions_test",
+      "resourceType": "model",
+      "layer": "bronze",
+      "materialization": "table",
+      "description": "Frozen-test predictions (both candidates) per model version.",
+      "grain": "See model SQL and contract",
+      "columns": [
+        {
+          "name": "source_file",
+          "description": "repo-relative path of the file this row was loaded from; provenance for reconciliation"
+        },
+        {
+          "name": "model_version",
+          "description": "model version, parsed from the artifacts/models/<version>/ path"
+        },
+        {
+          "name": "player_id",
+          "description": "nflverse GSIS player id"
+        },
+        {
+          "name": "season",
+          "description": "frozen test season"
+        },
+        {
+          "name": "week",
+          "description": "week within the test season"
+        },
+        {
+          "name": "position",
+          "description": "fantasy position, QB/RB/WR/TE"
+        },
+        {
+          "name": "player_display_name",
+          "description": "player name as recorded in the CSV"
+        },
+        {
+          "name": "team",
+          "description": "team abbreviation for the week"
+        },
+        {
+          "name": "candidate",
+          "description": "which candidate produced the row, rf (RandomForest) or xgb (XGBoost)"
+        },
+        {
+          "name": "prediction",
+          "description": "predicted PPR fantasy points, scored at training time with the frozen artifact"
+        },
+        {
+          "name": "prediction_floor",
+          "description": "lower interval bound (10th validation-residual quantile, clipped at 0)"
+        },
+        {
+          "name": "prediction_ceiling",
+          "description": "upper interval bound (90th validation-residual quantile)"
+        },
+        {
+          "name": "actual",
+          "description": "realised PPR points for the row (the test season is fully played)"
+        }
+      ],
+      "upstream": [],
+      "constraints": [],
+      "tests": [],
+      "sqlPath": "dbt/models/bronze/brz_predictions_test.sql",
+      "yamlPath": "dbt/models/bronze/_bronze.yml",
+      "sqlExcerpt": "{{ config(materialized='table') }}\n\n-- artifacts/models/<version>/test_predictions.csv, typed. model_version comes from the path.\nselect\n    filename as source_file,\n    regexp_extract(filename, 'models/([^/]+)/test_predictions\\.csv$', 1) as model_version,\n    cast(player_id as varchar) as player_id,\n    cast(season as integer) as season,\n    cast(week as integer) as week,\n    cast(position as varchar) as position,\n    cast(player_display_name as varchar) as player_display_name,\n    cast(team as varchar) as team,\n    cast(candidate as varchar) as candidate,\n    cast(prediction as double) as prediction,\n    cast(prediction_floor as double) as prediction_floor,\n    cast(prediction_ceiling as double) as prediction_ceiling,\n    cast(actual as double) as actual\nfrom {{ source('repo_files', 'predictions_test') }}",
+      "exported": false,
+      "consumer": "No direct application consumer documented"
+    },
+    {
+      "uniqueId": "model.ffai_dbt.brz_predictions_weekly",
+      "name": "brz_predictions_weekly",
+      "version": null,
+      "alias": "brz_predictions_weekly",
+      "resourceType": "model",
+      "layer": "bronze",
+      "materialization": "table",
+      "description": "Every record of every weekly predictions file, one row per (file, player).",
+      "grain": "See model SQL and contract",
+      "columns": [
+        {
+          "name": "source_file",
+          "description": "repo-relative path of the file this row was loaded from; provenance for reconciliation"
+        },
+        {
+          "name": "season",
+          "description": "season the file's predictions are for"
+        },
+        {
+          "name": "week",
+          "description": "week the file's predictions are for"
+        },
+        {
+          "name": "model_version",
+          "description": "model version that produced the file's predictions"
+        },
+        {
+          "name": "feature_version",
+          "description": "feature-module version the predictions were built with"
+        },
+        {
+          "name": "generated_at_utc",
+          "description": "when the weekly job wrote the predictions (UTC)"
+        },
+        {
+          "name": "actuals_attached_at_utc",
+          "description": "when the weekly job attached realised points to the file (UTC); null until the week was scored"
+        },
+        {
+          "name": "data_through_season",
+          "description": "season of the newest complete week the features were built from"
+        },
+        {
+          "name": "data_through_week",
+          "description": "week of the newest complete week the features were built from"
+        },
+        {
+          "name": "player_id",
+          "description": "nflverse GSIS player id"
+        },
+        {
+          "name": "player_display_name",
+          "description": "player name as recorded in the file (the file's `name` field)"
+        },
+        {
+          "name": "team",
+          "description": "team abbreviation at prediction time"
+        },
+        {
+          "name": "position",
+          "description": "fantasy position, QB/RB/WR/TE"
+        },
+        {
+          "name": "candidate",
+          "description": "which candidate produced the row, rf (RandomForest) or xgb (XGBoost)"
+        },
+        {
+          "name": "prediction",
+          "description": "predicted PPR fantasy points for the week"
+        },
+        {
+          "name": "prediction_floor",
+          "description": "lower interval bound (the file's `floor`, 10th residual quantile, clipped at 0)"
+        },
+        {
+          "name": "prediction_ceiling",
+          "description": "upper interval bound (the file's `ceiling`, 90th residual quantile)"
+        },
+        {
+          "name": "receptions_estimate",
+          "description": "as-of trailing-3-week average receptions used to derive half and standard points from the PPR prediction"
+        },
+        {
+          "name": "actual",
+          "description": "realised PPR points attached after the week was played; null until then"
+        }
+      ],
+      "upstream": [],
+      "constraints": [],
+      "tests": [],
+      "sqlPath": "dbt/models/bronze/brz_predictions_weekly.sql",
+      "yamlPath": "dbt/models/bronze/_bronze.yml",
+      "sqlExcerpt": "{{ config(materialized='table') }}\n\n-- One row per prediction record in every artifacts/predictions/<season>/week_<ww>.json.\nwith files as (\n    select * from {{ source('repo_files', 'predictions_weekly') }}\n)\n\nselect\n    f.filename as source_file,\n    cast(f.season as integer) as season,\n    cast(f.week as integer) as week,\n    cast(f.model_version as varchar) as model_version,\n    cast(f.feature_version as varchar) as feature_version,\n    cast(f.generated_at_utc as timestamp) as generated_at_utc,\n    cast(f.actuals_attached_at_utc as timestamp) as actuals_attached_at_utc,\n    cast(f.data_through.season as integer) as data_through_season,\n    cast(f.data_through.week as integer) as data_through_week,\n    cast(p.player_id as varchar) as player_id,\n    cast(p.name as varchar) as player_display_name,\n    cast(p.team as varchar) as team,\n    cast(p.position as varchar) as position,\n    cast(p.candidate as varchar) as candidate,\n    cast(p.prediction as double) as prediction,\n    cast(p.floor as double) as prediction_floor,",
+      "exported": false,
+      "consumer": "No direct application consumer documented"
+    },
+    {
+      "uniqueId": "model.ffai_dbt.brz_tiers",
+      "name": "brz_tiers",
+      "version": null,
+      "alias": "brz_tiers",
+      "resourceType": "model",
+      "layer": "bronze",
+      "materialization": "table",
+      "description": "One row per (tiers_version, position, tier, player).",
+      "grain": "See model SQL and contract",
+      "columns": [
+        {
+          "name": "source_file",
+          "description": "repo-relative path of the file this row was loaded from; provenance for reconciliation"
+        },
+        {
+          "name": "tiers_version",
+          "description": "tiers artifact version (the file's tier_version), e.g. 20260911-tiers_prevseason_v1-2024-mpc8"
+        },
+        {
+          "name": "season",
+          "description": "the prior season the tiers were built from (tiers are preseason, prior-season aggregates only)"
+        },
+        {
+          "name": "position",
+          "description": "position the tier list belongs to, QB/RB/WR/TE"
+        },
+        {
+          "name": "tier",
+          "description": "tier number, 1 is the top tier"
+        },
+        {
+          "name": "player_id",
+          "description": "nflverse GSIS player id"
+        },
+        {
+          "name": "player_display_name",
+          "description": "player name as recorded in the file (the file's `name` field)"
+        },
+        {
+          "name": "team",
+          "description": "team abbreviation at tiering time"
+        },
+        {
+          "name": "ppg_prev",
+          "description": "mean PPR points per game over the prior season (ffai.models.tiers)"
+        },
+        {
+          "name": "games_prev",
+          "description": "games played (stat rows) in the prior season"
+        },
+        {
+          "name": "tier_probability",
+          "description": "Gaussian-mixture membership probability of the assigned tier"
+        }
+      ],
+      "upstream": [],
+      "constraints": [],
+      "tests": [],
+      "sqlPath": "dbt/models/bronze/brz_tiers.sql",
+      "yamlPath": "dbt/models/bronze/_bronze.yml",
+      "sqlExcerpt": "{{ config(materialized='table') }}\n\n-- One row per (tiers_version, position, tier, player) from every artifacts/tiers/*/tiers.json.\nwith files as (\n    select * from {{ source('repo_files', 'tiers') }}\n),\n\nby_position as (\n    {% for pos in var('cohorts') %}\n    select\n        f.filename,\n        f.tier_version,\n        f.season,\n        '{{ pos }}' as position,\n        t.tier,\n        t.players\n    from files as f, unnest(f.positions.{{ pos }}) as u (t)\n    {{ \"union all\" if not loop.last }}\n    {% endfor %}\n)\n\nselect\n    b.filename as source_file,\n    cast(b.tier_version as varchar) as tiers_version,",
+      "exported": false,
+      "consumer": "No direct application consumer documented"
+    },
+    {
+      "uniqueId": "model.ffai_dbt.dim_model_version",
+      "name": "dim_model_version",
+      "version": null,
+      "alias": "dim_model_version",
+      "resourceType": "model",
+      "layer": "gold",
+      "materialization": "table",
+      "description": "One row per trained model version with training provenance and the manifest's champion / challenger slots.",
+      "grain": "model_version",
+      "columns": [
+        {
+          "name": "model_version",
+          "data_type": "varchar",
+          "description": "<train date>-<feature version>-<input hash prefix>"
+        },
+        {
+          "name": "feature_version",
+          "data_type": "varchar",
+          "description": "as-of feature module version (ffai.features.asof.FEATURE_VERSION)"
+        },
+        {
+          "name": "trained_at_utc",
+          "data_type": "timestamp",
+          "description": "training timestamp"
+        },
+        {
+          "name": "data_through_season",
+          "data_type": "integer",
+          "description": "last season in the training pull"
+        },
+        {
+          "name": "data_through_week",
+          "data_type": "integer",
+          "description": "last week in the training pull"
+        },
+        {
+          "name": "train_seasons",
+          "data_type": "varchar",
+          "description": "comma-separated training seasons"
+        },
+        {
+          "name": "val_season",
+          "data_type": "integer",
+          "description": "validation season (candidate selection)"
+        },
+        {
+          "name": "test_season",
+          "data_type": "integer",
+          "description": "frozen test season"
+        },
+        {
+          "name": "target",
+          "data_type": "varchar",
+          "description": "the model target as recorded at training"
+        },
+        {
+          "name": "input_sha256",
+          "data_type": "varchar",
+          "description": "sha256 of the training input frame"
+        },
+        {
+          "name": "input_rows",
+          "data_type": "integer",
+          "description": "rows in the training input frame"
+        },
+        {
+          "name": "code_commit",
+          "data_type": "varchar",
+          "description": "git commit that trained the model"
+        },
+        {
+          "name": "sklearn_version",
+          "data_type": "varchar",
+          "description": "scikit-learn version at training"
+        },
+        {
+          "name": "xgboost_version",
+          "data_type": "varchar",
+          "description": "xgboost version at training"
+        },
+        {
+          "name": "data_library",
+          "data_type": "varchar",
+          "description": "nflverse client and version used for the pull"
+        },
+        {
+          "name": "interval_method",
+          "data_type": "varchar",
+          "description": "how floor / ceiling were derived"
+        },
+        {
+          "name": "champion_qb",
+          "data_type": "varchar",
+          "description": "champion candidate for QB (rf or xgb)"
+        },
+        {
+          "name": "champion_rb",
+          "data_type": "varchar",
+          "description": "champion candidate for RB"
+        },
+        {
+          "name": "champion_wr",
+          "data_type": "varchar",
+          "description": "champion candidate for WR"
+        },
+        {
+          "name": "champion_te",
+          "data_type": "varchar",
+          "description": "champion candidate for TE"
+        },
+        {
+          "name": "n_features_qb",
+          "data_type": "integer",
+          "description": "features used by the QB models"
+        },
+        {
+          "name": "n_features_rb",
+          "data_type": "integer",
+          "description": "features used by the RB models"
+        },
+        {
+          "name": "n_features_wr",
+          "data_type": "integer",
+          "description": "features used by the WR models"
+        },
+        {
+          "name": "n_features_te",
+          "data_type": "integer",
+          "description": "features used by the TE models"
+        },
+        {
+          "name": "is_champion",
+          "data_type": "boolean",
+          "description": "true when the manifest's champion slot points at this version"
+        },
+        {
+          "name": "is_challenger",
+          "data_type": "boolean",
+          "description": "true when the manifest's challenger slot points at this version"
+        }
+      ],
+      "upstream": [
+        "brz_manifest",
+        "brz_model_metadata",
+        "slv_predictions"
+      ],
+      "constraints": [
+        {
+          "type": "primary_key",
+          "columns": [
+            "model_version"
+          ]
+        }
+      ],
+      "tests": [],
+      "sqlPath": "dbt/models/gold/dim_model_version.sql",
+      "yamlPath": "dbt/models/gold/_gold.yml",
+      "sqlExcerpt": "-- Grain: one row per model_version. Training provenance from metadata.json plus the manifest's\n-- champion / challenger slots. Versions that only appear in prediction files (no metadata)\n-- are kept with null provenance so fct_player_week always has a parent.\nwith versions as (\n    select model_version from {{ ref('brz_model_metadata') }}\n    union\n    select distinct model_version from {{ ref('slv_predictions') }}\n),\n\nmanifest as (\n    select * from {{ ref('brz_manifest') }}\n)\n\nselect\n    cast(v.model_version as varchar) as model_version,\n    cast(m.feature_version as varchar) as feature_version,\n    cast(m.trained_at_utc as timestamp) as trained_at_utc,\n    cast(m.data_through_season as integer) as data_through_season,\n    cast(m.data_through_week as integer) as data_through_week,\n    cast(array_to_string(m.train_seasons, ',') as varchar) as train_seasons,\n    cast(m.val_season as integer) as val_season,\n    cast(m.test_season as integer) as test_season,\n    cast(m.target as varchar) as target,\n    cast(m.input_sha256 as varchar) as input_sha256,",
+      "exported": true,
+      "consumer": "No direct application consumer documented"
+    },
+    {
+      "uniqueId": "model.ffai_dbt.dim_player",
+      "name": "dim_player",
+      "version": null,
+      "alias": "dim_player",
+      "resourceType": "model",
+      "layer": "gold",
+      "materialization": "table",
+      "description": "One row per player with current (latest-seen) attributes; no history.",
+      "grain": "player_id",
+      "columns": [
+        {
+          "name": "player_id",
+          "data_type": "varchar",
+          "description": "nflverse GSIS id"
+        },
+        {
+          "name": "player_display_name",
+          "data_type": "varchar",
+          "description": "display name from the newest row seen"
+        },
+        {
+          "name": "position",
+          "data_type": "varchar",
+          "description": "QB / RB / WR / TE from the newest row seen"
+        },
+        {
+          "name": "team",
+          "data_type": "varchar",
+          "description": "team on the newest row seen"
+        },
+        {
+          "name": "first_stats_season",
+          "data_type": "integer",
+          "description": "first season with a stats row in the warehouse (null if only predicted or tiered)"
+        },
+        {
+          "name": "last_stats_season",
+          "data_type": "integer",
+          "description": "season of the newest stats row"
+        },
+        {
+          "name": "last_stats_week",
+          "data_type": "integer",
+          "description": "week of the newest stats row"
+        },
+        {
+          "name": "games_played",
+          "data_type": "integer",
+          "description": "stats rows (regular-season games) in the warehouse"
+        },
+        {
+          "name": "attribute_source",
+          "data_type": "varchar",
+          "description": "which table supplied the attributes (stats > predictions > tiers)"
+        }
+      ],
+      "upstream": [
+        "slv_player_stats",
+        "slv_predictions",
+        "slv_tiers"
+      ],
+      "constraints": [
+        {
+          "type": "primary_key",
+          "columns": [
+            "player_id"
+          ]
+        }
+      ],
+      "tests": [],
+      "sqlPath": "dbt/models/gold/dim_player.sql",
+      "yamlPath": "dbt/models/gold/_gold.yml",
+      "sqlExcerpt": "-- Grain: one row per player_id. Current (latest-seen) attributes, no history: the newest stats\n-- row wins; players known only from a prediction file or a tiers file fall back to those.\nwith from_stats as (\n    select\n        player_id,\n        player_display_name,\n        position,\n        team,\n        min(season) over (partition by player_id) as first_season,\n        season as last_season,\n        week as last_week,\n        count(*) over (partition by player_id) as games_played,\n        row_number() over (partition by player_id order by period_key desc) as rn\n    from {{ ref('slv_player_stats') }}\n),\n\nfrom_predictions as (\n    select\n        player_id,\n        player_display_name,\n        position,\n        team,\n        row_number() over (partition by player_id order by period_key desc, candidate asc) as rn\n    from {{ ref('slv_predictions') }}",
+      "exported": true,
+      "consumer": "player mart endpoints; latest-seen identity"
+    },
+    {
+      "uniqueId": "model.ffai_dbt.dim_player_asof",
+      "name": "dim_player_asof",
+      "version": null,
+      "alias": "dim_player_asof",
+      "resourceType": "model",
+      "layer": "gold",
+      "materialization": "view",
+      "description": "One row per (player_id, period_key) for every scored period: the player's attributes as they were when that period was scored, resolved from the snp_player history (ADR-0024). is_exact_asof is false where history cannot answer (periods before the first capture, or a player captured after the period) and the current version is used instead. Not exported.",
+      "grain": "player_id × period_key",
+      "columns": [
+        {
+          "name": "player_id",
+          "data_type": "varchar",
+          "description": "nflverse GSIS id"
+        },
+        {
+          "name": "period_key",
+          "data_type": "integer",
+          "description": "season * 100 + week of the scored period"
+        },
+        {
+          "name": "player_display_name",
+          "data_type": "varchar",
+          "description": "display name as of the period (current when not exact)"
+        },
+        {
+          "name": "position",
+          "data_type": "varchar",
+          "description": "position as of the period (current when not exact)"
+        },
+        {
+          "name": "team",
+          "data_type": "varchar",
+          "description": "team as of the period (current when not exact)"
+        },
+        {
+          "name": "is_exact_asof",
+          "data_type": "boolean",
+          "description": "true when a snapshot version covering the period exists; false when the current version was used as a fallback"
+        },
+        {
+          "name": "version_from_period_key",
+          "data_type": "integer",
+          "description": "capture period_key of the version used"
+        },
+        {
+          "name": "version_valid_from_utc",
+          "data_type": "timestamp",
+          "description": "capture timestamp of the version used"
+        }
+      ],
+      "upstream": [
+        "dim_player_current",
+        "slv_predictions",
+        "snp_player"
+      ],
+      "constraints": [],
+      "tests": [
+        {
+          "dbt_utils.unique_combination_of_columns": {
+            "arguments": {
+              "combination_of_columns": [
+                "player_id",
+                "period_key"
+              ]
+            }
+          }
+        }
+      ],
+      "sqlPath": "dbt/models/gold/dim_player_asof.sql",
+      "yamlPath": "dbt/models/gold/_gold.yml",
+      "sqlExcerpt": "-- Grain: one row per (player_id, period_key) for every period a prediction exists for. Resolves\n-- the player's attributes as they were when that period was scored, from the snp_player SCD2\n-- history (ADR-0024): a snapshot version captured with data through period K (as_of_period_key)\n-- is the state used to score periods K+1 .. K' where K' is the next version's capture period.\n-- Periods before the first capture, and players captured later than the period, cannot be\n-- resolved from history; they fall back to the current version and is_exact_asof is false.\n-- tests/gold/assert_asof_exact_after_first_capture.sql proves is_exact_asof is true for every\n-- period after the snapshot's first capture. Not exported to artifacts/marts (meta export=false).\n{{ config(materialized='view', meta={'export': false}) }}\n\nwith periods as (\n    select distinct\n        player_id,\n        period_key\n    from {{ ref('slv_predictions') }}\n),\n\nhistory as (\n    select\n        player_id,\n        player_display_name,\n        position,\n        team,\n        as_of_period_key as valid_from_period_key,",
+      "exported": true,
+      "consumer": "Warehouse view; not exported/currently consumed by this page"
+    },
+    {
+      "uniqueId": "model.ffai_dbt.dim_player_current",
+      "name": "dim_player_current",
+      "version": null,
+      "alias": "dim_player_current",
+      "resourceType": "model",
+      "layer": "gold",
+      "materialization": "view",
+      "description": "One row per player: the current version of the SCD2 snapshot snp_player (ADR-0024), with the same attributes as dim_player plus when this version was first captured. Downstream marts pick this view for \"attributes now\" and dim_player_asof for \"attributes when the period was scored\". Not exported to artifacts/marts.",
+      "grain": "player_id",
+      "columns": [
+        {
+          "name": "player_id",
+          "data_type": "varchar",
+          "description": "nflverse GSIS id"
+        },
+        {
+          "name": "player_display_name",
+          "data_type": "varchar",
+          "description": "current display name"
+        },
+        {
+          "name": "position",
+          "data_type": "varchar",
+          "description": "current position"
+        },
+        {
+          "name": "team",
+          "data_type": "varchar",
+          "description": "current team"
+        },
+        {
+          "name": "version_from_period_key",
+          "data_type": "integer",
+          "description": "data-through period_key when this version was first captured"
+        },
+        {
+          "name": "version_valid_from_utc",
+          "data_type": "timestamp",
+          "description": "capture timestamp of this version"
+        }
+      ],
+      "upstream": [
+        "snp_player"
+      ],
+      "constraints": [],
+      "tests": [
+        {
+          "dbt_utils.equal_rowcount": {
+            "arguments": {
+              "compare_model": "ref('dim_player')"
+            }
+          }
+        }
+      ],
+      "sqlPath": "dbt/models/gold/dim_player_current.sql",
+      "yamlPath": "dbt/models/gold/_gold.yml",
+      "sqlExcerpt": "-- Grain: one row per player_id — the current version from the snp_player snapshot (SCD2,\n-- ADR-0024). Same attributes as dim_player plus when this version was first captured, so a\n-- downstream mart can choose between \"attributes now\" (this view) and \"attributes as they were\n-- when the period was scored\" (dim_player_asof). Not exported to artifacts/marts (meta export=false).\n{{ config(materialized='view', meta={'export': false}) }}\n\nselect\n    cast(player_id as varchar) as player_id,\n    cast(player_display_name as varchar) as player_display_name,\n    cast(position as varchar) as position,\n    cast(team as varchar) as team,\n    cast(as_of_period_key as integer) as version_from_period_key,\n    cast(dbt_valid_from as timestamp) as version_valid_from_utc\nfrom {{ ref('snp_player') }}\nwhere dbt_valid_to is null",
+      "exported": true,
+      "consumer": "Warehouse view; not exported/currently consumed by this page"
+    },
+    {
+      "uniqueId": "model.ffai_dbt.fct_decision_policy.v1",
+      "name": "fct_decision_policy",
+      "version": 1,
+      "alias": "fct_decision_policy",
+      "resourceType": "model",
+      "layer": "gold",
+      "materialization": "table",
+      "description": "Policy metrics per (season, week, position, model_version, candidate, min_floor) swept over var min_floor_grid: recommendation and review counts and rates, recommendation MAE, mean regret, hit rate, downside rate. Served by the API as /marts/decisions?min_floor=. Versioned (ADR-0025): v1 is the shape the API serves today and keeps the relation name fct_decision_policy (alias) so its exported parquet is unchanged; v2 (latest) adds the interval outcomes of recommended players (recommendation_within_3_rate, recommendation_interval_coverage) and exports as fct_decision_policy_v2.parquet. Deprecation policy: a version is served by the API for at least one full season after its successor ships; the API pins the version it reads (ffai.serve.marts.DECISIONS_MART_VERSION); when it moves to v2, v1 gets a deprecation_date one season out, keeps building and exporting until then, and is deleted after. ref('fct_decision_policy') without a version resolves to the latest version and is a build-time warning once v1 is deprecated.",
+      "grain": "season × week × position × model_version × candidate × min_floor",
+      "columns": [
+        {
+          "name": "season",
+          "data_type": "integer",
+          "description": "NFL season"
+        },
+        {
+          "name": "week",
+          "data_type": "integer",
+          "description": "regular-season week"
+        },
+        {
+          "name": "period_key",
+          "data_type": "integer",
+          "description": "season * 100 + week"
+        },
+        {
+          "name": "position",
+          "data_type": "varchar",
+          "description": "position"
+        },
+        {
+          "name": "model_version",
+          "data_type": "varchar",
+          "description": "model version"
+        },
+        {
+          "name": "candidate",
+          "data_type": "varchar",
+          "description": "rf or xgb"
+        },
+        {
+          "name": "min_floor",
+          "data_type": "double",
+          "description": "floor threshold of this row (one of var min_floor_grid)"
+        },
+        {
+          "name": "eligible_decisions",
+          "data_type": "integer",
+          "description": "scored players at the position that week"
+        },
+        {
+          "name": "recommendations",
+          "data_type": "integer",
+          "description": "players whose floor cleared min_floor"
+        },
+        {
+          "name": "reviews",
+          "data_type": "integer",
+          "description": "players below the threshold"
+        },
+        {
+          "name": "recommendation_rate",
+          "data_type": "double",
+          "description": "recommendations / eligible_decisions"
+        },
+        {
+          "name": "review_rate",
+          "data_type": "double",
+          "description": "reviews / eligible_decisions"
+        },
+        {
+          "name": "recommendations_with_outcome",
+          "data_type": "integer",
+          "description": "recommended players with a realised actual"
+        },
+        {
+          "name": "recommendation_mae",
+          "data_type": "double",
+          "description": "MAE over recommended players with outcomes"
+        },
+        {
+          "name": "review_mae",
+          "data_type": "double",
+          "description": "MAE over review players with outcomes"
+        },
+        {
+          "name": "mean_regret",
+          "data_type": "double",
+          "description": "mean(best_eligible_points - actual) over recommended players"
+        },
+        {
+          "name": "hit_rate",
+          "data_type": "double",
+          "description": "share of recommended players who beat replacement level"
+        },
+        {
+          "name": "downside_rate",
+          "data_type": "double",
+          "description": "share of recommended players who scored below their floor"
+        },
+        {
+          "name": "recommendation_within_3_rate",
+          "data_type": "double",
+          "description": "v2: share of recommended players with an outcome whose |actual - prediction| <= 3; at min_floor = 0 this reconciles to the artifacts' within_3_rate (tests/gold/assert_decision_within_3_reconciles_to_eval_artifacts.sql)"
+        },
+        {
+          "name": "recommendation_interval_coverage",
+          "data_type": "double",
+          "description": "v2: share of recommended players with an outcome whose actual fell inside floor..ceiling"
+        }
+      ],
+      "upstream": [
+        "fct_player_decisions"
+      ],
+      "constraints": [
+        {
+          "type": "primary_key",
+          "columns": [
+            "season",
+            "week",
+            "position",
+            "model_version",
+            "candidate",
+            "min_floor"
+          ]
+        }
+      ],
+      "tests": [],
+      "sqlPath": "dbt/models/gold/fct_decision_policy_v1.sql",
+      "yamlPath": "dbt/models/gold/_gold.yml",
+      "sqlExcerpt": "-- Grain: one row per (season, week, position, model_version, candidate, min_floor): the\n-- policy-metrics mart of analytics/sql/risk_strategy.sql swept over var min_floor_grid, so the\n-- API can answer \"what if the floor threshold were X\" without a rebuild. Only weeks with\n-- realised outcomes contribute to the outcome columns; counts cover every scored decision.\n{% set grid = var('min_floor_grid') %}\n\nwith grid as (\n    select unnest([{{ grid | join(', ') }}]) as min_floor\n),\n\ndecisions as (\n    select\n        d.season,\n        d.week,\n        d.position,\n        d.model_version,\n        d.candidate,\n        g.min_floor,\n        d.prediction,\n        d.prediction_floor,\n        d.replacement_level_points,\n        d.actual,\n        d.best_eligible_points,\n        case when d.prediction_floor >= g.min_floor then 'recommend' else 'review' end as policy_action",
+      "exported": true,
+      "consumer": "/marts/decisions (explicitly pinned to v1)"
+    },
+    {
+      "uniqueId": "model.ffai_dbt.fct_decision_policy.v2",
+      "name": "fct_decision_policy",
+      "version": 2,
+      "alias": "fct_decision_policy_v2",
+      "resourceType": "model",
+      "layer": "gold",
+      "materialization": "table",
+      "description": "Policy metrics per (season, week, position, model_version, candidate, min_floor) swept over var min_floor_grid: recommendation and review counts and rates, recommendation MAE, mean regret, hit rate, downside rate. Served by the API as /marts/decisions?min_floor=. Versioned (ADR-0025): v1 is the shape the API serves today and keeps the relation name fct_decision_policy (alias) so its exported parquet is unchanged; v2 (latest) adds the interval outcomes of recommended players (recommendation_within_3_rate, recommendation_interval_coverage) and exports as fct_decision_policy_v2.parquet. Deprecation policy: a version is served by the API for at least one full season after its successor ships; the API pins the version it reads (ffai.serve.marts.DECISIONS_MART_VERSION); when it moves to v2, v1 gets a deprecation_date one season out, keeps building and exporting until then, and is deleted after. ref('fct_decision_policy') without a version resolves to the latest version and is a build-time warning once v1 is deprecated.",
+      "grain": "season × week × position × model_version × candidate × min_floor",
+      "columns": [
+        {
+          "name": "season",
+          "data_type": "integer",
+          "description": "NFL season"
+        },
+        {
+          "name": "week",
+          "data_type": "integer",
+          "description": "regular-season week"
+        },
+        {
+          "name": "period_key",
+          "data_type": "integer",
+          "description": "season * 100 + week"
+        },
+        {
+          "name": "position",
+          "data_type": "varchar",
+          "description": "position"
+        },
+        {
+          "name": "model_version",
+          "data_type": "varchar",
+          "description": "model version"
+        },
+        {
+          "name": "candidate",
+          "data_type": "varchar",
+          "description": "rf or xgb"
+        },
+        {
+          "name": "min_floor",
+          "data_type": "double",
+          "description": "floor threshold of this row (one of var min_floor_grid)"
+        },
+        {
+          "name": "eligible_decisions",
+          "data_type": "integer",
+          "description": "scored players at the position that week"
+        },
+        {
+          "name": "recommendations",
+          "data_type": "integer",
+          "description": "players whose floor cleared min_floor"
+        },
+        {
+          "name": "reviews",
+          "data_type": "integer",
+          "description": "players below the threshold"
+        },
+        {
+          "name": "recommendation_rate",
+          "data_type": "double",
+          "description": "recommendations / eligible_decisions"
+        },
+        {
+          "name": "review_rate",
+          "data_type": "double",
+          "description": "reviews / eligible_decisions"
+        },
+        {
+          "name": "recommendations_with_outcome",
+          "data_type": "integer",
+          "description": "recommended players with a realised actual"
+        },
+        {
+          "name": "recommendation_mae",
+          "data_type": "double",
+          "description": "MAE over recommended players with outcomes"
+        },
+        {
+          "name": "review_mae",
+          "data_type": "double",
+          "description": "MAE over review players with outcomes"
+        },
+        {
+          "name": "mean_regret",
+          "data_type": "double",
+          "description": "mean(best_eligible_points - actual) over recommended players"
+        },
+        {
+          "name": "hit_rate",
+          "data_type": "double",
+          "description": "share of recommended players who beat replacement level"
+        },
+        {
+          "name": "downside_rate",
+          "data_type": "double",
+          "description": "share of recommended players who scored below their floor"
+        },
+        {
+          "name": "recommendation_within_3_rate",
+          "data_type": "double",
+          "description": "v2: share of recommended players with an outcome whose |actual - prediction| <= 3; at min_floor = 0 this reconciles to the artifacts' within_3_rate (tests/gold/assert_decision_within_3_reconciles_to_eval_artifacts.sql)"
+        },
+        {
+          "name": "recommendation_interval_coverage",
+          "data_type": "double",
+          "description": "v2: share of recommended players with an outcome whose actual fell inside floor..ceiling"
+        }
+      ],
+      "upstream": [
+        "fct_player_decisions"
+      ],
+      "constraints": [
+        {
+          "type": "primary_key",
+          "columns": [
+            "season",
+            "week",
+            "position",
+            "model_version",
+            "candidate",
+            "min_floor"
+          ]
+        }
+      ],
+      "tests": [],
+      "sqlPath": "dbt/models/gold/fct_decision_policy_v2.sql",
+      "yamlPath": "dbt/models/gold/_gold.yml",
+      "sqlExcerpt": "-- Grain: one row per (season, week, position, model_version, candidate, min_floor): the\n-- policy-metrics mart of analytics/sql/risk_strategy.sql swept over var min_floor_grid, so the\n-- API can answer \"what if the floor threshold were X\" without a rebuild. Only weeks with\n-- realised outcomes contribute to the outcome columns; counts cover every scored decision.\n--\n-- v2 (ADR-0025): v1 plus two additive interval-outcome columns for recommended players:\n-- recommendation_within_3_rate and recommendation_interval_coverage (actual inside floor..ceiling).\n-- v1 (fct_decision_policy_v1.sql, relation alias fct_decision_policy) is what the API serves.\n{% set grid = var('min_floor_grid') %}\n\nwith grid as (\n    select unnest([{{ grid | join(', ') }}]) as min_floor\n),\n\ndecisions as (\n    select\n        d.season,\n        d.week,\n        d.position,\n        d.model_version,\n        d.candidate,\n        g.min_floor,\n        d.prediction,\n        d.prediction_floor,",
+      "exported": true,
+      "consumer": "/marts/decisions (explicitly pinned to v1)"
+    },
+    {
+      "uniqueId": "model.ffai_dbt.fct_player_decisions",
+      "name": "fct_player_decisions",
+      "version": null,
+      "alias": "fct_player_decisions",
+      "resourceType": "model",
+      "layer": "gold",
+      "materialization": "table",
+      "description": "The floor policy from the retired risk_strategy.sql sketch applied to every scored player-week: recommend when the prediction floor clears var min_floor, else review; with replacement level, regret, hit, and downside outcomes once the week has an actual.",
+      "grain": "player_id × season × week × model_version × candidate",
+      "columns": [
+        {
+          "name": "player_id",
+          "data_type": "varchar",
+          "description": "nflverse GSIS id"
+        },
+        {
+          "name": "season",
+          "data_type": "integer",
+          "description": "NFL season"
+        },
+        {
+          "name": "week",
+          "data_type": "integer",
+          "description": "regular-season week"
+        },
+        {
+          "name": "period_key",
+          "data_type": "integer",
+          "description": "season * 100 + week"
+        },
+        {
+          "name": "model_version",
+          "data_type": "varchar",
+          "description": "model version"
+        },
+        {
+          "name": "candidate",
+          "data_type": "varchar",
+          "description": "rf or xgb"
+        },
+        {
+          "name": "position",
+          "data_type": "varchar",
+          "description": "position"
+        },
+        {
+          "name": "eval_window",
+          "data_type": "varchar",
+          "description": "evaluation window of the underlying row"
+        },
+        {
+          "name": "prediction",
+          "data_type": "double",
+          "description": "predicted PPR points"
+        },
+        {
+          "name": "prediction_floor",
+          "data_type": "double",
+          "description": "interval floor the policy tests"
+        },
+        {
+          "name": "prediction_ceiling",
+          "data_type": "double",
+          "description": "interval ceiling"
+        },
+        {
+          "name": "prediction_rank",
+          "data_type": "integer",
+          "description": "rank by prediction within (season"
+        },
+        {
+          "name": "min_floor",
+          "data_type": "double",
+          "description": "the floor threshold this table was built with (var min_floor)"
+        },
+        {
+          "name": "policy_action",
+          "data_type": "varchar",
+          "description": "recommend or review"
+        },
+        {
+          "name": "replacement_rank",
+          "data_type": "integer",
+          "description": "rank used as replacement level for the position (var replacement_rank)"
+        },
+        {
+          "name": "replacement_level_points",
+          "data_type": "double",
+          "description": "prediction of the replacement-rank player that week"
+        },
+        {
+          "name": "actual",
+          "data_type": "double",
+          "description": "realised PPR points (null until played)"
+        },
+        {
+          "name": "best_eligible_points",
+          "data_type": "double",
+          "description": "max realised points among the position's scored players that week"
+        },
+        {
+          "name": "regret",
+          "data_type": "double",
+          "description": "best_eligible_points - actual"
+        },
+        {
+          "name": "hit",
+          "data_type": "boolean",
+          "description": "actual >= replacement_level_points"
+        },
+        {
+          "name": "downside",
+          "data_type": "boolean",
+          "description": "actual < prediction_floor"
+        },
+        {
+          "name": "abs_error",
+          "data_type": "double",
+          "description": "|actual - prediction|"
+        }
+      ],
+      "upstream": [
+        "fct_player_week"
+      ],
+      "constraints": [
+        {
+          "type": "primary_key",
+          "columns": [
+            "player_id",
+            "season",
+            "week",
+            "model_version",
+            "candidate"
+          ]
+        },
+        {
+          "type": "check",
+          "expression": "policy_action in ('recommend', 'review')"
+        }
+      ],
+      "tests": [],
+      "sqlPath": "dbt/models/gold/fct_player_decisions.sql",
+      "yamlPath": "dbt/models/gold/_gold.yml",
+      "sqlExcerpt": "-- Grain: one row per (player_id, season, week, model_version, candidate): the floor policy of\n-- analytics/sql/risk_strategy.sql (now deleted, ADR-0016) applied to every scored player-week.\n--\n--   policy_action        recommend when prediction_floor >= min_floor (var), else review\n--   replacement_level    the prediction of the rank-k player at the position that week\n--                        (k = var replacement_rank: 12-team starters), i.e. what a free\n--                        replacement was expected to score\n--   best_eligible_points max realised points among the position's scored players that week\n--   regret               best_eligible_points - actual (what the best alternative earned more)\n--   hit                  actual >= replacement_level_points\n--   downside             actual < prediction_floor (the floor was breached)\n-- Outcome columns are null until the week has an actual.\n{% set min_floor = var('min_floor') %}\n{% set replacement_rank = var('replacement_rank') %}\n\nwith scored as (\n    select\n        *,\n        row_number() over (\n            partition by season, week, position, model_version, candidate\n            order by prediction desc, player_id asc\n        ) as prediction_rank,\n        max(actual) over (partition by season, week, position, model_version, candidate) as best_eligible_points,\n        case position",
+      "exported": true,
+      "consumer": "No direct application consumer documented"
+    },
+    {
+      "uniqueId": "model.ffai_dbt.fct_player_week",
+      "name": "fct_player_week",
+      "version": null,
+      "alias": "fct_player_week",
+      "resourceType": "model",
+      "layer": "gold",
+      "materialization": "table",
+      "description": "One row per (player, season, week, model_version, candidate): prediction, interval, realised points, error metrics, and the causal trailing-mean baseline. Predictions are PPR (the model target); half / standard predictions are derived from the as-of reception estimate where the weekly file recorded one; actuals exist under all three formats.",
+      "grain": "player_id × season × week × model_version × candidate",
+      "columns": [
+        {
+          "name": "player_id",
+          "data_type": "varchar",
+          "description": "nflverse GSIS id"
+        },
+        {
+          "name": "season",
+          "data_type": "integer",
+          "description": "NFL season"
+        },
+        {
+          "name": "week",
+          "data_type": "integer",
+          "description": "regular-season week"
+        },
+        {
+          "name": "period_key",
+          "data_type": "integer",
+          "description": "season * 100 + week"
+        },
+        {
+          "name": "model_version",
+          "data_type": "varchar",
+          "description": "model version that produced the prediction"
+        },
+        {
+          "name": "candidate",
+          "data_type": "varchar",
+          "description": "rf or xgb"
+        },
+        {
+          "name": "position",
+          "data_type": "varchar",
+          "description": "position at prediction time"
+        },
+        {
+          "name": "source",
+          "data_type": "varchar",
+          "description": "frozen_test / out_of_sample_season / weekly"
+        },
+        {
+          "name": "eval_window",
+          "data_type": "varchar",
+          "description": "evaluation window the row belongs to (drives the baseline)"
+        },
+        {
+          "name": "target_scoring_format",
+          "data_type": "varchar",
+          "description": "scoring format of prediction / actual (always ppr"
+        },
+        {
+          "name": "prediction",
+          "data_type": "double",
+          "description": "predicted PPR points"
+        },
+        {
+          "name": "prediction_floor",
+          "data_type": "double",
+          "description": "10th-percentile residual bound"
+        },
+        {
+          "name": "prediction_ceiling",
+          "data_type": "double",
+          "description": "90th-percentile residual bound"
+        },
+        {
+          "name": "receptions_estimate",
+          "data_type": "double",
+          "description": "as-of L3 average receptions (weekly files only)"
+        },
+        {
+          "name": "prediction_half",
+          "data_type": "double",
+          "description": "prediction - 0.5 * receptions_estimate (null without an estimate)"
+        },
+        {
+          "name": "prediction_standard",
+          "data_type": "double",
+          "description": "prediction - receptions_estimate (null without an estimate)"
+        },
+        {
+          "name": "actual",
+          "data_type": "double",
+          "description": "realised PPR points (rules macro over nflverse stats"
+        },
+        {
+          "name": "actual_source",
+          "data_type": "varchar",
+          "description": "stats or artifact (see model description)"
+        },
+        {
+          "name": "actual_half",
+          "data_type": "double",
+          "description": "realised half-PPR points (rules macro)"
+        },
+        {
+          "name": "actual_standard",
+          "data_type": "double",
+          "description": "realised standard points (rules macro)"
+        },
+        {
+          "name": "abs_error",
+          "data_type": "double",
+          "description": "|actual - prediction|"
+        },
+        {
+          "name": "within_3",
+          "data_type": "boolean",
+          "description": "abs_error <= 3"
+        },
+        {
+          "name": "within_5",
+          "data_type": "boolean",
+          "description": "abs_error <= 5"
+        },
+        {
+          "name": "interval_hit",
+          "data_type": "boolean",
+          "description": "floor <= actual <= ceiling"
+        },
+        {
+          "name": "baseline",
+          "data_type": "double",
+          "description": "causal trailing-mean baseline (see model description)"
+        },
+        {
+          "name": "baseline_abs_error",
+          "data_type": "double",
+          "description": "|actual - baseline|"
+        },
+        {
+          "name": "baseline_within_3",
+          "data_type": "boolean",
+          "description": "baseline_abs_error <= 3"
+        }
+      ],
+      "upstream": [
+        "slv_actuals",
+        "slv_predictions"
+      ],
+      "constraints": [
+        {
+          "type": "primary_key",
+          "columns": [
+            "player_id",
+            "season",
+            "week",
+            "model_version",
+            "candidate"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "dbt_utils.expression_is_true": {
+            "arguments": {
+              "expression": "abs_error is null or abs_error = abs(actual - prediction)"
+            }
+          }
+        },
+        {
+          "dbt_utils.expression_is_true": {
+            "arguments": {
+              "expression": "actual is null or actual_source in ('stats', 'artifact')"
+            }
+          }
+        }
+      ],
+      "sqlPath": "dbt/models/gold/fct_player_week.sql",
+      "yamlPath": "dbt/models/gold/_gold.yml",
+      "sqlExcerpt": "-- Grain: one row per (player_id, season, week, model_version, candidate): every recorded\n-- prediction next to what happened, with the error metrics and the causal baseline.\n--\n-- actual: realised PPR points from slv_actuals (rules macro over nflverse stats); when the\n--   stats row is not in the warehouse (CI fixture, or a player scored but absent from stats)\n--   the value recorded in the prediction artifact is used and actual_source says so. Where\n--   both exist they agree (tests/gold/assert_recorded_actuals_match_stats.sql).\n-- baseline: the evaluator's causal trailing mean (ffai.eval.evaluator.add_causal_baseline),\n--   reproduced in SQL (sums use fsum, DuckDB's exact-summation aggregate, because the evaluator\n--   takes means as exact rationals and an error of exactly 3.0 must land on the same side): the mean of the player's realised points over (a) stats rows strictly\n--   before the evaluation window started and (b) evaluated rows of the same window and\n--   candidate from strictly earlier periods; falling back to the position's history under the\n--   same rule; falling back to the prediction itself. Frozen-test and out-of-sample files are\n--   one window each (from week 1 of their season); each weekly file is its own window.\n{% set target_scoring_format = var('target_scoring_format') %}\n\nwith predictions as (\n    select * from {{ ref('slv_predictions') }}\n),\n\nactual_by_format as (\n    select\n        player_id,\n        period_key,",
+      "exported": true,
+      "consumer": "/marts/player_week/{player_id} and Player history"
+    },
+    {
+      "uniqueId": "model.ffai_dbt.fct_tier_outcomes",
+      "name": "fct_tier_outcomes",
+      "version": null,
+      "alias": "fct_tier_outcomes",
+      "resourceType": "model",
+      "layer": "gold",
+      "materialization": "table",
+      "description": "Preseason draft tier and rank per player next to the season they then played: PPR per game (rules macro), realised rank among the tiered players of the position, and the delta.",
+      "grain": "tiers_version × position × player_id",
+      "columns": [
+        {
+          "name": "tiers_version",
+          "data_type": "varchar",
+          "description": "tiers artifact version"
+        },
+        {
+          "name": "season",
+          "data_type": "integer",
+          "description": "the season the tiers were built for"
+        },
+        {
+          "name": "position",
+          "data_type": "varchar",
+          "description": "position"
+        },
+        {
+          "name": "player_id",
+          "data_type": "varchar",
+          "description": "nflverse GSIS id"
+        },
+        {
+          "name": "player_display_name",
+          "data_type": "varchar",
+          "description": "name recorded in the tiers file"
+        },
+        {
+          "name": "team",
+          "data_type": "varchar",
+          "description": "team recorded in the tiers file"
+        },
+        {
+          "name": "tier",
+          "data_type": "integer",
+          "description": "tier number (1 = best)"
+        },
+        {
+          "name": "tier_rank",
+          "data_type": "integer",
+          "description": "preseason rank within the position (by tier"
+        },
+        {
+          "name": "tier_probability",
+          "data_type": "double",
+          "description": "GMM membership probability of the assigned tier"
+        },
+        {
+          "name": "ppg_prev",
+          "data_type": "double",
+          "description": "prior-season PPR per game (a tier input)"
+        },
+        {
+          "name": "games_prev",
+          "data_type": "integer",
+          "description": "prior-season games (a tier input)"
+        },
+        {
+          "name": "games",
+          "data_type": "integer",
+          "description": "games played in the tier season (null if none in the warehouse)"
+        },
+        {
+          "name": "ppr_total",
+          "data_type": "double",
+          "description": "PPR points in the tier season"
+        },
+        {
+          "name": "ppr_per_game",
+          "data_type": "double",
+          "description": "PPR per game in the tier season"
+        },
+        {
+          "name": "realized_rank",
+          "data_type": "integer",
+          "description": "rank by ppr_per_game among tiered players of the position who played"
+        },
+        {
+          "name": "rank_delta",
+          "data_type": "integer",
+          "description": "tier_rank - realized_rank (positive = did better than ranked)"
+        },
+        {
+          "name": "n_tiered",
+          "data_type": "integer",
+          "description": "tiered players at the position for this version"
+        }
+      ],
+      "upstream": [
+        "slv_player_stats",
+        "slv_tiers"
+      ],
+      "constraints": [
+        {
+          "type": "primary_key",
+          "columns": [
+            "tiers_version",
+            "position",
+            "player_id"
+          ]
+        }
+      ],
+      "tests": [],
+      "sqlPath": "dbt/models/gold/fct_tier_outcomes.sql",
+      "yamlPath": "dbt/models/gold/_gold.yml",
+      "sqlExcerpt": "-- Grain: one row per (tiers_version, position, player_id): the preseason tier and rank next to\n-- what the player then did in the tier's season (PPR per game from the rules macro), and the\n-- realised rank among the tiered players of that position. Players with no game that season\n-- keep null outcomes.\nwith tiers as (\n    select * from {{ ref('slv_tiers') }}\n),\n\nseason_totals as (\n    select\n        player_id,\n        season,\n        count(*) as games,\n        sum(points_ppr) as ppr_total,\n        avg(points_ppr) as ppr_per_game\n    from {{ ref('slv_player_stats') }}\n    group by 1, 2\n),\n\njoined as (\n    select\n        t.tiers_version,\n        t.season,\n        t.position,",
+      "exported": true,
+      "consumer": "No direct application consumer documented"
+    },
+    {
+      "uniqueId": "model.ffai_dbt.fct_weekly_eval",
+      "name": "fct_weekly_eval",
+      "version": null,
+      "alias": "fct_weekly_eval",
+      "resourceType": "model",
+      "layer": "gold",
+      "materialization": "table",
+      "description": "Weekly evaluation computed in SQL from fct_player_week over rows with a realised actual, per evaluation window, model version, candidate, and cohort ('ALL' or a position). The n-weighted aggregate over a window's weeks reconciles to the committed evaluation artifact (tests/gold/assert_marts_reconcile_to_eval_artifacts.sql).",
+      "grain": "eval_window × season × week × model_version × candidate × cohort",
+      "columns": [
+        {
+          "name": "eval_window",
+          "data_type": "varchar",
+          "description": "evaluation window label"
+        },
+        {
+          "name": "season",
+          "data_type": "integer",
+          "description": "NFL season"
+        },
+        {
+          "name": "week",
+          "data_type": "integer",
+          "description": "regular-season week"
+        },
+        {
+          "name": "period_key",
+          "data_type": "integer",
+          "description": "season * 100 + week"
+        },
+        {
+          "name": "model_version",
+          "data_type": "varchar",
+          "description": "model version"
+        },
+        {
+          "name": "candidate",
+          "data_type": "varchar",
+          "description": "rf or xgb"
+        },
+        {
+          "name": "cohort",
+          "data_type": "varchar",
+          "description": "ALL or a position"
+        },
+        {
+          "name": "n",
+          "data_type": "integer",
+          "description": "rows with a realised actual"
+        },
+        {
+          "name": "mae",
+          "data_type": "double",
+          "description": "mean |actual - prediction|"
+        },
+        {
+          "name": "median_ae",
+          "data_type": "double",
+          "description": "median |actual - prediction|"
+        },
+        {
+          "name": "rmse",
+          "data_type": "double",
+          "description": "root mean squared error"
+        },
+        {
+          "name": "within_3_rate",
+          "data_type": "double",
+          "description": "share of rows with abs_error <= 3"
+        },
+        {
+          "name": "within_5_rate",
+          "data_type": "double",
+          "description": "share of rows with abs_error <= 5"
+        },
+        {
+          "name": "interval_coverage",
+          "data_type": "double",
+          "description": "share of rows whose actual fell inside floor..ceiling"
+        },
+        {
+          "name": "baseline_mae",
+          "data_type": "double",
+          "description": "mean |actual - baseline| on the same rows"
+        },
+        {
+          "name": "baseline_within_3_rate",
+          "data_type": "double",
+          "description": "baseline share within 3"
+        },
+        {
+          "name": "mae_minus_baseline",
+          "data_type": "double",
+          "description": "negative when the model beats the baseline"
+        }
+      ],
+      "upstream": [
+        "fct_player_week"
+      ],
+      "constraints": [
+        {
+          "type": "primary_key",
+          "columns": [
+            "eval_window",
+            "season",
+            "week",
+            "model_version",
+            "candidate",
+            "cohort"
+          ]
+        }
+      ],
+      "tests": [],
+      "sqlPath": "dbt/models/gold/fct_weekly_eval.sql",
+      "yamlPath": "dbt/models/gold/_gold.yml",
+      "sqlExcerpt": "-- Grain: one row per (eval_window, season, week, model_version, candidate, cohort), cohort =\n-- 'ALL' or a position. Weekly evaluation computed in SQL from fct_player_week over rows with a\n-- realised actual; metric definitions match the evaluation artifacts (mae = mean |actual -\n-- prediction|, within_k = share with |error| <= k on the same rows). Weeks with no actual yet\n-- produce no row.\nwith rows_with_actual as (\n    select * from {{ ref('fct_player_week') }}\n    where actual is not null\n),\n\ncohorts as (\n    select\n        'ALL' as cohort,\n        *\n    from rows_with_actual\n    union all\n    select\n        position as cohort,\n        *\n    from rows_with_actual\n)\n\nselect\n    cast(eval_window as varchar) as eval_window,",
+      "exported": true,
+      "consumer": "/marts/weekly_eval and the Evaluation page"
+    },
+    {
+      "uniqueId": "model.ffai_dbt.slv_actuals",
+      "name": "slv_actuals",
+      "version": null,
+      "alias": "slv_actuals",
+      "resourceType": "model",
+      "layer": "silver",
+      "materialization": "table",
+      "description": "Realised points per (player_id, season, week, scoring_format), long by format.",
+      "grain": "player_id × season × week × scoring_format",
+      "columns": [
+        {
+          "name": "scoring_format",
+          "description": "which rules the points are under: standard, half, or ppr"
+        },
+        {
+          "name": "actual",
+          "description": "realised points under the scoring format, from the rules macro on the nflverse stats"
+        },
+        {
+          "name": "player_id",
+          "description": "nflverse GSIS player id"
+        },
+        {
+          "name": "season",
+          "description": "NFL season year"
+        },
+        {
+          "name": "week",
+          "description": "regular-season week"
+        },
+        {
+          "name": "period_key",
+          "description": "season * 100 + week; monotonic in time"
+        },
+        {
+          "name": "position",
+          "description": "fantasy position, QB/RB/WR/TE"
+        }
+      ],
+      "upstream": [
+        "slv_player_stats"
+      ],
+      "constraints": [],
+      "tests": [
+        {
+          "dbt_utils.unique_combination_of_columns": {
+            "arguments": {
+              "combination_of_columns": [
+                "player_id",
+                "season",
+                "week",
+                "scoring_format"
+              ]
+            }
+          }
+        }
+      ],
+      "sqlPath": "dbt/models/silver/slv_actuals.sql",
+      "yamlPath": "dbt/models/silver/_silver.yml",
+      "sqlExcerpt": "-- Grain: one row per (player_id, season, week, scoring_format). Realised points under each\n-- scoring format, computed by the same rules macro (never a multiplier of PPR).\n{% for fmt in ['standard', 'half', 'ppr'] %}\nselect\n    player_id,\n    season,\n    week,\n    period_key,\n    position,\n    '{{ fmt }}' as scoring_format,\n    points_{{ fmt }} as actual\nfrom {{ ref('slv_player_stats') }}\n{{ \"union all\" if not loop.last }}\n{% endfor %}",
+      "exported": false,
+      "consumer": "No direct application consumer documented"
+    },
+    {
+      "uniqueId": "model.ffai_dbt.slv_eval_folds",
+      "name": "slv_eval_folds",
+      "version": null,
+      "alias": "slv_eval_folds",
+      "resourceType": "model",
+      "layer": "silver",
+      "materialization": "table",
+      "description": "Rolling-origin folds per (eval_id, season, week).",
+      "grain": "See model SQL and contract",
+      "columns": [
+        {
+          "name": "eval_id",
+          "description": "evaluation id of the artifact the fold belongs to"
+        },
+        {
+          "name": "kind",
+          "description": "evaluation window kind, frozen_test or out_of_sample_season"
+        },
+        {
+          "name": "model_version",
+          "description": "evaluated model version"
+        },
+        {
+          "name": "candidate",
+          "description": "candidate the rolling-origin refits used (rf or xgb)"
+        },
+        {
+          "name": "strategy",
+          "description": "fold strategy text from the artifact: refit on all rows strictly before the week, score that week"
+        },
+        {
+          "name": "season",
+          "description": "season of the scored fold week"
+        },
+        {
+          "name": "week",
+          "description": "the scored fold week"
+        },
+        {
+          "name": "n",
+          "description": "scored player-weeks in the fold"
+        },
+        {
+          "name": "mae",
+          "description": "fold MAE in PPR points"
+        },
+        {
+          "name": "baseline_mae",
+          "description": "causal trailing-mean baseline MAE on the fold rows"
+        },
+        {
+          "name": "window_mean_mae",
+          "description": "mean of the fold MAEs over the whole window, as published in the artifact"
+        },
+        {
+          "name": "window_mean_baseline_mae",
+          "description": "mean of the fold baseline MAEs over the whole window, as published"
+        }
+      ],
+      "upstream": [
+        "brz_eval_artifacts"
+      ],
+      "constraints": [],
+      "tests": [
+        {
+          "dbt_utils.unique_combination_of_columns": {
+            "arguments": {
+              "combination_of_columns": [
+                "eval_id",
+                "season",
+                "week"
+              ]
+            }
+          }
+        }
+      ],
+      "sqlPath": "dbt/models/silver/slv_eval_folds.sql",
+      "yamlPath": "dbt/models/silver/_silver.yml",
+      "sqlExcerpt": "-- Grain: one row per (eval_id, season, week): the rolling-origin folds of each evaluation\n-- artifact (a model refit on everything strictly before the week, scored on that week).\nwith artifacts as (\n    select * from {{ ref('brz_eval_artifacts') }}\n)\n\nselect\n    a.eval_id,\n    a.kind,\n    a.model.version as model_version,\n    a.rolling_origin.candidate,\n    a.rolling_origin.strategy,\n    cast(f.season as integer) as season,\n    cast(f.week as integer) as week,\n    cast(f.n as integer) as n,\n    f.mae,\n    f.baseline_mae,\n    a.rolling_origin.mean_mae as window_mean_mae,\n    a.rolling_origin.mean_baseline_mae as window_mean_baseline_mae\nfrom artifacts as a, unnest(a.rolling_origin.folds) as u (f)",
+      "exported": false,
+      "consumer": "No direct application consumer documented"
+    },
+    {
+      "uniqueId": "model.ffai_dbt.slv_eval_metrics",
+      "name": "slv_eval_metrics",
+      "version": null,
+      "alias": "slv_eval_metrics",
+      "resourceType": "model",
+      "layer": "silver",
+      "materialization": "table",
+      "description": "Published evaluation numbers per (eval_id, cohort), verbatim from the artifacts.",
+      "grain": "See model SQL and contract",
+      "columns": [
+        {
+          "name": "cohort",
+          "description": "ALL for the whole window, or the position (QB/RB/WR/TE)"
+        },
+        {
+          "name": "mae",
+          "description": "mean absolute error in PPR points, verbatim from the artifact"
+        },
+        {
+          "name": "eval_id",
+          "description": "evaluation id of the artifact the row is copied from"
+        },
+        {
+          "name": "kind",
+          "description": "evaluation window kind, frozen_test or out_of_sample_season"
+        },
+        {
+          "name": "season",
+          "description": "season the evaluation window covers"
+        },
+        {
+          "name": "model_version",
+          "description": "evaluated model version"
+        },
+        {
+          "name": "feature_version",
+          "description": "feature-module version of the evaluated model"
+        },
+        {
+          "name": "code_commit",
+          "description": "git commit that produced the artifact"
+        },
+        {
+          "name": "generated_at_utc",
+          "description": "when the artifact was written (UTC)"
+        },
+        {
+          "name": "input_path",
+          "description": "repo-relative path of the scored predictions file"
+        },
+        {
+          "name": "input_sha256",
+          "description": "sha256 of the scored predictions file"
+        },
+        {
+          "name": "baseline_name",
+          "description": "name of the baseline in the artifact (causal_trailing_mean)"
+        },
+        {
+          "name": "candidate",
+          "description": "candidate evaluated for the position cohort (rf or xgb); null on the ALL row"
+        },
+        {
+          "name": "n",
+          "description": "scored player-weeks in the cohort"
+        },
+        {
+          "name": "median_ae",
+          "description": "median absolute error, verbatim from the artifact"
+        },
+        {
+          "name": "rmse",
+          "description": "root mean squared error, verbatim from the artifact"
+        },
+        {
+          "name": "within_3_rate",
+          "description": "share of predictions within 3 points of the actual, verbatim from the artifact"
+        },
+        {
+          "name": "within_5_rate",
+          "description": "share of predictions within 5 points of the actual, verbatim from the artifact"
+        },
+        {
+          "name": "baseline_n",
+          "description": "rows the baseline was scored on"
+        },
+        {
+          "name": "baseline_mae",
+          "description": "causal trailing-mean baseline MAE on the same rows"
+        },
+        {
+          "name": "baseline_median_ae",
+          "description": "baseline median absolute error"
+        },
+        {
+          "name": "baseline_rmse",
+          "description": "baseline root mean squared error"
+        },
+        {
+          "name": "baseline_within_3_rate",
+          "description": "baseline share within 3 points"
+        },
+        {
+          "name": "baseline_within_5_rate",
+          "description": "baseline share within 5 points"
+        }
+      ],
+      "upstream": [
+        "brz_eval_artifacts"
+      ],
+      "constraints": [],
+      "tests": [
+        {
+          "dbt_utils.unique_combination_of_columns": {
+            "arguments": {
+              "combination_of_columns": [
+                "eval_id",
+                "cohort"
+              ]
+            }
+          }
+        }
+      ],
+      "sqlPath": "dbt/models/silver/slv_eval_metrics.sql",
+      "yamlPath": "dbt/models/silver/_silver.yml",
+      "sqlExcerpt": "-- Grain: one row per (eval_id, cohort). cohort = 'ALL' plus one row per position. The numbers\n-- here are the committed evaluation artifacts verbatim (rounded to 4 dp as published); the gold\n-- reconciliation tests compare fct_player_week / fct_weekly_eval against this table.\nwith artifacts as (\n    select * from {{ ref('brz_eval_artifacts') }}\n),\n\ncohorts as (\n    select\n        a.eval_id,\n        'ALL' as cohort,\n        cast(null as varchar) as candidate,\n        a.metrics.n as n,\n        a.metrics.mae as mae,\n        a.metrics.median_ae as median_ae,\n        a.metrics.rmse as rmse,\n        a.metrics.within_3_rate as within_3_rate,\n        a.metrics.within_5_rate as within_5_rate,\n        a.baseline.n as baseline_n,\n        a.baseline.mae as baseline_mae,\n        a.baseline.median_ae as baseline_median_ae,\n        a.baseline.rmse as baseline_rmse,\n        a.baseline.within_3_rate as baseline_within_3_rate,\n        a.baseline.within_5_rate as baseline_within_5_rate",
+      "exported": false,
+      "consumer": "No direct application consumer documented"
+    },
+    {
+      "uniqueId": "model.ffai_dbt.slv_player_stats",
+      "name": "slv_player_stats",
+      "version": null,
+      "alias": "slv_player_stats",
+      "resourceType": "model",
+      "layer": "silver",
+      "materialization": "incremental",
+      "description": "Cleaned weekly stats at the (player_id, season, week) grain: regular season, QB/RB/WR/TE, deduplicated (higher PPR points wins, then team), rows of the week being scored dropped, with rules-based points under every scoring format. Incremental (delete+insert on the grain key) with a lookback of var stats_lookback_periods so nflverse stat corrections to recent weeks are reprocessed; full-refresh policy and the reason this model (and not fct_player_week or bronze) is incremental are in the model header and ADR-0023.",
+      "grain": "player_id × season × week",
+      "columns": [
+        {
+          "name": "player_id",
+          "description": "nflverse GSIS id"
+        },
+        {
+          "name": "season",
+          "description": "NFL season (>= 2019, the first season in scope)"
+        },
+        {
+          "name": "week",
+          "description": "regular-season week 1..22 (18 games weeks since 2021; the bound leaves room)"
+        },
+        {
+          "name": "period_key",
+          "description": "season * 100 + week; monotonic in time, used for window frames"
+        },
+        {
+          "name": "position",
+          "description": "fantasy position in scope"
+        },
+        {
+          "name": "team",
+          "description": "team abbreviation the player was on for this week"
+        },
+        {
+          "name": "player_display_name",
+          "description": "player name as nflverse displays it"
+        },
+        {
+          "name": "opponent_team",
+          "description": "opponent team abbreviation for this week"
+        },
+        {
+          "name": "fantasy_points_ppr",
+          "description": "nflverse's own PPR points (reconciliation only; never a feature)"
+        },
+        {
+          "name": "fantasy_points",
+          "description": "nflverse's own standard points (reconciliation only)"
+        },
+        {
+          "name": "points_standard",
+          "description": "rules-based standard points (fantasy_points macro)"
+        },
+        {
+          "name": "points_half",
+          "description": "rules-based half-PPR points (0.5 per reception)"
+        },
+        {
+          "name": "points_ppr",
+          "description": "rules-based PPR points; the model target"
+        },
+        {
+          "name": "completions",
+          "description": "counting stat; never negative (Python contract NON_NEGATIVE)"
+        },
+        {
+          "name": "attempts",
+          "description": "counting stat; never negative (Python contract NON_NEGATIVE)"
+        },
+        {
+          "name": "passing_tds",
+          "description": "counting stat; never negative (Python contract NON_NEGATIVE)"
+        },
+        {
+          "name": "passing_interceptions",
+          "description": "counting stat; never negative (Python contract NON_NEGATIVE)"
+        },
+        {
+          "name": "passing_2pt_conversions",
+          "description": "counting stat; never negative (Python contract NON_NEGATIVE)"
+        },
+        {
+          "name": "sack_fumbles_lost",
+          "description": "counting stat; never negative (Python contract NON_NEGATIVE)"
+        },
+        {
+          "name": "carries",
+          "description": "counting stat; never negative (Python contract NON_NEGATIVE)"
+        },
+        {
+          "name": "rushing_tds",
+          "description": "counting stat; never negative (Python contract NON_NEGATIVE)"
+        },
+        {
+          "name": "rushing_fumbles_lost",
+          "description": "counting stat; never negative (Python contract NON_NEGATIVE)"
+        },
+        {
+          "name": "rushing_2pt_conversions",
+          "description": "counting stat; never negative (Python contract NON_NEGATIVE)"
+        },
+        {
+          "name": "receptions",
+          "description": "counting stat; never negative (Python contract NON_NEGATIVE)"
+        },
+        {
+          "name": "targets",
+          "description": "counting stat; never negative (Python contract NON_NEGATIVE)"
+        },
+        {
+          "name": "receiving_tds",
+          "description": "counting stat; never negative (Python contract NON_NEGATIVE)"
+        },
+        {
+          "name": "receiving_fumbles_lost",
+          "description": "counting stat; never negative (Python contract NON_NEGATIVE)"
+        },
+        {
+          "name": "receiving_2pt_conversions",
+          "description": "counting stat; never negative (Python contract NON_NEGATIVE)"
+        },
+        {
+          "name": "special_teams_tds",
+          "description": "counting stat; never negative (Python contract NON_NEGATIVE)"
+        },
+        {
+          "name": "passing_yards",
+          "description": "passing yards, as defined by nflverse"
+        },
+        {
+          "name": "passing_air_yards",
+          "description": "passing air yards, as defined by nflverse"
+        },
+        {
+          "name": "rushing_yards",
+          "description": "rushing yards, as defined by nflverse"
+        },
+        {
+          "name": "receiving_yards",
+          "description": "receiving yards, as defined by nflverse"
+        },
+        {
+          "name": "receiving_air_yards",
+          "description": "receiving air yards, as defined by nflverse"
+        }
+      ],
+      "upstream": [
+        "brz_player_stats"
+      ],
+      "constraints": [],
+      "tests": [
+        {
+          "dbt_utils.unique_combination_of_columns": {
+            "arguments": {
+              "combination_of_columns": [
+                "player_id",
+                "season",
+                "week"
+              ]
+            }
+          }
+        },
+        {
+          "dbt_expectations.expect_table_columns_to_contain_set": {
+            "arguments": {
+              "column_list": [
+                "player_id",
+                "player_display_name",
+                "position",
+                "season",
+                "week",
+                "team",
+                "opponent_team",
+                "completions",
+                "attempts",
+                "passing_yards",
+                "passing_tds",
+                "passing_interceptions",
+                "passing_air_yards",
+                "passing_2pt_conversions",
+                "sack_fumbles_lost",
+                "carries",
+                "rushing_yards",
+                "rushing_tds",
+                "rushing_fumbles_lost",
+                "rushing_2pt_conversions",
+                "receptions",
+                "targets",
+                "receiving_yards",
+                "receiving_tds",
+                "receiving_air_yards",
+                "receiving_fumbles_lost",
+                "receiving_2pt_conversions",
+                "special_teams_tds",
+                "fantasy_points",
+                "fantasy_points_ppr"
+              ]
+            }
+          }
+        },
+        {
+          "row_count_within_pct_of_prior_period": {
+            "arguments": {
+              "period_columns": [
+                "season",
+                "week"
+              ],
+              "tolerance_pct": "{{ var('row_count_tolerance_pct') }}"
+            }
+          }
+        }
+      ],
+      "sqlPath": "dbt/models/silver/slv_player_stats.sql",
+      "yamlPath": "dbt/models/silver/_silver.yml",
+      "sqlExcerpt": "-- Grain: one row per (player_id, season, week). Regular season, fantasy positions only.\n--\n-- Materialisation: incremental (delete+insert on the grain key). The largest table in the\n-- warehouse and the only one whose transformation is local to its own grain (typing, the dedup\n-- window below, and the rules macro all operate inside one (player_id, season, week) partition),\n-- so appending by period is safe. fct_player_week is *not* incremental: its causal baseline is a\n-- running window over a whole evaluation window. Bronze is a one-to-one copy of the newest\n-- snapshot file, whose name changes with every pull. See ADR-0023.\n--\n-- Lookback: nflverse restates stats for earlier weeks (stat corrections), so an incremental run\n-- reprocesses the newest `stats_lookback_periods` distinct periods already in the table (default\n-- 4) plus anything newer, and delete+insert replaces those rows. A correction older than the\n-- lookback is only picked up by a full refresh. The default of 4 is chosen conservatively; it is\n-- not calibrated. NFL stat corrections are normally applied in the days after a game, so one\n-- period would usually do, but how far back nflverse's releases actually restate was not\n-- measured: the only two cached pulls (2026-09-10 and 2026-09-11, off-season) differ in zero of\n-- 129,812 rows. To calibrate, diff consecutive in-season weekly pulls by (season, week) and set\n-- the var to the oldest period that ever changed, plus one.\n--\n-- Full-refresh policy: `dbt build --full-refresh` (weekly.yml input full_refresh=true, or\n-- FFAI_DBT_FULL_REFRESH=1 for the contracts wrapper) at the start of a season, after any change to\n-- this model's SQL or columns (on_schema_change = fail makes a silent column change impossible),\n-- or after a source restatement older than the lookback. CI always builds a fresh DuckDB file, so\n-- every CI build is a full refresh; tests/test_dbt_incremental.py proves that a full refresh and",
+      "exported": false,
+      "consumer": "No direct application consumer documented"
+    },
+    {
+      "uniqueId": "model.ffai_dbt.slv_predictions",
+      "name": "slv_predictions",
+      "version": null,
+      "alias": "slv_predictions",
+      "resourceType": "model",
+      "layer": "silver",
+      "materialization": "table",
+      "description": "Every recorded prediction at the (player_id, season, week, model_version, candidate) grain, unioned from the frozen-test CSV, the out-of-sample CSVs, and the weekly files, with the documented deduplication rule and the evaluation window each row belongs to.",
+      "grain": "player_id × season × week × model_version × candidate",
+      "columns": [
+        {
+          "name": "player_id",
+          "description": "nflverse GSIS player id"
+        },
+        {
+          "name": "season",
+          "description": "season the prediction is for"
+        },
+        {
+          "name": "week",
+          "description": "week the prediction is for"
+        },
+        {
+          "name": "model_version",
+          "description": "model version that produced the prediction"
+        },
+        {
+          "name": "candidate",
+          "description": "rf (RandomForest) or xgb (XGBoost)"
+        },
+        {
+          "name": "position",
+          "description": "fantasy position, QB/RB/WR/TE"
+        },
+        {
+          "name": "prediction",
+          "description": "predicted PPR points (the model target)"
+        },
+        {
+          "name": "prediction_floor",
+          "description": "10th residual-quantile interval bound, clipped at 0"
+        },
+        {
+          "name": "prediction_ceiling",
+          "description": "90th residual-quantile interval bound"
+        },
+        {
+          "name": "receptions_estimate",
+          "description": "as-of L3 average receptions (weekly files only); used to derive standard/half"
+        },
+        {
+          "name": "actual_recorded",
+          "description": "realised PPR points as recorded in the artifact (null until attached)"
+        },
+        {
+          "name": "source",
+          "description": "artifact family the row survived deduplication from: frozen_test, out_of_sample_season, or weekly"
+        },
+        {
+          "name": "eval_window",
+          "description": "evaluation window label (e.g. frozen_test:2024, weekly:2026-01)"
+        },
+        {
+          "name": "window_start_key",
+          "description": "period_key of the window's first evaluated period"
+        },
+        {
+          "name": "period_key",
+          "description": "season * 100 + week; monotonic in time"
+        },
+        {
+          "name": "player_display_name",
+          "description": "player name as recorded in the artifact"
+        },
+        {
+          "name": "team",
+          "description": "team abbreviation as recorded in the artifact"
+        },
+        {
+          "name": "source_file",
+          "description": "repo-relative path of the artifact file the surviving row came from"
+        },
+        {
+          "name": "generated_at_utc",
+          "description": "when the weekly job wrote the prediction (UTC); null for the frozen-test and out-of-sample CSVs"
+        }
+      ],
+      "upstream": [
+        "brz_predictions_oos",
+        "brz_predictions_test",
+        "brz_predictions_weekly"
+      ],
+      "constraints": [],
+      "tests": [
+        {
+          "dbt_utils.unique_combination_of_columns": {
+            "arguments": {
+              "combination_of_columns": [
+                "player_id",
+                "season",
+                "week",
+                "model_version",
+                "candidate"
+              ]
+            }
+          }
+        },
+        {
+          "dbt_utils.expression_is_true": {
+            "arguments": {
+              "expression": "prediction_floor <= prediction and prediction <= prediction_ceiling"
+            }
+          }
+        }
+      ],
+      "sqlPath": "dbt/models/silver/slv_predictions.sql",
+      "yamlPath": "dbt/models/silver/_silver.yml",
+      "sqlExcerpt": "-- Grain: one row per (player_id, season, week, model_version, candidate). Every prediction the\n-- project has ever recorded, from three artifact families:\n--   frozen_test           models/<v>/test_predictions.csv   (scored at training time)\n--   out_of_sample_season  models/<v>/oos_predictions_*.csv  (frozen artifact, later season)\n--   weekly                predictions/<season>/week_*.json  (the live weekly job)\n--\n-- Deduplication rule: the families should not overlap, but if the same key appears twice the\n-- weekly file wins, then out-of-sample, then frozen test; within a family the latest\n-- generated_at_utc wins, then the greatest source_file path. Deterministic and documented so a\n-- re-scored week can never silently double-count.\n--\n-- eval_window / window_start_key: the causal baseline (fct_player_week) treats each frozen-test\n-- and out-of-sample file as one evaluation window starting at week 1 of its season, and each\n-- weekly file as its own one-week window — exactly how ffai.eval.evaluator was run.\nwith unioned as (\n    select\n        'frozen_test' as source,\n        source_file,\n        model_version,\n        candidate,\n        player_id,\n        season,\n        week,\n        position,",
+      "exported": false,
+      "consumer": "No direct application consumer documented"
+    },
+    {
+      "uniqueId": "model.ffai_dbt.slv_rolling_weeks",
+      "name": "slv_rolling_weeks",
+      "version": null,
+      "alias": "slv_rolling_weeks",
+      "resourceType": "model",
+      "layer": "silver",
+      "materialization": "table",
+      "description": "In-season champion vs challenger shadow metrics per (season, week).",
+      "grain": "See model SQL and contract",
+      "columns": [
+        {
+          "name": "season",
+          "description": "in-season year"
+        },
+        {
+          "name": "week",
+          "description": "scored week"
+        },
+        {
+          "name": "period_key",
+          "description": "season * 100 + week; monotonic in time"
+        },
+        {
+          "name": "n",
+          "description": "scored player-weeks in the week"
+        },
+        {
+          "name": "champion_mae",
+          "description": "champion MAE on the week (PPR points)"
+        },
+        {
+          "name": "champion_within_3_rate",
+          "description": "share of the champion's predictions within 3 points of the actual"
+        },
+        {
+          "name": "champion_baseline_mae",
+          "description": "causal trailing-mean baseline MAE on the champion's rows"
+        },
+        {
+          "name": "challenger_mae",
+          "description": "challenger (shadow) MAE on the week"
+        },
+        {
+          "name": "challenger_within_3_rate",
+          "description": "share of the challenger's predictions within 3 points of the actual"
+        },
+        {
+          "name": "challenger_baseline_mae",
+          "description": "causal trailing-mean baseline MAE on the challenger's rows"
+        },
+        {
+          "name": "scored_at_utc",
+          "description": "when the weekly job scored the week (UTC)"
+        }
+      ],
+      "upstream": [
+        "brz_eval_rolling"
+      ],
+      "constraints": [],
+      "tests": [
+        {
+          "dbt_utils.unique_combination_of_columns": {
+            "arguments": {
+              "combination_of_columns": [
+                "season",
+                "week"
+              ]
+            }
+          }
+        }
+      ],
+      "sqlPath": "dbt/models/silver/slv_rolling_weeks.sql",
+      "yamlPath": "dbt/models/silver/_silver.yml",
+      "sqlExcerpt": "-- Grain: one row per (season, week): in-season champion vs challenger shadow evaluation written by\n-- the weekly job (artifacts/eval/rolling_<season>.json).\nselect\n    season,\n    week,\n    season * 100 + week as period_key,\n    n,\n    champion_mae,\n    champion_within_3_rate,\n    champion_baseline_mae,\n    challenger_mae,\n    challenger_within_3_rate,\n    challenger_baseline_mae,\n    scored_at_utc\nfrom {{ ref('brz_eval_rolling') }}",
+      "exported": false,
+      "consumer": "No direct application consumer documented"
+    },
+    {
+      "uniqueId": "model.ffai_dbt.slv_tiers",
+      "name": "slv_tiers",
+      "version": null,
+      "alias": "slv_tiers",
+      "resourceType": "model",
+      "layer": "silver",
+      "materialization": "table",
+      "description": "Preseason draft tiers per (tiers_version, position, player_id) with a rank within the position.",
+      "grain": "See model SQL and contract",
+      "columns": [
+        {
+          "name": "tier",
+          "description": "tier number, 1 is the top tier; a player listed twice keeps the tier with the higher membership probability"
+        },
+        {
+          "name": "position",
+          "description": "position the tier belongs to, QB/RB/WR/TE"
+        },
+        {
+          "name": "tiers_version",
+          "description": "tiers artifact version"
+        },
+        {
+          "name": "season",
+          "description": "the prior season the tiers were built from"
+        },
+        {
+          "name": "player_id",
+          "description": "nflverse GSIS player id"
+        },
+        {
+          "name": "player_display_name",
+          "description": "player name as recorded in the tiers file"
+        },
+        {
+          "name": "team",
+          "description": "team abbreviation at tiering time"
+        },
+        {
+          "name": "tier_probability",
+          "description": "Gaussian-mixture membership probability of the kept tier"
+        },
+        {
+          "name": "ppg_prev",
+          "description": "mean PPR points per game over the prior season"
+        },
+        {
+          "name": "games_prev",
+          "description": "games played (stat rows) in the prior season"
+        },
+        {
+          "name": "tier_rank",
+          "description": "rank within (tiers_version, position) ordered by tier, then ppg_prev descending"
+        }
+      ],
+      "upstream": [
+        "brz_tiers"
+      ],
+      "constraints": [],
+      "tests": [
+        {
+          "dbt_utils.unique_combination_of_columns": {
+            "arguments": {
+              "combination_of_columns": [
+                "tiers_version",
+                "position",
+                "player_id"
+              ]
+            }
+          }
+        }
+      ],
+      "sqlPath": "dbt/models/silver/slv_tiers.sql",
+      "yamlPath": "dbt/models/silver/_silver.yml",
+      "sqlExcerpt": "-- Grain: one row per (tiers_version, position, player_id). Deduplication rule: a player listed\n-- in two tiers of the same version keeps the tier with the higher membership probability, then\n-- the lower tier number.\nwith ranked as (\n    select\n        *,\n        row_number() over (\n            partition by tiers_version, position, player_id\n            order by tier_probability desc, tier asc\n        ) as dedup_rank\n    from {{ ref('brz_tiers') }}\n)\n\nselect\n    tiers_version,\n    season,\n    position,\n    player_id,\n    player_display_name,\n    team,\n    tier,\n    tier_probability,\n    ppg_prev,\n    games_prev,",
+      "exported": false,
+      "consumer": "No direct application consumer documented"
+    },
+    {
+      "uniqueId": "snapshot.ffai_dbt.snp_player",
+      "name": "snp_player",
+      "version": null,
+      "alias": "snp_player",
+      "resourceType": "snapshot",
+      "layer": "snapshot",
+      "materialization": "snapshot",
+      "description": "SCD Type 2 history of dim_player's slowly changing attributes (team, position, display name), captured on every warehouse build. A row is valid from dbt_valid_from until dbt_valid_to (null = current). as_of_period_key is the data-through period when the version was first captured, so as-of resolution works in period terms (ADR-0024).",
+      "grain": "player_id × dbt_valid_from (captured attribute version)",
+      "columns": [
+        {
+          "name": "player_id",
+          "description": "nflverse GSIS id"
+        },
+        {
+          "name": "player_display_name",
+          "description": "display name at capture (check column)"
+        },
+        {
+          "name": "position",
+          "description": "position at capture (check column)"
+        },
+        {
+          "name": "team",
+          "description": "team at capture (check column)"
+        },
+        {
+          "name": "as_of_period_key",
+          "description": "max period_key in slv_player_stats when this version was first captured"
+        },
+        {
+          "name": "dbt_valid_from",
+          "description": "capture timestamp of this version"
+        },
+        {
+          "name": "dbt_valid_to",
+          "description": "timestamp the version was superseded; null for the current version"
+        }
+      ],
+      "upstream": [
+        "dim_player",
+        "slv_player_stats"
+      ],
+      "constraints": [],
+      "tests": [],
+      "sqlPath": "dbt/snapshots/snp_player.sql",
+      "yamlPath": "dbt/snapshots/_snapshots.yml",
+      "sqlExcerpt": "{#- SCD Type 2 history of the player dimension (ADR-0024). `check` strategy on the attributes\n    that actually change during a season (team on a trade, position on a role change, display\n    name on a rename); a change closes the current row (dbt_valid_to) and opens a new one.\n    as_of_period_key is the warehouse's data-through period at the time of the capture (the newest\n    complete (season, week) in slv_player_stats); it is not a check column, so it records when each\n    version was first seen. dim_player_current and dim_player_asof (gold views) read this table.\n    History starts at the first prod run of this snapshot: earlier periods resolve to the current\n    record with is_exact_asof = false. -#}\n{% snapshot snp_player %}\n\n{{\n    config(\n        schema='snapshots',\n        unique_key='player_id',\n        strategy='check',\n        check_cols=['player_display_name', 'position', 'team'],\n        hard_deletes='ignore'\n    )\n}}\n\nselect\n    d.player_id,\n    d.player_display_name,\n    d.position,",
+      "exported": false,
+      "consumer": "No direct application consumer documented"
+    }
+  ]
+}
