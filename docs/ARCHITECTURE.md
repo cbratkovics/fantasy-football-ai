@@ -37,7 +37,9 @@ flowchart LR
 
 | Module | Responsibility | Key invariant |
 |---|---|---|
-| `ffai/config.py` | paths, seasons, positions, constants | no secrets, no env-dependent behaviour beyond two directory overrides |
+| `ffai/config.py` | paths, seasons, and `PROJECT`: the one project configuration (entity / period / cohorts / target / bands / candidates / deployment names) | no secrets; dbt vars, the frontend config JSON, and the workflow schedule are mirrors checked by `tests/test_project_config.py` (ADR-0028) |
+| `ffai/interfaces.py` | the seams a second domain implements: `SourceLoader`, `TargetSpec`, `FeatureModule` | satisfied by `nflverse.LOADER`, `scoring.TARGET_SPEC`, `features.asof` (`tests/test_interfaces.py`) |
+| `artifacts/schemas/` | JSON Schemas for the evaluation artifact, manifest, model metadata, scored-period file, drift report | every committed artifact validates in the test suite |
 | `ffai/data/nflverse.py` | the only data source; dated parquet cache | every loader returns one row per `(player_id, season, week)` |
 | `ffai/data/contracts.py` | runs `dbt build --select +tag:silver` and maps `run_results.json` into the contract report | the checks are dbt tests (ADR-0015); the weekly job HOLDs on any failure |
 | `ffai/scoring.py` | standard / half / PPR by explicit rules | reconciles exactly with nflverse (`tests/test_scoring_reconciliation.py`) |

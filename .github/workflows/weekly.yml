@@ -125,7 +125,7 @@ jobs:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           pip install -q "huggingface_hub[cli]"
-          hf upload cbratkovics/fantasy-football-ai . . --repo-type space \
+          hf upload "$(python -m ffai.config hf_space)" . . --repo-type space \
             --exclude ".git/*" --exclude ".venv/*" --exclude "data/*" --exclude "*.egg-info/*" \
             --exclude ".mypy_cache/*" --exclude ".ruff_cache/*" --exclude ".pytest_cache/*" \
             --exclude ".vscode/*" --exclude ".claude/*" --exclude "*.env*" \

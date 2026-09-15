@@ -18,7 +18,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from ffai.config import CACHE_DIR, POSITIONS, SEASON_TYPE
+from ffai.config import CACHE_DIR, POSITIONS, SEASON_TYPE, regular_season_weeks
 
 try:  # pragma: no cover - import guard
     import nflreadpy as _nfl
@@ -198,3 +198,33 @@ def current_season_week(schedules: pd.DataFrame, today: dt.date | None = None) -
     if pending.empty:
         return season, int(reg["week"].max()) + 1
     return season, int(pending["week"].min())
+
+
+class NflverseLoader:
+    """``ffai.interfaces.SourceLoader`` for nflverse: delegates to the module functions above.
+
+    Training, the weekly job, and the scripts call the functions directly (unchanged); the class
+    exists so the loader has one named seam a different source can replace (ADR-0028).
+    """
+
+    LIBRARY = LIBRARY
+    ID_COLUMNS = ID_COLUMNS
+    STAT_COLUMNS = STAT_COLUMNS
+
+    def load_period_rows(
+        self, seasons: int | Iterable[int], *, refresh: bool = False
+    ) -> pd.DataFrame:
+        return load_weekly_stats(seasons, refresh=refresh)
+
+    def cache_path_for(self, name: str, seasons: int | Iterable[int]) -> Path:
+        return cache_path_for(name, seasons)
+
+    def current_period(self, today: dt.date | None = None) -> tuple[int, int]:
+        year = (today or dt.date.today()).year
+        return current_season_week(load_schedules([year - 1, year]), today)
+
+    def periods_in_season(self, season: int) -> int:
+        return regular_season_weeks(season)
+
+
+LOADER = NflverseLoader()

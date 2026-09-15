@@ -5,10 +5,13 @@ import { useQuery } from '@tanstack/react-query'
 import { getDecisions } from '@/lib/api/marts'
 import type { DecisionSummaryRow, DecisionsResponse } from '@/lib/api/types'
 import { fmtInt, fmtNum, fmtPct, fmtUtc, shortHash } from '@/lib/format'
+import { COHORTS, UNITS } from '@/lib/project'
+import { PERFORMANCE_COPY } from '@/content/performance'
 import { ErrorState, LoadingState } from '@/components/ui/States'
 
 const DEFAULT_MIN_FLOOR = 6
-const SUMMARY_ORDER = ['ALL', 'QB', 'RB', 'WR', 'TE']
+const SUMMARY_ORDER = COHORTS
+const COPY = PERFORMANCE_COPY.decisions
 
 /**
  * Floor-policy outcomes from the gold mart fct_decision_policy, swept over the exported
@@ -31,10 +34,9 @@ export function DecisionsPanel({ seasons }: { seasons: number[] }) {
     <section className="method-grid" aria-label="Decision policy from the gold marts">
       <article style={{ gridColumn: '1 / -1' }}>
         <small>07 / DECISIONS · READ FROM GOLD MARTS EXPORTED BY THE WEEKLY BUILD</small>
-        <h2>Does trusting the floor pay off?</h2>
+        <h2>{COPY.title}</h2>
         <p>
-          The floor policy recommends a player when the prediction floor (10th residual percentile) clears a threshold, and sends everyone else to
-          review. This panel reads <code>fct_decision_policy</code>, a gold table built by dbt and exported to parquet by the weekly job; the API
+          {COPY.intro} <code>fct_decision_policy</code>, a gold table built by dbt and exported to parquet by the weekly job; the API
           serves it in-process. The evaluation figures above still come from the committed artifacts.
         </p>
 
@@ -73,22 +75,22 @@ export function DecisionsPanel({ seasons }: { seasons: number[] }) {
               <article>
                 <div><span>Recommended · ALL</span></div>
                 <strong>{fmtPct(overall.recommendation_rate)}</strong>
-                <p>{fmtInt(overall.recommendations)} of {fmtInt(overall.eligible_decisions)} scored player-weeks at floor ≥ {minFloor}</p>
+                <p>{fmtInt(overall.recommendations)} of {fmtInt(overall.eligible_decisions)} {COPY.scoredRows} {minFloor}</p>
               </article>
               <article>
                 <div><span>Hit rate · ALL</span></div>
                 <strong>{fmtPct(overall.hit_rate)}</strong>
-                <p>recommended players who beat replacement level</p>
+                <p>{COPY.hitRate}</p>
               </article>
               <article>
                 <div><span>Downside · ALL</span></div>
                 <strong>{fmtPct(overall.downside_rate)}</strong>
-                <p>recommended players who scored below their floor</p>
+                <p>{COPY.downside}</p>
               </article>
               <article>
                 <div><span>Rec. MAE · ALL</span></div>
                 <strong>{fmtNum(overall.recommendation_mae, 2)}</strong>
-                <p>mean regret {fmtNum(overall.mean_regret, 1)} pts vs the week&apos;s best at the position</p>
+                <p>mean regret {fmtNum(overall.mean_regret, 1)} {UNITS} {COPY.regret}</p>
               </article>
             </div>
 

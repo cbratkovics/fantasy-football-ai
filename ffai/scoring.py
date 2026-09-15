@@ -24,6 +24,9 @@ from typing import Literal
 
 import pandas as pd
 
+from ffai.config import PROJECT
+from ffai.interfaces import TargetSpec
+
 ScoringFormat = Literal["standard", "half", "ppr"]
 FORMATS: tuple[ScoringFormat, ...] = ("standard", "half", "ppr")
 
@@ -136,3 +139,16 @@ def reconcile(df: pd.DataFrame, tolerance: float = 0.01) -> pd.DataFrame:
             columns=["player_id", "season", "week", "format", "ours", "nflverse", "abs_diff"]
         )
     return pd.concat(out, ignore_index=True)
+
+
+# The one TargetSpec of this repository (ffai.interfaces): the model predicts PPR points, the
+# other formats derive by the same rules, and ``reconcile`` proves the rules against nflverse.
+TARGET_SPEC = TargetSpec(
+    column=PROJECT.target_column,
+    units=PROJECT.target_units,
+    format=PROJECT.target_scoring_format,
+    formats=FORMATS,
+    required_columns=REQUIRED_COLUMNS,
+    derive=score,
+    reconcile=reconcile,
+)

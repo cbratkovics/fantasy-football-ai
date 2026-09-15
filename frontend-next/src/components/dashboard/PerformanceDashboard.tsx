@@ -6,22 +6,25 @@ import { ChartBarIcon, CircleStackIcon, ScaleIcon, ShieldCheckIcon } from '@hero
 import { EVAL_KIND_EXPLANATION, EVAL_KIND_LABEL, evaluationLabel, getPerformance, sortEvaluations } from '@/lib/api/players'
 import type { MetricBlock, PerformanceArtifact } from '@/lib/api/types'
 import { fmtInt, fmtNum, fmtPct, fmtUtc, shortHash } from '@/lib/format'
+import { COHORTS, ENTITY_PERIOD, PROJECT, UNITS, withinKey, withinLabel } from '@/lib/project'
+import { PERFORMANCE_COPY } from '@/content/performance'
 import { ErrorState, LoadingState } from '@/components/ui/States'
 import { RollingOriginChart } from './RollingOriginChart'
 import { DecisionsPanel } from './DecisionsPanel'
 
-type Cohort = 'ALL' | 'QB' | 'RB' | 'WR' | 'TE'
+type Cohort = string
 type MetricKey = 'mae' | 'median_ae' | 'rmse' | 'within_3_rate' | 'within_5_rate'
 
-const COHORTS: Cohort[] = ['ALL', 'QB', 'RB', 'WR', 'TE']
-const METRIC_KEYS: MetricKey[] = ['mae', 'median_ae', 'rmse', 'within_3_rate', 'within_5_rate']
+// Tolerance bands come from the project config (within_k); the artifact carries within_<k>_rate.
+const [BAND_1, BAND_2] = PROJECT.withinK
+const METRIC_KEYS: MetricKey[] = ['mae', 'median_ae', 'rmse', withinKey(BAND_1), withinKey(BAND_2)]
 const METRIC_LABEL: Record<MetricKey, string> = {
   mae: 'MAE',
   median_ae: 'Median AE',
   rmse: 'RMSE',
-  within_3_rate: 'Within ±3',
-  within_5_rate: 'Within ±5',
-}
+  [withinKey(BAND_1)]: withinLabel(BAND_1),
+  [withinKey(BAND_2)]: withinLabel(BAND_2),
+} as Record<MetricKey, string>
 const isRate = (k: MetricKey) => k.endsWith('_rate')
 const show = (k: MetricKey, v: number | undefined) => (isRate(k) ? fmtPct(v) : fmtNum(v, 2))
 
@@ -34,7 +37,7 @@ interface CohortRow {
 function cohortRows(artifact: PerformanceArtifact): CohortRow[] {
   const rows: CohortRow[] = [{ cohort: 'ALL', model: artifact.metrics, baseline: artifact.baseline }]
   for (const c of COHORTS.slice(1)) {
-    const block = artifact.cohorts?.[c]
+    const block = artifact.cohorts?.[c as keyof typeof artifact.cohorts]
     if (block) rows.push({ cohort: c, model: block, baseline: block.baseline })
   }
   return rows
@@ -58,19 +61,16 @@ export function PerformanceDashboard() {
     <>
       <header className="evaluation-hero">
         <div className="eyebrow">
-          <span /> Model evaluation · committed artifact
+          <span /> {PERFORMANCE_COPY.heroEyebrow}
         </div>
         <div className="evaluation-title-row">
           <h1>
-            Evidence, not
+            {PERFORMANCE_COPY.heroTitle[0]}
             <br />
-            <em>just output.</em>
+            <em>{PERFORMANCE_COPY.heroTitle[1]}</em>
           </h1>
           <div>
-            <p>
-              The champion model is scored on a forward-time holdout against a causal baseline that only ever sees a player&apos;s earlier realised points.
-              Read every figure with its sample size and cohort in view.
-            </p>
+            <p>{PERFORMANCE_COPY.heroLede}</p>
             {a && (
               <span>
                 {a.split.strategy.replace(/_/g, ' ').toUpperCase()} · {evaluationLabel(a).toUpperCase()} · FROM WEEK {a.split.test_start_week}
@@ -121,7 +121,7 @@ export function PerformanceDashboard() {
                   <span>MAE · {selected.cohort}</span>
                 </div>
                 <strong>{fmtNum(selected.model.mae, 2)}</strong>
-                <p>baseline {fmtNum(selected.baseline.mae, 2)} · fantasy points</p>
+                <p>baseline {fmtNum(selected.baseline.mae, 2)} · {UNITS}</p>
               </article>
               <article>
                 <div>
@@ -134,10 +134,10 @@ export function PerformanceDashboard() {
               <article>
                 <div>
                   <ShieldCheckIcon />
-                  <span>Within ±3 · {selected.cohort}</span>
+                  <span>{withinLabel(BAND_1)} · {selected.cohort}</span>
                 </div>
-                <strong>{fmtPct(selected.model.within_3_rate)}</strong>
-                <p>baseline {fmtPct(selected.baseline.within_3_rate)}</p>
+                <strong>{fmtPct(selected.model[withinKey(BAND_1)])}</strong>
+                <p>baseline {fmtPct(selected.baseline[withinKey(BAND_1)])}</p>
               </article>
               <article>
                 <div>
@@ -145,7 +145,7 @@ export function PerformanceDashboard() {
                   <span>Sample · {selected.cohort}</span>
                 </div>
                 <strong>{fmtInt(selected.model.n)}</strong>
-                <p>player-game rows in the {a.season} {EVAL_KIND_LABEL[a.kind] ?? a.kind}</p>
+                <p>{ENTITY_PERIOD} rows in the {a.season} {EVAL_KIND_LABEL[a.kind] ?? a.kind}</p>
               </article>
             </div>
 
@@ -162,7 +162,7 @@ export function PerformanceDashboard() {
               </div>
               <div>
                 <small>Cohort</small>
-                <div role="group" aria-label="Position cohort">
+                <div role="group" aria-label={`${PROJECT.cohort.name} cohort`}>
                   {COHORTS.map((c) => (
                     <button key={c} className={cohort === c ? 'active' : ''} onClick={() => setCohort(c)}>
                       {c}
@@ -291,14 +291,8 @@ export function PerformanceDashboard() {
               <article>
                 <small>06 / HOW TO READ IT</small>
                 <h2>Compare to the baseline, not to zero.</h2>
-                <p>
-                  The baseline is the honest yardstick: a trailing mean of the player&apos;s own earlier realised points that never sees the week it is scored on. A
-                  model earns its place only where it beats that column for the cohort you care about.
-                </p>
-                <p>
-                  Positional cohorts share one model version and one split, so their figures can be compared directly. Sample sizes differ by position; use them
-                  when weighing the differences.
-                </p>
+                <p>{PERFORMANCE_COPY.baselineReadout}</p>
+                <p>{PERFORMANCE_COPY.cohortReadout}</p>
                 {evaluations.length > 1 && (
                   <p>
                     Every evaluation listed above scores the same frozen model artifact ({a.model.version}); only the scored season and its role in model
@@ -339,8 +333,8 @@ function EvaluationComparison({
             <th className="px-4 py-2 text-right">n</th>
             <th className="px-4 py-2 text-right">MAE · ALL</th>
             <th className="px-4 py-2 text-right">Baseline MAE</th>
-            <th className="px-4 py-2 text-right">Within ±3</th>
-            <th className="px-4 py-2 text-right">Baseline ±3</th>
+            <th className="px-4 py-2 text-right">{withinLabel(BAND_1)}</th>
+            <th className="px-4 py-2 text-right">Baseline ±{BAND_1}</th>
             <th className="px-4 py-2 text-right">Folds</th>
           </tr>
         </thead>
@@ -357,8 +351,8 @@ function EvaluationComparison({
                 <td className="px-4 py-2 text-right">{fmtInt(e.metrics.n)}</td>
                 <td className="px-4 py-2 text-right">{fmtNum(e.metrics.mae, 2)}</td>
                 <td className="px-4 py-2 text-right">{fmtNum(e.baseline.mae, 2)}</td>
-                <td className="px-4 py-2 text-right">{fmtPct(e.metrics.within_3_rate)}</td>
-                <td className="px-4 py-2 text-right">{fmtPct(e.baseline.within_3_rate)}</td>
+                <td className="px-4 py-2 text-right">{fmtPct(e.metrics[withinKey(BAND_1)])}</td>
+                <td className="px-4 py-2 text-right">{fmtPct(e.baseline[withinKey(BAND_1)])}</td>
                 <td className="px-4 py-2 text-right">{e.rolling_origin.folds.length}</td>
               </tr>
             )

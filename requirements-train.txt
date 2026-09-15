@@ -10,6 +10,8 @@ dbt-core>=1.9
 dbt-duckdb>=1.9
 # dev / CI
 pytest>=8
+jsonschema>=4
+pyyaml>=6
 httpx>=0.27
 ruff>=0.5
 black>=24

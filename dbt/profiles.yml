@@ -10,6 +10,11 @@ ffai_dbt:
       path: "{{ env_var('FFAI_DUCKDB_PATH', '.duckdb/ffai_dev.duckdb') }}"
       schema: main
       threads: 4
+      # DuckDB's own parallelism (dbt's `threads` only bounds model concurrency). Parallel
+      # aggregation order is not deterministic, so exports differ at the 1e-15 level between
+      # builds; FFAI_DUCKDB_THREADS=1 makes a build reproducible for checksum comparisons.
+      settings:
+        threads: "{{ env_var('FFAI_DUCKDB_THREADS', '4') | int }}"
     prod:
       type: duckdb
       # FFAI_MOTHERDUCK_DATABASE overrides the database only for scratch verification builds.

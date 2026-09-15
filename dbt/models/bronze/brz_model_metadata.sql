@@ -21,7 +21,7 @@ select
     cast(input_rows as integer) as input_rows,
     cast(code_commit as varchar) as code_commit,
     cast(interval_method as varchar) as interval_method,
-{% for pos in ['QB', 'RB', 'WR', 'TE'] -%}
+{% for pos in var('cohorts') -%}
 cast(positions.{{ pos }}.champion as varchar) as champion_{{ pos | lower }},
 cast(positions.{{ pos }}.n_features as integer) as n_features_{{ pos | lower }},
 cast(positions.{{ pos }}.n_train as integer) as n_train_{{ pos | lower }},

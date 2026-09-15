@@ -1,0 +1,43 @@
+{
+  "slug": "fantasy-football-ai",
+  "displayName": "Win My League · Decision Lab",
+  "domainSummary": "Weekly PPR fantasy-points projections for NFL quarterbacks, running backs, wide receivers and tight ends, with an artifact-backed evaluation trail.",
+  "repoUrl": "https://github.com/cbratkovics/fantasy-football-ai",
+  "apiUrl": "https://cbratkovics-fantasy-football-ai.hf.space",
+  "pagesUrl": "https://cbratkovics.github.io/fantasy-football-ai/",
+  "entity": {
+    "name": "player",
+    "key": "player_id"
+  },
+  "period": {
+    "name": "week",
+    "season": "season"
+  },
+  "cohort": {
+    "name": "position",
+    "values": [
+      "QB",
+      "RB",
+      "WR",
+      "TE"
+    ]
+  },
+  "target": {
+    "column": "fantasy_points_ppr",
+    "units": "points",
+    "format": "ppr",
+    "formats": [
+      "standard",
+      "half",
+      "ppr"
+    ]
+  },
+  "withinK": [
+    3,
+    5
+  ],
+  "candidates": [
+    "rf",
+    "xgb"
+  ]
+}

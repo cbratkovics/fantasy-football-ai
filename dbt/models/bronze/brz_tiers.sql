@@ -6,7 +6,7 @@ with files as (
 ),
 
 by_position as (
-    {% for pos in ['QB', 'RB', 'WR', 'TE'] %}
+    {% for pos in var('cohorts') %}
     select
         f.filename,
         f.tier_version,

@@ -47,7 +47,7 @@ with in_scope as (
     from {{ ref('brz_player_stats') }}
     where
         season_type = 'REG'
-        and position in ('QB', 'RB', 'WR', 'TE')
+        and position in ({% for c in var('cohorts') %}'{{ c }}'{{ ", " if not loop.last }}{% endfor %})
         {% if target_season is not none and target_week is not none %}
         and not (season = {{ target_season }} and week >= {{ target_week }})
         and season <= {{ target_season }}

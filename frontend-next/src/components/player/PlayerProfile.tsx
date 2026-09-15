@@ -7,7 +7,12 @@ import { fmtInt, fmtNum, fmtUtc, shortHash } from '@/lib/format'
 import { PageShell } from '@/components/ui/PageShell'
 import { ErrorState, LoadingState } from '@/components/ui/States'
 import { Provenance } from '@/components/ui/Provenance'
+import { PROJECT, withinLabel } from '@/lib/project'
+import { PERFORMANCE_COPY } from '@/content/performance'
 import { PlayerHistoryChart, SOURCE_LABEL, SOURCE_STYLE } from './PlayerHistoryChart'
+
+const [BAND_1] = PROJECT.withinK
+const COPY = PERFORMANCE_COPY.player
 
 export function PlayerProfile({ playerId }: { playerId: string }) {
   // Identity from the artifact-backed route; the history itself from the gold mart.
@@ -23,7 +28,7 @@ export function PlayerProfile({ playerId }: { playerId: string }) {
     <PageShell
       wide
       crumb={name}
-      eyebrow="Player history · read from gold marts exported by the weekly build"
+      eyebrow={COPY.eyebrow}
       title={
         <>
           {name}{' '}
@@ -32,7 +37,7 @@ export function PlayerProfile({ playerId }: { playerId: string }) {
           </em>
         </>
       }
-      lede="Each row is one scored player-week from fct_player_week: the prediction with its floor–ceiling band, the realised points once the week is played, the error, and the causal baseline (a trailing mean of the player's own earlier points that never sees the week it is scored on). Frozen-test rows are the held-out test season, out-of-sample rows a later complete season the same frozen model scored, weekly rows the live job's files."
+      lede={COPY.lede}
     >
       {(player.isPending || marts.isPending) && <LoadingState label="Loading player history from the marts…" />}
       {player.isError && <ErrorState error={player.error} context={`GET /players/${playerId}`} />}
@@ -41,7 +46,7 @@ export function PlayerProfile({ playerId }: { playerId: string }) {
         <div className="space-y-6">
           <Provenance
             items={[
-              ['Player id', week.player_id],
+              [`${PROJECT.entity.name} id`, week.player_id],
               ['Mart', `${week.mart} · ${fmtInt(week.n)} rows`],
               ['Candidate', typeof week.candidate === 'string' ? week.candidate : 'champion per position'],
               ['Exported', `${fmtUtc(week.export.exported_at_utc)} · target ${week.export.target ?? '—'} · commit ${shortHash(week.export.code_commit)}`],
@@ -55,15 +60,15 @@ export function PlayerProfile({ playerId }: { playerId: string }) {
             <table className="w-full min-w-[760px] text-left text-sm">
               <thead className="bg-[#f8f7f2] font-mono text-[9px] uppercase tracking-widest text-[#61706c]">
                 <tr>
-                  <th className="px-4 py-3">Season</th>
-                  <th className="px-4 py-3">Week</th>
+                  <th className="px-4 py-3">{PROJECT.period.season}</th>
+                  <th className="px-4 py-3">{PROJECT.period.name}</th>
                   <th className="px-4 py-3 text-right">Prediction</th>
                   <th className="px-4 py-3 text-right">Floor</th>
                   <th className="px-4 py-3 text-right">Ceiling</th>
                   <th className="px-4 py-3 text-right">Actual</th>
                   <th className="px-4 py-3 text-right">Error</th>
                   <th className="px-4 py-3 text-right">Baseline</th>
-                  <th className="px-4 py-3">Within ±3</th>
+                  <th className="px-4 py-3">{withinLabel(BAND_1)}</th>
                   <th className="px-4 py-3">Source</th>
                   <th className="px-4 py-3">Model</th>
                 </tr>

@@ -19,6 +19,13 @@ target-path: "target"
 clean-targets: ["target", "dbt_packages"]
 
 vars:
+  # Project vocabulary, mirrored from ffai/config.py (PROJECT); tests/test_project_config.py fails
+  # when these defaults drift from ffai.config.dbt_vars() (ADR-0028).
+  entity_key: player_id
+  cohorts: [QB, RB, WR, TE]
+  candidates: [rf, xgb]
+  target_scoring_format: ppr
+  within_k: [3, 5]
   # Every path is relative to the repository root; run dbt from there (Makefile, CI, weekly job).
   # The weekly wrapper (ffai/data/contracts.py) passes the exact nflverse cache file it loaded;
   # CI points this at the committed fixture CSV.

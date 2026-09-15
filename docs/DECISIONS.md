@@ -412,3 +412,4 @@ covers models, sources, and exposures; it does not require descriptions on tests
 - [ADR-0025](adr/0025-versioned-decisions-mart.md) — `fct_decision_policy` is versioned; v1 keeps its relation name, the API pins a version (2026-09-15)
 - [ADR-0026](adr/0026-slim-ci-deferred-to-cached-main-dev-build.md) — Slim CI compares and defers to the cached `main` dev build, not a prod manifest (2026-09-15)
 - [ADR-0027](adr/0027-single-constraints-file-for-the-dbt-toolchain.md) — One `constraints.txt` pins dbt-core, dbt-duckdb, and DuckDB for CI and the weekly job (2026-09-15)
+- [ADR-0028](adr/0028-single-project-config-and-interfaces.md) — One project config, three named seams, and JSON Schemas for the artifacts (2026-09-15)

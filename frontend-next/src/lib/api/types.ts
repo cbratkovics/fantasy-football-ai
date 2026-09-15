@@ -149,6 +149,9 @@ export interface MetricBlock {
   within_5_rate: number
 }
 
+/** The tolerance-band keys an artifact carries (project config withinK = [3, 5]). */
+export type WithinKey = 'within_3_rate' | 'within_5_rate'
+
 export interface BaselineBlock extends MetricBlock {
   name?: string
 }

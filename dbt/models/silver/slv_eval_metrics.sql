@@ -23,7 +23,7 @@ cohorts as (
         a.baseline.within_3_rate as baseline_within_3_rate,
         a.baseline.within_5_rate as baseline_within_5_rate
     from artifacts as a
-    {% for pos in ['QB', 'RB', 'WR', 'TE'] %}
+    {% for pos in var('cohorts') %}
     union all
     select
         a.eval_id,

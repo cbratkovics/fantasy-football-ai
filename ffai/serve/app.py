@@ -24,19 +24,14 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from ffai import __version__
-from ffai.config import ARTIFACTS_DIR, POSITIONS
+from ffai.config import ARTIFACTS_DIR, POSITIONS, cors_origins
 from ffai.models import registry
 from ffai.serve import marts, schemas
 
 log = logging.getLogger("ffai.serve")
 
-DEFAULT_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "https://winmyleague.ai",
-    "https://www.winmyleague.ai",
-    "https://fantasy-football-ai.vercel.app",
-]
+# Local dev plus the deployed site (ffai.config.PROJECT.site_origins, ADR-0028).
+DEFAULT_ORIGINS = cors_origins()
 
 
 class State:

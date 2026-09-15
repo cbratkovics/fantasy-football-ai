@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/cbratkovics/fantasy-football-ai/artifacts/schemas/drift_report.schema.json",
+  "title": "Drift report (ffai.eval.drift.drift_report)",
+  "description": "Inputs of the drift-hold rule (ADR-0010): PSI per feature of the last N played periods against the training deciles of the same week-of-season bucket, and the status the rule derives. HOLD = median monitored PSI above thresholds.hold_median with at least three monitored features, or at least thresholds.min_severe_features features above thresholds.severe; WARN = any feature above hold_median or median above warn. Thresholds are calibration output (backtest every N-period window in the training seasons), not defaults to copy into another project.",
+  "type": "object",
+  "required": [
+    "n",
+    "psi",
+    "monitored",
+    "median_monitored",
+    "flagged",
+    "severe",
+    "thresholds",
+    "status"
+  ],
+  "properties": {
+    "n": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "psi": {
+      "type": "object",
+      "additionalProperties": {
+        "type": [
+          "number",
+          "null"
+        ]
+      }
+    },
+    "monitored": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "median_monitored": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "flagged": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "severe": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "thresholds": {
+      "type": "object",
+      "required": [
+        "warn",
+        "hold_median",
+        "severe",
+        "min_severe_features"
+      ],
+      "properties": {
+        "warn": {
+          "type": "number"
+        },
+        "hold_median": {
+          "type": "number"
+        },
+        "severe": {
+          "type": "number"
+        },
+        "min_severe_features": {
+          "type": "integer"
+        }
+      }
+    },
+    "status": {
+      "enum": [
+        "ok",
+        "warn",
+        "hold"
+      ]
+    }
+  }
+}

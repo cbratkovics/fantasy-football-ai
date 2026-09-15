@@ -12,7 +12,7 @@
 --   candidate from strictly earlier periods; falling back to the position's history under the
 --   same rule; falling back to the prediction itself. Frozen-test and out-of-sample files are
 --   one window each (from week 1 of their season); each weekly file is its own window.
-{% set target_scoring_format = 'ppr' %}
+{% set target_scoring_format = var('target_scoring_format') %}
 
 with predictions as (
     select * from {{ ref('slv_predictions') }}
