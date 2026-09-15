@@ -5,9 +5,11 @@ Steps (each appends to the run log):
 1. Determine the current season / next week from nflverse schedules (or the CLI overrides).
 2. Load stats through the last completed week; run the data contracts (dbt silver tests via
    ``ffai.data.contracts``); failure → HOLD.
-3. Drift: PSI of the last four completed weeks of played rows against the week-of-season
-   matched training deciles; median monitored PSI > 0.25 (or ≥ 2 features > 0.5) → HOLD,
-   any feature > 0.25 → warn (``ffai.eval.drift.drift_status``, ADR-0010).
+3. Drift: PSI of the last four completed weeks of played rows against the training reference;
+   the training-time week-of-season bucket while the window sits inside one season, the
+   training seasons' rows at the window's own week positions when it crosses a season boundary
+   (ADR-0031); median monitored PSI > 0.25 (or ≥ 2 features > 0.5) → HOLD, any feature > 0.25 →
+   warn (ADR-0010). Every run writes ``artifacts/drift/<run_id>.json``.
 4. Build as-of features for the upcoming week and score the champion →
    ``artifacts/predictions/<season>/week_<ww>.json``.
 5. Attach last week's actuals to last week's predictions file and append champion + challenger
@@ -227,8 +229,9 @@ def run_weekly(
         periods = played[["season", "week"]].drop_duplicates().sort_values(["season", "week"])
         recent = periods.tail(DRIFT_WINDOW_WEEKS)
         window = played.merge(recent, on=["season", "week"])
-        bucket = str(drift.week_bucket(int(recent["week"].iloc[-1])))
+        training_rows = played[played["season"].isin(meta["seasons"]["train"])]
         drift_by_pos = {}
+        drift_full = {}
         worst = "ok"
         for pos in POSITIONS:
             cand = registry.candidate_for(champ_cand, pos)
@@ -238,20 +241,46 @@ def run_weekly(
                 for f in pm["candidates"][cand]["top_feature_importance"]
                 if f not in DRIFT_EXCLUDED_FEATURES and not f.endswith("_season_avg")
             ]
-            ref = pm["drift_reference"]["buckets"].get(bucket) or pm["drift_reference"]["global"]
-            rep = drift.drift_report(window[window["position"] == pos], ref, monitored)
+            ref, ref_meta = drift.reference_for_window(
+                window[window["position"] == pos],
+                pm["drift_reference"],
+                training_rows[training_rows["position"] == pos],
+                monitored,
+            )
+            rep = drift.drift_report(
+                window[window["position"] == pos], ref, monitored, reference=ref_meta
+            )
+            drift_full[pos] = rep
             drift_by_pos[pos] = {
                 "status": rep["status"],
                 "median_monitored": rep["median_monitored"],
                 "flagged": rep["flagged"],
                 "severe": rep["severe"],
                 "n": rep["n"],
+                "reference_mode": ref_meta["mode"],
             }
             drift_feats += [f"{pos}:{f}" for f in rep["flagged"]]
             if rep["status"] == "hold" or (rep["status"] == "warn" and worst == "ok"):
                 worst = rep["status"]
         drift_status = worst
-        step("drift", status=drift_status, positions=drift_by_pos)
+        drift_artifact = drift.run_report(
+            run_id=run_id,
+            at_utc=log["at_utc"],
+            season=season,
+            week=week,
+            model_version=champ_version,
+            status=drift_status,
+            positions=drift_full,
+        )
+        if not dry_run:
+            drift.write_run_report(drift_artifact, artifacts)
+        step(
+            "drift",
+            status=drift_status,
+            window_weeks=drift.window_weeks(window),
+            positions=drift_by_pos,
+            report=f"drift/{run_id}.json",
+        )
 
         if drift_status != "hold":
             # 5. last week's actuals + rolling evaluation (champion and challenger shadow)

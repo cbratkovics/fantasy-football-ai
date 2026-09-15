@@ -93,9 +93,25 @@ def test_committed_prediction_files_validate(path: Path) -> None:
     jsonschema.validate(json.loads(path.read_text(encoding="utf-8")), _schema("predictions_file"))
 
 
-def test_drift_report_matches_its_schema() -> None:
+def test_drift_run_report_matches_its_schema() -> None:
     rng = np.random.default_rng(0)
     ref = {"f1": [float(x) for x in np.quantile(rng.normal(size=500), np.linspace(0, 1, 11))]}
     report = drift.drift_report(pd.DataFrame({"f1": rng.normal(size=200)}), ref, ["f1"])
-    jsonschema.validate(report, _schema("drift_report"))
-    assert report["status"] in {"ok", "warn", "hold"}
+    schema = _schema("drift_report")
+    jsonschema.validate(report, {"$ref": "#/$defs/position_report", "$defs": schema["$defs"]})
+    run = drift.run_report(
+        run_id="run-20260101T000000Z",
+        at_utc="2026-01-01T00:00:00+00:00",
+        season=2026,
+        week=2,
+        model_version="m",
+        status=report["status"],
+        positions={"QB": report},
+    )
+    jsonschema.validate(run, schema)
+    assert run["drift_report_version"] == drift.REPORT_VERSION
+
+
+@pytest.mark.parametrize("path", sorted((ARTIFACTS_DIR / "drift").glob("run-*.json")))
+def test_committed_drift_reports_validate(path: Path) -> None:
+    jsonschema.validate(json.loads(path.read_text(encoding="utf-8")), _schema("drift_report"))

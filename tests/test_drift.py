@@ -82,3 +82,90 @@ def test_report_flags_only_monitored_features() -> None:
     # With only two monitored features the median is not used; one spike stays a warning.
     r = drift.drift_report(cur, ref, monitored=["a", "b"])
     assert r["status"] == "warn"
+
+
+def _seasonal_world(
+    rng: np.random.Generator, seasons: list[int], n_players: int = 40
+) -> pd.DataFrame:
+    """A cohort whose feature level rises through the season: week-1 rows sit near 10, week-18 rows
+    near 10 + 17 * 0.6. Late-season rows compared with an early-season reference look shifted;
+    compared with late-season rows they do not."""
+    rows = []
+    for season in seasons:
+        for week in range(1, 19):
+            level = 10.0 + 0.6 * (week - 1)
+            for _p in range(n_players):
+                rows.append(
+                    {
+                        "season": season,
+                        "week": week,
+                        "position": "QB",
+                        "f_a": rng.normal(level, 2.0),
+                        "f_b": rng.normal(level * 2, 5.0),
+                        "f_c": rng.normal(3.0, 1.0),
+                    }
+                )
+    return pd.DataFrame(rows)
+
+
+def _bucket_reference(train: pd.DataFrame, feats: list[str]) -> dict:
+    buckets = {}
+    b = train["week"].map(drift.week_bucket)
+    for k in sorted(b.unique()):
+        buckets[str(int(k))] = drift.deciles(train[b == k], feats)
+    return {
+        "bucket_weeks": drift.BUCKET_WEEKS,
+        "global": drift.deciles(train, feats),
+        "buckets": buckets,
+    }
+
+
+def test_early_season_window_holds_under_bucket_reference_and_clears_under_hybrid() -> None:
+    rng = np.random.default_rng(3)
+    feats = ["f_a", "f_b", "f_c"]
+    train = _seasonal_world(rng, [2019, 2020, 2021, 2022])
+    bucket_ref = _bucket_reference(train, feats)
+    current = _seasonal_world(rng, [2025, 2026])
+    # target 2026 week 2: last four played weeks are 2025 wk16-18 and 2026 wk1
+    window = current[
+        ((current["season"] == 2025) & (current["week"] >= 16))
+        | ((current["season"] == 2026) & (current["week"] == 1))
+    ]
+    pooled = drift.drift_report(window, bucket_ref["buckets"]["0"], feats)
+    assert pooled["status"] == "hold", pooled["median_monitored"]
+    ref, meta = drift.reference_for_window(window, bucket_ref, train, feats)
+    hybrid = drift.drift_report(window, ref, feats, reference=meta)
+    assert meta["mode"] == "matched"
+    assert meta["window_weeks"] == [16, 17, 18, 1] and meta["reference_weeks"] == [1, 16, 17, 18]
+    assert hybrid["status"] == "ok", hybrid["median_monitored"]
+    assert hybrid["reference"]["training_seasons"] == [2019, 2020, 2021, 2022]
+
+
+def test_mid_season_window_is_identical_under_both_references() -> None:
+    rng = np.random.default_rng(4)
+    feats = ["f_a", "f_b", "f_c"]
+    train = _seasonal_world(rng, [2019, 2020, 2021, 2022])
+    bucket_ref = _bucket_reference(train, feats)
+    current = _seasonal_world(rng, [2026])
+    window = current[current["week"].between(5, 8)]  # target week 9, window inside the season
+    bucket_only = drift.drift_report(window, bucket_ref["buckets"]["1"], feats)
+    ref, meta = drift.reference_for_window(window, bucket_ref, train, feats)
+    hybrid = drift.drift_report(window, ref, feats, reference=meta)
+    assert (
+        meta["mode"] == "bucket" and meta["bucket"] == 1 and meta["reference_weeks"] == [5, 6, 7, 8]
+    )
+    assert hybrid["psi"] == bucket_only["psi"] and hybrid["status"] == bucket_only["status"]
+
+
+def test_matched_reference_falls_back_to_bucket_when_thin() -> None:
+    rng = np.random.default_rng(5)
+    feats = ["f_a", "f_b", "f_c"]
+    train = _seasonal_world(rng, [2019], n_players=3)  # 3 rows per week: far below the minimum
+    bucket_ref = _bucket_reference(train, feats)
+    current = _seasonal_world(rng, [2025, 2026], n_players=10)
+    window = current[
+        ((current["season"] == 2025) & (current["week"] >= 16))
+        | ((current["season"] == 2026) & (current["week"] == 1))
+    ]
+    _, meta = drift.reference_for_window(window, bucket_ref, train, feats)
+    assert meta["mode"] == "bucket" and meta["fallback"]

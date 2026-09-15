@@ -10,6 +10,7 @@ help:
 	@echo "train     - train champion/challenger candidates (writes artifacts/models/<version>)"
 	@echo "tiers     - build preseason GMM tiers (SEASON=2024)"
 	@echo "evaluate  - frozen-test + rolling-origin evaluation, manifest, model card"
+	@echo "calibrate-drift - backtest the drift rule over past seasons, bucket vs hybrid reference (ADR-0031)"
 	@echo "score     - score one week: SEASON=2025 WEEK=1 [THROUGH=2024]"
 	@echo "weekly    - dry-run the autonomous weekly job"
 	@echo "api       - run the API locally on :7860"
@@ -46,6 +47,9 @@ tiers:
 	$(PY) scripts/tiers.py --season $(SEASON)
 
 ARGS ?=
+calibrate-drift:
+	$(PY) scripts/calibrate_drift.py
+
 evaluate:
 	$(PY) scripts/evaluate.py $(ARGS)
 

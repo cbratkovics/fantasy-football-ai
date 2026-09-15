@@ -1,79 +1,44 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/cbratkovics/fantasy-football-ai/artifacts/schemas/drift_report.schema.json",
-  "title": "Drift report (ffai.eval.drift.drift_report)",
-  "description": "Inputs of the drift-hold rule (ADR-0010): PSI per feature of the last N played periods against the training deciles of the same week-of-season bucket, and the status the rule derives. HOLD = median monitored PSI above thresholds.hold_median with at least three monitored features, or at least thresholds.min_severe_features features above thresholds.severe; WARN = any feature above hold_median or median above warn. Thresholds are calibration output (backtest every N-period window in the training seasons), not defaults to copy into another project.",
+  "title": "Drift run report (drift_report_version 1.1)",
+  "description": "artifacts/drift/<run_id>.json, written by the weekly job on every run whose contracts passed (HOLD, WARN and OK alike): the per-position PSI reports the publish/hold decision was made on. Per position: PSI per feature of the last N played weeks against the training reference, the status the rule derives, and which reference was used (ADR-0010 rule, ADR-0031 hybrid reference). HOLD = median monitored PSI above thresholds.hold_median with at least three monitored features, or at least thresholds.min_severe_features features above thresholds.severe; WARN = any feature above hold_median or median above warn. Thresholds are calibration output, not defaults to copy into another project. Version 1.0 was the bare per-position report.",
   "type": "object",
   "required": [
-    "n",
-    "psi",
-    "monitored",
-    "median_monitored",
-    "flagged",
-    "severe",
-    "thresholds",
-    "status"
+    "drift_report_version",
+    "run_id",
+    "at_utc",
+    "season",
+    "week",
+    "model_version",
+    "window_weeks_max",
+    "status",
+    "positions"
   ],
   "properties": {
-    "n": {
+    "drift_report_version": {
+      "const": "1.1"
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^run-"
+    },
+    "at_utc": {
+      "type": "string"
+    },
+    "season": {
+      "type": "integer"
+    },
+    "week": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 1
     },
-    "psi": {
-      "type": "object",
-      "additionalProperties": {
-        "type": [
-          "number",
-          "null"
-        ]
-      }
+    "model_version": {
+      "type": "string"
     },
-    "monitored": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    },
-    "median_monitored": {
-      "type": [
-        "number",
-        "null"
-      ]
-    },
-    "flagged": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    },
-    "severe": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    },
-    "thresholds": {
-      "type": "object",
-      "required": [
-        "warn",
-        "hold_median",
-        "severe",
-        "min_severe_features"
-      ],
-      "properties": {
-        "warn": {
-          "type": "number"
-        },
-        "hold_median": {
-          "type": "number"
-        },
-        "severe": {
-          "type": "number"
-        },
-        "min_severe_features": {
-          "type": "integer"
-        }
-      }
+    "window_weeks_max": {
+      "type": "integer",
+      "minimum": 1
     },
     "status": {
       "enum": [
@@ -81,6 +46,163 @@
         "warn",
         "hold"
       ]
+    },
+    "positions": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "$ref": "#/$defs/position_report"
+      }
+    }
+  },
+  "$defs": {
+    "position_report": {
+      "type": "object",
+      "required": [
+        "n",
+        "psi",
+        "monitored",
+        "median_monitored",
+        "flagged",
+        "severe",
+        "thresholds",
+        "status",
+        "reference"
+      ],
+      "properties": {
+        "n": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "psi": {
+          "type": "object",
+          "additionalProperties": {
+            "type": [
+              "number",
+              "null"
+            ]
+          }
+        },
+        "monitored": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "median_monitored": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "flagged": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "severe": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "thresholds": {
+          "type": "object",
+          "required": [
+            "warn",
+            "hold_median",
+            "severe",
+            "min_severe_features"
+          ],
+          "properties": {
+            "warn": {
+              "type": "number"
+            },
+            "hold_median": {
+              "type": "number"
+            },
+            "severe": {
+              "type": "number"
+            },
+            "min_severe_features": {
+              "type": "integer"
+            }
+          }
+        },
+        "status": {
+          "enum": [
+            "ok",
+            "warn",
+            "hold"
+          ]
+        },
+        "reference": {
+          "description": "How the reference deciles were chosen (ADR-0031): bucket = the training-time week-of-season bucket of the newest window week; matched = training-season rows at the window's own week positions (used when the window crosses a season boundary)",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "required": [
+                "mode",
+                "window_seasons",
+                "window_weeks",
+                "reference_weeks",
+                "training_seasons"
+              ],
+              "properties": {
+                "mode": {
+                  "enum": [
+                    "bucket",
+                    "matched"
+                  ]
+                },
+                "window_seasons": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
+                },
+                "window_weeks": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
+                },
+                "reference_weeks": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
+                },
+                "bucket": {
+                  "type": "integer"
+                },
+                "training_seasons": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
+                },
+                "n_reference_rows": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "fallback": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
     }
   }
 }

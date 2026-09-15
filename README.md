@@ -117,7 +117,7 @@ nflverse pull ─▶ data contracts ─▶ drift (PSI) ─▶ as-of features ─
 
 1. **Pull** the latest weekly stats from nflverse; rows of the week being scored are dropped (they are incomplete by definition).
 2. **Data contracts** — dbt tests on the silver layer, run against MotherDuck: grain uniqueness (player × season × week), freshness through the expected week, null and range checks, row count vs prior week, scoring reconciliation. Failure → `HOLD`, naming the missing week.
-3. **Drift** — PSI per monitored feature over the last four played weeks against week-of-season-matched training deciles. Broad shift → `HOLD`; single-feature shift → warn. The first rule written held 47 of 60 normal backtest windows; the current thresholds were calibrated on those windows ([ADR-0010](docs/DECISIONS.md)).
+3. **Drift** — PSI per monitored feature over the last four played weeks against the training reference: the training-time week-of-season bucket while the window sits inside one season, the training seasons' rows at the window's own week positions when it crosses a season boundary (ADR-0031). Broad shift → `HOLD`; single-feature shift → warn (ADR-0010). Every run writes `artifacts/drift/<run_id>.json` with the per-feature PSI and the reference it used.
 4. **Score** the upcoming week with the champion.
 5. **Score last week's actuals** against last week's predictions; append to the season's rolling evaluation.
 6. **Shadow-score** the XGBoost challenger. **Promote** only if it beats the champion for four consecutive weeks *and* on the frozen test season.

@@ -118,7 +118,14 @@ Change versus `{{ tiers.comparison_to_previous.previous_tier_version }}` (`metad
 * Errors are large relative to weekly scores (see MAE above); the 10th/90th residual quantiles
   give an 80% empirical interval on the validation season, not a guarantee.
 * Trained on {{ meta.seasons.train | join(', ') }}; distribution drift is monitored weekly with PSI
-  (`ffai/eval/drift.py`) but the model is not retrained automatically.
+  (`ffai/eval/drift.py`) but the model is not retrained automatically. The reference is the
+  training-time week-of-season bucket while the four-week window sits inside one season, and the
+  training seasons' rows at the window's own week positions when it crosses a season boundary
+  (ADR-0031); every run writes `artifacts/drift/<run_id>.json` with the per-feature PSI and the
+  reference it used.
+* Lesson: the monitor was calibrated on target weeks 5–18 only (ADR-0010) and held week 2 of 2026
+  in production; the recalibration over weeks 2–18 is in ADR-0031. Calibrate over every seasonal
+  position the job will run at.
 """
 
 KIND_TITLES = {
