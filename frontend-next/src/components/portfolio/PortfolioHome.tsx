@@ -284,9 +284,9 @@ export function PortfolioHome() {
           <div className="section-heading compact light-heading">
             <div>
               <span className="section-number">03</span>
-              <p>WHAT THIS DEMONSTRATES</p>
+              <p>ENGINEERING EVIDENCE</p>
             </div>
-            <h2>Technical depth, translated into practical value.</h2>
+            <h2>Inspect the contracts behind the published output.</h2>
           </div>
           <div className="skills-list">
             {skills.map(([title, text], index) => (
@@ -300,16 +300,21 @@ export function PortfolioHome() {
           <div className="truth-panel">
             <CommandLineIcon />
             <div>
-              <span>PORTFOLIO PRINCIPLE</span>
-              <h3>Credibility compounds.</h3>
+              <span>PUBLICATION PRINCIPLE</span>
+              <h3>Every published figure needs provenance.</h3>
               <p>
                 Every figure on this site is read from a committed evaluation artifact. Nothing is typed into the UI by hand, and the API names the model,
-                feature set, and evaluation behind each response so a reader can reproduce it from the repository.
+                feature set, and evaluation behind each response so a reader can trace it to repository evidence.
               </p>
             </div>
-            <a href={`${SITE.repoUrl}/blob/main/docs/PORTFOLIO_CASE_STUDY.md`} target="_blank" rel="noreferrer">
-              Read the technical brief <ArrowRightIcon />
-            </a>
+            <div className="flex flex-col items-start gap-3">
+              <Link href={ROUTES.dataPlatform} className="portfolio-button primary">
+                Explore the architecture <ArrowRightIcon />
+              </Link>
+              <a href={`${SITE.repoUrl}/blob/main/docs/PORTFOLIO_CASE_STUDY.md`} target="_blank" rel="noreferrer" className="text-sm font-bold underline">
+                Read the source brief
+              </a>
+            </div>
           </div>
         </section>
       </main>

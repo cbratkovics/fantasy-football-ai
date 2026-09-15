@@ -59,6 +59,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install -c constraints.txt -r requirements-train.txt
           pip install -e .
+      - name: Check publication content before artifact mirroring
+        run: python scripts/check_publication.py
       - name: dbt deps
         run: dbt deps --project-dir dbt --profiles-dir dbt
       - name: Run the weekly job
