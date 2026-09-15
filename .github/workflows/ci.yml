@@ -44,6 +44,8 @@ jobs:
         run: |
           ruff check ffai tests scripts
           black --check ffai tests scripts
+      - name: Check tracked publication content
+        run: python scripts/check_publication.py
       - name: Tests (offline fixture; committed artifacts for the API tests)
         run: python -m pytest tests
       - name: Import check for the server
@@ -128,6 +130,8 @@ jobs:
         run: |
           dbt docs generate --target dev --static
           mkdir -p site && cp dbt/target/static_index.html site/index.html
+      - name: Check generated dbt publication
+        run: python scripts/check_publication.py site dbt/target/manifest.json dbt/target/catalog.json
       - name: Every model, column, source, and exposure is described (ADR-0021)
         run: python scripts/check_dbt_descriptions.py
       - name: Save this build as the slim-CI state (main only)
@@ -176,6 +180,9 @@ jobs:
       - run: npm run build
         env:
           NEXT_PUBLIC_API_URL: http://localhost:7860
+      - name: Check generated frontend publication
+        working-directory: .
+        run: python scripts/check_publication.py frontend-next/.next
 
   deploy-space:
     # Manual only: "Run workflow" with deploy_space=true. Mirrors main to the Space with the same

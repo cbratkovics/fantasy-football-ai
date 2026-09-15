@@ -1,90 +1,154 @@
-# Portfolio case study
+# Win My League: Forecasting and Analytics Architecture
 
-## Executive framing
+## Purpose and implemented scope
 
-Win My League is presented as a **decision-science system**, not as a collection of
-advanced-algorithm claims. The loop that matters is:
+Win My League produces weekly fantasy-football point forecasts and exposes the evidence needed
+to interpret them. The repository contains two related systems with a deliberate boundary:
 
-> ingest events → validate data → estimate outcomes and uncertainty → apply a policy → explain the
-> action → monitor outcomes by cohort.
+1. Python ingests nflverse data, builds time-aware features, trains and scores models, evaluates
+   forecasts, and writes versioned artifacts.
+2. dbt transforms repository-owned source files and artifacts into tested bronze, silver, and
+   gold relations for analysis. It does not train models or compute features used for inference.
 
-Fantasy football is an authentic, safe domain for that loop. It does **not** prove fraud expertise,
-scale, or commercial production experience; in an interview, distinguish the transferable methods
-from domain experience that has not been earned.
+The product is an experimental, read-only analytics application. It is not a guarantee of player
+performance, a transaction system, or evidence of operation at commercial scale.
 
-## What the repository is today (after the 2026-09 rebuild)
+## Architecture and data flow
 
-The read-only audit in `AUDIT.md` found that the previous codebase served constants and seeded
-random numbers, that its published accuracy figures had no computational source, and that every
-tracked training path leaked. The rebuild kept two seeds — the git-ignored lagged-feature trainer
-and the branch evaluator — and deleted everything else. The result:
+```text
+nflverse weekly player statistics
+  -> Python contracts and strictly-as-of features
+  -> per-position RandomForest and XGBoost candidates
+  -> prediction, model-metadata, and evaluation artifacts
+  -> FastAPI /predictions and /performance
 
-| Loop stage | Implementation | Evidence |
-|---|---|---|
-| Ingest | nflverse only, dated parquet cache (`ffai/data/nflverse.py`) | `docs/DATA_SOURCES.md` |
-| Validate | grain / range / null / freshness / row-count contracts (`ffai/data/contracts.py`); PSI drift (`ffai/eval/drift.py`) | `tests/test_contracts.py`, `tests/test_drift.py` |
-| Estimate | one as-of feature module; RF champion + XGB challenger per position; residual-quantile intervals | `tests/test_asof_no_leakage.py` on real data; `artifacts/models/<version>/metadata.json` |
-| Policy | deterministic publish / hold / promote rule in the weekly job (`ffai/pipeline/weekly.py`, `ffai/models/registry.py`) | `tests/test_weekly_policy.py`, `tests/test_registry.py` |
-| Explain | every served record carries model version, feature version, interval method, and the reception-based derivation of half/standard points | `ffai/serve/schemas.py` |
-| Monitor | forward holdout + causal trailing-mean baseline + rolling-origin folds, written as a hashed, commit-stamped artifact; the same frozen model scored on the complete 2025 season it never saw (`kind: out_of_sample_season`); weekly rolling evaluation appended by CI | `artifacts/eval/*.json` (one per evaluation, listed in `manifest.evaluations`), `docs/MODEL_CARD.md` |
+repository data and artifacts
+  -> dbt bronze copies
+  -> dbt silver conformance and grain tests
+  -> dbt gold evaluation and decision marts
+  -> exported Parquet relations
+  -> FastAPI /marts/*
+```
 
-## What changed in the claims
+`ffai/data/nflverse.py` is the source adapter. The feature builder in
+`ffai/features/asof.py` uses only observations earlier than the row being predicted; training,
+evaluation, and weekly scoring share that implementation. `ffai/models/train.py` fits a
+RandomForest and XGBoost candidate for each supported position using temporal season splits and
+records feature version, input hash, code commit, and data-through period in model metadata.
+Residual quantiles from validation data define forecast intervals.
 
-Every number that used to appear in the README, the site, and the fixtures was removed. Figures
-now exist only inside `artifacts/eval/<eval_id>.json` and `artifacts/models/<version>/metadata.json`,
-and every place that shows one (model card, `/performance` API, the frontend performance page)
-reads it from there and names the key. "Within ±3 points" is defined explicitly as
-`mean(|actual − prediction| ≤ 3)` on the same rows as MAE, which was the audit's central finding:
-the old headline accuracy and the old MAE could not have come from the same sample.
+The weekly pipeline validates data, checks feature drift, scores the registered champion and
+challenger, attaches newly available outcomes, and applies a deterministic publish/hold/promote
+policy. A successful publication updates committed artifacts before dbt builds and exports its
+analytical relations. See `docs/ARCHITECTURE.md` for module and artifact contracts.
 
-## The strongest evidence: a season the model never saw
+## Transformation layers and grains
 
-The champion was trained on 2019–2022, selected on 2023, and tested on 2024. After the 2025
-season completed it was scored on every 2025 game with the same frozen artifact and feature
-builder, and evaluated with the same evaluator and baseline. The model card shows both tables and
-a delta paragraph composed from the two artifacts; the API's `/performance` returns both artifacts
-with their `kind`, and the site's performance page switches between them. No number in that
-comparison is typed by hand.
+The dbt project reads nflverse cache files plus committed prediction, evaluation, tier, manifest,
+and model-metadata artifacts. Its layers have separate responsibilities:
 
-## Decision layer: designed, partially implemented
+- **Bronze** models are typed copies of source file families and retain `source_file` provenance.
+- **Silver** models reconcile schemas, deterministic source precedence, and explicit grains.
+  Important grains include player × season × week for statistics; player × season × week ×
+  model version × candidate for predictions; eval id × cohort for evaluation metrics; and tier
+  version × position × player for tiers.
+- **Gold** models provide contracted dimensions and facts including `fct_player_week`,
+  `fct_weekly_eval`, `fct_player_decisions`, the versioned `fct_decision_policy`, and
+  `fct_tier_outcomes`.
 
-The evaluator supports a policy sweep over a `decision_score` (coverage, selected MAE, downside
-rate against the prediction floor). No component yet *produces* a decision score, so
-`policy_sweep` is empty in the current artifact and the frontend shows no threshold simulator.
-The `analytics/sql/risk_strategy.sql` mart is a design sketch for a warehouse that does not exist
-in this repository. Both are honest "proposed" items, not implemented ones.
+Gold contracts fix column names and types. Generic and singular tests enforce uniqueness,
+accepted values, relationships, scoring reconciliation, freshness, and agreement between marts
+and evaluation artifacts. Python model training remains upstream of these transformations.
 
-## Metric tree (unchanged intent)
+### Corrections and captured history
 
-**North star:** incremental lineup points per eligible decision versus a declared baseline.
+`slv_player_stats` uses incremental delete-and-insert processing at its player-week grain. Each
+run reprocesses the newest four distinct loaded periods plus new periods, allowing recent
+nflverse corrections to replace existing rows. The four-period window is a conservative policy,
+not a claim that older corrections cannot occur; older restatements require `--full-refresh`.
+Downstream facts that depend on earlier observations remain full-table transformations.
 
-| Metric | Definition | Status |
-|---|---|---|
-| MAE, median AE, RMSE, within ±3 / ±5 | see `metric_definitions` in the eval artifact | implemented, per cohort |
-| Causal trailing-mean baseline | player's earlier realised points, position fallback, outcomes appended only after the week is scored | implemented |
-| Rolling-origin MAE | refit before each week of the test season, score that week | implemented (17 folds) |
-| Interval coverage | share of actuals inside [floor, ceiling] | proposed (intervals are validation-residual quantiles; coverage not yet reported) |
-| Recommendation rate, hit rate, regret, downside rate | policy metrics over a decision score | designed in the evaluator; no scorer yet |
-| PSI per feature | vs training deciles; hold > 0.25 on top-10 features | implemented in the weekly job |
+The `snp_player` SCD2 snapshot records changes to player name, position, and team from the time
+snapshotting begins. `dim_player_asof.is_exact_asof` distinguishes periods supported by an actual
+capture from older periods that must fall back to the current record. The repository does not
+claim historical dimension state before its first capture, and snapshot-backed views are not
+currently exported to the serving layer.
 
-## Interview narrative (two minutes)
+## Evaluation and provenance
 
-"I inherited a forecasting repository whose published accuracy could not be reproduced and whose
-API served random numbers. Instead of patching it I audited it, kept the one leak-free feature
-scheme and the one honest evaluator, and rebuilt a small system around them: a single as-of
-feature module with a leakage test on real data, a champion/challenger trainer with a frozen
-temporal split, an evaluator that writes a hashed artifact with a causal baseline and rolling-origin
-folds, a stateless API that only reads committed artifacts, and a weekly CI job that scores,
-shadow-evaluates, and publishes or holds by a deterministic rule. The resulting numbers are
-modest — the model beats a trailing-mean baseline but weekly fantasy scores are noisy — and the
-project's value is that every figure it shows can be traced to its data hash, split, baseline, and
-commit."
+Evaluation artifacts under `artifacts/eval/` are the computational source for forecast metrics.
+They contain metric definitions, cohort results, a causal trailing-mean baseline, rolling-origin
+folds, input hashes, model and feature versions, and a code commit. The generated model card and
+`/performance` read those artifacts rather than duplicating figures in prose or UI constants.
 
-## What is next
+The frozen-test evaluation reflects the declared historical training, validation, and test
+seasons. A separately typed out-of-sample-season artifact evaluates the same frozen model on a
+later completed season. These are historical evaluations; they are not prospective weekly
+performance. Rolling weekly artifacts accumulate only after outcomes become available and must
+be interpreted using their recorded evaluation window and sample size.
 
-1. Interval coverage and calibration in the weekly rolling evaluation.
-2. A decision scorer (probability of beating a replacement-level line) so the policy sweep and a
-   threshold simulator become real.
-3. Opponent and injury context as features — each requires a licence note, a contract check, and
-   the same leakage test.
-4. A frozen external ranking as a second baseline (only if a licence permits committing it).
+dbt independently recomputes analytical metrics from prediction and outcome rows. Singular tests
+reconcile aligned artifact and mart scopes within the declared tolerance. This provides two
+inspectable computation paths without treating either path as evidence outside its recorded
+population.
+
+## Decision and serving contracts
+
+FastAPI is stateless with respect to the analytics warehouse: it loads committed files at
+startup and performs no MotherDuck query on a request.
+
+- `/performance` serves full evaluation JSON artifacts registered by `artifacts/manifest.json`.
+- `/marts/weekly_eval`, `/marts/player_week/{player_id}`, and `/marts/decisions` query Parquet
+  relations exported by `dbt run-operation export_gold` and opened in an in-memory DuckDB
+  connection. These routes return 404 when no export is present.
+- `/predictions/*` and `/players/*` use committed prediction and model artifacts rather than dbt
+  relations.
+
+An exported relation is not automatically an API contract. The latest dbt decision-policy model
+is v2, while `/marts/decisions` deliberately pins the backwards-compatible v1 relation. The API
+reports that served mart version, and both relation aliases may coexist in an export. The floor
+policy applies an implemented threshold to forecast intervals; it should not be confused with
+the evaluator's optional `decision_score` sweep, for which current artifacts contain no scorer.
+
+## Validation and reproducible evidence
+
+Important decisions have executable checks:
+
+- leakage tests perturb future rows and assert that earlier as-of features do not change;
+- artifact schema, grain, scoring, evaluator, registry, drift, and weekly-policy tests run in the
+  Python suite;
+- an incremental dbt regression compares correction handling with a full refresh, including the
+  documented older-correction boundary;
+- dbt contracts, unit tests, and reconciliation tests run before documentation or production
+  exports are published;
+- API tests cover both artifact-backed endpoints and exported-mart behavior; and
+- the frontend reads versions and metrics from API responses and is type-checked during build.
+
+Reproduction commands and environment assumptions live in `README.md`. Counts and metric values
+should be taken from the current test output and artifacts, not copied from this brief.
+
+## Operational boundaries
+
+- nflverse is the only statistics source. Licensing and attribution are documented in
+  `docs/DATA_SOURCES.md` and `docs/COMMERCIAL_USE_COMPLIANCE.md`.
+- The development warehouse is DuckDB; the scheduled workflow uses MotherDuck for transformation
+  and then exports files. No database or credential is required on the API serving path.
+- The model has no injury, weather, opponent, betting, roster, authentication, payment, or
+  automated lineup-submission integration.
+- Drift thresholds and the recent-correction lookback are explicit operating policies, not
+  universal performance guarantees.
+- A branch build, cached page, and deployed production alias can refer to different revisions.
+  The artifact commit and export manifest are the authoritative revision metadata when present.
+
+## Scoped technical next steps
+
+1. Accumulate prospective weekly evaluation windows and report interval calibration only after
+   enough outcome-bearing rows exist.
+2. Calibrate the incremental restatement window from observed correction timing while preserving
+   the documented full-refresh escape hatch.
+3. Migrate the decisions endpoint to mart v2 only after its compatibility and reconciliation
+   requirements are satisfied for a full deprecation window.
+4. Use snapshot-backed player attributes in a downstream export only when consumers need them,
+   retaining `is_exact_asof` so pre-capture fallback remains visible.
+5. Add contextual features only with source licensing, as-of availability, contracts, and the
+   same leakage checks as the current feature set.

@@ -1,4 +1,4 @@
-.PHONY: help install test lint format train tiers evaluate score weekly api build frontend dbt-deps dbt-dev dbt-state dbt-slim dbt-prod dbt-export dbt-docs dbt-lint
+.PHONY: help install test lint publication-check format train tiers evaluate score weekly api build frontend dbt-deps dbt-dev dbt-state dbt-slim dbt-prod dbt-export dbt-docs dbt-lint
 
 PY ?= .venv/bin/python
 
@@ -6,6 +6,7 @@ help:
 	@echo "install   - create .venv and install training + dev dependencies"
 	@echo "test      - run the test suite (offline fixture; FFAI_TEST_DATA=full for the real pull)"
 	@echo "lint      - ruff + black --check"
+	@echo "publication-check - scan tracked public text for coaching material"
 	@echo "format    - black"
 	@echo "train     - train champion/challenger candidates (writes artifacts/models/<version>)"
 	@echo "tiers     - build preseason GMM tiers (SEASON=2024)"
@@ -35,6 +36,9 @@ test:
 lint:
 	$(PY) -m ruff check ffai tests scripts
 	$(PY) -m black --check ffai tests scripts
+
+publication-check:
+	$(PY) scripts/check_publication.py
 
 format:
 	$(PY) -m black ffai tests scripts
