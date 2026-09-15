@@ -130,6 +130,16 @@ jobs:
             --exclude ".mypy_cache/*" --exclude ".ruff_cache/*" --exclude ".pytest_cache/*" \
             --exclude ".vscode/*" --exclude ".claude/*" --exclude "*.env*" \
             --exclude "frontend-next/node_modules/*" --exclude "frontend-next/.next/*"
+      - name: Ensure the notification label exists
+        # Idempotent (--force updates an existing label); the HOLD / failure issues below must
+        # never depend on repository setup. Run 2026-09-15T12:16Z failed here with
+        # "could not add label: 'weekly-hold' not found".
+        if: ${{ !cancelled() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create weekly-hold --color D93F0B \
+            --description "Opened by weekly.yml when a run HOLDs or the warehouse build fails" --force || true
       - name: Open an issue if the warehouse build failed
         if: ${{ failure() && steps.dbt.outcome == 'failure' }}
         env:
