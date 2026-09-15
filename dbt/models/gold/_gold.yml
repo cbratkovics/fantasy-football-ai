@@ -262,7 +262,7 @@ models:
       - { name: mean_regret, data_type: double, description: mean(best_eligible_points - actual) over recommended players }
       - { name: hit_rate, data_type: double, description: share of recommended players who beat replacement level, data_tests: [{ dbt_expectations.expect_column_values_to_be_between: { arguments: { min_value: 0, max_value: 1 } } }] }
       - { name: downside_rate, data_type: double, description: share of recommended players who scored below their floor, data_tests: [{ dbt_expectations.expect_column_values_to_be_between: { arguments: { min_value: 0, max_value: 1 } } }] }
-      - { name: recommendation_within_3_rate, data_type: double, description: "v2: share of recommended players with an outcome whose |actual - prediction| <= 3", data_tests: [{ dbt_expectations.expect_column_values_to_be_between: { arguments: { min_value: 0, max_value: 1 } } }] }
+      - { name: recommendation_within_3_rate, data_type: double, description: "v2: share of recommended players with an outcome whose |actual - prediction| <= 3; at min_floor = 0 this reconciles to the artifacts' within_3_rate (tests/gold/assert_decision_within_3_reconciles_to_eval_artifacts.sql)", data_tests: [{ dbt_expectations.expect_column_values_to_be_between: { arguments: { min_value: 0, max_value: 1 } } }] }
       - { name: recommendation_interval_coverage, data_type: double, description: "v2: share of recommended players with an outcome whose actual fell inside floor..ceiling", data_tests: [{ dbt_expectations.expect_column_values_to_be_between: { arguments: { min_value: 0, max_value: 1 } } }] }
 
   - name: fct_tier_outcomes

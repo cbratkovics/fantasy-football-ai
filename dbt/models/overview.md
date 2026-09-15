@@ -50,7 +50,8 @@ snapshot-backed views:
 - `fct_decision_policy` — the same policy swept over a grid of floor thresholds: recommendation
   rates, recommendation MAE, mean regret, hit rate, and downside rate per week and position.
   Versioned (ADR-0025): v1 is the served shape and keeps the plain relation name; v2 (latest) adds
-  `recommendation_within_3_rate` and `recommendation_interval_coverage`. The API pins v1.
+  `recommendation_within_3_rate` (reconciled to the artifacts' within-3 at the inclusive
+  threshold) and `recommendation_interval_coverage`. The API pins v1.
 - `fct_tier_outcomes` — each preseason draft tier and rank next to the realised rank of the
   season that followed.
 - `dim_player_current` / `dim_player_asof` (views, not exported) — the current snapshot version per
@@ -66,18 +67,19 @@ Counts from `dbt ls` and the `dbt build` output of this project:
 | Models | 26 (9 bronze, 7 silver, 9 gold) |
 | Snapshots | 1 |
 | Source tables | 9 (one source, `repo_files`) |
-| Data tests | 96 (89 generic, 7 singular) |
+| Data tests | 97 (89 generic, 8 singular) |
 | Unit tests | 3 |
 | Exposures | 2 |
 
 The 89 generic tests: 28 `expect_column_values_to_be_between`, 27 `not_null`, 14
 `accepted_values`, 8 `unique_combination_of_columns`, 4 `expression_is_true`, 3 `unique`,
 2 `relationships`, 1 `equal_rowcount`, 1 `expect_table_columns_to_contain_set`, and 1 custom
-`row_count_within_pct_of_prior_period`. The 7 singular tests reconcile the warehouse to things
+`row_count_within_pct_of_prior_period`. The 8 singular tests reconcile the warehouse to things
 outside it: the scoring rules against nflverse's own points, recorded actuals against the stats,
 stats freshness and row count against the previous run, the causal baseline against the
-evaluation artifacts, the marts against the evaluation artifacts, and the as-of dimension against
-the snapshot's first capture.
+evaluation artifacts, the marts against the evaluation artifacts, the v2 decisions mart's
+within-±3 column against the evaluation artifacts, and the as-of dimension against the
+snapshot's first capture.
 
 - **Contracts.** Every gold mart has an enforced dbt contract (column names, types, and
   primary-key / not-null constraints), so a schema change fails the build instead of the API.

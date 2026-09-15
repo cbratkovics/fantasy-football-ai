@@ -22,5 +22,19 @@ season after its successor ships; when the API moves to v2, v1 gets a `deprecati
 season out, keeps building and exporting until then, and is deleted after. An unversioned
 `ref('fct_decision_policy')` resolves to the latest version.
 
+Claim discipline for v2. `recommendation_within_3_rate` is the same "within ±3" metric whose
+unsourced predecessor the rebuild retired, so it must trace to `artifacts/eval/*.json`. The
+evaluator does not emit a within-3 for a recommended subset (its `policy_sweep` is empty for
+these artifacts), but at `min_floor = 0` every scored player is recommended (floors are clipped
+at 0), so the outcome-weighted aggregate of v2 at that threshold over each artifact's window,
+model version, and per-position candidate must equal the published `n` and `within_3_rate` to
+1e-4, per position and overall: `tests/gold/assert_decision_within_3_reconciles_to_eval_artifacts.sql`,
+which fails the build on any disagreement. At stricter thresholds the column is a subset
+statistic of those same reconciled rows, exactly like v1's `recommendation_mae`.
+`recommendation_interval_coverage` has no artifact counterpart and stays a mart-derived figure
+(like `fct_weekly_eval.interval_coverage`). Rule for whoever bumps `DECISIONS_MART_VERSION`:
+a version may be served only while every artifact-shaped metric it carries has a reconciliation
+test.
+
 **Consequences.** Two decision tables build each week (2,336 rows each). The v2 parquet appears
 in `artifacts/marts` after the next weekly export; the API ignores it until the pin moves.

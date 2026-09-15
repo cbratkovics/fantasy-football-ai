@@ -12,7 +12,9 @@ would silently miss corrections.
 **Decision.** `slv_player_stats` is `materialized: incremental`, `incremental_strategy:
 delete+insert`, `unique_key: [player_id, season, week]`, `on_schema_change: fail`. An
 incremental run reprocesses every period whose `period_key` is at or above the smallest of the
-newest `stats_lookback_periods` distinct periods already in the table (var, default 4), plus
+newest `stats_lookback_periods` distinct periods already in the table (var, default 4, chosen
+conservatively and not calibrated: the model header records what was measured and how to
+calibrate it), plus
 anything newer; delete+insert replaces those rows. Full-refresh policy: `--full-refresh` at the
 start of a season, after any change to the model's SQL or columns, or after a restatement older
 than the lookback. The weekly workflow exposes `full_refresh` as a dispatch input

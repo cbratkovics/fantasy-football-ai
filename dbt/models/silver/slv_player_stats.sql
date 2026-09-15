@@ -10,7 +10,12 @@
 -- Lookback: nflverse restates stats for earlier weeks (stat corrections), so an incremental run
 -- reprocesses the newest `stats_lookback_periods` distinct periods already in the table (default
 -- 4) plus anything newer, and delete+insert replaces those rows. A correction older than the
--- lookback is only picked up by a full refresh.
+-- lookback is only picked up by a full refresh. The default of 4 is chosen conservatively; it is
+-- not calibrated. NFL stat corrections are normally applied in the days after a game, so one
+-- period would usually do, but how far back nflverse's releases actually restate was not
+-- measured: the only two cached pulls (2026-09-10 and 2026-09-11, off-season) differ in zero of
+-- 129,812 rows. To calibrate, diff consecutive in-season weekly pulls by (season, week) and set
+-- the var to the oldest period that ever changed, plus one.
 --
 -- Full-refresh policy: `dbt build --full-refresh` (weekly.yml input full_refresh=true, or
 -- FFAI_DBT_FULL_REFRESH=1 for the contracts wrapper) at the start of a season, after any change to
