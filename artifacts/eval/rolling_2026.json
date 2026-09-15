@@ -1,4 +1,22 @@
 {
   "season": 2026,
-  "weeks": []
+  "weeks": [
+    {
+      "week": 1,
+      "n": 307,
+      "champion": {
+        "n": 307,
+        "mae": 5.1046,
+        "within_3_rate": 0.4365,
+        "baseline_mae": 5.0275
+      },
+      "challenger": {
+        "n": 307,
+        "mae": 5.2707,
+        "within_3_rate": 0.443,
+        "baseline_mae": 5.0275
+      },
+      "scored_at_utc": "2026-09-15T14:37:10+00:00"
+    }
+  ]
 }
