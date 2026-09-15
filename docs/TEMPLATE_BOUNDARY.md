@@ -5,6 +5,9 @@ Read-only inventory of this repository, classified for extraction into the reusa
 Phase B/C change. Nothing in this document changes behaviour; it decides what the template
 parameterises, what it keeps as-is, and what stays fantasy-football-specific behind an interface.
 
+The template built from this audit is `cbratkovics/ds-dbt-stack-template` (ADR-0029); its
+`docs/SECOND_USE_CHECKLIST.md` lists where the template's names differ from this repository's.
+
 Classification:
 
 - **Generic** — reusable as-is (no domain word inside, or only in comments).
