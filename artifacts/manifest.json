@@ -41,11 +41,11 @@
   "feature_version": "asof_v1",
   "last_run": {
     "action": "HOLD",
-    "at_utc": "2026-09-15T12:16:13+00:00",
+    "at_utc": "2026-09-15T12:35:08+00:00",
     "reasons": [
       "drift PSI > hold threshold on QB:fantasy_points_ppr_L1, QB:fantasy_points_ppr_L3_avg, QB:fantasy_points_ppr_L5_avg, QB:passing_air_yards_L3_avg, QB:passing_yards_L1, QB:passing_yards_L3_avg, QB:passing_yards_L5_avg, RB:rushing_yards_L1"
     ],
-    "run_id": "run-20260915T121613Z",
+    "run_id": "run-20260915T123508Z",
     "season": 2026,
     "stats_rows": 40687,
     "week": 2
@@ -55,5 +55,5 @@
     "latest": "predictions/2026/week_01.json"
   },
   "tiers_version": "20260911-tiers_prevseason_v1-2024-mpc8",
-  "updated_at_utc": "2026-09-15T12:16:31+00:00"
+  "updated_at_utc": "2026-09-15T12:35:25+00:00"
 }
