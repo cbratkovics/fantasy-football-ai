@@ -24,9 +24,31 @@ MART_TABLES: tuple[str, ...] = (
     "fct_weekly_eval",
     "fct_player_decisions",
     "fct_decision_policy",
+    "fct_decision_policy_v2",
     "fct_tier_outcomes",
 )
 EXPORT_MANIFEST = "_export_manifest.json"
+
+# Versioned marts (ADR-0025): dbt exports each version under its own relation alias. The API
+# pins the version it reads; a version stays served for at least one season after its successor.
+MART_VERSIONS: dict[str, dict[int, str]] = {
+    "fct_decision_policy": {1: "fct_decision_policy", 2: "fct_decision_policy_v2"},
+}
+DECISIONS_MART_VERSION = 1
+
+
+def mart_table(mart: str, version: int | None = None) -> str:
+    """The exported table (parquet stem / DuckDB view) for a mart, at an explicit version."""
+    if mart not in MART_VERSIONS:
+        if version not in (None, 1):
+            raise KeyError(f"{mart} is not versioned")
+        return mart
+    versions = MART_VERSIONS[mart]
+    if version is None:
+        raise KeyError(f"{mart} is versioned; pass version= one of {sorted(versions)}")
+    if version not in versions:
+        raise KeyError(f"{mart} has no version {version}; known: {sorted(versions)}")
+    return versions[version]
 
 
 class MartStore:
@@ -62,9 +84,10 @@ class MartStore:
         return [dict(zip(cols, row, strict=True)) for row in cur.fetchall()]
 
     def min_floors(self) -> list[float]:
+        table = mart_table("fct_decision_policy", DECISIONS_MART_VERSION)
         return [
             float(r["min_floor"])
-            for r in self._rows("select distinct min_floor from fct_decision_policy order by 1")
+            for r in self._rows(f"select distinct min_floor from {table} order by 1")
         ]
 
     # -- queries -------------------------------------------------------------------------
@@ -125,8 +148,9 @@ class MartStore:
             where.append("candidate = ?")
             params.append(candidate)
         clause = " and ".join(where)
+        table = mart_table("fct_decision_policy", DECISIONS_MART_VERSION)
         rows = self._rows(
-            f"select * from fct_decision_policy where {clause} order by period_key, position, candidate",
+            f"select * from {table} where {clause} order by period_key, position, candidate",
             params,
         )
         # Count-weighted roll-ups of the same rows, in SQL, so no number is invented client-side.
@@ -145,7 +169,7 @@ class MartStore:
                 sum(downside_rate * recommendations_with_outcome)
                     / nullif(sum(recommendations_with_outcome), 0) as downside_rate,
                 sum(recommendations_with_outcome) as recommendations_with_outcome
-            from fct_decision_policy where {clause}
+            from {table} where {clause}
             group by 1 order by 1
         """
         overall = self._rows(summary_sql.format(group="'ALL'"), params)

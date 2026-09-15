@@ -1,4 +1,4 @@
-.PHONY: help install test lint format train tiers evaluate score weekly api build frontend dbt-deps dbt-dev dbt-prod dbt-export dbt-docs dbt-lint
+.PHONY: help install test lint format train tiers evaluate score weekly api build frontend dbt-deps dbt-dev dbt-state dbt-slim dbt-prod dbt-export dbt-docs dbt-lint
 
 PY ?= .venv/bin/python
 
@@ -16,6 +16,8 @@ help:
 	@echo "build     - build the API Docker image"
 	@echo "frontend  - run the Next.js dev server on :3000"
 	@echo "dbt-dev   - dbt deps + build the medallion warehouse locally (.duckdb/ffai_dev.duckdb)"
+	@echo "dbt-state - save the last dev build (manifest + DuckDB file) as slim-build state in .dbt-state/"
+	@echo "dbt-slim  - build only state:modified+ against .dbt-state, deferring the rest (ADR-0026)"
 	@echo "dbt-prod  - dbt build against MotherDuck (needs MOTHERDUCK_TOKEN in the environment)"
 	@echo "dbt-export - export gold marts to artifacts/marts/*.parquet (DBT_TARGET=dev|prod)"
 	@echo "dbt-docs  - generate the static dbt docs site into dbt/target"
@@ -23,7 +25,7 @@ help:
 
 install:
 	uv venv --python 3.11 .venv
-	uv pip install --python $(PY) -r requirements-train.txt
+	uv pip install --python $(PY) -c constraints.txt -r requirements-train.txt
 	uv pip install --python $(PY) -e .
 
 test:
@@ -71,10 +73,23 @@ DBT_TARGET ?= dev
 
 dbt-deps:
 	$(DBT) deps $(DBT_FLAGS)
+	@# macOS occasionally leaves empty '<pkg> 2' copies next to the installed packages, which makes
+	@# dbt refuse to run ("expects 3 package(s) ... found 6"); empty directories are safe to drop.
+	@find dbt/dbt_packages -maxdepth 1 -type d -empty -delete
 
 dbt-dev: dbt-deps
 	mkdir -p .duckdb
 	$(DBT) build $(DBT_FLAGS) --target dev
+
+dbt-state:
+	mkdir -p .dbt-state
+	cp dbt/target/manifest.json .dbt-state/manifest.json
+	cp .duckdb/ffai_dev.duckdb .dbt-state/ffai_dev.duckdb
+	git rev-parse HEAD > .dbt-state/commit
+
+dbt-slim: dbt-deps
+	@test -f .dbt-state/manifest.json || (echo "no .dbt-state; run make dbt-dev && make dbt-state first" && exit 1)
+	$(DBT) build $(DBT_FLAGS) --target dev --select state:modified+ --defer --state $(CURDIR)/.dbt-state
 
 dbt-prod: dbt-deps
 	$(DBT) build $(DBT_FLAGS) --target prod

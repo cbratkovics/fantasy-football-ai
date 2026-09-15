@@ -1,0 +1,7 @@
+# Pins for the analytics toolchain, applied by CI and the weekly job (pip install -c constraints.txt).
+# One place to bump dbt: the dev build, the slim-CI state comparison, and the prod build on
+# MotherDuck must run the same dbt-core / dbt-duckdb / DuckDB, or state:modified+ and the
+# incremental / snapshot materialisations can behave differently between them (ADR-0027).
+dbt-core==1.12.4
+dbt-duckdb==1.11.0
+duckdb==1.5.5

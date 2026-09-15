@@ -18,7 +18,10 @@ cache the weekly job refreshes.
 back to a committed file.
 
 **Silver** (`slv_*`, 7 models) — conformed, deduplicated, and grain-enforced. Each grain is a
-`unique_combination_of_columns` test:
+`unique_combination_of_columns` test. `slv_player_stats` is the one incremental model: delete+insert
+on its grain key with a lookback of `stats_lookback_periods` (default 4) so nflverse stat
+corrections to recent weeks are reprocessed; `tests/test_dbt_incremental.py` proves an incremental
+run and a full refresh produce identical rows, including a restated week (ADR-0023):
 
 - `slv_player_stats` — (player_id, season, week)
 - `slv_actuals` — (player_id, season, week, scoring_format)
@@ -28,7 +31,12 @@ back to a committed file.
 - `slv_rolling_weeks` — (season, week)
 - `slv_tiers` — (tiers_version, position, player_id)
 
-**Gold** (7 marts, contracts enforced) — what the API and the site read:
+**Snapshot** (`snp_player`) — SCD Type 2 history of `dim_player`'s slowly changing attributes
+(team, position, display name), captured on every build; each version records the data-through
+period it was first seen at (ADR-0024).
+
+**Gold** (9 models, contracts enforced) — what the API and the site read, plus the two
+snapshot-backed views:
 
 - `dim_player` — one row per player with the latest-seen name, team, and position.
 - `dim_model_version` — one row per trained model version: training provenance plus the
@@ -41,8 +49,13 @@ back to a committed file.
   the prediction floor clears the threshold, else review) with regret, hit, and downside outcomes.
 - `fct_decision_policy` — the same policy swept over a grid of floor thresholds: recommendation
   rates, recommendation MAE, mean regret, hit rate, and downside rate per week and position.
+  Versioned (ADR-0025): v1 is the served shape and keeps the plain relation name; v2 (latest) adds
+  `recommendation_within_3_rate` and `recommendation_interval_coverage`. The API pins v1.
 - `fct_tier_outcomes` — each preseason draft tier and rank next to the realised rank of the
   season that followed.
+- `dim_player_current` / `dim_player_asof` (views, not exported) — the current snapshot version per
+  player, and the version in force when each scored period was scored, with `is_exact_asof` saying
+  whether history could answer or the current record was used as a fallback.
 
 ## How trust is established
 
@@ -50,19 +63,21 @@ Counts from `dbt ls` and the `dbt build` output of this project:
 
 | Resource | Count |
 | --- | --- |
-| Models | 23 (9 bronze, 7 silver, 7 gold) |
+| Models | 26 (9 bronze, 7 silver, 9 gold) |
+| Snapshots | 1 |
 | Source tables | 9 (one source, `repo_files`) |
-| Data tests | 82 (76 generic, 6 singular) |
+| Data tests | 96 (89 generic, 7 singular) |
 | Unit tests | 3 |
 | Exposures | 2 |
 
-The 76 generic tests: 24 `expect_column_values_to_be_between`, 23 `not_null`, 13
-`accepted_values`, 7 `unique_combination_of_columns`, 4 `expression_is_true`, 2 `unique`,
-1 `relationships`, 1 `expect_table_columns_to_contain_set`, and 1 custom
-`row_count_within_pct_of_prior_period`. The 6 singular tests reconcile the warehouse to things
+The 89 generic tests: 28 `expect_column_values_to_be_between`, 27 `not_null`, 14
+`accepted_values`, 8 `unique_combination_of_columns`, 4 `expression_is_true`, 3 `unique`,
+2 `relationships`, 1 `equal_rowcount`, 1 `expect_table_columns_to_contain_set`, and 1 custom
+`row_count_within_pct_of_prior_period`. The 7 singular tests reconcile the warehouse to things
 outside it: the scoring rules against nflverse's own points, recorded actuals against the stats,
 stats freshness and row count against the previous run, the causal baseline against the
-evaluation artifacts, and the marts against the evaluation artifacts.
+evaluation artifacts, the marts against the evaluation artifacts, and the as-of dimension against
+the snapshot's first capture.
 
 - **Contracts.** Every gold mart has an enforced dbt contract (column names, types, and
   primary-key / not-null constraints), so a schema change fails the build instead of the API.
@@ -75,6 +90,22 @@ evaluation artifacts, and the marts against the evaluation artifacts.
   than 1e-4. The warehouse cannot publish a number the evaluation artifacts do not already carry.
 - **Unit tests** cover the scoring-rules macro under all three formats, the prediction
   deduplication rule, and the weekly MAE / within-k aggregation on fixed rows.
+- **Versions.** The public decisions mart is versioned; a version is served for at least one
+  season after its successor ships, and the API names the version it reads.
+- **Slim CI.** Pull requests build only `state:modified+` against the last `main` dev build
+  (manifest and DuckDB file from the Actions cache), deferring everything else to it; `main`
+  itself always does a full dev build. Production builds happen once a week on MotherDuck.
+
+## From model to mart to API
+
+A prediction is written by the weekly job to `artifacts/predictions/<season>/week_<ww>.json` →
+`brz_predictions_weekly` → `slv_predictions` (deduplicated across the frozen-test, out-of-sample,
+and weekly families) → `fct_player_week` (joined to the realised points from `slv_actuals`, with
+the causal baseline) → `fct_weekly_eval` and `fct_player_decisions` / `fct_decision_policy` →
+`export_gold` writes each gold table to `artifacts/marts/<alias>.parquet` → the FastAPI service
+opens those files in-process and serves `/marts/weekly_eval`, `/marts/player_week/{id}`, and
+`/marts/decisions`. The evaluation numbers on the site come from `artifacts/eval/*.json` through
+`/performance`; the reconciliation test is what lets the two paths coexist.
 
 ## How to navigate
 

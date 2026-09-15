@@ -149,7 +149,7 @@ ffai/            data/ (loader, contracts wrapper) · features/asof.py · scorin
 dbt/             ffai_dbt — bronze / silver / gold models, tests, macros, exposures (dbt Core + dbt-duckdb)
 artifacts/       committed, versioned: manifest.json · models/<version>/ · tiers/<version>/ · eval/<eval_id>.json · predictions/<season>/ · marts/*.parquet
 frontend-next/   Next.js 14 — reads only the API
-tests/           68 tests: leakage, grain, scoring, contracts wrapper, evaluator, drift, registry, tiers, API contract (incl. marts), weekly policy
+tests/           72 tests: leakage, grain, scoring, contracts wrapper, evaluator, drift, registry, tiers, API contract (incl. marts), weekly policy
 docs/            MODEL_CARD (generated) · ARCHITECTURE · DECISIONS · DATA_SOURCES · REBUILD_REPORT · case study
 ```
 
@@ -193,13 +193,14 @@ flowchart LR
 | **Silver** | Grain uniqueness at every table; the former Python data contracts are now dbt tests (`unique_combination_of_columns`, `expect_column_values_to_be_between`, `accepted_values`, `not_null`, a custom `row_count_within_pct_of_prior_period`, var-driven freshness and row-count tests) plus a singular test that the SQL scoring macro reproduces nflverse's points on every row. The weekly job runs `dbt build --select +tag:silver` and HOLDs on failure. |
 | **Gold** | Every model has `contract: enforced` with DuckDB-enforced not-null / primary-key / check constraints and a description per column. `fct_weekly_eval` recomputes MAE and within-±k in SQL from `fct_player_week`; `fct_decision_policy` sweeps a floor policy over a threshold grid. |
 | **Reconciliation** | `tests/gold/assert_marts_reconcile_to_eval_artifacts.sql`: for every committed evaluation artifact and cohort, the n-weighted aggregate of the marts must match the published n exactly and MAE / within-3 / within-5 to 1e-4, or the build fails. The marts never replace the artifacts; they must agree with them. |
-| **Counts** | 23 models · 82 data tests · 3 unit tests (scoring rules, prediction dedup, weekly-eval metrics) · 6 singular tests · 2 exposures (`api`, `decision_lab_site`). |
+| **Depth** | `slv_player_stats` is incremental (delete+insert, 4-period restatement lookback, equivalence proven by `tests/test_dbt_incremental.py`); `snp_player` is an SCD2 snapshot of the player dimension with `dim_player_current` / `dim_player_asof` views; `fct_decision_policy` is versioned (v1 served, v2 additive) and the API pins the version it reads; pull requests run slim CI (`state:modified+` with `--defer` to the cached `main` dev build). |
+| **Counts** | 26 models · 1 snapshot · 96 data tests · 3 unit tests (scoring rules, prediction dedup, weekly-eval metrics) · 7 singular tests · 2 exposures (`api`, `decision_lab_site`). |
 
 `make dbt-dev` builds and tests locally; `make dbt-prod` needs `MOTHERDUCK_TOKEN`; `make dbt-export`
 writes the parquet marts the API reads. CI builds the `dev` target from the committed fixture,
 lints with `sqlfluff` (dbt templater), and publishes `dbt docs` to
 [GitHub Pages](https://cbratkovics.github.io/fantasy-football-ai/). Design records:
-[ADR-0013 … ADR-0020](docs/DECISIONS.md).
+[ADR-0013 … ADR-0027](docs/DECISIONS.md).
 
 ---
 

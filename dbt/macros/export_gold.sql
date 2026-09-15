@@ -6,20 +6,23 @@
 {% macro export_gold(out_dir='artifacts/marts') %}
     {% if execute %}
         {% set gold = [] %}
-        {% for node in graph.nodes.values() if node.resource_type == 'model' and 'gold' in node.tags %}
+        {#- Every gold model except those opting out with meta export=false (the snapshot-backed
+            dim_player_current / dim_player_asof views). Files are named by alias, not name, so
+            each version of a versioned model gets its own file (ADR-0025). -#}
+        {% for node in graph.nodes.values() if node.resource_type == 'model' and 'gold' in node.tags and (node.config.get('meta') or {}).get('export', true) %}
             {% do gold.append(node) %}
         {% endfor %}
-        {% set gold = gold | sort(attribute='name') %}
+        {% set gold = gold | sort(attribute='alias') %}
         {% set manifest_rows = [] %}
         {% for node in gold %}
             {% set relation = adapter.get_relation(database=node.database, schema=node.schema, identifier=node.alias) %}
             {% if relation is none %}
                 {{ exceptions.raise_compiler_error("export_gold: " ~ node.schema ~ "." ~ node.alias ~ " does not exist; run dbt build first") }}
             {% endif %}
-            {% set path = out_dir ~ '/' ~ node.name ~ '.parquet' %}
+            {% set path = out_dir ~ '/' ~ node.alias ~ '.parquet' %}
             {% do run_query("copy (select * from " ~ relation ~ ") to '" ~ path ~ "' (format parquet, compression zstd)") %}
             {% set n = run_query("select count(*) from " ~ relation).columns[0].values()[0] %}
-            {% do manifest_rows.append("select '" ~ node.name ~ "' as model, " ~ n ~ " as row_count, '" ~ path ~ "' as path") %}
+            {% do manifest_rows.append("select '" ~ node.alias ~ "' as model, " ~ n ~ " as row_count, '" ~ path ~ "' as path") %}
             {% do log("export_gold: " ~ path ~ " (" ~ n ~ " rows)", info=true) %}
         {% endfor %}
         {% set commit = env_var('GITHUB_SHA', '') %}

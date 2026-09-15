@@ -128,3 +128,5 @@ logs/
 !dbt/**/*.sql
 !analytics/**/*.sql
 dbt/.user.yml
+# slim-build state (make dbt-state): a copy of the last dev manifest and DuckDB file
+.dbt-state/

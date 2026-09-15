@@ -46,6 +46,11 @@ def dbt_target() -> str:
     return os.environ.get("FFAI_DBT_TARGET", DEFAULT_TARGET)
 
 
+def dbt_full_refresh() -> bool:
+    """``FFAI_DBT_FULL_REFRESH=1`` rebuilds the incremental silver model from scratch (ADR-0023)."""
+    return os.environ.get("FFAI_DBT_FULL_REFRESH", "").strip().lower() in {"1", "true", "yes"}
+
+
 def _short_name(unique_id: str) -> str:
     # test.ffai_dbt.not_null_slv_player_stats_player_id.4f2a1b -> not_null_slv_player_stats_player_id
     parts = unique_id.split(".")
@@ -137,9 +142,13 @@ def dbt_vars(
 
 
 def dbt_command(
-    vars_: dict[str, Any], *, target: str, project_dir: Path = DBT_PROJECT_DIR
+    vars_: dict[str, Any],
+    *,
+    target: str,
+    project_dir: Path = DBT_PROJECT_DIR,
+    full_refresh: bool = False,
 ) -> list[str]:
-    return [
+    cmd = [
         sys.executable,
         "-m",
         "dbt.cli.main",
@@ -157,6 +166,9 @@ def dbt_command(
         "--vars",
         json.dumps(vars_),
     ]
+    if full_refresh:
+        cmd.append("--full-refresh")
+    return cmd
 
 
 def run_silver_contracts(
@@ -183,7 +195,9 @@ def run_silver_contracts(
         expected_through=expected_through,
         prior_row_count=prior_row_count,
     )
-    cmd = dbt_command(vars_, target=target, project_dir=project_dir)
+    cmd = dbt_command(
+        vars_, target=target, project_dir=project_dir, full_refresh=dbt_full_refresh()
+    )
     results_path = project_dir / "target" / "run_results.json"
     results_path.unlink(missing_ok=True)  # never read a previous invocation's results
     proc = subprocess.run(cmd, cwd=REPO_ROOT, capture_output=True, text=True)

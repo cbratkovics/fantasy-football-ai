@@ -213,3 +213,23 @@ def test_marts_decisions_sweep(client) -> None:
     assert qb["rows"] and all(r["position"] == "QB" for r in qb["rows"])
     assert client.get("/marts/decisions?min_floor=6.37").status_code == 422
     assert client.get("/marts/decisions?position=K").status_code == 422
+
+
+def test_decisions_mart_is_read_at_an_explicit_version(client) -> None:
+    """ADR-0025: the API pins the decisions mart version it serves; v1 keeps the plain relation name."""
+    from ffai.serve import marts
+
+    assert marts.DECISIONS_MART_VERSION == 1
+    assert (
+        marts.mart_table("fct_decision_policy", marts.DECISIONS_MART_VERSION)
+        == "fct_decision_policy"
+    )
+    assert marts.mart_table("fct_decision_policy", 2) == "fct_decision_policy_v2"
+    with pytest.raises(KeyError):
+        marts.mart_table("fct_decision_policy")  # a versioned mart needs an explicit version
+    with pytest.raises(KeyError):
+        marts.mart_table("fct_decision_policy", 3)
+    body = client.get("/marts/decisions").json()
+    assert body["mart"] == "fct_decision_policy"
+    served = set(body["rows"][0])
+    assert "recommendation_interval_coverage" not in served, "v1 must not carry v2 columns"

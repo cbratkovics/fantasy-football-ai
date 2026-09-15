@@ -1,6 +1,8 @@
 # Architecture decision records
 
-Short, dated records of decisions that shape this repository. Newest last.
+Short, dated records of decisions that shape this repository. Newest last. ADR-0001 … ADR-0021
+are sections of this file; from ADR-0022 on each record is a file under `docs/adr/` and is
+indexed at the end of this file (ADR-0022).
 
 ## ADR-0001 — `main` is fast-forwarded to the production branch (2026-09-10)
 
@@ -401,3 +403,12 @@ exist versus columns that are documented) needs a built warehouse, which CI alre
 
 **Consequences.** A new column without a description fails CI, not the commit. The check
 covers models, sources, and exposures; it does not require descriptions on tests or macros.
+
+## Index of records under `docs/adr/`
+
+- [ADR-0022](adr/0022-adr-files-under-docs-adr.md) — New decision records are files under `docs/adr/`, indexed here (2026-09-15)
+- [ADR-0023](adr/0023-incremental-silver-stats-with-lookback.md) — `slv_player_stats` is incremental with a restatement lookback (2026-09-15)
+- [ADR-0024](adr/0024-player-snapshot-and-asof-views.md) — `dim_player` history as an SCD2 snapshot with current and as-of views (2026-09-15)
+- [ADR-0025](adr/0025-versioned-decisions-mart.md) — `fct_decision_policy` is versioned; v1 keeps its relation name, the API pins a version (2026-09-15)
+- [ADR-0026](adr/0026-slim-ci-deferred-to-cached-main-dev-build.md) — Slim CI compares and defers to the cached `main` dev build, not a prod manifest (2026-09-15)
+- [ADR-0027](adr/0027-single-constraints-file-for-the-dbt-toolchain.md) — One `constraints.txt` pins dbt-core, dbt-duckdb, and DuckDB for CI and the weekly job (2026-09-15)

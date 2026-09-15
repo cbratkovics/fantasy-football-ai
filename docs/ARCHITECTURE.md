@@ -90,13 +90,21 @@ flowchart LR
   × week × model_version × candidate; `slv_actuals` adds scoring_format; `slv_eval_metrics` eval_id ×
   cohort; `slv_eval_folds` eval_id × season × week; `slv_tiers` tiers_version × position × player)
   with documented deterministic deduplication; the data contracts are its tests (ADR-0015).
+* `slv_player_stats` is incremental (delete+insert on the grain, `stats_lookback_periods`
+  restatement lookback, documented full-refresh policy; ADR-0023).
+* Snapshot `snp_player` (SCD2, `check` on team / position / display name) feeds the gold views
+  `dim_player_current` and `dim_player_asof` (`is_exact_asof` marks periods history can answer;
+  ADR-0024). The views are not exported.
 * Gold: `dim_player`, `dim_model_version`, `fct_player_week`, `fct_weekly_eval`,
-  `fct_player_decisions`, `fct_decision_policy`, `fct_tier_outcomes`; every model contracted
-  (ADR-0016, ADR-0017). Unit tests pin the scoring macro, the prediction dedup rule, and the
-  weekly-eval metrics. Exposures: `api`, `decision_lab_site`.
+  `fct_player_decisions`, `fct_decision_policy` (versioned: v1 served under the plain relation
+  name, v2 additive, API pins `DECISIONS_MART_VERSION`; ADR-0025), `fct_tier_outcomes`; every
+  model contracted (ADR-0016, ADR-0017). Unit tests pin the scoring macro, the prediction dedup
+  rule, and the weekly-eval metrics. Exposures: `api`, `decision_lab_site`.
 * The weekly job runs the silver contracts inside the Python job (HOLD on failure), then after
-  scoring `dbt build --target prod` and `export_gold`; CI builds `dev` from the committed fixture,
-  lints with sqlfluff, and publishes `dbt docs` to GitHub Pages (ADR-0019, ADR-0020).
+  scoring `dbt build --target prod` and `export_gold`; CI builds `dev` from the committed fixture
+  (full on `main`, `state:modified+ --defer` against the cached `main` build elsewhere; ADR-0026),
+  lints with sqlfluff, and publishes `dbt docs` to GitHub Pages (ADR-0019, ADR-0020). The dbt
+  toolchain is pinned once in `constraints.txt` (ADR-0027).
 
 ## Serving
 

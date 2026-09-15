@@ -6,11 +6,13 @@ ffai_dbt:
   outputs:
     dev:
       type: duckdb
-      path: ".duckdb/ffai_dev.duckdb"
+      # FFAI_DUCKDB_PATH lets tests build into a scratch file (tests/test_dbt_incremental.py).
+      path: "{{ env_var('FFAI_DUCKDB_PATH', '.duckdb/ffai_dev.duckdb') }}"
       schema: main
       threads: 4
     prod:
       type: duckdb
-      path: "md:ffai?motherduck_token={{ env_var('MOTHERDUCK_TOKEN') }}"
+      # FFAI_MOTHERDUCK_DATABASE overrides the database only for scratch verification builds.
+      path: "md:{{ env_var('FFAI_MOTHERDUCK_DATABASE', 'ffai') }}?motherduck_token={{ env_var('MOTHERDUCK_TOKEN') }}"
       schema: main
       threads: 4

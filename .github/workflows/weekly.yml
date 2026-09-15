@@ -27,6 +27,10 @@ on:
         description: "Compute but do not commit"
         type: boolean
         default: false
+      full_refresh:
+        description: "Rebuild the incremental silver stats table from scratch (ADR-0023: start of a season, model change, or a restatement older than the lookback)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -47,11 +51,13 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
-          cache-dependency-path: requirements-train.txt
+          cache-dependency-path: |
+            requirements-train.txt
+            constraints.txt
       - name: Install
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements-train.txt
+          pip install -c constraints.txt -r requirements-train.txt
           pip install -e .
       - name: dbt deps
         run: dbt deps --project-dir dbt --profiles-dir dbt
@@ -61,6 +67,7 @@ jobs:
         env:
           MOTHERDUCK_TOKEN: ${{ secrets.MOTHERDUCK_TOKEN }}
           FFAI_DBT_TARGET: prod
+          FFAI_DBT_FULL_REFRESH: ${{ inputs.full_refresh == true && '1' || '' }}
         run: |
           ARGS=""
           if [ -n "${{ inputs.season }}" ] && [ -n "${{ inputs.week }}" ]; then
@@ -97,7 +104,9 @@ jobs:
           MOTHERDUCK_TOKEN: ${{ secrets.MOTHERDUCK_TOKEN }}
         run: |
           VARS="{\"target_season\": ${{ steps.outcome.outputs.season }}, \"target_week\": $((10#${{ steps.outcome.outputs.week }}))}"
-          dbt build --project-dir dbt --profiles-dir dbt --target prod --vars "$VARS"
+          FLAGS=""
+          if [ "${{ inputs.full_refresh }}" = "true" ]; then FLAGS="--full-refresh"; fi
+          dbt build --project-dir dbt --profiles-dir dbt --target prod --vars "$VARS" $FLAGS
           dbt run-operation export_gold --project-dir dbt --profiles-dir dbt --target prod
       - name: Commit artifacts
         if: ${{ inputs.dry_run != true && steps.outcome.outputs.action != 'DRY_RUN' }}

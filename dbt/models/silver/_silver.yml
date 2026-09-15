@@ -19,7 +19,12 @@ models:
     description: >
       Cleaned weekly stats at the (player_id, season, week) grain: regular season, QB/RB/WR/TE,
       deduplicated (higher PPR points wins, then team), rows of the week being scored dropped,
-      with rules-based points under every scoring format.
+      with rules-based points under every scoring format. Incremental (delete+insert on the grain
+      key) with a lookback of var stats_lookback_periods so nflverse stat corrections to recent
+      weeks are reprocessed; full-refresh policy and the reason this model (and not
+      fct_player_week or bronze) is incremental are in the model header and ADR-0023.
+    config:
+      materialized: incremental
     data_tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
@@ -461,6 +466,9 @@ unit_tests:
       a 2-pt conversion, and a null-heavy line (nulls count as zero). Expected values are computed
       by hand from the rules in the macro docstring.
     model: slv_player_stats
+    overrides:
+      macros:
+        is_incremental: false
     given:
       - input: ref('brz_player_stats')
         rows:

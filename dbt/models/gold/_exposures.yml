@@ -13,7 +13,7 @@ exposures:
     depends_on:
       - ref('fct_weekly_eval')
       - ref('fct_player_week')
-      - ref('fct_decision_policy')
+      - ref('fct_decision_policy', v=1)
       - ref('dim_model_version')
     owner:
       name: Christopher Bratkovics
@@ -29,7 +29,7 @@ exposures:
       history chart are driven by the gold marts through /marts/decisions and
       /marts/player_week/{player_id}; the published evaluation numbers come from the artifacts.
     depends_on:
-      - ref('fct_decision_policy')
+      - ref('fct_decision_policy', v=1)
       - ref('fct_player_week')
       - ref('fct_weekly_eval')
     owner:

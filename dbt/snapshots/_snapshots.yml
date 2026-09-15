@@ -1,0 +1,24 @@
+version: 2
+
+snapshots:
+  - name: snp_player
+    description: >
+      SCD Type 2 history of dim_player's slowly changing attributes (team, position, display
+      name), captured on every warehouse build. A row is valid from dbt_valid_from until
+      dbt_valid_to (null = current). as_of_period_key is the data-through period when the version
+      was first captured, so as-of resolution works in period terms (ADR-0024).
+    columns:
+      - name: player_id
+        description: nflverse GSIS id
+      - name: player_display_name
+        description: display name at capture (check column)
+      - name: position
+        description: position at capture (check column)
+      - name: team
+        description: team at capture (check column)
+      - name: as_of_period_key
+        description: max period_key in slv_player_stats when this version was first captured
+      - name: dbt_valid_from
+        description: capture timestamp of this version
+      - name: dbt_valid_to
+        description: timestamp the version was superseded; null for the current version

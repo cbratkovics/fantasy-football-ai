@@ -23,6 +23,48 @@ models:
       - { name: games_played, data_type: integer, description: stats rows (regular-season games) in the warehouse, constraints: [{ type: not_null }] }
       - { name: attribute_source, data_type: varchar, description: which table supplied the attributes (stats > predictions > tiers), data_tests: [{ accepted_values: { arguments: { values: [stats, predictions, tiers] } } }] }
 
+  - name: dim_player_current
+    description: >
+      One row per player: the current version of the SCD2 snapshot snp_player (ADR-0024), with
+      the same attributes as dim_player plus when this version was first captured. Downstream
+      marts pick this view for "attributes now" and dim_player_asof for "attributes when the
+      period was scored". Not exported to artifacts/marts.
+    config:
+      contract: { enforced: true }
+    data_tests:
+      - dbt_utils.equal_rowcount:
+          arguments:
+            compare_model: ref('dim_player')
+    columns:
+      - { name: player_id, data_type: varchar, description: nflverse GSIS id, data_tests: [unique, not_null, { relationships: { arguments: { to: ref('dim_player'), field: player_id } } }] }
+      - { name: player_display_name, data_type: varchar, description: current display name }
+      - { name: position, data_type: varchar, description: current position, data_tests: [{ accepted_values: { arguments: { values: [QB, RB, WR, TE] } } }] }
+      - { name: team, data_type: varchar, description: current team }
+      - { name: version_from_period_key, data_type: integer, description: data-through period_key when this version was first captured }
+      - { name: version_valid_from_utc, data_type: timestamp, description: capture timestamp of this version }
+
+  - name: dim_player_asof
+    description: >
+      One row per (player_id, period_key) for every scored period: the player's attributes as
+      they were when that period was scored, resolved from the snp_player history (ADR-0024).
+      is_exact_asof is false where history cannot answer (periods before the first capture, or a
+      player captured after the period) and the current version is used instead. Not exported.
+    config:
+      contract: { enforced: true }
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [player_id, period_key]
+    columns:
+      - { name: player_id, data_type: varchar, description: nflverse GSIS id, data_tests: [not_null] }
+      - { name: period_key, data_type: integer, description: season * 100 + week of the scored period, data_tests: [not_null] }
+      - { name: player_display_name, data_type: varchar, description: display name as of the period (current when not exact) }
+      - { name: position, data_type: varchar, description: position as of the period (current when not exact) }
+      - { name: team, data_type: varchar, description: team as of the period (current when not exact) }
+      - { name: is_exact_asof, data_type: boolean, description: true when a snapshot version covering the period exists; false when the current version was used as a fallback, data_tests: [not_null] }
+      - { name: version_from_period_key, data_type: integer, description: capture period_key of the version used }
+      - { name: version_valid_from_utc, data_type: timestamp, description: capture timestamp of the version used }
+
   - name: dim_model_version
     description: One row per trained model version with training provenance and the manifest's champion / challenger slots.
     config:
@@ -176,11 +218,31 @@ models:
       Policy metrics per (season, week, position, model_version, candidate, min_floor) swept over
       var min_floor_grid: recommendation and review counts and rates, recommendation MAE, mean
       regret, hit rate, downside rate. Served by the API as /marts/decisions?min_floor=.
+      Versioned (ADR-0025): v1 is the shape the API serves today and keeps the relation name
+      fct_decision_policy (alias) so its exported parquet is unchanged; v2 (latest) adds the
+      interval outcomes of recommended players (recommendation_within_3_rate,
+      recommendation_interval_coverage) and exports as fct_decision_policy_v2.parquet.
+      Deprecation policy: a version is served by the API for at least one full season after its
+      successor ships; the API pins the version it reads (ffai.serve.marts.DECISIONS_MART_VERSION);
+      when it moves to v2, v1 gets a deprecation_date one season out, keeps building and exporting
+      until then, and is deleted after. ref('fct_decision_policy') without a version resolves to the
+      latest version and is a build-time warning once v1 is deprecated.
+    latest_version: 2
     config:
       contract: { enforced: true }
     constraints:
       - type: primary_key
         columns: [season, week, position, model_version, candidate, min_floor]
+    versions:
+      - v: 1
+        config:
+          alias: fct_decision_policy
+        columns:
+          - include: all
+            exclude: [recommendation_within_3_rate, recommendation_interval_coverage]
+      - v: 2
+        columns:
+          - include: all
     columns:
       - { name: season, data_type: integer, description: NFL season, constraints: [{ type: not_null }] }
       - { name: week, data_type: integer, description: regular-season week, constraints: [{ type: not_null }] }
@@ -200,6 +262,8 @@ models:
       - { name: mean_regret, data_type: double, description: mean(best_eligible_points - actual) over recommended players }
       - { name: hit_rate, data_type: double, description: share of recommended players who beat replacement level, data_tests: [{ dbt_expectations.expect_column_values_to_be_between: { arguments: { min_value: 0, max_value: 1 } } }] }
       - { name: downside_rate, data_type: double, description: share of recommended players who scored below their floor, data_tests: [{ dbt_expectations.expect_column_values_to_be_between: { arguments: { min_value: 0, max_value: 1 } } }] }
+      - { name: recommendation_within_3_rate, data_type: double, description: "v2: share of recommended players with an outcome whose |actual - prediction| <= 3", data_tests: [{ dbt_expectations.expect_column_values_to_be_between: { arguments: { min_value: 0, max_value: 1 } } }] }
+      - { name: recommendation_interval_coverage, data_type: double, description: "v2: share of recommended players with an outcome whose actual fell inside floor..ceiling", data_tests: [{ dbt_expectations.expect_column_values_to_be_between: { arguments: { min_value: 0, max_value: 1 } } }] }
 
   - name: fct_tier_outcomes
     description: >
