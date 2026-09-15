@@ -1,0 +1,100 @@
+{
+  "run_id": "run-20260915T121613Z",
+  "at_utc": "2026-09-15T12:16:13+00:00",
+  "dry_run": false,
+  "steps": [
+    {
+      "step": "season_week",
+      "season": 2026,
+      "week": 2
+    },
+    {
+      "step": "stats",
+      "loaded_rows": 40687,
+      "rows_before_target_week": 40687,
+      "dropped_partial_rows": 0
+    },
+    {
+      "step": "contracts",
+      "ok": true,
+      "failures": [],
+      "summary": {
+        "dbt": {
+          "elapsed_s": 9.863986015319824,
+          "invocation_id": "878c17c1-3990-4f32-881e-5f0357d4cca2",
+          "status_counts": {
+            "success": 14,
+            "pass": 66
+          },
+          "n_checks": 66,
+          "target": "prod",
+          "vars": {
+            "stats_path": "data/cache/player_stats_2019-2026_2026-09-15.parquet",
+            "target_season": 2026,
+            "target_week": 2,
+            "expected_season": 2026,
+            "expected_week": 1,
+            "prior_row_count": 40330
+          },
+          "returncode": 0
+        },
+        "rows": 40687,
+        "players": 1393,
+        "latest": [
+          2026,
+          1
+        ]
+      }
+    },
+    {
+      "step": "drift",
+      "status": "hold",
+      "positions": {
+        "QB": {
+          "status": "hold",
+          "median_monitored": 0.3293,
+          "flagged": [
+            "fantasy_points_ppr_L1",
+            "fantasy_points_ppr_L3_avg",
+            "fantasy_points_ppr_L5_avg",
+            "passing_air_yards_L3_avg",
+            "passing_yards_L1",
+            "passing_yards_L3_avg",
+            "passing_yards_L5_avg"
+          ],
+          "severe": [],
+          "n": 158
+        },
+        "RB": {
+          "status": "warn",
+          "median_monitored": 0.0566,
+          "flagged": [
+            "rushing_yards_L1"
+          ],
+          "severe": [],
+          "n": 353
+        },
+        "WR": {
+          "status": "warn",
+          "median_monitored": 0.1212,
+          "flagged": [],
+          "severe": [],
+          "n": 566
+        },
+        "TE": {
+          "status": "ok",
+          "median_monitored": 0.0716,
+          "flagged": [],
+          "severe": [],
+          "n": 295
+        }
+      }
+    }
+  ],
+  "season": 2026,
+  "week": 2,
+  "action": "HOLD",
+  "reasons": [
+    "drift PSI > hold threshold on QB:fantasy_points_ppr_L1, QB:fantasy_points_ppr_L3_avg, QB:fantasy_points_ppr_L5_avg, QB:passing_air_yards_L3_avg, QB:passing_yards_L1, QB:passing_yards_L3_avg, QB:passing_yards_L5_avg, RB:rushing_yards_L1"
+  ]
+}
