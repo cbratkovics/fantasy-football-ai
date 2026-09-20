@@ -166,7 +166,7 @@ into a warehouse: developed against a local DuckDB file, deployed to **MotherDuc
 *evaluation and decision* marts; model features stay in the one Python feature module.
 
 ```mermaid
-flowchart LR
+flowchart TB
   subgraph src["sources · the repo's own files"]
     S1["data/cache/player_stats_*.parquet"]
     S2["artifacts/predictions · test_predictions.csv · oos_predictions_*.csv"]
