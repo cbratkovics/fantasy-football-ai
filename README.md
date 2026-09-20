@@ -130,7 +130,7 @@ The policy is pure Python, unit-tested on synthetic run logs for the publish / h
 ## Architecture
 
 ```mermaid
-flowchart LR
+flowchart TB
   N["nflverse via nflreadpy"] --> C["data contracts + drift"]
   C --> F["as-of features · asof_v1"]
   F --> T["train · RF champion, XGB challenger"]
