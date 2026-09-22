@@ -1,0 +1,240 @@
+{
+  "drift_report_version": "1.1",
+  "run_id": "run-20260922T141927Z",
+  "at_utc": "2026-09-22T14:19:27+00:00",
+  "season": 2026,
+  "week": 3,
+  "model_version": "20260911-asof_v1-d333de20",
+  "window_weeks_max": 4,
+  "status": "warn",
+  "positions": {
+    "QB": {
+      "n": 153,
+      "psi": {
+        "fantasy_points_ppr_L3_avg": 0.1482,
+        "fantasy_points_ppr_L5_avg": 0.111,
+        "passing_yards_L5_avg": 0.1354,
+        "passing_yards_L3_avg": 0.1307,
+        "passing_air_yards_L3_avg": 0.1643,
+        "passing_yards_L1": 0.1789,
+        "fantasy_points_ppr_L1": 0.1243
+      },
+      "monitored": [
+        "fantasy_points_ppr_L3_avg",
+        "fantasy_points_ppr_L5_avg",
+        "passing_yards_L5_avg",
+        "passing_yards_L3_avg",
+        "passing_air_yards_L3_avg",
+        "passing_yards_L1",
+        "fantasy_points_ppr_L1"
+      ],
+      "median_monitored": 0.1354,
+      "flagged": [],
+      "severe": [],
+      "thresholds": {
+        "warn": 0.1,
+        "hold_median": 0.25,
+        "severe": 0.5,
+        "min_severe_features": 2
+      },
+      "status": "warn",
+      "reference": {
+        "mode": "matched",
+        "window_seasons": [
+          2025,
+          2026
+        ],
+        "window_weeks": [
+          17,
+          18,
+          1,
+          2
+        ],
+        "reference_weeks": [
+          1,
+          2,
+          17,
+          18
+        ],
+        "training_seasons": [
+          2019,
+          2020,
+          2021,
+          2022
+        ],
+        "n_reference_rows": 471
+      }
+    },
+    "RB": {
+      "n": 353,
+      "psi": {
+        "fantasy_points_ppr_L5_avg": 0.0645,
+        "carries_L3_avg": 0.0302,
+        "carries_L1": 0.0484,
+        "carries_L5_avg": 0.0257,
+        "fantasy_points_ppr_L3_avg": 0.0306,
+        "rushing_yards_L1": 0.1682,
+        "rushing_yards_L5_avg": 0.0537,
+        "fantasy_points_ppr_L1": 0.2781
+      },
+      "monitored": [
+        "fantasy_points_ppr_L5_avg",
+        "carries_L3_avg",
+        "carries_L1",
+        "carries_L5_avg",
+        "fantasy_points_ppr_L3_avg",
+        "rushing_yards_L1",
+        "rushing_yards_L5_avg",
+        "fantasy_points_ppr_L1"
+      ],
+      "median_monitored": 0.051,
+      "flagged": [
+        "fantasy_points_ppr_L1"
+      ],
+      "severe": [],
+      "thresholds": {
+        "warn": 0.1,
+        "hold_median": 0.25,
+        "severe": 0.5,
+        "min_severe_features": 2
+      },
+      "status": "warn",
+      "reference": {
+        "mode": "matched",
+        "window_seasons": [
+          2025,
+          2026
+        ],
+        "window_weeks": [
+          17,
+          18,
+          1,
+          2
+        ],
+        "reference_weeks": [
+          1,
+          2,
+          17,
+          18
+        ],
+        "training_seasons": [
+          2019,
+          2020,
+          2021,
+          2022
+        ],
+        "n_reference_rows": 1114
+      }
+    },
+    "WR": {
+      "n": 563,
+      "psi": {
+        "targets_L5_avg": 0.0912,
+        "fantasy_points_ppr_L5_avg": 0.0863,
+        "receptions_L5_avg": 0.085,
+        "receiving_yards_L5_avg": 0.0711,
+        "fantasy_points_ppr_L3_avg": 0.0822,
+        "receiving_air_yards_L3_avg": 0.0606
+      },
+      "monitored": [
+        "targets_L5_avg",
+        "fantasy_points_ppr_L5_avg",
+        "receptions_L5_avg",
+        "receiving_yards_L5_avg",
+        "fantasy_points_ppr_L3_avg",
+        "receiving_air_yards_L3_avg"
+      ],
+      "median_monitored": 0.0836,
+      "flagged": [],
+      "severe": [],
+      "thresholds": {
+        "warn": 0.1,
+        "hold_median": 0.25,
+        "severe": 0.5,
+        "min_severe_features": 2
+      },
+      "status": "ok",
+      "reference": {
+        "mode": "matched",
+        "window_seasons": [
+          2025,
+          2026
+        ],
+        "window_weeks": [
+          17,
+          18,
+          1,
+          2
+        ],
+        "reference_weeks": [
+          1,
+          2,
+          17,
+          18
+        ],
+        "training_seasons": [
+          2019,
+          2020,
+          2021,
+          2022
+        ],
+        "n_reference_rows": 1747
+      }
+    },
+    "TE": {
+      "n": 287,
+      "psi": {
+        "fantasy_points_ppr_L5_avg": 0.0513,
+        "targets_L5_avg": 0.0639,
+        "receiving_yards_L5_avg": 0.0475,
+        "receiving_yards_L3_avg": 0.0161,
+        "fantasy_points_ppr_L3_avg": 0.0592,
+        "targets_L3_avg": 0.1697
+      },
+      "monitored": [
+        "fantasy_points_ppr_L5_avg",
+        "targets_L5_avg",
+        "receiving_yards_L5_avg",
+        "receiving_yards_L3_avg",
+        "fantasy_points_ppr_L3_avg",
+        "targets_L3_avg"
+      ],
+      "median_monitored": 0.0552,
+      "flagged": [],
+      "severe": [],
+      "thresholds": {
+        "warn": 0.1,
+        "hold_median": 0.25,
+        "severe": 0.5,
+        "min_severe_features": 2
+      },
+      "status": "ok",
+      "reference": {
+        "mode": "matched",
+        "window_seasons": [
+          2025,
+          2026
+        ],
+        "window_weeks": [
+          17,
+          18,
+          1,
+          2
+        ],
+        "reference_weeks": [
+          1,
+          2,
+          17,
+          18
+        ],
+        "training_seasons": [
+          2019,
+          2020,
+          2021,
+          2022
+        ],
+        "n_reference_rows": 830
+      }
+    }
+  }
+}

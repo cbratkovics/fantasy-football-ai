@@ -19,7 +19,7 @@
   },
   "data_through": {
     "season": 2026,
-    "week": 1
+    "week": 2
   },
   "eval_id": "eval-20260911-20260911-asof_v1-d333de20-rf",
   "evaluations": [
@@ -41,21 +41,21 @@
   "feature_version": "asof_v1",
   "last_run": {
     "action": "PUBLISH",
-    "at_utc": "2026-09-15T14:37:10+00:00",
+    "at_utc": "2026-09-22T14:19:27+00:00",
     "reasons": [
       "drift warning on RB:fantasy_points_ppr_L1",
       "contracts ok, drift within limits",
       "no promotion: fewer than 4 scored weeks available"
     ],
-    "run_id": "run-20260915T143710Z",
+    "run_id": "run-20260922T141927Z",
     "season": 2026,
-    "stats_rows": 40687,
-    "week": 2
+    "stats_rows": 41046,
+    "week": 3
   },
   "manifest_version": "1.0",
   "predictions": {
-    "latest": "predictions/2026/week_02.json"
+    "latest": "predictions/2026/week_03.json"
   },
   "tiers_version": "20260911-tiers_prevseason_v1-2024-mpc8",
-  "updated_at_utc": "2026-09-15T14:37:30+00:00"
+  "updated_at_utc": "2026-09-22T14:19:56+00:00"
 }
