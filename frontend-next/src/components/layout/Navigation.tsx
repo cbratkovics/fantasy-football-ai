@@ -12,6 +12,7 @@ const primary = [
   { name: 'Tiers', href: ROUTES.tiers },
   { name: 'Draft', href: ROUTES.draft },
   { name: 'Start/Sit', href: ROUTES.startSit },
+  { name: 'Decision Lab', href: ROUTES.decisionLab },
   { name: 'Evaluation', href: ROUTES.performance },
   { name: 'Data Platform', href: ROUTES.dataPlatform },
 ]

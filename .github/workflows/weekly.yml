@@ -110,12 +110,23 @@ jobs:
           if [ "${{ inputs.full_refresh }}" = "true" ]; then FLAGS="--full-refresh"; fi
           dbt build --project-dir dbt --profiles-dir dbt --target prod --vars "$VARS" $FLAGS
           dbt run-operation export_gold --project-dir dbt --profiles-dir dbt --target prod
+      - name: Export the Decision Lab bundle (after gold export, before the commit)
+        # Rebuilds the offline Decision Lab bundle from the marts just exported plus the
+        # prediction files and evaluation artifacts (ADR-0032). On failure the exporter leaves the
+        # previously published bundle untouched and writes artifacts/decision_lab/_last_attempt.json,
+        # so the site keeps the last valid decision inputs and shows the failed attempt separately;
+        # the failure must not block the artifact commit (continue-on-error), and an issue is
+        # opened below.
+        id: lab
+        if: ${{ inputs.dry_run != true && (steps.outcome.outputs.action == 'PUBLISH' || steps.outcome.outputs.action == 'PROMOTE') }}
+        continue-on-error: true
+        run: python scripts/export_decision_lab.py --out artifacts/decision_lab --public-copy frontend-next/public/decision-lab
       - name: Commit artifacts
         if: ${{ inputs.dry_run != true && steps.outcome.outputs.action != 'DRY_RUN' }}
         run: |
           git config user.name "weekly-job"
           git config user.email "weekly-job@users.noreply.github.com"
-          git add artifacts docs/MODEL_CARD.md
+          git add artifacts docs/MODEL_CARD.md frontend-next/public/decision-lab
           git diff --cached --quiet && echo "nothing to commit" && exit 0
           git commit -m "weekly: ${{ steps.outcome.outputs.season }} wk${{ steps.outcome.outputs.week }} ${{ steps.outcome.outputs.action }}"
           git push
@@ -151,6 +162,15 @@ jobs:
             --title "weekly: warehouse build failed for ${{ steps.outcome.outputs.season }} wk${{ steps.outcome.outputs.week }} (${{ steps.outcome.outputs.run_id }})" \
             --label "weekly-hold" \
             --body "dbt build --target prod (or export_gold) failed after scoring; nothing was committed. See the run log: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      - name: Open an issue if the Decision Lab export failed
+        if: ${{ steps.lab.outcome == 'failure' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create \
+            --title "weekly: Decision Lab export failed for ${{ steps.outcome.outputs.season }} wk${{ steps.outcome.outputs.week }} (${{ steps.outcome.outputs.run_id }})" \
+            --label "weekly-hold" \
+            --body "scripts/export_decision_lab.py failed after the gold export; the previously published bundle was left untouched and the attempt is recorded in artifacts/decision_lab/_last_attempt.json (committed with the artifacts). See the run log: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
       - name: Open an issue on HOLD
         if: ${{ steps.outcome.outputs.action == 'HOLD' }}
         env:

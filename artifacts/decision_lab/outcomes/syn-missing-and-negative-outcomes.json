@@ -1,0 +1,35 @@
+{
+ "coverage": {
+  "observed": 2,
+  "scored": 3
+ },
+ "inputs_content_sha256": "f7413c22c670a615dfffcdfd2517b215330e77e1da8a6bdb2d9b7d6a8e2362ef",
+ "model_version": "synthetic-model-v1",
+ "observed_at_utc": null,
+ "rows": [
+  {
+   "actual": null,
+   "actual_source": null,
+   "player_id": "SYN-A"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "synthetic",
+   "player_id": "SYN-B"
+  },
+  {
+   "actual": -1.5,
+   "actual_source": "synthetic",
+   "player_id": "SYN-C"
+  }
+ ],
+ "schema_version": "outcome_snapshot/1.0",
+ "scoring_format": "ppr",
+ "season": 2099,
+ "snapshot_id": "syn-missing-and-negative-outcomes",
+ "source": {
+  "files": [],
+  "mart": null
+ },
+ "week": 1
+}

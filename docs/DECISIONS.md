@@ -416,3 +416,6 @@ covers models, sources, and exposures; it does not require descriptions on tests
 - [ADR-0029](adr/0029-reusable-stack-template-extracted.md) — The stack is extracted into a private copier template; this repository keeps its names (2026-09-15)
 - [ADR-0030](adr/0030-tests-that-shell-out-to-dbt-own-their-dependencies.md) — A test that shells out to dbt installs its own packages; CI job boundaries are not a dependency manager (2026-09-15)
 - [ADR-0031](adr/0031-hybrid-drift-reference-across-the-season-boundary.md) — Drift reference matched to the window's week positions when the window crosses a season boundary; every run writes a drift artifact (2026-09-15)
+- [ADR-0032](adr/0032-decision-lab-evidence-adapter-and-pure-policy.md) — Decision Lab: an offline evidence adapter over the gold marts and a pure, versioned decision policy (2026-09-27)
+- [ADR-0033](adr/0033-decision-receipts-local-persistence-trust-boundary.md) — Decision receipts: browser-local persistence, appended events, and an honest trust boundary (2026-09-27)
+- [ADR-0034](adr/0034-frontend-test-tooling-vitest-playwright.md) — Frontend test tooling: vitest + Testing Library for unit, component and parity tests; Playwright for the browser flow (2026-09-27)

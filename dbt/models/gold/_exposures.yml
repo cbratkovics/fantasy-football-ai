@@ -35,3 +35,25 @@ exposures:
     owner:
       name: Christopher Bratkovics
       email: cbratkovics@gmail.com
+
+  - name: decision_lab
+    label: Decision Lab offline bundle (frontend-next/public/decision-lab)
+    type: application
+    maturity: medium
+    url: https://www.winmyleague.ai/decision-lab
+    description: >
+      The Decision Lab is a static bundle, not an API consumer: scripts/export_decision_lab.py
+      reads the committed fct_player_week parquet (artifacts/marts) together with the prediction
+      files and the evaluation artifacts, reconciles the full-data aggregates to those artifacts,
+      and writes versioned inputs snapshots (never containing actuals) and separate outcome
+      snapshots into artifacts/decision_lab, copied to frontend-next/public/decision-lab for the
+      site (ADR-0032). The lab's baseline provenance prefers this table's baseline_source column
+      when the parquet carries it and derives it by reconciliation otherwise. Display names and
+      teams come from the period-specific prediction sources; dim_player is only the fallback
+      (labelled display_source dim_player_current).
+    depends_on:
+      - ref('fct_player_week')
+      - ref('dim_player')
+    owner:
+      name: Christopher Bratkovics
+      email: cbratkovics@gmail.com

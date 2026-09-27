@@ -17,6 +17,7 @@ export const ROUTES = {
   tiers: '/tiers',
   draft: '/draft',
   startSit: '/start-sit',
+  decisionLab: '/decision-lab',
   performance: '/performance',
   dataPlatform: '/data-platform',
   howItWorks: '/how-it-works',

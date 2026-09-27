@@ -1,0 +1,4385 @@
+{
+ "cases": {
+  "content_sha256": "a0ce3151f74fea03519d7a854dc5af8ea94956fa07f801fe78c4dab02f4f1567",
+  "file_sha256": "c286e2b12c9465bd63aa6e336fc993da7838d19d2a8656160b02267b77aeb065",
+  "n_rows": 18,
+  "path": "cases.json"
+ },
+ "code_revision": {
+  "note": "revision that produced this export; the commit that later contains it may differ (compare with artifacts/marts/_export_manifest.json code_commit, which also predates its containing commit)",
+  "produced_at": "94bb33bb06aa401647fdc2657a74d92d1c869609"
+ },
+ "digest_coverage": {
+  "content_sha256": "SHA-256 of canonical_json(parsed document) (ffai/decision_lab/canonical.py: sorted keys, no whitespace, numbers rounded half-up at six decimals); independent of formatting.",
+  "decision_id": "content_sha256 of the normalized decision_inputs document: schema and policy versions, the snapshot reference including the inputs snapshot's content digest, slot, every alternative with its availability fields, and the parameters; never outcomes, events, timestamps or the computed result (ffai/decision_lab/receipts.py).",
+  "file_sha256": "SHA-256 of the file's bytes exactly as written to the bundle.",
+  "inputs_content_sha256": "Recorded inside each outcome snapshot: the content_sha256 of the inputs snapshot it pairs with.",
+  "manifest": "The manifest's own content digest is recorded in _build.json, never inside the manifest (no self-reference).",
+  "outcome_id": "content_sha256 of the outcome snapshot document.",
+  "volatile": "_build.json and _last_attempt.json are outside every digest."
+ },
+ "exporter_version": "1.0.0",
+ "latest_weekly_snapshot_id": "weekly-2026-w03-20260911-asof_v1-d333de20-rf",
+ "lineage": {
+  "baseline_provenance_method": "population_rule_and_reconciliation",
+  "challenger_candidate_by_position": {
+   "QB": "xgb",
+   "RB": "xgb",
+   "TE": "xgb",
+   "WR": "xgb"
+  },
+  "challenger_model_version": "20260911-asof_v1-d333de20",
+  "champion_candidate_by_position": {
+   "QB": "rf",
+   "RB": "rf",
+   "TE": "rf",
+   "WR": "rf"
+  },
+  "data_through": {
+   "season": 2026,
+   "week": 2
+  },
+  "feature_version": "asof_v1",
+  "manifest_last_run": {
+   "action": "PUBLISH",
+   "at_utc": "2026-09-22T14:19:27+00:00",
+   "run_id": "run-20260922T141927Z",
+   "season": 2026,
+   "week": 3
+  },
+  "mart_export": {
+   "code_commit": "ca8b3452ed83c72a09f2fdaae7663dfbc721d730",
+   "exported_at_utc": "2026-09-22T14:20:17+00:00",
+   "invocation_id": "9f1c8fcc-e763-4071-97eb-41172d133041",
+   "row_counts": {
+    "dim_model_version": 1,
+    "dim_player": 1406,
+    "fct_decision_policy": 2400,
+    "fct_decision_policy_v2": 2400,
+    "fct_player_decisions": 25266,
+    "fct_player_week": 25266,
+    "fct_tier_outcomes": 934,
+    "fct_weekly_eval": 370
+   },
+   "target": "prod"
+  },
+  "model_version": "20260911-asof_v1-d333de20",
+  "predictions_latest": "predictions/2026/week_03.json"
+ },
+ "policy_spec": {
+  "path": "ffai/decision_lab/policy_spec.json",
+  "sha256": "35c8d3816f28d1a19e695a4651d0d088cec13dd067c18377ed0a379c00c3a11c"
+ },
+ "policy_version": "1.0.0",
+ "schema_version": "decision_lab_manifest/1.0",
+ "schema_versions": {
+  "cases": "decision_lab_cases/1.0",
+  "decision_inputs": "decision_inputs/1.0",
+  "decision_result": "decision_result/1.0",
+  "inputs_snapshot": "inputs_snapshot/1.0",
+  "manifest": "decision_lab_manifest/1.0",
+  "outcome_metrics": "outcome_metrics/1.0",
+  "outcome_snapshot": "outcome_snapshot/1.0",
+  "receipt": "decision_receipt/1.0"
+ },
+ "snapshots": [
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "ff8136d4453ad6b4cc73d98d5b3009c3bbb99b98b0030e0552a7bda8f520a467",
+    "file_sha256": "ffc96958e7c83ee270b21806c1df11c804de44ed98fb3ecac3c684277318cb26",
+    "n_rows": 299,
+    "path": "inputs/frozen-2024-w01-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "d095fc32de4649080c4fd77f611cd6408c5d076a09552a5f0d7f1bf203d59d75",
+    "file_sha256": "47a899ce5e58a4ba5a59b2e5efb917528ff576e174e98f01a36ff26eb48a4e51",
+    "n_observed": 299,
+    "n_rows": 299,
+    "path": "outcomes/frozen-2024-w01-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 299
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8589,
+      "mae": 4.5512,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.6844,
+      "mae": 6.1328,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804,
+      "mae": 4.5025,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6636,
+      "mae": 3.6439,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.9942,
+      "mae": 4.6049,
+      "n": 2391
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.858885499256539,
+      "mae": 4.551216112754481,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.684445057933093,
+      "mae": 6.132781010719755,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804032354227506,
+      "mae": 4.502484042553191,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6635776982037562,
+      "mae": 3.643858215179316,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.994219163735905,
+      "mae": 4.604939774153074,
+      "n": 2391
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2024,
+   "snapshot_id": "frozen-2024-w01-20260911-asof_v1-d333de20-rf",
+   "source_family": "frozen_test",
+   "week": 1
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "4d12f5b193fcca0d9159cb437332ff15bfede83a757b685041b64b9cbb643de6",
+    "file_sha256": "35e80f9de411a8f5f6bb04fc488b8fba120d439045cceacad51a457f6fbbda26",
+    "n_rows": 326,
+    "path": "inputs/frozen-2024-w02-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "b74a464e35badc82451d25acc8f9ceb0d8eb7c0c3a6ed0f89f1f892abdc7f0f8",
+    "file_sha256": "516845d47e216118750102f7b75e6be3cfefce6a3aaae7635bb8ae9865e3d360",
+    "n_observed": 326,
+    "n_rows": 326,
+    "path": "outcomes/frozen-2024-w02-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 326
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8589,
+      "mae": 4.5512,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.6844,
+      "mae": 6.1328,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804,
+      "mae": 4.5025,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6636,
+      "mae": 3.6439,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.9942,
+      "mae": 4.6049,
+      "n": 2391
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.858885499256539,
+      "mae": 4.551216112754481,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.684445057933093,
+      "mae": 6.132781010719755,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804032354227506,
+      "mae": 4.502484042553191,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6635776982037562,
+      "mae": 3.643858215179316,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.994219163735905,
+      "mae": 4.604939774153074,
+      "n": 2391
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2024,
+   "snapshot_id": "frozen-2024-w02-20260911-asof_v1-d333de20-rf",
+   "source_family": "frozen_test",
+   "week": 2
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "97d4fc73d2b212c842172567aa5f32d36a6dbba5ba1485d007e16ed6fa979131",
+    "file_sha256": "810a5127bfef3bf6bbf2a2119f9302a409136ca602b8c4d9c38398e7c2419f89",
+    "n_rows": 345,
+    "path": "inputs/frozen-2024-w03-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "81bb52d91c03bf8bce79345e6cb8f5e5c1260b4b28b1b2807e561ac4b2e912d1",
+    "file_sha256": "41aafc3cde065b98fc2f0f8f5fe1d6e1be387cc6cdd50734edc358ef4a9e46d8",
+    "n_observed": 345,
+    "n_rows": 345,
+    "path": "outcomes/frozen-2024-w03-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 345
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8589,
+      "mae": 4.5512,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.6844,
+      "mae": 6.1328,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804,
+      "mae": 4.5025,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6636,
+      "mae": 3.6439,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.9942,
+      "mae": 4.6049,
+      "n": 2391
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.858885499256539,
+      "mae": 4.551216112754481,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.684445057933093,
+      "mae": 6.132781010719755,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804032354227506,
+      "mae": 4.502484042553191,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6635776982037562,
+      "mae": 3.643858215179316,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.994219163735905,
+      "mae": 4.604939774153074,
+      "n": 2391
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2024,
+   "snapshot_id": "frozen-2024-w03-20260911-asof_v1-d333de20-rf",
+   "source_family": "frozen_test",
+   "week": 3
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "d6416068dee7ba1d4a70b5a9c0fe92b3231fc6fa5ddb55255d44da7f9c2599b3",
+    "file_sha256": "b917c8a175de8cffdba72e243b215e769a53d0026dca41231dd610c7667aaa80",
+    "n_rows": 333,
+    "path": "inputs/frozen-2024-w04-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "e34029bbc71720ee6de1e94770960c686abd28c2a2096ece843137f7692e2401",
+    "file_sha256": "be45a60affc23f55056c5614eea081550d9a4091f81087da092213308b69d2f8",
+    "n_observed": 333,
+    "n_rows": 333,
+    "path": "outcomes/frozen-2024-w04-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 333
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8589,
+      "mae": 4.5512,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.6844,
+      "mae": 6.1328,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804,
+      "mae": 4.5025,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6636,
+      "mae": 3.6439,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.9942,
+      "mae": 4.6049,
+      "n": 2391
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.858885499256539,
+      "mae": 4.551216112754481,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.684445057933093,
+      "mae": 6.132781010719755,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804032354227506,
+      "mae": 4.502484042553191,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6635776982037562,
+      "mae": 3.643858215179316,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.994219163735905,
+      "mae": 4.604939774153074,
+      "n": 2391
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2024,
+   "snapshot_id": "frozen-2024-w04-20260911-asof_v1-d333de20-rf",
+   "source_family": "frozen_test",
+   "week": 4
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "dc23c0d27b5a208a467093c1c2675b28417e88c121f702c40e1d2056b6f5c343",
+    "file_sha256": "673b2ec0746629fbbd840becb6b3cb1bb89580eec8caf27aeb26d07c39d1829b",
+    "n_rows": 288,
+    "path": "inputs/frozen-2024-w05-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "fc65a397c5929b9260b509feac9d1146d8ba99ddff53373c48abb378f46d80ca",
+    "file_sha256": "50ae14a7e6aad976354aba318d76fb7c98f17bd529613337c168a15c8f9cef3e",
+    "n_observed": 288,
+    "n_rows": 288,
+    "path": "outcomes/frozen-2024-w05-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 288
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8589,
+      "mae": 4.5512,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.6844,
+      "mae": 6.1328,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804,
+      "mae": 4.5025,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6636,
+      "mae": 3.6439,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.9942,
+      "mae": 4.6049,
+      "n": 2391
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.858885499256539,
+      "mae": 4.551216112754481,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.684445057933093,
+      "mae": 6.132781010719755,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804032354227506,
+      "mae": 4.502484042553191,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6635776982037562,
+      "mae": 3.643858215179316,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.994219163735905,
+      "mae": 4.604939774153074,
+      "n": 2391
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2024,
+   "snapshot_id": "frozen-2024-w05-20260911-asof_v1-d333de20-rf",
+   "source_family": "frozen_test",
+   "week": 5
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "710bdd0eb242426d6f85248e0d9543e2061a1d4a7c7d54894563b4875f491c0c",
+    "file_sha256": "27b03d2e64c2ca28030623e2df23cc5aa49807cc15c3afe97ad291a47d3b8775",
+    "n_rows": 289,
+    "path": "inputs/frozen-2024-w06-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "339423e0e17de23ec6016a87940c99544cbc8e7ef4c3dd3167cddf7b07d82bb3",
+    "file_sha256": "b27d1d446f6f68df0c02d43e89e9a2161c744ed9cbf9e48fc564612f40f8dd13",
+    "n_observed": 289,
+    "n_rows": 289,
+    "path": "outcomes/frozen-2024-w06-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 289
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8589,
+      "mae": 4.5512,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.6844,
+      "mae": 6.1328,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804,
+      "mae": 4.5025,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6636,
+      "mae": 3.6439,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.9942,
+      "mae": 4.6049,
+      "n": 2391
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.858885499256539,
+      "mae": 4.551216112754481,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.684445057933093,
+      "mae": 6.132781010719755,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804032354227506,
+      "mae": 4.502484042553191,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6635776982037562,
+      "mae": 3.643858215179316,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.994219163735905,
+      "mae": 4.604939774153074,
+      "n": 2391
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2024,
+   "snapshot_id": "frozen-2024-w06-20260911-asof_v1-d333de20-rf",
+   "source_family": "frozen_test",
+   "week": 6
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "dd4f0f274c2c49de19792893e467b874f13370b064ffbb5fa0ac7098dd987534",
+    "file_sha256": "ac42897321d7763fe2a8f2da4de6cf8d43b3cb5f355faa66efd7dd40dfc74b02",
+    "n_rows": 327,
+    "path": "inputs/frozen-2024-w07-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "87b91e719fb338f8a0fbd6e71b1b7712952587a9b056ca9522cf2ba9f5ca624f",
+    "file_sha256": "949e4ddf287410ec399ce535b0e8437ca8c60ea01fba2749579eaf561a9b365f",
+    "n_observed": 327,
+    "n_rows": 327,
+    "path": "outcomes/frozen-2024-w07-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 327
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8589,
+      "mae": 4.5512,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.6844,
+      "mae": 6.1328,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804,
+      "mae": 4.5025,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6636,
+      "mae": 3.6439,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.9942,
+      "mae": 4.6049,
+      "n": 2391
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.858885499256539,
+      "mae": 4.551216112754481,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.684445057933093,
+      "mae": 6.132781010719755,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804032354227506,
+      "mae": 4.502484042553191,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6635776982037562,
+      "mae": 3.643858215179316,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.994219163735905,
+      "mae": 4.604939774153074,
+      "n": 2391
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2024,
+   "snapshot_id": "frozen-2024-w07-20260911-asof_v1-d333de20-rf",
+   "source_family": "frozen_test",
+   "week": 7
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "ca4a8c097ad4b33de6654f70f0b8c1471deb5cd7d979acad2a8798283fea0a3e",
+    "file_sha256": "0e9ab2835a556fbc4e67874b0739152322dbb2b7b6429f78898538cfab93dec2",
+    "n_rows": 349,
+    "path": "inputs/frozen-2024-w08-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "22473f35b45656f2844d67d9d57ea987e0e35af62af841a1cd2d1a00af6dc685",
+    "file_sha256": "55944afc2765d49180219dcd762a40c82727b9dc1b1cba88696e8ae411f92d34",
+    "n_observed": 349,
+    "n_rows": 349,
+    "path": "outcomes/frozen-2024-w08-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 349
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8589,
+      "mae": 4.5512,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.6844,
+      "mae": 6.1328,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804,
+      "mae": 4.5025,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6636,
+      "mae": 3.6439,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.9942,
+      "mae": 4.6049,
+      "n": 2391
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.858885499256539,
+      "mae": 4.551216112754481,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.684445057933093,
+      "mae": 6.132781010719755,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804032354227506,
+      "mae": 4.502484042553191,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6635776982037562,
+      "mae": 3.643858215179316,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.994219163735905,
+      "mae": 4.604939774153074,
+      "n": 2391
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2024,
+   "snapshot_id": "frozen-2024-w08-20260911-asof_v1-d333de20-rf",
+   "source_family": "frozen_test",
+   "week": 8
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "7df9fb83419dbfd4fb35df07c0e6149f74880a1815ebf0b7d170713618938ecc",
+    "file_sha256": "f3b4d3d450814fe073eb0d7c8c572a7d9bc73af93e56224054a5c2579dab956d",
+    "n_rows": 320,
+    "path": "inputs/frozen-2024-w09-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "54503e5256888b963b07d94b3d91eeb691b038e2252f95afa9386262fb1d944b",
+    "file_sha256": "54f31acc572df82685c8047a84e562bbc84fa8c10830915d9beec5e1e467e205",
+    "n_observed": 320,
+    "n_rows": 320,
+    "path": "outcomes/frozen-2024-w09-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 320
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8589,
+      "mae": 4.5512,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.6844,
+      "mae": 6.1328,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804,
+      "mae": 4.5025,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6636,
+      "mae": 3.6439,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.9942,
+      "mae": 4.6049,
+      "n": 2391
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.858885499256539,
+      "mae": 4.551216112754481,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.684445057933093,
+      "mae": 6.132781010719755,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804032354227506,
+      "mae": 4.502484042553191,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6635776982037562,
+      "mae": 3.643858215179316,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.994219163735905,
+      "mae": 4.604939774153074,
+      "n": 2391
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2024,
+   "snapshot_id": "frozen-2024-w09-20260911-asof_v1-d333de20-rf",
+   "source_family": "frozen_test",
+   "week": 9
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "a820f6ea4e35535ffe8ef923df059524df19451f0f951c5751e9281ce86291fc",
+    "file_sha256": "105d459928479db4008384ae5436d67119b99d852d3e926ccf851887cef9adf3",
+    "n_rows": 291,
+    "path": "inputs/frozen-2024-w10-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "73f4d0f5c97a089f81b5ef11aee720725f83a956eda724228538f84381da0321",
+    "file_sha256": "b29f94dbaa71c1897a2c40bf7f28872bb38e5ce0e3c63337937a9fad23273df9",
+    "n_observed": 291,
+    "n_rows": 291,
+    "path": "outcomes/frozen-2024-w10-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 291
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8589,
+      "mae": 4.5512,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.6844,
+      "mae": 6.1328,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804,
+      "mae": 4.5025,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6636,
+      "mae": 3.6439,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.9942,
+      "mae": 4.6049,
+      "n": 2391
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.858885499256539,
+      "mae": 4.551216112754481,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.684445057933093,
+      "mae": 6.132781010719755,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804032354227506,
+      "mae": 4.502484042553191,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6635776982037562,
+      "mae": 3.643858215179316,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.994219163735905,
+      "mae": 4.604939774153074,
+      "n": 2391
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2024,
+   "snapshot_id": "frozen-2024-w10-20260911-asof_v1-d333de20-rf",
+   "source_family": "frozen_test",
+   "week": 10
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "1cfb4ac91b0a8045a54acc69ae48ac0da6c658ba91b802ace87164d78d7e0aa5",
+    "file_sha256": "a1f8f4029df507264abe62f8720c493ed7e3b0ae5630d0c518b3db4ff3a45e29",
+    "n_rows": 307,
+    "path": "inputs/frozen-2024-w11-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "64624759f8351781faaece242f02303073fa36c8a551361cf5e2d93643ecea64",
+    "file_sha256": "e2e18148472f7f5eac1018487f46a2653b5e3a36792fc3963253b3421171a92d",
+    "n_observed": 307,
+    "n_rows": 307,
+    "path": "outcomes/frozen-2024-w11-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 307
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8589,
+      "mae": 4.5512,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.6844,
+      "mae": 6.1328,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804,
+      "mae": 4.5025,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6636,
+      "mae": 3.6439,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.9942,
+      "mae": 4.6049,
+      "n": 2391
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.858885499256539,
+      "mae": 4.551216112754481,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.684445057933093,
+      "mae": 6.132781010719755,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804032354227506,
+      "mae": 4.502484042553191,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6635776982037562,
+      "mae": 3.643858215179316,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.994219163735905,
+      "mae": 4.604939774153074,
+      "n": 2391
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2024,
+   "snapshot_id": "frozen-2024-w11-20260911-asof_v1-d333de20-rf",
+   "source_family": "frozen_test",
+   "week": 11
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "207dfe7357e10b7a9a1d87f74a9bfb289f55ca25b3f08f30577d70a94ba3b10e",
+    "file_sha256": "11ff8e386a381f9f38b2da4995fff2fdfdfc9550547ff7c04302133f6751c87a",
+    "n_rows": 283,
+    "path": "inputs/frozen-2024-w12-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "055e99ce0bb62807fe63d692eccb2a2b8ab3d97e05196c71c837a92f4729e9f0",
+    "file_sha256": "72a147fb155e5db238c6b935f5e594299a368554c386585a5ecdc34df3578518",
+    "n_observed": 283,
+    "n_rows": 283,
+    "path": "outcomes/frozen-2024-w12-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 283
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8589,
+      "mae": 4.5512,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.6844,
+      "mae": 6.1328,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804,
+      "mae": 4.5025,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6636,
+      "mae": 3.6439,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.9942,
+      "mae": 4.6049,
+      "n": 2391
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.858885499256539,
+      "mae": 4.551216112754481,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.684445057933093,
+      "mae": 6.132781010719755,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804032354227506,
+      "mae": 4.502484042553191,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6635776982037562,
+      "mae": 3.643858215179316,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.994219163735905,
+      "mae": 4.604939774153074,
+      "n": 2391
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2024,
+   "snapshot_id": "frozen-2024-w12-20260911-asof_v1-d333de20-rf",
+   "source_family": "frozen_test",
+   "week": 12
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "cfc01025f4d8d7b1e5adedd3281e15af7ba932fed365ac5377729e9207a0b754",
+    "file_sha256": "ad57b9a1f89459a411e2b5043e6bf3f1248bba56f605f4bd034c4b0a6d813874",
+    "n_rows": 344,
+    "path": "inputs/frozen-2024-w13-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "f630c99c6c6acdfd3438392a2e7a3b3747e60d094b09848cbe17918a5c42256c",
+    "file_sha256": "41b05f7de811aca9bfa4c20bf4e6ec19ca3840dae8d48328d66c828a1312601e",
+    "n_observed": 344,
+    "n_rows": 344,
+    "path": "outcomes/frozen-2024-w13-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 344
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8589,
+      "mae": 4.5512,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.6844,
+      "mae": 6.1328,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804,
+      "mae": 4.5025,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6636,
+      "mae": 3.6439,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.9942,
+      "mae": 4.6049,
+      "n": 2391
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.858885499256539,
+      "mae": 4.551216112754481,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.684445057933093,
+      "mae": 6.132781010719755,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804032354227506,
+      "mae": 4.502484042553191,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6635776982037562,
+      "mae": 3.643858215179316,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.994219163735905,
+      "mae": 4.604939774153074,
+      "n": 2391
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2024,
+   "snapshot_id": "frozen-2024-w13-20260911-asof_v1-d333de20-rf",
+   "source_family": "frozen_test",
+   "week": 13
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "1eceb2137af203d332b43f59841ed618acde21ecf161a4a44eb0df038faa1836",
+    "file_sha256": "62bd861f3dad8df6b530ef0b9083a5e7e14308ac265d8e960dd12616767ca9f3",
+    "n_rows": 279,
+    "path": "inputs/frozen-2024-w14-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "b7436a93d02bae5e0ddd941e1e707e1e0a86a746071b8dd45f044b930176da80",
+    "file_sha256": "f426e6e8804d5375ed74d553bdbc8d7b6cad564bf4bbbe718c9d0a21cb88e6c8",
+    "n_observed": 279,
+    "n_rows": 279,
+    "path": "outcomes/frozen-2024-w14-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 279
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8589,
+      "mae": 4.5512,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.6844,
+      "mae": 6.1328,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804,
+      "mae": 4.5025,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6636,
+      "mae": 3.6439,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.9942,
+      "mae": 4.6049,
+      "n": 2391
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.858885499256539,
+      "mae": 4.551216112754481,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.684445057933093,
+      "mae": 6.132781010719755,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804032354227506,
+      "mae": 4.502484042553191,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6635776982037562,
+      "mae": 3.643858215179316,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.994219163735905,
+      "mae": 4.604939774153074,
+      "n": 2391
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2024,
+   "snapshot_id": "frozen-2024-w14-20260911-asof_v1-d333de20-rf",
+   "source_family": "frozen_test",
+   "week": 14
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "8987df8769b56efc5fc2afe1f94dfdfcadee91e26806a369a555586ee45e0b96",
+    "file_sha256": "b71feeca9aa7ded1b5fbb934d8d8b436fa54e096d9ae86f30969043406600341",
+    "n_rows": 344,
+    "path": "inputs/frozen-2024-w15-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "ab3d1ea599a0717d4eb76f167a2a9ac24d1cc1c70e4ea74467f0be68eb1674e8",
+    "file_sha256": "21d617adee11772c159bf748ade790ebc9992465216a7b99dda28df9828e5062",
+    "n_observed": 344,
+    "n_rows": 344,
+    "path": "outcomes/frozen-2024-w15-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 344
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8589,
+      "mae": 4.5512,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.6844,
+      "mae": 6.1328,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804,
+      "mae": 4.5025,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6636,
+      "mae": 3.6439,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.9942,
+      "mae": 4.6049,
+      "n": 2391
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.858885499256539,
+      "mae": 4.551216112754481,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.684445057933093,
+      "mae": 6.132781010719755,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804032354227506,
+      "mae": 4.502484042553191,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6635776982037562,
+      "mae": 3.643858215179316,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.994219163735905,
+      "mae": 4.604939774153074,
+      "n": 2391
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2024,
+   "snapshot_id": "frozen-2024-w15-20260911-asof_v1-d333de20-rf",
+   "source_family": "frozen_test",
+   "week": 15
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "5b09d9168cd3df07cad22addd9e7bd29fc09e94bf85bb737c7c14684c7c2a317",
+    "file_sha256": "93eea72097162d988b9e84f0ea0d503a21fa377bcc2ccdad112c0e54d0ce6364",
+    "n_rows": 336,
+    "path": "inputs/frozen-2024-w16-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "d37ef689acd5949e18b3216d61f0fe82429612ecde4e3565c929c90d57ef0342",
+    "file_sha256": "02e36429f50955ad4b86e8a8b4ad1f74ca5f8ccd7e985495923aea4fed4467ab",
+    "n_observed": 336,
+    "n_rows": 336,
+    "path": "outcomes/frozen-2024-w16-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 336
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8589,
+      "mae": 4.5512,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.6844,
+      "mae": 6.1328,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804,
+      "mae": 4.5025,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6636,
+      "mae": 3.6439,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.9942,
+      "mae": 4.6049,
+      "n": 2391
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.858885499256539,
+      "mae": 4.551216112754481,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.684445057933093,
+      "mae": 6.132781010719755,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804032354227506,
+      "mae": 4.502484042553191,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6635776982037562,
+      "mae": 3.643858215179316,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.994219163735905,
+      "mae": 4.604939774153074,
+      "n": 2391
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2024,
+   "snapshot_id": "frozen-2024-w16-20260911-asof_v1-d333de20-rf",
+   "source_family": "frozen_test",
+   "week": 16
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "99a4052966f0969687641ab790a72ee024962b182817cf156c724ce03db49cf9",
+    "file_sha256": "466610160bd70fc9cf97e1a4c82d89dd7d72dc7732a6eea401839d7406092322",
+    "n_rows": 350,
+    "path": "inputs/frozen-2024-w17-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "fa05ac624c0442a2672de0f7bafd912ecad5b68022e962def68c42b47eb0113f",
+    "file_sha256": "32d885c1c8340b05a5065c22098b848a29824ad64f4b7d29d8e6e9dc03855e0a",
+    "n_observed": 350,
+    "n_rows": 350,
+    "path": "outcomes/frozen-2024-w17-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 350
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8589,
+      "mae": 4.5512,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.6844,
+      "mae": 6.1328,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804,
+      "mae": 4.5025,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6636,
+      "mae": 3.6439,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.9942,
+      "mae": 4.6049,
+      "n": 2391
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.858885499256539,
+      "mae": 4.551216112754481,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.684445057933093,
+      "mae": 6.132781010719755,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804032354227506,
+      "mae": 4.502484042553191,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6635776982037562,
+      "mae": 3.643858215179316,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.994219163735905,
+      "mae": 4.604939774153074,
+      "n": 2391
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2024,
+   "snapshot_id": "frozen-2024-w17-20260911-asof_v1-d333de20-rf",
+   "source_family": "frozen_test",
+   "week": 17
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "a51c2f3bbfbe0702fd8506c9126ce4e582c6bb05b99db589e12a94e0e998f922",
+    "file_sha256": "1656aafaa59a48d6d187ae0a1f0df97f471d39d1c766771f06818fea489323ae",
+    "n_rows": 337,
+    "path": "inputs/frozen-2024-w18-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "d995cfe8c066d9916de0c42553d372710eb9b8cd87125a1179d2f358c8977332",
+    "file_sha256": "6261cd4bedee5e2d57772cb7d8ce8269e9b14ecbb6fe5a8f0931e1ddd614434c",
+    "n_observed": 337,
+    "n_rows": 337,
+    "path": "outcomes/frozen-2024-w18-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 337
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8589,
+      "mae": 4.5512,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.6844,
+      "mae": 6.1328,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804,
+      "mae": 4.5025,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6636,
+      "mae": 3.6439,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.9942,
+      "mae": 4.6049,
+      "n": 2391
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.858885499256539,
+      "mae": 4.551216112754481,
+      "n": 5747
+     },
+     "QB": {
+      "baseline_mae": 6.684445057933093,
+      "mae": 6.132781010719755,
+      "n": 653
+     },
+     "RB": {
+      "baseline_mae": 4.804032354227506,
+      "mae": 4.502484042553191,
+      "n": 1504
+     },
+     "TE": {
+      "baseline_mae": 3.6635776982037562,
+      "mae": 3.643858215179316,
+      "n": 1199
+     },
+     "WR": {
+      "baseline_mae": 4.994219163735905,
+      "mae": 4.604939774153074,
+      "n": 2391
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2024,
+   "snapshot_id": "frozen-2024-w18-20260911-asof_v1-d333de20-rf",
+   "source_family": "frozen_test",
+   "week": 18
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "7a32f718c13a354b557afa9c046b961bd8aae2801b23270730f8da346325b35e",
+    "file_sha256": "8fac5336d6d227b3c68aaae69c1793ad915561b975145efc068823d093021cf5",
+    "n_rows": 301,
+    "path": "inputs/oos-2025-w01-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "8b821beaaa1c0826369c5d3ecb9ab2d8045c74dbe9ca759e77d75c1187d6075c",
+    "file_sha256": "95a22efb94fd9dad6c3628e4b001de0aff54b6eefefc225f7613522456fba6d8",
+    "n_observed": 301,
+    "n_rows": 301,
+    "path": "outcomes/oos-2025-w01-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 301
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8046,
+      "mae": 4.4909,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.079,
+      "mae": 6.635,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786,
+      "mae": 4.5439,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.748,
+      "mae": 3.5882,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582,
+      "mae": 4.3551,
+      "n": 2461
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.8046154573643705,
+      "mae": 4.490907169428475,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.078994603836829,
+      "mae": 6.635003076923078,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786040202439177,
+      "mae": 4.543873294346978,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.7479984538525044,
+      "mae": 3.58824920886076,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582134925377835,
+      "mae": 4.355101584721658,
+      "n": 2461
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2025,
+   "snapshot_id": "oos-2025-w01-20260911-asof_v1-d333de20-rf",
+   "source_family": "out_of_sample_season",
+   "week": 1
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "a28f0828b82be4ac072f11a0ba67446c915aa77f58bc18f095b9dc80030e6c8b",
+    "file_sha256": "7b6bd2a01b276a74178e40bd9a156cf5fd8baa862dd4d01a4a1e6deff7fee382",
+    "n_rows": 339,
+    "path": "inputs/oos-2025-w02-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "63fb07e1d8ff0b4b579360f488bbee75c7873d3cf1ec9a735c5086de8aa40b4b",
+    "file_sha256": "673fc3d60e7a0e77384ca729dbf5039f8abd4000181406ae2c7efbaefa528e64",
+    "n_observed": 339,
+    "n_rows": 339,
+    "path": "outcomes/oos-2025-w02-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 339
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8046,
+      "mae": 4.4909,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.079,
+      "mae": 6.635,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786,
+      "mae": 4.5439,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.748,
+      "mae": 3.5882,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582,
+      "mae": 4.3551,
+      "n": 2461
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.8046154573643705,
+      "mae": 4.490907169428475,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.078994603836829,
+      "mae": 6.635003076923078,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786040202439177,
+      "mae": 4.543873294346978,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.7479984538525044,
+      "mae": 3.58824920886076,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582134925377835,
+      "mae": 4.355101584721658,
+      "n": 2461
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2025,
+   "snapshot_id": "oos-2025-w02-20260911-asof_v1-d333de20-rf",
+   "source_family": "out_of_sample_season",
+   "week": 2
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "b7b46a2b5eb6644ebd71b1e042725262ec7669c1c7a07985d473f7e64d3c8ec1",
+    "file_sha256": "dfb1ed2d58f691e9a95c031c180a50cb68692ba09806e57182489f38bdaae147",
+    "n_rows": 347,
+    "path": "inputs/oos-2025-w03-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "c726e1faa6ecdafa0cb085ed369838b9f7a6558930418aa877125b5b9982b13f",
+    "file_sha256": "42500c01f546c5afac8f9429e377440d297c49549757d17ac2d883db28c55e41",
+    "n_observed": 347,
+    "n_rows": 347,
+    "path": "outcomes/oos-2025-w03-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 347
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8046,
+      "mae": 4.4909,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.079,
+      "mae": 6.635,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786,
+      "mae": 4.5439,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.748,
+      "mae": 3.5882,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582,
+      "mae": 4.3551,
+      "n": 2461
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.8046154573643705,
+      "mae": 4.490907169428475,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.078994603836829,
+      "mae": 6.635003076923078,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786040202439177,
+      "mae": 4.543873294346978,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.7479984538525044,
+      "mae": 3.58824920886076,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582134925377835,
+      "mae": 4.355101584721658,
+      "n": 2461
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2025,
+   "snapshot_id": "oos-2025-w03-20260911-asof_v1-d333de20-rf",
+   "source_family": "out_of_sample_season",
+   "week": 3
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "2c85a85886a26cb8abbeb79b04af5cc507a7d22139f825f59d2e4479fb8f05e3",
+    "file_sha256": "e080996064ab60b3e7373e0afbdcc851a866defb16d6022e30dcea18c93a2892",
+    "n_rows": 352,
+    "path": "inputs/oos-2025-w04-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "23467f2dd88b1a28dd687d016907f72b9936edf85133fcace3378e477906c359",
+    "file_sha256": "b024c72f57b28319a0c57cd47f0e1dd72005cde79d00e19c0f0d83fe62d883d5",
+    "n_observed": 352,
+    "n_rows": 352,
+    "path": "outcomes/oos-2025-w04-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 352
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8046,
+      "mae": 4.4909,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.079,
+      "mae": 6.635,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786,
+      "mae": 4.5439,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.748,
+      "mae": 3.5882,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582,
+      "mae": 4.3551,
+      "n": 2461
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.8046154573643705,
+      "mae": 4.490907169428475,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.078994603836829,
+      "mae": 6.635003076923078,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786040202439177,
+      "mae": 4.543873294346978,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.7479984538525044,
+      "mae": 3.58824920886076,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582134925377835,
+      "mae": 4.355101584721658,
+      "n": 2461
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2025,
+   "snapshot_id": "oos-2025-w04-20260911-asof_v1-d333de20-rf",
+   "source_family": "out_of_sample_season",
+   "week": 4
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "b16772da966a9aef98d3931e54a858a8f80c4fd029c1aa64f472dfeffaadaf01",
+    "file_sha256": "4dff6d540e0241d3fd8fc829a4a16d8c165a8015f0c0f29852c797c510a8e424",
+    "n_rows": 311,
+    "path": "inputs/oos-2025-w05-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "e1abc39e9754e1ed58c414e2203ca35be4e694416d6f17de954687d076b0c43f",
+    "file_sha256": "1d66f1a72e7a40398ad96f76bb3182e19b6fad68ff56821f3612e3d8a792892c",
+    "n_observed": 311,
+    "n_rows": 311,
+    "path": "outcomes/oos-2025-w05-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 311
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8046,
+      "mae": 4.4909,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.079,
+      "mae": 6.635,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786,
+      "mae": 4.5439,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.748,
+      "mae": 3.5882,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582,
+      "mae": 4.3551,
+      "n": 2461
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.8046154573643705,
+      "mae": 4.490907169428475,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.078994603836829,
+      "mae": 6.635003076923078,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786040202439177,
+      "mae": 4.543873294346978,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.7479984538525044,
+      "mae": 3.58824920886076,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582134925377835,
+      "mae": 4.355101584721658,
+      "n": 2461
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2025,
+   "snapshot_id": "oos-2025-w05-20260911-asof_v1-d333de20-rf",
+   "source_family": "out_of_sample_season",
+   "week": 5
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "a915e96b6a33c877a5ebcff52c296577788bc5544f7fd3c9ef40d953beb748b2",
+    "file_sha256": "2fa2a089248d9e86f91e823d662d10e1aeb8b9ff957845aebbfd842be3196bb9",
+    "n_rows": 317,
+    "path": "inputs/oos-2025-w06-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "4a26ec239a458c29ef6f0cda66c014a97eb41b7f66fa5b4255f4cf6da9205431",
+    "file_sha256": "05a42b32d5647216908bb558c821ba593df0d2aaeab4bc79b366315ef12a52b3",
+    "n_observed": 317,
+    "n_rows": 317,
+    "path": "outcomes/oos-2025-w06-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 317
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8046,
+      "mae": 4.4909,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.079,
+      "mae": 6.635,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786,
+      "mae": 4.5439,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.748,
+      "mae": 3.5882,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582,
+      "mae": 4.3551,
+      "n": 2461
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.8046154573643705,
+      "mae": 4.490907169428475,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.078994603836829,
+      "mae": 6.635003076923078,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786040202439177,
+      "mae": 4.543873294346978,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.7479984538525044,
+      "mae": 3.58824920886076,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582134925377835,
+      "mae": 4.355101584721658,
+      "n": 2461
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2025,
+   "snapshot_id": "oos-2025-w06-20260911-asof_v1-d333de20-rf",
+   "source_family": "out_of_sample_season",
+   "week": 6
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "7dfd67dfad2781a8e579bc28f4925df03ad30efa53f61d3205feb1aed2e16337",
+    "file_sha256": "8c4a275e18ea29d0555db597839dd259061a024c22707894414fd5d85a67bb57",
+    "n_rows": 335,
+    "path": "inputs/oos-2025-w07-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "ae8de8878f0e0aac6a742463ee383a367333c9acca24e811cf443485b9fadbcd",
+    "file_sha256": "a5945afae3ca8a2eff75b3c8f1e8b766d44c1f1b328471eaddb842d67253919f",
+    "n_observed": 335,
+    "n_rows": 335,
+    "path": "outcomes/oos-2025-w07-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 335
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8046,
+      "mae": 4.4909,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.079,
+      "mae": 6.635,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786,
+      "mae": 4.5439,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.748,
+      "mae": 3.5882,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582,
+      "mae": 4.3551,
+      "n": 2461
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.8046154573643705,
+      "mae": 4.490907169428475,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.078994603836829,
+      "mae": 6.635003076923078,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786040202439177,
+      "mae": 4.543873294346978,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.7479984538525044,
+      "mae": 3.58824920886076,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582134925377835,
+      "mae": 4.355101584721658,
+      "n": 2461
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2025,
+   "snapshot_id": "oos-2025-w07-20260911-asof_v1-d333de20-rf",
+   "source_family": "out_of_sample_season",
+   "week": 7
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "800daa07dd721affe2611efd97e9fbe0946dbfe0a78cbeb4aedd4c37ed96f592",
+    "file_sha256": "a2a4f35c79831dadacf9fcf421dd320aee5162c77b7a7f0293393a5a5d991aac",
+    "n_rows": 287,
+    "path": "inputs/oos-2025-w08-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "e6d45eae24290b26784677763517cea65ab3dae6f48a066dc9528eab3fbdacd3",
+    "file_sha256": "a35e3616ed34fac1d4aeda095a81d6f598fb9f29c3e2a7565384576fa7748da7",
+    "n_observed": 287,
+    "n_rows": 287,
+    "path": "outcomes/oos-2025-w08-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 287
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8046,
+      "mae": 4.4909,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.079,
+      "mae": 6.635,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786,
+      "mae": 4.5439,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.748,
+      "mae": 3.5882,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582,
+      "mae": 4.3551,
+      "n": 2461
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.8046154573643705,
+      "mae": 4.490907169428475,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.078994603836829,
+      "mae": 6.635003076923078,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786040202439177,
+      "mae": 4.543873294346978,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.7479984538525044,
+      "mae": 3.58824920886076,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582134925377835,
+      "mae": 4.355101584721658,
+      "n": 2461
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2025,
+   "snapshot_id": "oos-2025-w08-20260911-asof_v1-d333de20-rf",
+   "source_family": "out_of_sample_season",
+   "week": 8
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "2e8410ea7b17a067e17faa09444331cb312346b38f593736151e77feab1799b1",
+    "file_sha256": "abd6835d8d04513184bc00625c5913eb79e0b798d5f51af10eb11e37e35c6b92",
+    "n_rows": 309,
+    "path": "inputs/oos-2025-w09-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "eb6fbf6f93eec18103f726c6cec7265ae56a40e2c06e9e0e8efc0e959997b546",
+    "file_sha256": "5d17c9114c241763ce2c6810fe8bfa6203d0a6cc3d2064d6d84002e857f52102",
+    "n_observed": 309,
+    "n_rows": 309,
+    "path": "outcomes/oos-2025-w09-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 309
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8046,
+      "mae": 4.4909,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.079,
+      "mae": 6.635,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786,
+      "mae": 4.5439,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.748,
+      "mae": 3.5882,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582,
+      "mae": 4.3551,
+      "n": 2461
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.8046154573643705,
+      "mae": 4.490907169428475,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.078994603836829,
+      "mae": 6.635003076923078,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786040202439177,
+      "mae": 4.543873294346978,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.7479984538525044,
+      "mae": 3.58824920886076,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582134925377835,
+      "mae": 4.355101584721658,
+      "n": 2461
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2025,
+   "snapshot_id": "oos-2025-w09-20260911-asof_v1-d333de20-rf",
+   "source_family": "out_of_sample_season",
+   "week": 9
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "375794f152591cc0e0a8eb369bd0f6cd415b833fdf808d7ae78f1cfe544c690d",
+    "file_sha256": "08e219bff05af4b88ed27808edc74acab8bc758d1dfda7399098abaed9eaf7a0",
+    "n_rows": 310,
+    "path": "inputs/oos-2025-w10-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "0d4fc92b55273ec201edfe7a53cf1e5a099b0df7f98d6e05b2de34855de57ae6",
+    "file_sha256": "2301de317e50d659cc4d97bf6bd6108b0fbea5be5b84ddf01c75b4c391dd0e57",
+    "n_observed": 310,
+    "n_rows": 310,
+    "path": "outcomes/oos-2025-w10-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 310
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8046,
+      "mae": 4.4909,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.079,
+      "mae": 6.635,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786,
+      "mae": 4.5439,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.748,
+      "mae": 3.5882,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582,
+      "mae": 4.3551,
+      "n": 2461
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.8046154573643705,
+      "mae": 4.490907169428475,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.078994603836829,
+      "mae": 6.635003076923078,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786040202439177,
+      "mae": 4.543873294346978,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.7479984538525044,
+      "mae": 3.58824920886076,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582134925377835,
+      "mae": 4.355101584721658,
+      "n": 2461
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2025,
+   "snapshot_id": "oos-2025-w10-20260911-asof_v1-d333de20-rf",
+   "source_family": "out_of_sample_season",
+   "week": 10
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "490d35240e58c5aa73bce9647a762568c1e663f699d2ca329355213ce521dd95",
+    "file_sha256": "86aab300140e250bb549fce3da074cfef2c1aed21c535c3c3f0f63dcebb80d3f",
+    "n_rows": 324,
+    "path": "inputs/oos-2025-w11-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "ffec3b1ea26103926828d3d124263b455f6e7d0b0d3628dec038368cb51eb114",
+    "file_sha256": "9c91aff2dae0d0e15a8c473d583030de07be82e1326f3639896d35f92a0d328b",
+    "n_observed": 324,
+    "n_rows": 324,
+    "path": "outcomes/oos-2025-w11-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 324
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8046,
+      "mae": 4.4909,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.079,
+      "mae": 6.635,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786,
+      "mae": 4.5439,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.748,
+      "mae": 3.5882,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582,
+      "mae": 4.3551,
+      "n": 2461
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.8046154573643705,
+      "mae": 4.490907169428475,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.078994603836829,
+      "mae": 6.635003076923078,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786040202439177,
+      "mae": 4.543873294346978,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.7479984538525044,
+      "mae": 3.58824920886076,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582134925377835,
+      "mae": 4.355101584721658,
+      "n": 2461
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2025,
+   "snapshot_id": "oos-2025-w11-20260911-asof_v1-d333de20-rf",
+   "source_family": "out_of_sample_season",
+   "week": 11
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "28da6bdfcdeb42abb2ab58605244a546802dcf6473a04157b07f0aa5e3c43aa7",
+    "file_sha256": "a767d2cccb65eca097df18c3211d4ad67b073c670cfee000a9530ad187a8c0c0",
+    "n_rows": 308,
+    "path": "inputs/oos-2025-w12-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "9927606f4427d9a0f3ed7aa5e6ab4f9c68ceafbf8733e33651f9b838623484fb",
+    "file_sha256": "cca03143f4f15f0581bc81706b13134d362281912c7ebef59862c93e0443ab2b",
+    "n_observed": 308,
+    "n_rows": 308,
+    "path": "outcomes/oos-2025-w12-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 308
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8046,
+      "mae": 4.4909,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.079,
+      "mae": 6.635,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786,
+      "mae": 4.5439,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.748,
+      "mae": 3.5882,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582,
+      "mae": 4.3551,
+      "n": 2461
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.8046154573643705,
+      "mae": 4.490907169428475,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.078994603836829,
+      "mae": 6.635003076923078,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786040202439177,
+      "mae": 4.543873294346978,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.7479984538525044,
+      "mae": 3.58824920886076,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582134925377835,
+      "mae": 4.355101584721658,
+      "n": 2461
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2025,
+   "snapshot_id": "oos-2025-w12-20260911-asof_v1-d333de20-rf",
+   "source_family": "out_of_sample_season",
+   "week": 12
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "6d7a465c05381f4f333f468971f1d40c422a770309351b42c0da9b79882895a6",
+    "file_sha256": "6ed3f07776319d3eef2fdb7fcc0ae47075bfa6dea795bccc27e0505d5240aecf",
+    "n_rows": 349,
+    "path": "inputs/oos-2025-w13-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "55cbd0aa6fa8b8c866a5ca2f3b590752cc0ecb686da43e2d6ee4d6baf5d907e0",
+    "file_sha256": "75fb3ecd3d51bc534fb9fd60f8c9ea110e1c32ca6dcd387280fd51bdde65d09e",
+    "n_observed": 349,
+    "n_rows": 349,
+    "path": "outcomes/oos-2025-w13-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 349
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8046,
+      "mae": 4.4909,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.079,
+      "mae": 6.635,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786,
+      "mae": 4.5439,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.748,
+      "mae": 3.5882,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582,
+      "mae": 4.3551,
+      "n": 2461
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.8046154573643705,
+      "mae": 4.490907169428475,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.078994603836829,
+      "mae": 6.635003076923078,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786040202439177,
+      "mae": 4.543873294346978,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.7479984538525044,
+      "mae": 3.58824920886076,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582134925377835,
+      "mae": 4.355101584721658,
+      "n": 2461
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2025,
+   "snapshot_id": "oos-2025-w13-20260911-asof_v1-d333de20-rf",
+   "source_family": "out_of_sample_season",
+   "week": 13
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "2f0c9b5e89767adeb5fd1119e143455c3e0acd00e6d654ba8d56785c3f3c7384",
+    "file_sha256": "9c6db8f3193b5583085847326c7673aad4207c71466ebe1296fd1e37f0b01e92",
+    "n_rows": 325,
+    "path": "inputs/oos-2025-w14-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "fd91f0112bfb1f3f7d217d721554e098f3f91a048f8422d299d4e59311ba1b8c",
+    "file_sha256": "408ebd36b5c5598a196203505c8e9a113f3a0cf508703af098690844bbfeef8b",
+    "n_observed": 325,
+    "n_rows": 325,
+    "path": "outcomes/oos-2025-w14-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 325
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8046,
+      "mae": 4.4909,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.079,
+      "mae": 6.635,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786,
+      "mae": 4.5439,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.748,
+      "mae": 3.5882,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582,
+      "mae": 4.3551,
+      "n": 2461
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.8046154573643705,
+      "mae": 4.490907169428475,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.078994603836829,
+      "mae": 6.635003076923078,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786040202439177,
+      "mae": 4.543873294346978,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.7479984538525044,
+      "mae": 3.58824920886076,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582134925377835,
+      "mae": 4.355101584721658,
+      "n": 2461
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2025,
+   "snapshot_id": "oos-2025-w14-20260911-asof_v1-d333de20-rf",
+   "source_family": "out_of_sample_season",
+   "week": 14
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "49c643fdabb3c7ccc9a9b570dc07e6a6cfe80129fe23fb8466f00dccdf78825d",
+    "file_sha256": "d59df4695cbaf15496a5bd16b626c7be94ec4f4f42468aaa53c0dcd607778150",
+    "n_rows": 341,
+    "path": "inputs/oos-2025-w15-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "1db809af8e87ec73410a9afa3cf05a8d783ce12eef3f92eba72a801d86b3e8d9",
+    "file_sha256": "f49447307588d4d5e2c13e9ea39318af76e7881a58a354bc7395c70583422aac",
+    "n_observed": 341,
+    "n_rows": 341,
+    "path": "outcomes/oos-2025-w15-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 341
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8046,
+      "mae": 4.4909,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.079,
+      "mae": 6.635,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786,
+      "mae": 4.5439,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.748,
+      "mae": 3.5882,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582,
+      "mae": 4.3551,
+      "n": 2461
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.8046154573643705,
+      "mae": 4.490907169428475,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.078994603836829,
+      "mae": 6.635003076923078,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786040202439177,
+      "mae": 4.543873294346978,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.7479984538525044,
+      "mae": 3.58824920886076,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582134925377835,
+      "mae": 4.355101584721658,
+      "n": 2461
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2025,
+   "snapshot_id": "oos-2025-w15-20260911-asof_v1-d333de20-rf",
+   "source_family": "out_of_sample_season",
+   "week": 15
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "194b395bfdfa7c6bac394b78fc8e4ac39737589629477c4874ebb29ca066ef05",
+    "file_sha256": "fd2bf045fb64502e0454d52f961659593b5c12f640a45f3fe8b51a97824c26a1",
+    "n_rows": 362,
+    "path": "inputs/oos-2025-w16-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "9d9875095587c71683844078ef34235615049ee12fabd9ebf35c0ab4afc0e4a9",
+    "file_sha256": "aae6c0c6682c42e51f48e21ef7184604c3a577229676a1bbfdb3636b11b9acaf",
+    "n_observed": 362,
+    "n_rows": 362,
+    "path": "outcomes/oos-2025-w16-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 362
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8046,
+      "mae": 4.4909,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.079,
+      "mae": 6.635,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786,
+      "mae": 4.5439,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.748,
+      "mae": 3.5882,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582,
+      "mae": 4.3551,
+      "n": 2461
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.8046154573643705,
+      "mae": 4.490907169428475,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.078994603836829,
+      "mae": 6.635003076923078,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786040202439177,
+      "mae": 4.543873294346978,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.7479984538525044,
+      "mae": 3.58824920886076,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582134925377835,
+      "mae": 4.355101584721658,
+      "n": 2461
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2025,
+   "snapshot_id": "oos-2025-w16-20260911-asof_v1-d333de20-rf",
+   "source_family": "out_of_sample_season",
+   "week": 16
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "bad4796a7c03279506e7c95147aa4202b2f957f4e47c484d5cbb123c785bbdc0",
+    "file_sha256": "06ba1786a20f5fd5ed00d68388d0f6a0a66a3a24b63c31883de0927d74923d6a",
+    "n_rows": 353,
+    "path": "inputs/oos-2025-w17-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "c503cabc7dc1f5cdc2ab44f4e768d94eb69afd6807c490183a1d8281982bc97d",
+    "file_sha256": "b7d62ef320bddc50850fd9de62ef6cc8fbe120733f026054ccebff455a3fcfe8",
+    "n_observed": 353,
+    "n_rows": 353,
+    "path": "outcomes/oos-2025-w17-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 353
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8046,
+      "mae": 4.4909,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.079,
+      "mae": 6.635,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786,
+      "mae": 4.5439,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.748,
+      "mae": 3.5882,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582,
+      "mae": 4.3551,
+      "n": 2461
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.8046154573643705,
+      "mae": 4.490907169428475,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.078994603836829,
+      "mae": 6.635003076923078,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786040202439177,
+      "mae": 4.543873294346978,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.7479984538525044,
+      "mae": 3.58824920886076,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582134925377835,
+      "mae": 4.355101584721658,
+      "n": 2461
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2025,
+   "snapshot_id": "oos-2025-w17-20260911-asof_v1-d333de20-rf",
+   "source_family": "out_of_sample_season",
+   "week": 17
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "f00270106528a9879850d614dd8d88517c8f25b2ab578199734bf1719bf7cae4",
+    "file_sha256": "42d8aa6d05f8989a256bcf67b5c56ff51a7a55fd7147ed9e71cecc394a1ec8e8",
+    "n_rows": 344,
+    "path": "inputs/oos-2025-w18-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "f4d29dd670c88a95ea98d1ed5bee2555d07c98497b64a75daf0ef740e1038f1b",
+    "file_sha256": "2d222e0c72989062a86164a0fa78fcbd7329e97a2a9eeac295f636004518bc32",
+    "n_observed": 344,
+    "n_rows": 344,
+    "path": "outcomes/oos-2025-w18-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "realized_stats_rows",
+    "description": "players with a realized nflverse stats row in this week and at least one prior game, scored by the frozen model; not a reconstructed pregame roster universe. data_cutoff is the last completed week before this one: each row's features use only strictly earlier weeks (as-of).",
+    "exclusions": [
+     "players without a stats row this week (inactive, bye, injured, not rostered)",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 344
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.8046,
+      "mae": 4.4909,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.079,
+      "mae": 6.635,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786,
+      "mae": 4.5439,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.748,
+      "mae": 3.5882,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582,
+      "mae": 4.3551,
+      "n": 2461
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.8046154573643705,
+      "mae": 4.490907169428475,
+      "n": 5914
+     },
+     "QB": {
+      "baseline_mae": 7.078994603836829,
+      "mae": 6.635003076923078,
+      "n": 650
+     },
+     "RB": {
+      "baseline_mae": 4.786040202439177,
+      "mae": 4.543873294346978,
+      "n": 1539
+     },
+     "TE": {
+      "baseline_mae": 3.7479984538525044,
+      "mae": 3.58824920886076,
+      "n": 1264
+     },
+     "WR": {
+      "baseline_mae": 4.7582134925377835,
+      "mae": 4.355101584721658,
+      "n": 2461
+     }
+    },
+    "reference": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2025,
+   "snapshot_id": "oos-2025-w18-20260911-asof_v1-d333de20-rf",
+   "source_family": "out_of_sample_season",
+   "week": 18
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match rolling_2026.json week 1, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "rolling_2026.json week 1"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "2291cb1882c31d9943292af6705f558c2902708d2f7368eeab2c7ef26ccc73cc",
+    "file_sha256": "e17f20d5e2fd8fe4aa95eb16c4627c7239bcb93065f674a6b461fc5d251f9779",
+    "n_rows": 610,
+    "path": "inputs/weekly-2026-w01-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "70de222ce5d32a5ce0fe161a1f6da618103d99c7d9f1d0e777625f523a852c01",
+    "file_sha256": "749a0f1318e460345440adb4b3270887fb7446327556b968fa1fc20729adf289",
+    "n_observed": 307,
+    "n_rows": 610,
+    "path": "outcomes/weekly-2026-w01-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "scored_eligible_players",
+    "description": "every player with a stat row in this or the previous season and at least one prior game, scored regardless of roster status, injury, bye or availability",
+    "exclusions": [
+     "players without a stats row in this or the previous season",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 610
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 5.0275,
+      "mae": 5.1046,
+      "n": 307
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 5.027489813082466,
+      "mae": 5.10456026058632,
+      "n": 307
+     }
+    },
+    "reference": "rolling_2026.json week 1",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2026,
+   "snapshot_id": "weekly-2026-w01-20260911-asof_v1-d333de20-rf",
+   "source_family": "weekly",
+   "week": 1
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match rolling_2026.json week 2, so every row's baseline is player history",
+    "provenance_basis": "population_rule_and_reconciliation",
+    "reconciled": true,
+    "reconciled_to": "rolling_2026.json week 2"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "232a1c09f6f53875ccdeca4d33308da9ae3d5ac8fb7f2f06c42206f5e8672ff0",
+    "file_sha256": "4db63eeb808b95f9bfe3d030a0650914bd50e7005e0cf26db2f2dc591315a181",
+    "n_rows": 660,
+    "path": "inputs/weekly-2026-w02-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "9571b0072d463d84c44ac6587ebd7bc2d564bfa7fac83061b1d2964b84ab0836",
+    "file_sha256": "f7ff1d8a6b1a3292de91570875416a6bc769728c6d6ecf29fd4e4897c4ff00e0",
+    "n_observed": 345,
+    "n_rows": 660,
+    "path": "outcomes/weekly-2026-w02-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "scored_eligible_players",
+    "description": "every player with a stat row in this or the previous season and at least one prior game, scored regardless of roster status, injury, bye or availability",
+    "exclusions": [
+     "players without a stats row in this or the previous season",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 660
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.7397,
+      "mae": 4.8282,
+      "n": 345
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.739707894531933,
+      "mae": 4.828231884057971,
+      "n": 345
+     }
+    },
+    "reference": "rolling_2026.json week 2",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2026,
+   "snapshot_id": "weekly-2026-w02-20260911-asof_v1-d333de20-rf",
+   "source_family": "weekly",
+   "week": 2
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; no reference aggregate exists yet for this week (rolling_2026.json week 3), so the baseline values for this snapshot have not been reconciled to an evaluation artifact",
+    "provenance_basis": "population_rule_unreconciled",
+    "reconciled": null,
+    "reconciled_to": null
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "f8b533bbe25048d885b6237fd315b70d131da11651772ba4b1b1e4ee4d03f146",
+    "file_sha256": "9365e633d566b854f23c38a7bc0f86d6c0a6b19e5c149491445af598656cadae",
+    "n_rows": 674,
+    "path": "inputs/weekly-2026-w03-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "published_weekly",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": null,
+   "population": {
+    "conditioning": "scored_eligible_players",
+    "description": "every player with a stat row in this or the previous season and at least one prior game, scored regardless of roster status, injury, bye or availability",
+    "exclusions": [
+     "players without a stats row in this or the previous season",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 674
+   },
+   "reconciliation": {
+    "expected": null,
+    "observed": {
+     "baseline_mae": null,
+     "mae": null,
+     "n": 0
+    },
+    "reference": "rolling_2026.json week 3",
+    "status": "unavailable",
+    "tolerance": 0.0001
+   },
+   "season": 2026,
+   "snapshot_id": "weekly-2026-w03-20260911-asof_v1-d333de20-rf",
+   "source_family": "weekly",
+   "week": 3
+  },
+  {
+   "baseline": {
+    "name": "synthetic",
+    "note": "baseline values and provenance are set per case",
+    "provenance_basis": "synthetic",
+    "reconciled": null,
+    "reconciled_to": null
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "f566f8c3c8ccfb35fe581b3ed6b26d93cdf0229c7c1d394b88d2c65c9ac0fc38",
+    "file_sha256": "178130c5273e2a3ea1140f8851cb0893264d881d78f1467620132b461b639083",
+    "n_rows": 2,
+    "path": "inputs/syn-ambiguity-floor-relaxation.json"
+   },
+   "mode": "synthetic",
+   "model_version": "synthetic-model-v1",
+   "outcomes": {
+    "content_sha256": "8b6461eb3f8fa8ee2d653ba2a0f59cf178461fe484b3551cca38474b15b5ceb1",
+    "file_sha256": "a144f3ec6c4e101f50c640436120efe9eb7e731e659a9e0ad428f53d81524139",
+    "n_observed": 2,
+    "n_rows": 2,
+    "path": "outcomes/syn-ambiguity-floor-relaxation.json"
+   },
+   "population": {
+    "conditioning": "synthetic",
+    "description": "hand-built synthetic rows; never evidence about any real player",
+    "exclusions": [],
+    "n_rows": 2
+   },
+   "reconciliation": null,
+   "season": 2099,
+   "snapshot_id": "syn-ambiguity-floor-relaxation",
+   "source_family": "synthetic",
+   "week": 1
+  },
+  {
+   "baseline": {
+    "name": "synthetic",
+    "note": "baseline values and provenance are set per case",
+    "provenance_basis": "synthetic",
+    "reconciled": null,
+    "reconciled_to": null
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "dcfae58001acc7a9809eca0ee6484810605eca42cd8b7e23d0de0f37cdc6663b",
+    "file_sha256": "a0488900ae612088bc026c70e2563f985fdcd957c52318e5c3394a39ae5194a9",
+    "n_rows": 2,
+    "path": "inputs/syn-baseline-fallback.json"
+   },
+   "mode": "synthetic",
+   "model_version": "synthetic-model-v1",
+   "outcomes": null,
+   "population": {
+    "conditioning": "synthetic",
+    "description": "hand-built synthetic rows; never evidence about any real player",
+    "exclusions": [],
+    "n_rows": 2
+   },
+   "reconciliation": null,
+   "season": 2099,
+   "snapshot_id": "syn-baseline-fallback",
+   "source_family": "synthetic",
+   "week": 1
+  },
+  {
+   "baseline": {
+    "name": "synthetic",
+    "note": "baseline values and provenance are set per case",
+    "provenance_basis": "synthetic",
+    "reconciled": null,
+    "reconciled_to": null
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "6045bbe7871d37020059ae1efcedb33d842251d4499b40f12e4b63ad7138a550",
+    "file_sha256": "ab579cc7006569cef0dcd3ee47f58991b1b47690a73ef5f12dcc7cea0a80a0b6",
+    "n_rows": 2,
+    "path": "inputs/syn-blocked-evidence.json"
+   },
+   "mode": "synthetic",
+   "model_version": "synthetic-model-v1",
+   "outcomes": null,
+   "population": {
+    "conditioning": "synthetic",
+    "description": "hand-built synthetic rows; never evidence about any real player",
+    "exclusions": [],
+    "n_rows": 2
+   },
+   "reconciliation": null,
+   "season": 2099,
+   "snapshot_id": "syn-blocked-evidence",
+   "source_family": "synthetic",
+   "week": 1
+  },
+  {
+   "baseline": {
+    "name": "synthetic",
+    "note": "baseline values and provenance are set per case",
+    "provenance_basis": "synthetic",
+    "reconciled": null,
+    "reconciled_to": null
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "85f3c5a20dd02403008f4bfb298bf4c15e5cdbca4306a6a1aa0a47be026181e2",
+    "file_sha256": "aa33d598c881c0280ca8fde1673c951e7b635b496a9f3473195525f34664a0cf",
+    "n_rows": 2,
+    "path": "inputs/syn-exact-tie.json"
+   },
+   "mode": "synthetic",
+   "model_version": "synthetic-model-v1",
+   "outcomes": null,
+   "population": {
+    "conditioning": "synthetic",
+    "description": "hand-built synthetic rows; never evidence about any real player",
+    "exclusions": [],
+    "n_rows": 2
+   },
+   "reconciliation": null,
+   "season": 2099,
+   "snapshot_id": "syn-exact-tie",
+   "source_family": "synthetic",
+   "week": 1
+  },
+  {
+   "baseline": {
+    "name": "synthetic",
+    "note": "baseline values and provenance are set per case",
+    "provenance_basis": "synthetic",
+    "reconciled": null,
+    "reconciled_to": null
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "77e114d9d26fa5afb698415e92b842f77c999a823ed1b196e2d013b2d5ad5382",
+    "file_sha256": "8b978303360c909964291b42baaff73f321f3f0885b809be10eb05ba7f8eae53",
+    "n_rows": 2,
+    "path": "inputs/syn-floor-missing.json"
+   },
+   "mode": "synthetic",
+   "model_version": "synthetic-model-v1",
+   "outcomes": null,
+   "population": {
+    "conditioning": "synthetic",
+    "description": "hand-built synthetic rows; never evidence about any real player",
+    "exclusions": [],
+    "n_rows": 2
+   },
+   "reconciliation": null,
+   "season": 2099,
+   "snapshot_id": "syn-floor-missing",
+   "source_family": "synthetic",
+   "week": 1
+  },
+  {
+   "baseline": {
+    "name": "synthetic",
+    "note": "baseline values and provenance are set per case",
+    "provenance_basis": "synthetic",
+    "reconciled": null,
+    "reconciled_to": null
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "f7413c22c670a615dfffcdfd2517b215330e77e1da8a6bdb2d9b7d6a8e2362ef",
+    "file_sha256": "1cfc4357d2b0c4a0718ee79d698e55918a7a81c21126c492295cc79ef489f0ef",
+    "n_rows": 3,
+    "path": "inputs/syn-missing-and-negative-outcomes.json"
+   },
+   "mode": "synthetic",
+   "model_version": "synthetic-model-v1",
+   "outcomes": {
+    "content_sha256": "675d7ff5ca32fa5c6d76a5471dd128ba1bc5b53f154f7f55c3d1ee5488c645a7",
+    "file_sha256": "f2960b15e94c8dbc3a32457fdc434e3ace7132dc91a7948fb7ee7a0d53a41351",
+    "n_observed": 2,
+    "n_rows": 3,
+    "path": "outcomes/syn-missing-and-negative-outcomes.json"
+   },
+   "population": {
+    "conditioning": "synthetic",
+    "description": "hand-built synthetic rows; never evidence about any real player",
+    "exclusions": [],
+    "n_rows": 3
+   },
+   "reconciliation": null,
+   "season": 2099,
+   "snapshot_id": "syn-missing-and-negative-outcomes",
+   "source_family": "synthetic",
+   "week": 1
+  },
+  {
+   "baseline": {
+    "name": "synthetic",
+    "note": "baseline values and provenance are set per case",
+    "provenance_basis": "synthetic",
+    "reconciled": null,
+    "reconciled_to": null
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "11caaf4aa7fe04e69ba0636112a0e6a391779d5829d6a2dfa49b22f239f8ec5d",
+    "file_sha256": "399d89c353fd459b66e796d8f58fd84c7c0c6edadaa837c6a96fe2ef396799b9",
+    "n_rows": 1,
+    "path": "inputs/syn-one-option.json"
+   },
+   "mode": "synthetic",
+   "model_version": "synthetic-model-v1",
+   "outcomes": null,
+   "population": {
+    "conditioning": "synthetic",
+    "description": "hand-built synthetic rows; never evidence about any real player",
+    "exclusions": [],
+    "n_rows": 1
+   },
+   "reconciliation": null,
+   "season": 2099,
+   "snapshot_id": "syn-one-option",
+   "source_family": "synthetic",
+   "week": 1
+  },
+  {
+   "baseline": {
+    "name": "synthetic",
+    "note": "baseline values and provenance are set per case",
+    "provenance_basis": "synthetic",
+    "reconciled": null,
+    "reconciled_to": null
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "c9a7b5c7480143ffa52d682f1c90e9652a4f36e019caabd11b26c7fe2fcfbd7d",
+    "file_sha256": "4995c87dc4e3b1290fd2f302d46bbfea9164747f2e165f8a441f67bd46758e36",
+    "n_rows": 3,
+    "path": "inputs/syn-slot-and-exclusion.json"
+   },
+   "mode": "synthetic",
+   "model_version": "synthetic-model-v1",
+   "outcomes": null,
+   "population": {
+    "conditioning": "synthetic",
+    "description": "hand-built synthetic rows; never evidence about any real player",
+    "exclusions": [],
+    "n_rows": 3
+   },
+   "reconciliation": null,
+   "season": 2099,
+   "snapshot_id": "syn-slot-and-exclusion",
+   "source_family": "synthetic",
+   "week": 1
+  },
+  {
+   "baseline": {
+    "name": "synthetic",
+    "note": "baseline values and provenance are set per case",
+    "provenance_basis": "synthetic",
+    "reconciled": null,
+    "reconciled_to": null
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "7874943fda50b8e5de6d589a58695350bbe8b66e141db638a6059c4109479043",
+    "file_sha256": "510ffdfacc0dfc39934240ef3cd9e99a5b68336b1e76eaf5d4a890bbfabd05e1",
+    "n_rows": 2,
+    "path": "inputs/syn-threshold-equality.json"
+   },
+   "mode": "synthetic",
+   "model_version": "synthetic-model-v1",
+   "outcomes": null,
+   "population": {
+    "conditioning": "synthetic",
+    "description": "hand-built synthetic rows; never evidence about any real player",
+    "exclusions": [],
+    "n_rows": 2
+   },
+   "reconciliation": null,
+   "season": 2099,
+   "snapshot_id": "syn-threshold-equality",
+   "source_family": "synthetic",
+   "week": 1
+  },
+  {
+   "baseline": {
+    "name": "synthetic",
+    "note": "baseline values and provenance are set per case",
+    "provenance_basis": "synthetic",
+    "reconciled": null,
+    "reconciled_to": null
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "54dcbc5d5256793938f08ff6b560a8fe14c4f8352f2b6a53cc46879c6755953c",
+    "file_sha256": "48ec9180d1a03a9c0329c4c4916a9750febc80ab6c9907161e35b4aeead7f6b4",
+    "n_rows": 2,
+    "path": "inputs/syn-unknown-availability.json"
+   },
+   "mode": "synthetic",
+   "model_version": "synthetic-model-v1",
+   "outcomes": null,
+   "population": {
+    "conditioning": "synthetic",
+    "description": "hand-built synthetic rows; never evidence about any real player",
+    "exclusions": [],
+    "n_rows": 2
+   },
+   "reconciliation": null,
+   "season": 2099,
+   "snapshot_id": "syn-unknown-availability",
+   "source_family": "synthetic",
+   "week": 1
+  }
+ ],
+ "sources": [
+  {
+   "path": "artifacts/eval/eval-20260911-20260911-asof_v1-d333de20-rf-oos2025.json",
+   "role": "eval_artifact",
+   "rows": null,
+   "sha256": "357d3e9f2df75748f96bc15eb31d5ea1af8ab53fc47f037fad4f01ab8e9cb131"
+  },
+  {
+   "path": "artifacts/eval/eval-20260911-20260911-asof_v1-d333de20-rf.json",
+   "role": "eval_artifact",
+   "rows": null,
+   "sha256": "831449741d3237f6557bc169452abcddaba819eb29fccc535b3a2ea68b52cf1d"
+  },
+  {
+   "path": "artifacts/eval/rolling_2026.json",
+   "role": "rolling_eval",
+   "rows": null,
+   "sha256": "eb9402a6169ac0775136d1305a25c56f6c6aee7965a6dc305e8b899679ddb94d"
+  },
+  {
+   "path": "artifacts/manifest.json",
+   "role": "artifact_manifest",
+   "rows": null,
+   "sha256": "5988ccff07ca7944b7fa32681d55a69ba369f9aaf6df7e85219eb3affd77741c"
+  },
+  {
+   "path": "artifacts/marts/_export_manifest.json",
+   "role": "mart_export_manifest",
+   "rows": null,
+   "sha256": "331781f879f2261a6e49fa6ec184f5536a4640daa1399cee85176384e35597d9"
+  },
+  {
+   "path": "artifacts/marts/fct_player_week.parquet",
+   "role": "mart",
+   "rows": 25266,
+   "sha256": "f790506c1cfea04d49f30406102a0392444da8064d9d69b665b1d9dee1d57657"
+  },
+  {
+   "path": "artifacts/models/20260911-asof_v1-d333de20/metadata.json",
+   "role": "model_metadata",
+   "rows": null,
+   "sha256": "25f7ec3763d9647c0fd8821f9bfbf1d7f124700da25fe5615d7e4e7513a1c94a"
+  },
+  {
+   "path": "artifacts/models/20260911-asof_v1-d333de20/oos_predictions_2025.csv",
+   "role": "prediction_csv",
+   "rows": 11828,
+   "sha256": "6ba7b21b2772395f95056299dfef30c405861728276f88e3af74a0d702f9c02f"
+  },
+  {
+   "path": "artifacts/models/20260911-asof_v1-d333de20/test_predictions.csv",
+   "role": "prediction_csv",
+   "rows": 11494,
+   "sha256": "30cf233f8cd8e9083e00c2fac50b8cd65b24cf51cc07dbe30e3ad75af628b6f5"
+  },
+  {
+   "path": "artifacts/predictions/2026/week_01.json",
+   "role": "predictions",
+   "rows": 610,
+   "sha256": "63bca5fd520286324dfe209241d22e5e5d287da6409e64537734ca74f476ae8d"
+  },
+  {
+   "path": "artifacts/predictions/2026/week_02.json",
+   "role": "predictions",
+   "rows": 660,
+   "sha256": "634ee250978c318bab0491d52aad48596a189eba0f8366e5009522ebcbc2efaf"
+  },
+  {
+   "path": "artifacts/predictions/2026/week_03.json",
+   "role": "predictions",
+   "rows": 674,
+   "sha256": "75c89f53be8367075d3ef9acf3dcc72f2f099aab4dc65f85e2df9467af00a873"
+  },
+  {
+   "path": "artifacts/runs/run-20260914T231839Z.json",
+   "role": "run_log",
+   "rows": null,
+   "sha256": "b6c25bc340808e0d6b6f2b95c93f0865ad3a2ff38b525a4d913e7a400986ec73"
+  },
+  {
+   "path": "artifacts/runs/run-20260915T143710Z.json",
+   "role": "run_log",
+   "rows": null,
+   "sha256": "636c8147dd5f8e8175ef40015b6c7c47af022b35db835f039e849024f8b388db"
+  },
+  {
+   "path": "artifacts/runs/run-20260922T141927Z.json",
+   "role": "run_log",
+   "rows": null,
+   "sha256": "78c3c694d775a3d6a6a0240446a30a7e5d0b4de25b8b624e6e026dc186dc0eb5"
+  }
+ ]
+}

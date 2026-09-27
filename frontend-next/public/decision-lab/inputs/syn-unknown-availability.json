@@ -1,0 +1,90 @@
+{
+ "baseline": {
+  "name": "synthetic",
+  "note": "baseline values and provenance are set per case",
+  "provenance_basis": "synthetic",
+  "reconciled": null,
+  "reconciled_to": null
+ },
+ "candidate_by_position": {
+  "QB": "rf",
+  "RB": "rf",
+  "TE": "rf",
+  "WR": "rf"
+ },
+ "champion_at_source": {
+  "basis": "synthetic",
+  "candidate_by_position": {
+   "QB": "rf",
+   "RB": "rf",
+   "TE": "rf",
+   "WR": "rf"
+  },
+  "model_version": "synthetic-model-v1"
+ },
+ "data_cutoff": {
+  "season": 2098,
+  "week": 18
+ },
+ "feature_version": null,
+ "generated_at_utc": null,
+ "mode": "synthetic",
+ "model_version": "synthetic-model-v1",
+ "population": {
+  "conditioning": "synthetic",
+  "description": "hand-built synthetic rows; never evidence about any real player",
+  "exclusions": [],
+  "n_rows": 2
+ },
+ "publication": {
+  "action": null,
+  "note": "synthetic inputs for boundary and regression checks",
+  "run_id": null,
+  "status": "synthetic"
+ },
+ "rows": [
+  {
+   "availability_default": "unknown",
+   "baseline": 12.0,
+   "baseline_provenance": "player_history",
+   "candidate": "rf",
+   "ceiling": 22.0,
+   "display_name": "Synthetic A",
+   "display_source": "synthetic",
+   "floor": 6.0,
+   "model_version": "synthetic-model-v1",
+   "player_id": "SYN-A",
+   "position": "WR",
+   "projection": 14.0,
+   "source_row_ref": null,
+   "team": "SYN"
+  },
+  {
+   "availability_default": "unknown",
+   "baseline": 11.0,
+   "baseline_provenance": "player_history",
+   "candidate": "rf",
+   "ceiling": 20.0,
+   "display_name": "Synthetic B",
+   "display_source": "synthetic",
+   "floor": 5.0,
+   "model_version": "synthetic-model-v1",
+   "player_id": "SYN-B",
+   "position": "WR",
+   "projection": 12.0,
+   "source_row_ref": null,
+   "team": "SYN"
+  }
+ ],
+ "schema_version": "inputs_snapshot/1.0",
+ "scoring_format": "ppr",
+ "season": 2099,
+ "snapshot_id": "syn-unknown-availability",
+ "source": {
+  "files": [],
+  "mart": null,
+  "mart_export": null
+ },
+ "source_family": "synthetic",
+ "week": 1
+}
