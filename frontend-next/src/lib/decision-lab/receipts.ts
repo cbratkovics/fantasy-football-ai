@@ -590,24 +590,71 @@ export function validateReceipt(receipt: unknown, options: ValidateReceiptOption
  * is accepted (the longer event list wins); anything else with the same `decision_id` throws
  * {@link ConflictError}.
  */
+/**
+ * Everything in a receipt that is fixed when the receipt is created. Only `events` (and the
+ * `action` / `outcome` projections derived from them) may grow afterwards. Mirrors
+ * `receipts.IMMUTABLE_FIELDS` in Python.
+ */
+export const IMMUTABLE_FIELDS = [
+  'schema_version',
+  'decision_id',
+  'parent_decision_id',
+  'created_at_utc',
+  'case_id',
+  'prediction_note',
+  'inputs',
+  'result',
+  'result_sha256',
+  'trust',
+] as const;
+
+/** The receipt without its event history: the part two records must share to be merged. */
+export function immutableContent(receipt: Receipt): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (let i = 0; i < IMMUTABLE_FIELDS.length; i += 1) {
+    const k = IMMUTABLE_FIELDS[i];
+    out[k] = (receipt as unknown as Record<string, unknown>)[k];
+  }
+  return out;
+}
+
+/**
+ * Idempotent import: identical receipts merge to one; the same decision with a superset of events
+ * is accepted; anything else with the same `decision_id` is a conflict.
+ *
+ * Two receipts merge only when their complete immutable content is equal ({@link IMMUTABLE_FIELDS},
+ * including `created_at_utc`, `prediction_note`, `case_id` and `parent_decision_id`) and one event
+ * history is a prefix of the other. The decision id is a digest of the inputs alone, so two receipts
+ * can share it while recording a different creation time, note, case or parent; that is a conflict,
+ * reported by field name, never resolved by preferring the longer history. On success the merged
+ * receipt keeps `existing`'s immutable content (identical to `incoming`'s) and the longer history.
+ */
 export function merge(existing: Receipt, incoming: Receipt): Receipt {
   if (existing.decision_id !== incoming.decision_id) {
     throw new ConflictError('receipts have different decision ids');
   }
-  if (!deepEqual(existing.inputs, incoming.inputs) || existing.result_sha256 !== incoming.result_sha256) {
-    throw new ConflictError('same decision_id but different inputs or result');
+  const differing: string[] = [];
+  const left = existing as unknown as Record<string, unknown>;
+  const right = incoming as unknown as Record<string, unknown>;
+  for (let i = 0; i < IMMUTABLE_FIELDS.length; i += 1) {
+    const k = IMMUTABLE_FIELDS[i];
+    if (!deepEqual(left[k] ?? null, right[k] ?? null)) {
+      differing.push(k);
+    }
+  }
+  if (differing.length > 0) {
+    throw new ConflictError(`same decision_id but different immutable content: ${differing.join(', ')}`);
   }
   const a = existing.events;
   const b = incoming.events;
-  const longerIsExisting = a.length > b.length;
-  const shorter = longerIsExisting ? b : a;
-  const longer = longerIsExisting ? a : b;
+  const shorter = a.length <= b.length ? a : b;
+  const longer = a.length <= b.length ? b : a;
   for (let i = 0; i < shorter.length; i += 1) {
     if (shorter[i].event_id !== longer[i].event_id) {
       throw new ConflictError(`event ${shorter[i].seq} differs between the two receipts`);
     }
   }
-  const out: Receipt = { ...(longerIsExisting ? existing : incoming), events: longer.slice() };
+  const out: Receipt = { ...existing, events: longer.slice() };
   const state = deriveState(out);
   out.action = state.action;
   out.outcome = state.outcome;

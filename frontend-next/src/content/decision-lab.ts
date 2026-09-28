@@ -108,6 +108,8 @@ export const DECISION_LAB_COPY = {
     needSnapshot: 'Load a snapshot before computing.',
     needAlternatives: 'Nominate at least one alternative before computing.',
     unchanged: 'The inputs are semantically identical to the current decision; its identity did not change.',
+    alreadySaved:
+      'This decision is already saved: the stored record (its creation time, note, case and parent link) was opened instead of creating a competing one. Change an assumption to start a new decision.',
   },
 
   card: {

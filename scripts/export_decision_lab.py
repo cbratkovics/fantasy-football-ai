@@ -8,7 +8,8 @@
 
 Offline: reads artifacts/marts, artifacts/predictions, artifacts/eval, artifacts/models/*.csv and
 metadata, artifacts/runs and artifacts/manifest.json. Never writes outside --out (and the public
-copy). ``--check`` builds into a temporary sibling directory and compares every file except
+copy). Exit codes: 0 ok; 1 failed with the previous bundle and public copy re-established and
+verified; 2 failed and the restoration could not be established (publish nothing). ``--check`` builds into a temporary sibling directory and compares every file except
 ``_build.json`` / ``_last_attempt.json`` (``manifest.json`` is compared with
 ``code_revision.produced_at`` neutralised, because the export records the git HEAD that produced
 it and the commit that contains it necessarily differs); exit 1 on any difference.
@@ -73,8 +74,21 @@ def main(argv: list[str] | None = None) -> int:
     try:
         manifest = exporter.export_bundle(args.artifacts, args.out, public_copy=args.public_copy)
     except exporter.ExportError as exc:
+        diagnostics = args.out / bundle.LAST_ATTEMPT_NAME
+        if exc.restored is False:
+            # Exit 2: neither destination may be published; the caller must restore both paths
+            # from the last commit (the weekly job does) before anything is staged.
+            print(
+                f"EXPORT FAILED AND RESTORATION NOT ESTABLISHED (stage {exc.stage}; the published "
+                f"paths are in an unknown state and must not be committed; see {diagnostics}): {exc}"
+            )
+            return 2
+        if exc.restored is None:
+            print(f"EXPORT INCOMPLETE (stage {exc.stage}; see {diagnostics}): {exc}")
+            return 1
         print(
-            f"EXPORT FAILED (previous bundle untouched; see {args.out / bundle.LAST_ATTEMPT_NAME}): {exc}"
+            f"EXPORT FAILED (stage {exc.stage}; previous bundle and public copy preserved and "
+            f"verified; see {diagnostics}): {exc}"
         )
         return 1
     print(exporter.summary(manifest))

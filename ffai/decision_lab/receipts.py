@@ -462,22 +462,52 @@ def validate_receipt(
     return checks
 
 
+IMMUTABLE_FIELDS: tuple[str, ...] = (
+    "schema_version",
+    "decision_id",
+    "parent_decision_id",
+    "created_at_utc",
+    "case_id",
+    "prediction_note",
+    "inputs",
+    "result",
+    "result_sha256",
+    "trust",
+)
+"""Everything in a receipt that is fixed when the receipt is created. Only ``events`` (and the
+``action`` / ``outcome`` projections derived from them) may grow afterwards."""
+
+
+def immutable_content(receipt: dict[str, Any]) -> dict[str, Any]:
+    """The receipt without its event history: the part two records must share to be merged."""
+    return {k: receipt.get(k) for k in IMMUTABLE_FIELDS}
+
+
 def merge(existing: dict[str, Any], incoming: dict[str, Any]) -> dict[str, Any]:
     """Idempotent import: identical receipts merge to one; the same decision with a superset of
-    events is accepted; anything else with the same ``decision_id`` is a conflict."""
+    events is accepted; anything else with the same ``decision_id`` is a conflict.
+
+    Two receipts merge only when their complete immutable content is equal
+    (:data:`IMMUTABLE_FIELDS`, including ``created_at_utc``, ``prediction_note``, ``case_id`` and
+    ``parent_decision_id``) and one event history is a prefix of the other. Because the decision
+    id is a digest of the inputs alone, two receipts can share it while recording a different
+    creation time, note, case or parent; that is a conflict, reported by field name, never
+    resolved by preferring the longer history. On success the merged receipt keeps ``existing``'s
+    immutable content (identical to ``incoming``'s) and the longer event history.
+    """
     if existing["decision_id"] != incoming["decision_id"]:
         raise ConflictError("receipts have different decision ids")
-    if (
-        existing["inputs"] != incoming["inputs"]
-        or existing["result_sha256"] != incoming["result_sha256"]
-    ):
-        raise ConflictError("same decision_id but different inputs or result")
+    differing = [k for k in IMMUTABLE_FIELDS if existing.get(k) != incoming.get(k)]
+    if differing:
+        raise ConflictError(
+            "same decision_id but different immutable content: " + ", ".join(differing)
+        )
     a, b = existing["events"], incoming["events"]
     shorter, longer = (a, b) if len(a) <= len(b) else (b, a)
     for x, y in zip(shorter, longer, strict=False):
         if x["event_id"] != y["event_id"]:
             raise ConflictError(f"event {x['seq']} differs between the two receipts")
-    out = dict(existing if longer is a else incoming)
+    out = dict(existing)
     out["events"] = list(longer)
     out["action"], out["outcome"] = derive_state(out)
     return out

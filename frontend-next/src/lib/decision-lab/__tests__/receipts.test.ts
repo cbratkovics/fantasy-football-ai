@@ -3,6 +3,8 @@ import { describe, expect, it } from 'vitest';
 import { contentId } from '../canonical';
 import {
   ConflictError,
+  IMMUTABLE_FIELDS,
+  immutableContent,
   ReceiptError,
   TRUST_NOTE,
   attachOutcome,
@@ -317,5 +319,60 @@ describe('buildDecisionInputs / snapshotRef / outcomeCompatible', () => {
     expect(attached.outcome.state).toBe('attached');
     expect(attached.outcome.metrics?.chosen_actual_reason).toBe('no_action_recorded');
     expect(attached.outcome.metrics?.model_recommended_player_id).toBeNull();
+  });
+});
+
+describe('merge: complete immutable content', () => {
+  const G2 = loadGolden().receipt;
+  const cases: Array<[string, unknown]> = [
+    ['created_at_utc', '2099-06-01T00:00:00+00:00'],
+    ['prediction_note', 'a different note'],
+    ['prediction_note', null],
+    ['case_id', 'some-other-case'],
+    ['case_id', null],
+    ['parent_decision_id', '9'.repeat(64)],
+    ['trust', { note: 'edited' }],
+    ['schema_version', 'decision_receipt/0.9'],
+  ];
+
+  it.each(cases)('rejects a different %s in either direction and for any event count', (field, value) => {
+    const base = G2.receipt_after_action;
+    const other = clone(base) as unknown as Record<string, unknown>;
+    other[field] = value;
+    const changed = other as unknown as Receipt;
+    const re = new RegExp(`different immutable content: ${field}$`);
+    expect(() => merge(base, changed)).toThrow(re);
+    expect(() => merge(changed, base)).toThrow(re);
+    // Unequal event counts never rescue a metadata mismatch: the longer history does not win.
+    const longer = clone(G2.receipt_after_outcome) as unknown as Record<string, unknown>;
+    longer[field] = value;
+    expect(() => merge(base, longer as unknown as Receipt)).toThrow(/different immutable content/);
+    expect(() => merge(longer as unknown as Receipt, G2.receipt_new)).toThrow(/different immutable content/);
+  });
+
+  it('reports every differing field', () => {
+    const other = clone(G2.receipt_new) as unknown as Record<string, unknown>;
+    other.created_at_utc = '2099-06-01T00:00:00+00:00';
+    other.prediction_note = 'changed';
+    other.case_id = null;
+    expect(() => merge(G2.receipt_new, other as unknown as Receipt)).toThrow(/content: created_at_utc, case_id, prediction_note$/);
+  });
+
+  it('keeps the shared metadata for identical imports and valid extensions', () => {
+    const { receipt_new: r0, receipt_after_action: r1, receipt_after_outcome: r2 } = G2;
+    const pairs: Array<[Receipt, Receipt]> = [[r0, r0], [r1, r1], [r0, r1], [r1, r0], [r1, r2], [r2, r0]];
+    for (const [existing, incoming] of pairs) {
+      const merged = merge(existing, incoming);
+      expect(immutableContent(merged)).toEqual(immutableContent(existing));
+      expect(merged.events.length).toBe(Math.max(existing.events.length, incoming.events.length));
+    }
+    expect(merge(r0, r2).prediction_note).toBe('I expect A');
+    expect(merge(r0, r2).created_at_utc).toBe(r0.created_at_utc);
+    expect(new Set([...IMMUTABLE_FIELDS, 'events', 'action', 'outcome'])).toEqual(new Set(Object.keys(r2)));
+  });
+
+  it('equal event counts with a diverging event is a conflict', () => {
+    expect(G2.receipt_after_action.events.length).toBe(G2.receipt_declined.events.length);
+    expect(() => merge(G2.receipt_after_action, G2.receipt_declined)).toThrow(/event 1 differs/);
   });
 });

@@ -850,11 +850,11 @@ def test_merge_with_a_different_result_is_a_conflict() -> None:
     r0 = LIFECYCLE["receipt_new"]
     other = copy.deepcopy(r0)
     other["result_sha256"] = "3" * 64
-    with pytest.raises(receipts.ConflictError, match="different inputs or result"):
+    with pytest.raises(receipts.ConflictError, match="different immutable content"):
         receipts.merge(r0, other)
     other = copy.deepcopy(r0)
     other["inputs"]["parameters"]["min_floor"] = 8.0  # same decision_id claimed, different inputs
-    with pytest.raises(receipts.ConflictError, match="different inputs or result"):
+    with pytest.raises(receipts.ConflictError, match="different immutable content"):
         receipts.merge(r0, other)
 
 
@@ -920,3 +920,79 @@ def test_timestamps_and_notes_never_enter_the_decision_id() -> None:
     b = receipts.new_receipt(GOLDEN_INPUTS, created_at_utc=T2, prediction_note="y", case_id="two")
     assert a["decision_id"] == b["decision_id"]
     assert a["result_sha256"] == b["result_sha256"]
+
+
+# --- merge: complete immutable content -------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("created_at_utc", "2099-06-01T00:00:00+00:00"),
+        ("prediction_note", "a different note"),
+        ("prediction_note", None),
+        ("case_id", "some-other-case"),
+        ("case_id", None),
+        ("parent_decision_id", "9" * 64),
+        ("trust", {"note": "edited"}),
+        ("schema_version", "decision_receipt/0.9"),
+    ],
+)
+def test_merge_rejects_different_immutable_metadata(field: str, value: Any) -> None:
+    """Same decision id, same events, one immutable field changed: a conflict naming the field,
+    in both directions, whatever the event counts."""
+    base = LIFECYCLE["receipt_after_action"]
+    other = copy.deepcopy(base)
+    other[field] = value
+    assert other[field] != base[field]
+    with pytest.raises(receipts.ConflictError, match=f"different immutable content: {field}$"):
+        receipts.merge(base, other)
+    with pytest.raises(receipts.ConflictError, match=f"different immutable content: {field}$"):
+        receipts.merge(other, base)
+    # Unequal event counts do not rescue a metadata mismatch: the longer history never wins.
+    longer = copy.deepcopy(LIFECYCLE["receipt_after_outcome"])
+    longer[field] = value
+    with pytest.raises(receipts.ConflictError, match="different immutable content"):
+        receipts.merge(base, longer)
+    with pytest.raises(receipts.ConflictError, match="different immutable content"):
+        receipts.merge(longer, LIFECYCLE["receipt_new"])
+
+
+def test_merge_reports_every_differing_immutable_field() -> None:
+    base = LIFECYCLE["receipt_new"]
+    other = copy.deepcopy(base)
+    other["created_at_utc"] = "2099-06-01T00:00:00+00:00"
+    other["prediction_note"] = "changed"
+    other["case_id"] = None
+    with pytest.raises(
+        receipts.ConflictError, match="content: created_at_utc, case_id, prediction_note$"
+    ):
+        receipts.merge(base, other)
+
+
+def test_merge_keeps_metadata_for_valid_extensions_and_duplicates() -> None:
+    """Equal immutable content: identical receipts and prefix histories still merge, and the
+    merged receipt carries the shared metadata untouched (no rewritten time, note, or parent)."""
+    r0, r1, r2 = (
+        LIFECYCLE["receipt_new"],
+        LIFECYCLE["receipt_after_action"],
+        LIFECYCLE["receipt_after_outcome"],
+    )
+    for existing, incoming in ((r0, r0), (r1, r1), (r0, r1), (r1, r0), (r1, r2), (r2, r0)):
+        merged = receipts.merge(existing, incoming)
+        assert receipts.immutable_content(merged) == receipts.immutable_content(existing)
+        assert len(merged["events"]) == max(len(existing["events"]), len(incoming["events"]))
+    assert (
+        r0["prediction_note"] == "I expect A" and r0["case_id"] == "syn-ambiguity-floor-relaxation"
+    )
+    assert receipts.merge(r0, r2)["prediction_note"] == "I expect A"
+    # The immutable content is exactly the receipt minus its history and projections.
+    assert set(receipts.IMMUTABLE_FIELDS) | {"events", "action", "outcome"} == set(r2)
+
+
+def test_merge_equal_event_counts_with_a_diverging_event_is_a_conflict() -> None:
+    recorded = LIFECYCLE["receipt_after_action"]
+    declined = LIFECYCLE["receipt_declined"]
+    assert len(recorded["events"]) == len(declined["events"]) == 1
+    with pytest.raises(receipts.ConflictError, match="event 1 differs"):
+        receipts.merge(recorded, declined)

@@ -175,3 +175,42 @@ describe('export / import', () => {
     expect(loadReceipts().receipts).toEqual({});
   });
 });
+
+describe('immutable metadata at the storage boundary', () => {
+  it('a rejected import (same id, different created_at_utc / note / case / parent) leaves the saved receipt byte-identical', () => {
+    saveReceipt(clone(G.receipt_after_action));
+    const before = window.localStorage.getItem(STORAGE_KEY);
+    const variants: Array<Partial<Receipt>> = [
+      { created_at_utc: '2099-06-01T00:00:00+00:00' },
+      { prediction_note: 'rewritten note' },
+      { prediction_note: null },
+      { case_id: 'another-case' },
+      { parent_decision_id: '9'.repeat(64) },
+    ];
+    for (const patch of variants) {
+      // Longer history than the saved one, so a "longer wins" merge would have overwritten it.
+      const incoming = { ...clone(G.receipt_after_outcome), ...patch };
+      const report = importReceipts(JSON.stringify([incoming]));
+      expect(report.imported).toBe(0);
+      expect(report.duplicates).toBe(0);
+      expect(report.rejected).toEqual([
+        { decision_id: G.receipt_new.decision_id, reason: expect.stringMatching(/^conflict: same decision_id but different immutable content: /) },
+      ]);
+      expect(window.localStorage.getItem(STORAGE_KEY)).toBe(before);
+    }
+    expect(loadReceipts().receipts[G.receipt_new.decision_id]).toEqual(G.receipt_after_action);
+  });
+
+  it('saveReceipt refuses a same-id receipt with different metadata and keeps the stored one', () => {
+    saveReceipt(clone(G.receipt_after_action));
+    const before = window.localStorage.getItem(STORAGE_KEY);
+    const competing = { ...clone(G.receipt_after_outcome), created_at_utc: '2099-06-01T00:00:00+00:00' };
+    const res = saveReceipt(competing);
+    expect(res).toMatchObject({ ok: false, reason: 'conflict' });
+    expect(window.localStorage.getItem(STORAGE_KEY)).toBe(before);
+    // A matching-metadata extension is still accepted.
+    const ok = saveReceipt(clone(G.receipt_after_outcome));
+    expect(ok).toMatchObject({ ok: true, merged: true });
+    expect(loadReceipts().receipts[G.receipt_new.decision_id]).toEqual(G.receipt_after_outcome);
+  });
+});

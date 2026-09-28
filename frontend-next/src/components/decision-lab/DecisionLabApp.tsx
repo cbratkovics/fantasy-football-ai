@@ -212,6 +212,20 @@ export function DecisionLabApp({ initialCaseId = null, fetchImpl, baseUrl = DEFA
       setComputeMessage(COPY.compute.unchanged)
       return
     }
+    // The same semantic decision may already be saved (an earlier session, an import). Its
+    // creation time, note, case and parent link are immutable: open the saved record instead of
+    // creating a competing one whose metadata could never be merged over it.
+    const stored = loadReceipts()
+    const already = Object.prototype.hasOwnProperty.call(stored.receipts, id) ? stored.receipts[id] : null
+    if (already) {
+      setSaved(stored)
+      setComputed({ receipt: already, saved: true, key: k, diff: null })
+      setFrozen(already.action.state !== 'not_recorded')
+      setActionError(null)
+      setOutcomeState({ status: already.outcome.state === 'attached' ? 'attached' : 'idle' })
+      setComputeMessage(COPY.compute.alreadySaved)
+      return
+    }
     const prev = computed && computed.receipt.case_id === d.caseId && computed.receipt.inputs.snapshot.snapshot_id === inputs.snapshot.snapshot_id ? computed.receipt : null
     const receipt = newReceipt(inputs, {
       createdAtUtc: now(),

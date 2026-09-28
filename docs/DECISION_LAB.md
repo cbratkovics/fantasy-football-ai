@@ -54,10 +54,35 @@ python -m ffai.decision_lab.replay  ◄── receipt JSON ──►  Export / I
 ```
 
 The exporter reuses the tested gold marts and the source artifacts; it does not train, does not
-overwrite `artifacts/marts`, and does not need the stats cache. It writes into a temporary
-sibling directory, verifies the result with the same fail-closed loader the tests use, and only
-then swaps it into place. A failed export leaves the previous bundle untouched and records
-`artifacts/decision_lab/_last_attempt.json`.
+overwrite `artifacts/marts`, and does not need the stats cache.
+
+### Replacement and rollback guarantees
+
+`export_bundle` replaces the canonical bundle and the public copy in three steps:
+
+1. **Staging.** The bundle is built into `artifacts/decision_lab.build-<pid>` and verified with
+   the fail-closed loader; the public copy is staged as `frontend-next/public/decision-lab.build-<pid>`
+   and verified byte-identical. Nothing published has been touched; a failure here only removes
+   the staging directories (exit 1).
+2. **Replacement.** The previous canonical bundle is parked as `decision_lab.previous-<pid>`,
+   the staged one moved in; the previous public copy is parked and the staged copy moved in.
+   Then the *published* paths are verified again (loader over the canonical bundle, byte
+   comparison with the public copy).
+3. **Cleanup.** Only after that verification succeeds are the parked previous versions deleted.
+
+Each rename is atomic on its own; the two to four renames are **not one transaction**. A reader
+can observe a momentarily missing or mismatched destination between them, and a process killed
+mid-swap leaves `.previous-*` / `.build-*` siblings behind. Every *caught* failure during
+replacement or verification is rolled back in reverse order, and the rollback is then verified:
+a previous canonical bundle must load fail-closed, a previous public copy must equal it, and a
+destination that did not exist before must be absent again. If that holds the exporter exits 1
+with the previous bundle and public copy re-established; if it does not, the exporter exits 2
+("restoration not established"), the weekly job restores both paths from the last commit and
+re-verifies them before staging anything, and no partial copy can reach a commit. Leftover
+`.build-*` / `.previous-*` siblings are excluded from the weekly commit by pathspec. Failure
+diagnostics go to `artifacts/decision_lab/_last_attempt.json` (`stage`, `restoration`,
+`published_state`), a file outside every digest that the next successful export deletes; the
+immutable evidence files are never edited in place.
 
 ### Bundle files and identities
 

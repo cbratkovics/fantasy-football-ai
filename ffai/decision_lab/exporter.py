@@ -76,7 +76,20 @@ DIGEST_COVERAGE = {
 
 
 class ExportError(RuntimeError):
-    """The export could not be completed; the existing bundle was left untouched."""
+    """The export could not be completed.
+
+    ``restored`` says what the published destinations hold afterwards: ``True`` — the previous
+    canonical bundle and public copy (or their absence, on a first build) were re-established and
+    verified; ``False`` — a restoration step or its verification failed, so the destinations must
+    be treated as unknown and must not be published; ``None`` — the new bundle is in place and
+    verified but a post-success cleanup failed. ``stage`` names where the failure happened
+    (``staging``, ``replacement``, ``verification``, ``cleanup``).
+    """
+
+    def __init__(self, message: str, *, restored: bool | None = True, stage: str = "staging"):
+        super().__init__(message)
+        self.restored = restored
+        self.stage = stage
 
 
 def dumps(obj: Any) -> str:
@@ -999,57 +1012,314 @@ def build_into(artifacts: Path, out: Path, *, code_revision: str | None) -> dict
     return manifest
 
 
-def _write_last_attempt(out: Path, error: str, code_revision: str | None) -> None:
-    out.mkdir(parents=True, exist_ok=True)
-    (out / bundle.LAST_ATTEMPT_NAME).write_text(
-        dumps(
-            {
-                "status": "failed",
-                "attempted_at_utc": utc_now(),
-                "error": error,
-                "code_revision": code_revision,
-                "exporter_version": EXPORTER_VERSION,
-            }
-        ),
-        encoding="utf-8",
-    )
+def _write_last_attempt(
+    out: Path,
+    error: str,
+    code_revision: str | None,
+    *,
+    stage: str,
+    restoration: dict[str, Any],
+    published_state: str,
+) -> None:
+    """Failure diagnostics next to (never inside) the evidence: ``_last_attempt.json`` is outside
+    every digest (see ``DIGEST_COVERAGE``) and is deleted by the next successful export."""
+    try:
+        out.mkdir(parents=True, exist_ok=True)
+        (out / bundle.LAST_ATTEMPT_NAME).write_text(
+            dumps(
+                {
+                    "status": "failed",
+                    "attempted_at_utc": utc_now(),
+                    "error": error,
+                    "stage": stage,
+                    "restoration": restoration,
+                    "published_state": published_state,
+                    "code_revision": code_revision,
+                    "exporter_version": EXPORTER_VERSION,
+                    "note": (
+                        "diagnostics only; outside every digest; published_state says whether the "
+                        "previously published bundle was re-established (previous_bundle_preserved), "
+                        "was never there (no_previous_bundle), or could not be verified (unknown)"
+                    ),
+                }
+            ),
+            encoding="utf-8",
+        )
+    except OSError:
+        # Diagnostics must never mask the original failure (the destination may be unusable).
+        pass
+
+
+# Filesystem seams: tests inject failures here (a rename that fails after the first swap, a copy
+# that fails, a verification that fails) without touching the real filesystem semantics.
+def _move(src: Path, dst: Path) -> None:
+    os.rename(src, dst)
+
+
+def _copytree(src: Path, dst: Path) -> None:
+    shutil.copytree(src, dst)
+
+
+def _verify_published(out: Path, public_copy: Path | None) -> dict[str, Any]:
+    return verify_bundle(out, public_copy=public_copy)
+
+
+def _rmtree(path: Path) -> None:
+    if path.exists():
+        shutil.rmtree(path)
+
+
+def _restore(
+    *,
+    out: Path,
+    public: Path | None,
+    tmp_out: Path,
+    tmp_pub: Path | None,
+    prev_out: Path,
+    prev_pub: Path | None,
+    placed: dict[str, bool],
+    had_out: bool,
+    had_pub: bool,
+) -> dict[str, Any]:
+    """Undo whatever ``export_bundle`` had swapped, in reverse order, then *verify* the result.
+
+    Returns ``{"status": "verified" | "failed", "steps": [...], "errors": [...]}``. ``verified``
+    means: every destination that existed before holds a bundle that loads fail-closed (canonical)
+    or equals the canonical (public copy); every destination that did not exist before is absent
+    again; no ``.previous-*`` sibling remains. Anything else is ``failed``.
+    """
+    steps: list[str] = []
+    errors: list[str] = []
+
+    def attempt(label: str, fn) -> None:  # noqa: ANN001
+        try:
+            fn()
+            steps.append(label)
+        except Exception as exc:  # noqa: BLE001 - collect everything, verify afterwards
+            errors.append(f"{label}: {type(exc).__name__}: {exc}")
+
+    if public is not None and tmp_pub is not None and prev_pub is not None:
+        if placed["pub_placed"]:
+            attempt("move new public copy aside", lambda: _move(public, tmp_pub))
+        if placed["pub_moved"]:
+            attempt("restore previous public copy", lambda: _move(prev_pub, public))
+    if placed["out_placed"]:
+        attempt("move new canonical bundle aside", lambda: _move(out, tmp_out))
+    if placed["out_moved"]:
+        attempt("restore previous canonical bundle", lambda: _move(prev_out, out))
+
+    # Verification of the restored state (never trust the renames alone).
+    # The state to re-establish is the one recorded *before* any rename (had_out / had_pub), not
+    # whatever the interrupted sequence happened to reach.
+    try:
+        if had_out:
+            if not out.is_dir():
+                raise ExportError("previous canonical bundle is missing after restoration")
+            bundle.load_bundle(out).verify_all()
+        elif out.exists():
+            raise ExportError("a partial canonical bundle remains where none existed before")
+        if public is not None:
+            if had_pub:
+                if not public.is_dir():
+                    raise ExportError("previous public copy is missing after restoration")
+                if had_out:
+                    diffs = compare_dirs(out, public, ignore={bundle.LAST_ATTEMPT_NAME})
+                    if diffs:
+                        raise ExportError(
+                            f"restored public copy differs from the bundle: {diffs[:5]}"
+                        )
+            elif public.exists():
+                raise ExportError("a partial public copy remains where none existed before")
+        for leftover in (prev_out, prev_pub):
+            if leftover is not None and leftover.exists():
+                raise ExportError(f"previous version still parked at {leftover.name}")
+    except Exception as exc:  # noqa: BLE001
+        errors.append(f"verification: {type(exc).__name__}: {exc}")
+    return {"status": "failed" if errors else "verified", "steps": steps, "errors": errors}
 
 
 def export_bundle(
     artifacts: Path, out: Path, *, public_copy: Path | None = None, repo: Path = REPO_ROOT
 ) -> dict[str, Any]:
-    """Atomic export: build into ``<out>.build-<pid>``, verify, swap. Fail closed."""
+    """Build, stage, verify, then replace both published destinations; restore both on failure.
+
+    Sequence:
+
+    1. **Staging.** Build into ``<out>.build-<pid>`` and verify it with the fail-closed loader;
+       copy it to ``<public>.build-<pid>`` and verify the copy is byte-identical. Nothing published
+       has been touched yet; a failure here just removes the staging directories.
+    2. **Replacement.** Park the previous canonical bundle as ``<out>.previous-<pid>``, move the
+       staged bundle in; park the previous public copy, move the staged copy in. Then run the
+       final verification on the *published* paths (loader over ``out``; byte comparison with the
+       public copy).
+    3. **Cleanup.** Only after that verification succeeds are the parked previous versions deleted.
+
+    What this does and does not guarantee: each directory rename is atomic on its own, but the
+    two-to-four renames are **not one transaction** — a reader can observe a momentarily missing
+    or mismatched destination between them, and a process killed mid-swap leaves ``.previous-*``
+    / ``.build-*`` siblings behind (the weekly job excludes such siblings from its commit and
+    restores both paths from git). Every *caught* failure during replacement or verification is
+    rolled back in reverse order and the rollback is verified (:func:`_restore`); the exception
+    then reports ``restored=True``. If the rollback itself cannot be verified the exception
+    reports ``restored=False`` and the caller must not publish either path. Diagnostics go to
+    ``_last_attempt.json`` (outside every digest); the immutable evidence files are never edited.
+    """
     artifacts, out = Path(artifacts), Path(out)
+    public = Path(public_copy) if public_copy is not None else None
     code_revision = git_head(repo)
-    tmp = out.parent / f"{out.name}.build-{os.getpid()}"
-    if tmp.exists():
-        shutil.rmtree(tmp)
+    tmp_out = out.parent / f"{out.name}.build-{os.getpid()}"
+    tmp_pub = public.parent / f"{public.name}.build-{os.getpid()}" if public else None
+    prev_out = out.parent / f"{out.name}.previous-{os.getpid()}"
+    prev_pub = public.parent / f"{public.name}.previous-{os.getpid()}" if public else None
+    had_out, had_pub = out.exists(), bool(public and public.exists())
+    published_state = "previous_bundle_preserved" if had_out else "no_previous_bundle"
+    for stale in (tmp_out, tmp_pub, prev_out, prev_pub):
+        if stale is not None and stale.exists():
+            raise ExportError(
+                f"leftover directory {stale} from an interrupted export; inspect and remove it first",
+                restored=None,
+                stage="staging",
+            )
+
+    # 1. staging -----------------------------------------------------------------------------
     try:
-        manifest = build_into(artifacts, tmp, code_revision=code_revision)
-    except Exception as exc:  # noqa: BLE001 - any failure must leave the old bundle untouched
-        shutil.rmtree(tmp, ignore_errors=True)
-        _write_last_attempt(out, f"{type(exc).__name__}: {exc}", code_revision)
-        raise ExportError(str(exc)) from exc
-    previous = out.parent / f"{out.name}.previous-{os.getpid()}"
-    if out.exists():
-        out.rename(previous)
-    tmp.rename(out)
-    if previous.exists():
-        shutil.rmtree(previous)
-    if public_copy is not None:
-        mirror(out, Path(public_copy))
+        manifest = build_into(artifacts, tmp_out, code_revision=code_revision)
+        if public is not None and tmp_pub is not None:
+            _copytree(tmp_out, tmp_pub)
+            diffs = compare_dirs(tmp_out, tmp_pub)
+            if diffs:
+                raise ExportError(f"staged public copy differs from the staged bundle: {diffs[:5]}")
+    except Exception as exc:  # noqa: BLE001 - any failure must leave the published paths untouched
+        for tmp in (tmp_out, tmp_pub):
+            if tmp is not None:
+                shutil.rmtree(tmp, ignore_errors=True)
+        _write_last_attempt(
+            out,
+            f"{type(exc).__name__}: {exc}",
+            code_revision,
+            stage="staging",
+            restoration={"status": "not_needed", "steps": [], "errors": []},
+            published_state=published_state,
+        )
+        raise ExportError(str(exc), restored=True, stage="staging") from exc
+
+    # 2. replacement + final verification ------------------------------------------------------
+    placed = {"out_moved": False, "out_placed": False, "pub_moved": False, "pub_placed": False}
+    stage = "replacement"
+    try:
+        if had_out:
+            _move(out, prev_out)
+            placed["out_moved"] = True
+        _move(tmp_out, out)
+        placed["out_placed"] = True
+        if public is not None and tmp_pub is not None and prev_pub is not None:
+            if had_pub:
+                _move(public, prev_pub)
+                placed["pub_moved"] = True
+            _move(tmp_pub, public)
+            placed["pub_placed"] = True
+        stage = "verification"
+        report = _verify_published(out, public)
+    except Exception as exc:  # noqa: BLE001
+        restoration = _restore(
+            out=out,
+            public=public,
+            tmp_out=tmp_out,
+            tmp_pub=tmp_pub,
+            prev_out=prev_out,
+            prev_pub=prev_pub,
+            placed=placed,
+            had_out=had_out,
+            had_pub=had_pub,
+        )
+        for tmp in (tmp_out, tmp_pub):
+            if tmp is not None:
+                shutil.rmtree(tmp, ignore_errors=True)
+        restored = restoration["status"] == "verified"
+        state = published_state if restored else "unknown"
+        message = f"{type(exc).__name__}: {exc}"
+        if not restored:
+            message += (
+                "; restoration could not be established (" + "; ".join(restoration["errors"]) + ")"
+            )
+        _write_last_attempt(
+            out,
+            message,
+            code_revision,
+            stage=stage,
+            restoration=restoration,
+            published_state=state,
+        )
+        raise ExportError(message, restored=restored, stage=stage) from exc
+
+    # 3. cleanup of the parked previous versions ------------------------------------------------
+    try:
+        _rmtree(prev_out)
+        if prev_pub is not None:
+            _rmtree(prev_pub)
+    except OSError as exc:
+        raise ExportError(
+            f"new bundle is in place and verified, but a parked previous version could not be "
+            f"removed: {exc}; remove it before publishing",
+            restored=None,
+            stage="cleanup",
+        ) from exc
+    manifest["_verify_report"] = report
     return manifest
 
 
 def mirror(src: Path, dest: Path) -> None:
-    """Replace ``dest`` with a byte-identical copy of ``src`` and verify it."""
-    dest = Path(dest)
-    if dest.exists():
-        shutil.rmtree(dest)
-    shutil.copytree(src, dest)
-    diffs = compare_dirs(src, dest)
-    if diffs:
-        raise ExportError(f"public copy differs from the bundle: {diffs[:5]}")
+    """Replace ``dest`` with a byte-identical copy of ``src``: stage the copy beside ``dest``,
+    verify it, park the previous ``dest``, swap, and restore the previous ``dest`` if the swap or
+    the verification fails. Used for ad-hoc copies; ``export_bundle`` stages the public copy
+    itself so both destinations are replaced under one rollback."""
+    src, dest = Path(src), Path(dest)
+    tmp = dest.parent / f"{dest.name}.build-{os.getpid()}"
+    prev = dest.parent / f"{dest.name}.previous-{os.getpid()}"
+    for stale in (tmp, prev):
+        if stale.exists():
+            raise ExportError(f"leftover directory {stale} from an interrupted copy", restored=None)
+    try:
+        _copytree(src, tmp)
+        diffs = compare_dirs(src, tmp)
+        if diffs:
+            raise ExportError(f"staged copy differs from the bundle: {diffs[:5]}")
+    except Exception as exc:  # noqa: BLE001
+        shutil.rmtree(tmp, ignore_errors=True)
+        raise ExportError(str(exc), restored=True) from exc
+    had = dest.exists()
+    moved = placed_new = False
+    try:
+        if had:
+            _move(dest, prev)
+            moved = True
+        _move(tmp, dest)
+        placed_new = True
+        diffs = compare_dirs(src, dest)
+        if diffs:
+            raise ExportError(f"public copy differs from the bundle: {diffs[:5]}")
+    except Exception as exc:  # noqa: BLE001
+        errors: list[str] = []
+        try:
+            if placed_new:
+                _move(dest, tmp)
+            if moved:
+                _move(prev, dest)
+            if had and not dest.is_dir():
+                errors.append("previous copy missing after restoration")
+            if not had and dest.exists():
+                errors.append("partial copy remains where none existed")
+        except Exception as inner:  # noqa: BLE001
+            errors.append(f"{type(inner).__name__}: {inner}")
+        shutil.rmtree(tmp, ignore_errors=True)
+        if errors:
+            raise ExportError(
+                f"{exc}; restoration could not be established ({'; '.join(errors)})",
+                restored=False,
+                stage="replacement",
+            ) from exc
+        raise ExportError(str(exc), restored=True, stage="replacement") from exc
+    _rmtree(prev)
 
 
 def _files(root: Path) -> dict[str, Path]:

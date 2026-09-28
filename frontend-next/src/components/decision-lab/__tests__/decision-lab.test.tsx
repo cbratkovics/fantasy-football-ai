@@ -195,6 +195,36 @@ describe('actions, receipts and outcomes', () => {
   })
 })
 
+describe('already-saved semantic decisions', () => {
+  it('opens the saved record instead of creating a competing receipt with new metadata', async () => {
+    const user = userEvent.setup()
+    const first = mount()
+    await selectCaseAndWait(user)
+    await user.type(screen.getByTestId('prediction-note'), 'first note')
+    await user.click(screen.getByTestId('compute'))
+    await user.click(screen.getByTestId('choose-SYN-B'))
+    await user.click(screen.getByTestId('record-choice'))
+    const stored = loadReceipts(window.localStorage)
+    const [savedId] = Object.keys(stored.receipts)
+    const savedBefore = JSON.stringify(stored.receipts[savedId])
+    expect(stored.receipts[savedId].prediction_note).toBe('first note')
+    first.unmount()
+
+    // A later session with a different clock and a different note reaches the same inputs.
+    render(<DecisionLabApp fetchImpl={createMemoryFetch(syntheticBundle().files)} now={() => '2026-02-02T00:00:00Z'} />)
+    await selectCaseAndWait(user)
+    await user.type(screen.getByTestId('prediction-note'), 'second note')
+    await user.click(screen.getByTestId('compute'))
+    expect(screen.getByTestId('compute-message')).toHaveTextContent(/already saved/)
+    expect(screen.getByTestId('saved-badge')).toHaveTextContent('Recorded decision')
+    expect(screen.getByTestId('action-chosen')).toHaveTextContent('Synthetic B (SYN-B)')
+    expect(screen.getByTestId('frozen-note')).toBeInTheDocument()
+    const after = loadReceipts(window.localStorage)
+    expect(Object.keys(after.receipts)).toEqual([savedId])
+    expect(JSON.stringify(after.receipts[savedId])).toBe(savedBefore)
+  })
+})
+
 describe('missing numbers', () => {
   it("renders '—' for a missing floor, never 0", async () => {
     const user = userEvent.setup()
