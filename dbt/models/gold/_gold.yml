@@ -118,6 +118,9 @@ models:
       - dbt_utils.expression_is_true:
           arguments:
             expression: "actual is null or actual_source in ('stats', 'artifact')"
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "baseline_source != 'prediction' or baseline = prediction"
     columns:
       - { name: player_id, data_type: varchar, description: nflverse GSIS id, constraints: [{ type: not_null }] }
       - { name: season, data_type: integer, description: NFL season, constraints: [{ type: not_null }] }
@@ -146,6 +149,7 @@ models:
       - { name: baseline, data_type: double, description: causal trailing-mean baseline (see model description), constraints: [{ type: not_null }] }
       - { name: baseline_abs_error, data_type: double, description: "|actual - baseline|" }
       - { name: baseline_within_3, data_type: boolean, description: baseline_abs_error <= 3 }
+      - { name: baseline_source, data_type: varchar, description: "which history produced baseline: player_history (the player's earlier realised points), position_history (the position's, when the player has none), or prediction (the row's own prediction when neither exists; not an independent baseline)", constraints: [{ type: not_null }], data_tests: [{ accepted_values: { arguments: { values: [player_history, position_history, prediction] } } }] }
 
   - name: fct_weekly_eval
     description: >

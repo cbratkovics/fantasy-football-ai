@@ -1,0 +1,1578 @@
+{
+ "coverage": {
+  "observed": 309,
+  "scored": 309
+ },
+ "inputs_content_sha256": "2e8410ea7b17a067e17faa09444331cb312346b38f593736151e77feab1799b1",
+ "model_version": "20260911-asof_v1-d333de20",
+ "observed_at_utc": "2026-09-22T14:20:17+00:00",
+ "rows": [
+  {
+   "actual": 12.12,
+   "actual_source": "stats",
+   "player_id": "00-0023459"
+  },
+  {
+   "actual": 30.7,
+   "actual_source": "stats",
+   "player_id": "00-0026158"
+  },
+  {
+   "actual": 26.84,
+   "actual_source": "stats",
+   "player_id": "00-0026498"
+  },
+  {
+   "actual": 8.6,
+   "actual_source": "stats",
+   "player_id": "00-0030061"
+  },
+  {
+   "actual": 6.1,
+   "actual_source": "stats",
+   "player_id": "00-0030279"
+  },
+  {
+   "actual": 12.6,
+   "actual_source": "stats",
+   "player_id": "00-0030506"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0030564"
+  },
+  {
+   "actual": 26.26,
+   "actual_source": "stats",
+   "player_id": "00-0030565"
+  },
+  {
+   "actual": 3.6,
+   "actual_source": "stats",
+   "player_id": "00-0031236"
+  },
+  {
+   "actual": 23.0,
+   "actual_source": "stats",
+   "player_id": "00-0031381"
+  },
+  {
+   "actual": 12.8,
+   "actual_source": "stats",
+   "player_id": "00-0031588"
+  },
+  {
+   "actual": 2.4,
+   "actual_source": "stats",
+   "player_id": "00-0031687"
+  },
+  {
+   "actual": 1.5,
+   "actual_source": "stats",
+   "player_id": "00-0032104"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0032211"
+  },
+  {
+   "actual": 3.0,
+   "actual_source": "stats",
+   "player_id": "00-0032392"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0032464"
+  },
+  {
+   "actual": 13.1,
+   "actual_source": "stats",
+   "player_id": "00-0032764"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0032775"
+  },
+  {
+   "actual": 15.4,
+   "actual_source": "stats",
+   "player_id": "00-0033077"
+  },
+  {
+   "actual": 9.1,
+   "actual_source": "stats",
+   "player_id": "00-0033090"
+  },
+  {
+   "actual": 19.36,
+   "actual_source": "stats",
+   "player_id": "00-0033106"
+  },
+  {
+   "actual": 10.3,
+   "actual_source": "stats",
+   "player_id": "00-0033110"
+  },
+  {
+   "actual": 24.84,
+   "actual_source": "stats",
+   "player_id": "00-0033119"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0033217"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0033246"
+  },
+  {
+   "actual": 34.3,
+   "actual_source": "stats",
+   "player_id": "00-0033280"
+  },
+  {
+   "actual": 1.6,
+   "actual_source": "stats",
+   "player_id": "00-0033282"
+  },
+  {
+   "actual": 6.9,
+   "actual_source": "stats",
+   "player_id": "00-0033288"
+  },
+  {
+   "actual": 11.8,
+   "actual_source": "stats",
+   "player_id": "00-0033293"
+  },
+  {
+   "actual": 5.4,
+   "actual_source": "stats",
+   "player_id": "00-0033307"
+  },
+  {
+   "actual": 3.0,
+   "actual_source": "stats",
+   "player_id": "00-0033357"
+  },
+  {
+   "actual": 0.5,
+   "actual_source": "stats",
+   "player_id": "00-0033526"
+  },
+  {
+   "actual": 2.9,
+   "actual_source": "stats",
+   "player_id": "00-0033555"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0033572"
+  },
+  {
+   "actual": 1.2,
+   "actual_source": "stats",
+   "player_id": "00-0033854"
+  },
+  {
+   "actual": 1.2,
+   "actual_source": "stats",
+   "player_id": "00-0033857"
+  },
+  {
+   "actual": 5.5,
+   "actual_source": "stats",
+   "player_id": "00-0033858"
+  },
+  {
+   "actual": 10.5,
+   "actual_source": "stats",
+   "player_id": "00-0033873"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0033881"
+  },
+  {
+   "actual": 0.7,
+   "actual_source": "stats",
+   "player_id": "00-0033906"
+  },
+  {
+   "actual": 12.5,
+   "actual_source": "stats",
+   "player_id": "00-0033923"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0033955"
+  },
+  {
+   "actual": 10.0,
+   "actual_source": "stats",
+   "player_id": "00-0034348"
+  },
+  {
+   "actual": 1.9,
+   "actual_source": "stats",
+   "player_id": "00-0034365"
+  },
+  {
+   "actual": 13.7,
+   "actual_source": "stats",
+   "player_id": "00-0034383"
+  },
+  {
+   "actual": 1.5,
+   "actual_source": "stats",
+   "player_id": "00-0034407"
+  },
+  {
+   "actual": 1.7,
+   "actual_source": "stats",
+   "player_id": "00-0034418"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0034419"
+  },
+  {
+   "actual": 6.2,
+   "actual_source": "stats",
+   "player_id": "00-0034613"
+  },
+  {
+   "actual": 16.6,
+   "actual_source": "stats",
+   "player_id": "00-0034753"
+  },
+  {
+   "actual": 6.6,
+   "actual_source": "stats",
+   "player_id": "00-0034775"
+  },
+  {
+   "actual": 3.4,
+   "actual_source": "stats",
+   "player_id": "00-0034791"
+  },
+  {
+   "actual": 25.56,
+   "actual_source": "stats",
+   "player_id": "00-0034796"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0034798"
+  },
+  {
+   "actual": 22.98,
+   "actual_source": "stats",
+   "player_id": "00-0034827"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0034854"
+  },
+  {
+   "actual": 28.82,
+   "actual_source": "stats",
+   "player_id": "00-0034857"
+  },
+  {
+   "actual": 27.2,
+   "actual_source": "stats",
+   "player_id": "00-0034869"
+  },
+  {
+   "actual": 6.3,
+   "actual_source": "stats",
+   "player_id": "00-0034960"
+  },
+  {
+   "actual": 3.5,
+   "actual_source": "stats",
+   "player_id": "00-0034975"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0035021"
+  },
+  {
+   "actual": 17.8,
+   "actual_source": "stats",
+   "player_id": "00-0035208"
+  },
+  {
+   "actual": 9.1,
+   "actual_source": "stats",
+   "player_id": "00-0035229"
+  },
+  {
+   "actual": 7.1,
+   "actual_source": "stats",
+   "player_id": "00-0035250"
+  },
+  {
+   "actual": 7.8,
+   "actual_source": "stats",
+   "player_id": "00-0035261"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0035359"
+  },
+  {
+   "actual": 0.9,
+   "actual_source": "stats",
+   "player_id": "00-0035500"
+  },
+  {
+   "actual": 11.2,
+   "actual_source": "stats",
+   "player_id": "00-0035535"
+  },
+  {
+   "actual": 10.0,
+   "actual_source": "stats",
+   "player_id": "00-0035537"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0035594"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0035602"
+  },
+  {
+   "actual": 2.6,
+   "actual_source": "stats",
+   "player_id": "00-0035640"
+  },
+  {
+   "actual": 10.8,
+   "actual_source": "stats",
+   "player_id": "00-0035644"
+  },
+  {
+   "actual": 9.4,
+   "actual_source": "stats",
+   "player_id": "00-0035645"
+  },
+  {
+   "actual": 9.3,
+   "actual_source": "stats",
+   "player_id": "00-0035662"
+  },
+  {
+   "actual": 11.0,
+   "actual_source": "stats",
+   "player_id": "00-0035685"
+  },
+  {
+   "actual": 4.0,
+   "actual_source": "stats",
+   "player_id": "00-0035689"
+  },
+  {
+   "actual": 20.0,
+   "actual_source": "stats",
+   "player_id": "00-0035700"
+  },
+  {
+   "actual": 14.08,
+   "actual_source": "stats",
+   "player_id": "00-0035710"
+  },
+  {
+   "actual": 9.4,
+   "actual_source": "stats",
+   "player_id": "00-0035719"
+  },
+  {
+   "actual": 13.0,
+   "actual_source": "stats",
+   "player_id": "00-0035891"
+  },
+  {
+   "actual": 12.1,
+   "actual_source": "stats",
+   "player_id": "00-0036040"
+  },
+  {
+   "actual": 28.1,
+   "actual_source": "stats",
+   "player_id": "00-0036139"
+  },
+  {
+   "actual": 6.9,
+   "actual_source": "stats",
+   "player_id": "00-0036158"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0036176"
+  },
+  {
+   "actual": 4.2,
+   "actual_source": "stats",
+   "player_id": "00-0036182"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0036187"
+  },
+  {
+   "actual": 8.54,
+   "actual_source": "stats",
+   "player_id": "00-0036212"
+  },
+  {
+   "actual": 7.7,
+   "actual_source": "stats",
+   "player_id": "00-0036223"
+  },
+  {
+   "actual": 1.2,
+   "actual_source": "stats",
+   "player_id": "00-0036232"
+  },
+  {
+   "actual": 3.0,
+   "actual_source": "stats",
+   "player_id": "00-0036244"
+  },
+  {
+   "actual": 20.5,
+   "actual_source": "stats",
+   "player_id": "00-0036252"
+  },
+  {
+   "actual": 14.1,
+   "actual_source": "stats",
+   "player_id": "00-0036259"
+  },
+  {
+   "actual": 9.02,
+   "actual_source": "stats",
+   "player_id": "00-0036264"
+  },
+  {
+   "actual": 2.0,
+   "actual_source": "stats",
+   "player_id": "00-0036290"
+  },
+  {
+   "actual": 2.5,
+   "actual_source": "stats",
+   "player_id": "00-0036309"
+  },
+  {
+   "actual": 16.7,
+   "actual_source": "stats",
+   "player_id": "00-0036322"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0036331"
+  },
+  {
+   "actual": 27.7,
+   "actual_source": "stats",
+   "player_id": "00-0036355"
+  },
+  {
+   "actual": 15.5,
+   "actual_source": "stats",
+   "player_id": "00-0036358"
+  },
+  {
+   "actual": 0.5,
+   "actual_source": "stats",
+   "player_id": "00-0036360"
+  },
+  {
+   "actual": 33.1,
+   "actual_source": "stats",
+   "player_id": "00-0036410"
+  },
+  {
+   "actual": 3.1,
+   "actual_source": "stats",
+   "player_id": "00-0036415"
+  },
+  {
+   "actual": 4.5,
+   "actual_source": "stats",
+   "player_id": "00-0036422"
+  },
+  {
+   "actual": 2.5,
+   "actual_source": "stats",
+   "player_id": "00-0036497"
+  },
+  {
+   "actual": 9.3,
+   "actual_source": "stats",
+   "player_id": "00-0036550"
+  },
+  {
+   "actual": 14.5,
+   "actual_source": "stats",
+   "player_id": "00-0036554"
+  },
+  {
+   "actual": 1.7,
+   "actual_source": "stats",
+   "player_id": "00-0036555"
+  },
+  {
+   "actual": 14.2,
+   "actual_source": "stats",
+   "player_id": "00-0036613"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0036620"
+  },
+  {
+   "actual": 5.9,
+   "actual_source": "stats",
+   "player_id": "00-0036626"
+  },
+  {
+   "actual": 4.0,
+   "actual_source": "stats",
+   "player_id": "00-0036628"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0036630"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0036637"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0036646"
+  },
+  {
+   "actual": 2.1,
+   "actual_source": "stats",
+   "player_id": "00-0036754"
+  },
+  {
+   "actual": 4.4,
+   "actual_source": "stats",
+   "player_id": "00-0036755"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0036825"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0036841"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0036862"
+  },
+  {
+   "actual": 1.9,
+   "actual_source": "stats",
+   "player_id": "00-0036887"
+  },
+  {
+   "actual": 11.7,
+   "actual_source": "stats",
+   "player_id": "00-0036894"
+  },
+  {
+   "actual": 6.18,
+   "actual_source": "stats",
+   "player_id": "00-0036898"
+  },
+  {
+   "actual": 17.1,
+   "actual_source": "stats",
+   "player_id": "00-0036900"
+  },
+  {
+   "actual": 7.4,
+   "actual_source": "stats",
+   "player_id": "00-0036919"
+  },
+  {
+   "actual": 2.6,
+   "actual_source": "stats",
+   "player_id": "00-0036959"
+  },
+  {
+   "actual": 18.7,
+   "actual_source": "stats",
+   "player_id": "00-0036963"
+  },
+  {
+   "actual": 7.8,
+   "actual_source": "stats",
+   "player_id": "00-0036970"
+  },
+  {
+   "actual": 21.2,
+   "actual_source": "stats",
+   "player_id": "00-0036971"
+  },
+  {
+   "actual": 15.8,
+   "actual_source": "stats",
+   "player_id": "00-0036972"
+  },
+  {
+   "actual": 16.5,
+   "actual_source": "stats",
+   "player_id": "00-0036973"
+  },
+  {
+   "actual": 3.8,
+   "actual_source": "stats",
+   "player_id": "00-0036980"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0036984"
+  },
+  {
+   "actual": 7.3,
+   "actual_source": "stats",
+   "player_id": "00-0036997"
+  },
+  {
+   "actual": 1.6,
+   "actual_source": "stats",
+   "player_id": "00-0037004"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0037005"
+  },
+  {
+   "actual": 2.6,
+   "actual_source": "stats",
+   "player_id": "00-0037085"
+  },
+  {
+   "actual": 1.8,
+   "actual_source": "stats",
+   "player_id": "00-0037120"
+  },
+  {
+   "actual": 6.7,
+   "actual_source": "stats",
+   "player_id": "00-0037157"
+  },
+  {
+   "actual": 16.9,
+   "actual_source": "stats",
+   "player_id": "00-0037228"
+  },
+  {
+   "actual": 38.8,
+   "actual_source": "stats",
+   "player_id": "00-0037238"
+  },
+  {
+   "actual": 8.7,
+   "actual_source": "stats",
+   "player_id": "00-0037239"
+  },
+  {
+   "actual": 16.6,
+   "actual_source": "stats",
+   "player_id": "00-0037240"
+  },
+  {
+   "actual": 13.9,
+   "actual_source": "stats",
+   "player_id": "00-0037247"
+  },
+  {
+   "actual": 13.5,
+   "actual_source": "stats",
+   "player_id": "00-0037248"
+  },
+  {
+   "actual": 9.9,
+   "actual_source": "stats",
+   "player_id": "00-0037252"
+  },
+  {
+   "actual": 11.3,
+   "actual_source": "stats",
+   "player_id": "00-0037261"
+  },
+  {
+   "actual": 0.6,
+   "actual_source": "stats",
+   "player_id": "00-0037263"
+  },
+  {
+   "actual": 2.6,
+   "actual_source": "stats",
+   "player_id": "00-0037291"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0037292"
+  },
+  {
+   "actual": 9.7,
+   "actual_source": "stats",
+   "player_id": "00-0037329"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0037348"
+  },
+  {
+   "actual": 4.7,
+   "actual_source": "stats",
+   "player_id": "00-0037525"
+  },
+  {
+   "actual": 11.8,
+   "actual_source": "stats",
+   "player_id": "00-0037545"
+  },
+  {
+   "actual": 0.3,
+   "actual_source": "stats",
+   "player_id": "00-0037563"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0037594"
+  },
+  {
+   "actual": 2.2,
+   "actual_source": "stats",
+   "player_id": "00-0037654"
+  },
+  {
+   "actual": 17.5,
+   "actual_source": "stats",
+   "player_id": "00-0037664"
+  },
+  {
+   "actual": 2.4,
+   "actual_source": "stats",
+   "player_id": "00-0037742"
+  },
+  {
+   "actual": 16.5,
+   "actual_source": "stats",
+   "player_id": "00-0037744"
+  },
+  {
+   "actual": 11.3,
+   "actual_source": "stats",
+   "player_id": "00-0037746"
+  },
+  {
+   "actual": 3.3,
+   "actual_source": "stats",
+   "player_id": "00-0037801"
+  },
+  {
+   "actual": 3.0,
+   "actual_source": "stats",
+   "player_id": "00-0037809"
+  },
+  {
+   "actual": 16.1,
+   "actual_source": "stats",
+   "player_id": "00-0037816"
+  },
+  {
+   "actual": 10.6,
+   "actual_source": "stats",
+   "player_id": "00-0037837"
+  },
+  {
+   "actual": 9.0,
+   "actual_source": "stats",
+   "player_id": "00-0037838"
+  },
+  {
+   "actual": 17.4,
+   "actual_source": "stats",
+   "player_id": "00-0037840"
+  },
+  {
+   "actual": 8.0,
+   "actual_source": "stats",
+   "player_id": "00-0038041"
+  },
+  {
+   "actual": 10.3,
+   "actual_source": "stats",
+   "player_id": "00-0038046"
+  },
+  {
+   "actual": 3.1,
+   "actual_source": "stats",
+   "player_id": "00-0038090"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0038104"
+  },
+  {
+   "actual": 13.6,
+   "actual_source": "stats",
+   "player_id": "00-0038117"
+  },
+  {
+   "actual": 7.8,
+   "actual_source": "stats",
+   "player_id": "00-0038124"
+  },
+  {
+   "actual": 8.1,
+   "actual_source": "stats",
+   "player_id": "00-0038134"
+  },
+  {
+   "actual": 3.2,
+   "actual_source": "stats",
+   "player_id": "00-0038359"
+  },
+  {
+   "actual": 0.8,
+   "actual_source": "stats",
+   "player_id": "00-0038416"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0038440"
+  },
+  {
+   "actual": 2.8,
+   "actual_source": "stats",
+   "player_id": "00-0038454"
+  },
+  {
+   "actual": 2.1,
+   "actual_source": "stats",
+   "player_id": "00-0038465"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0038519"
+  },
+  {
+   "actual": 17.6,
+   "actual_source": "stats",
+   "player_id": "00-0038542"
+  },
+  {
+   "actual": 22.0,
+   "actual_source": "stats",
+   "player_id": "00-0038543"
+  },
+  {
+   "actual": 15.3,
+   "actual_source": "stats",
+   "player_id": "00-0038544"
+  },
+  {
+   "actual": 2.4,
+   "actual_source": "stats",
+   "player_id": "00-0038547"
+  },
+  {
+   "actual": 8.3,
+   "actual_source": "stats",
+   "player_id": "00-0038558"
+  },
+  {
+   "actual": 9.1,
+   "actual_source": "stats",
+   "player_id": "00-0038559"
+  },
+  {
+   "actual": 6.8,
+   "actual_source": "stats",
+   "player_id": "00-0038563"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0038573"
+  },
+  {
+   "actual": 6.0,
+   "actual_source": "stats",
+   "player_id": "00-0038576"
+  },
+  {
+   "actual": 19.2,
+   "actual_source": "stats",
+   "player_id": "00-0038597"
+  },
+  {
+   "actual": 17.0,
+   "actual_source": "stats",
+   "player_id": "00-0038606"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0038608"
+  },
+  {
+   "actual": 12.5,
+   "actual_source": "stats",
+   "player_id": "00-0038611"
+  },
+  {
+   "actual": 6.0,
+   "actual_source": "stats",
+   "player_id": "00-0038618"
+  },
+  {
+   "actual": 18.0,
+   "actual_source": "stats",
+   "player_id": "00-0038619"
+  },
+  {
+   "actual": 20.0,
+   "actual_source": "stats",
+   "player_id": "00-0038621"
+  },
+  {
+   "actual": 1.7,
+   "actual_source": "stats",
+   "player_id": "00-0038679"
+  },
+  {
+   "actual": 4.4,
+   "actual_source": "stats",
+   "player_id": "00-0038685"
+  },
+  {
+   "actual": 8.8,
+   "actual_source": "stats",
+   "player_id": "00-0038705"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0038735"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0038738"
+  },
+  {
+   "actual": 2.7,
+   "actual_source": "stats",
+   "player_id": "00-0038797"
+  },
+  {
+   "actual": 3.7,
+   "actual_source": "stats",
+   "player_id": "00-0038839"
+  },
+  {
+   "actual": 1.8,
+   "actual_source": "stats",
+   "player_id": "00-0038840"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0038896"
+  },
+  {
+   "actual": 22.1,
+   "actual_source": "stats",
+   "player_id": "00-0038933"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0038938"
+  },
+  {
+   "actual": 8.4,
+   "actual_source": "stats",
+   "player_id": "00-0038994"
+  },
+  {
+   "actual": 4.0,
+   "actual_source": "stats",
+   "player_id": "00-0038996"
+  },
+  {
+   "actual": 17.7,
+   "actual_source": "stats",
+   "player_id": "00-0038997"
+  },
+  {
+   "actual": 9.2,
+   "actual_source": "stats",
+   "player_id": "00-0039032"
+  },
+  {
+   "actual": 16.6,
+   "actual_source": "stats",
+   "player_id": "00-0039040"
+  },
+  {
+   "actual": 6.0,
+   "actual_source": "stats",
+   "player_id": "00-0039041"
+  },
+  {
+   "actual": 11.4,
+   "actual_source": "stats",
+   "player_id": "00-0039064"
+  },
+  {
+   "actual": 21.7,
+   "actual_source": "stats",
+   "player_id": "00-0039065"
+  },
+  {
+   "actual": 5.6,
+   "actual_source": "stats",
+   "player_id": "00-0039066"
+  },
+  {
+   "actual": 18.6,
+   "actual_source": "stats",
+   "player_id": "00-0039067"
+  },
+  {
+   "actual": 6.7,
+   "actual_source": "stats",
+   "player_id": "00-0039074"
+  },
+  {
+   "actual": 22.8,
+   "actual_source": "stats",
+   "player_id": "00-0039075"
+  },
+  {
+   "actual": 5.8,
+   "actual_source": "stats",
+   "player_id": "00-0039139"
+  },
+  {
+   "actual": 6.4,
+   "actual_source": "stats",
+   "player_id": "00-0039144"
+  },
+  {
+   "actual": 2.98,
+   "actual_source": "stats",
+   "player_id": "00-0039150"
+  },
+  {
+   "actual": 4.36,
+   "actual_source": "stats",
+   "player_id": "00-0039163"
+  },
+  {
+   "actual": 5.6,
+   "actual_source": "stats",
+   "player_id": "00-0039165"
+  },
+  {
+   "actual": 0.9,
+   "actual_source": "stats",
+   "player_id": "00-0039299"
+  },
+  {
+   "actual": 43.3,
+   "actual_source": "stats",
+   "player_id": "00-0039338"
+  },
+  {
+   "actual": 3.2,
+   "actual_source": "stats",
+   "player_id": "00-0039342"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0039355"
+  },
+  {
+   "actual": 1.5,
+   "actual_source": "stats",
+   "player_id": "00-0039356"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0039363"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0039364"
+  },
+  {
+   "actual": 6.7,
+   "actual_source": "stats",
+   "player_id": "00-0039384"
+  },
+  {
+   "actual": 3.0,
+   "actual_source": "stats",
+   "player_id": "00-0039391"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0039407"
+  },
+  {
+   "actual": 9.2,
+   "actual_source": "stats",
+   "player_id": "00-0039410"
+  },
+  {
+   "actual": 1.9,
+   "actual_source": "stats",
+   "player_id": "00-0039491"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0039530"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0039603"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0039648"
+  },
+  {
+   "actual": 18.52,
+   "actual_source": "stats",
+   "player_id": "00-0039732"
+  },
+  {
+   "actual": 5.8,
+   "actual_source": "stats",
+   "player_id": "00-0039738"
+  },
+  {
+   "actual": -0.6,
+   "actual_source": "stats",
+   "player_id": "00-0039739"
+  },
+  {
+   "actual": 11.4,
+   "actual_source": "stats",
+   "player_id": "00-0039757"
+  },
+  {
+   "actual": 11.5,
+   "actual_source": "stats",
+   "player_id": "00-0039793"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0039796"
+  },
+  {
+   "actual": 11.7,
+   "actual_source": "stats",
+   "player_id": "00-0039847"
+  },
+  {
+   "actual": 22.6,
+   "actual_source": "stats",
+   "player_id": "00-0039849"
+  },
+  {
+   "actual": 16.36,
+   "actual_source": "stats",
+   "player_id": "00-0039851"
+  },
+  {
+   "actual": 8.3,
+   "actual_source": "stats",
+   "player_id": "00-0039868"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0039875"
+  },
+  {
+   "actual": 7.1,
+   "actual_source": "stats",
+   "player_id": "00-0039880"
+  },
+  {
+   "actual": 1.7,
+   "actual_source": "stats",
+   "player_id": "00-0039890"
+  },
+  {
+   "actual": 8.5,
+   "actual_source": "stats",
+   "player_id": "00-0039893"
+  },
+  {
+   "actual": 6.0,
+   "actual_source": "stats",
+   "player_id": "00-0039894"
+  },
+  {
+   "actual": 3.7,
+   "actual_source": "stats",
+   "player_id": "00-0039901"
+  },
+  {
+   "actual": 15.22,
+   "actual_source": "stats",
+   "player_id": "00-0039910"
+  },
+  {
+   "actual": 9.6,
+   "actual_source": "stats",
+   "player_id": "00-0039915"
+  },
+  {
+   "actual": 22.74,
+   "actual_source": "stats",
+   "player_id": "00-0039917"
+  },
+  {
+   "actual": 38.7,
+   "actual_source": "stats",
+   "player_id": "00-0039918"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0039919"
+  },
+  {
+   "actual": 18.92,
+   "actual_source": "stats",
+   "player_id": "00-0039923"
+  },
+  {
+   "actual": 1.2,
+   "actual_source": "stats",
+   "player_id": "00-0040009"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0040075"
+  },
+  {
+   "actual": 0.7,
+   "actual_source": "stats",
+   "player_id": "00-0040078"
+  },
+  {
+   "actual": 19.9,
+   "actual_source": "stats",
+   "player_id": "00-0040122"
+  },
+  {
+   "actual": 8.6,
+   "actual_source": "stats",
+   "player_id": "00-0040124"
+  },
+  {
+   "actual": 29.8,
+   "actual_source": "stats",
+   "player_id": "00-0040126"
+  },
+  {
+   "actual": 7.6,
+   "actual_source": "stats",
+   "player_id": "00-0040128"
+  },
+  {
+   "actual": 1.4,
+   "actual_source": "stats",
+   "player_id": "00-0040130"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0040131"
+  },
+  {
+   "actual": 4.0,
+   "actual_source": "stats",
+   "player_id": "00-0040134"
+  },
+  {
+   "actual": -0.3,
+   "actual_source": "stats",
+   "player_id": "00-0040138"
+  },
+  {
+   "actual": 2.3,
+   "actual_source": "stats",
+   "player_id": "00-0040142"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0040154"
+  },
+  {
+   "actual": 5.9,
+   "actual_source": "stats",
+   "player_id": "00-0040164"
+  },
+  {
+   "actual": 7.6,
+   "actual_source": "stats",
+   "player_id": "00-0040170"
+  },
+  {
+   "actual": 2.9,
+   "actual_source": "stats",
+   "player_id": "00-0040172"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0040184"
+  },
+  {
+   "actual": 11.8,
+   "actual_source": "stats",
+   "player_id": "00-0040189"
+  },
+  {
+   "actual": 2.8,
+   "actual_source": "stats",
+   "player_id": "00-0040194"
+  },
+  {
+   "actual": 1.9,
+   "actual_source": "stats",
+   "player_id": "00-0040198"
+  },
+  {
+   "actual": 2.2,
+   "actual_source": "stats",
+   "player_id": "00-0040202"
+  },
+  {
+   "actual": 0.1,
+   "actual_source": "stats",
+   "player_id": "00-0040208"
+  },
+  {
+   "actual": 1.8,
+   "actual_source": "stats",
+   "player_id": "00-0040218"
+  },
+  {
+   "actual": 22.8,
+   "actual_source": "stats",
+   "player_id": "00-0040236"
+  },
+  {
+   "actual": 2.1,
+   "actual_source": "stats",
+   "player_id": "00-0040238"
+  },
+  {
+   "actual": 5.1,
+   "actual_source": "stats",
+   "player_id": "00-0040242"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0040277"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0040506"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0040509"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0040534"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0040563"
+  },
+  {
+   "actual": 2.7,
+   "actual_source": "stats",
+   "player_id": "00-0040583"
+  },
+  {
+   "actual": 2.5,
+   "actual_source": "stats",
+   "player_id": "00-0040584"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0040644"
+  },
+  {
+   "actual": 20.8,
+   "actual_source": "stats",
+   "player_id": "00-0040648"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0040649"
+  },
+  {
+   "actual": 2.9,
+   "actual_source": "stats",
+   "player_id": "00-0040667"
+  },
+  {
+   "actual": 6.4,
+   "actual_source": "stats",
+   "player_id": "00-0040676"
+  },
+  {
+   "actual": 27.24,
+   "actual_source": "stats",
+   "player_id": "00-0040691"
+  },
+  {
+   "actual": 7.5,
+   "actual_source": "stats",
+   "player_id": "00-0040705"
+  },
+  {
+   "actual": 9.6,
+   "actual_source": "stats",
+   "player_id": "00-0040719"
+  },
+  {
+   "actual": 3.8,
+   "actual_source": "stats",
+   "player_id": "00-0040727"
+  },
+  {
+   "actual": 0.0,
+   "actual_source": "stats",
+   "player_id": "00-0040729"
+  },
+  {
+   "actual": 16.6,
+   "actual_source": "stats",
+   "player_id": "00-0040730"
+  },
+  {
+   "actual": 12.7,
+   "actual_source": "stats",
+   "player_id": "00-0040734"
+  },
+  {
+   "actual": 7.4,
+   "actual_source": "stats",
+   "player_id": "00-0040737"
+  },
+  {
+   "actual": 10.9,
+   "actual_source": "stats",
+   "player_id": "00-0040739"
+  },
+  {
+   "actual": 9.24,
+   "actual_source": "stats",
+   "player_id": "00-0040743"
+  }
+ ],
+ "schema_version": "outcome_snapshot/1.0",
+ "scoring_format": "ppr",
+ "season": 2025,
+ "snapshot_id": "oos-2025-w09-20260911-asof_v1-d333de20-rf",
+ "source": {
+  "files": [
+   {
+    "path": "artifacts/marts/fct_player_week.parquet",
+    "role": "mart",
+    "rows": 25266,
+    "sha256": "f790506c1cfea04d49f30406102a0392444da8064d9d69b665b1d9dee1d57657"
+   },
+   {
+    "path": "artifacts/marts/_export_manifest.json",
+    "role": "mart_export_manifest",
+    "rows": null,
+    "sha256": "331781f879f2261a6e49fa6ec184f5536a4640daa1399cee85176384e35597d9"
+   }
+  ],
+  "mart": "fct_player_week"
+ },
+ "week": 9
+}

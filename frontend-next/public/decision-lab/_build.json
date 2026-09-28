@@ -1,0 +1,9 @@
+{
+ "built_at_utc": "2026-09-27T22:22:33+00:00",
+ "code_revision": "94bb33bb06aa401647fdc2657a74d92d1c869609",
+ "duckdb_version": "1.5.5",
+ "exporter_version": "1.0.0",
+ "manifest_content_sha256": "4cc0bed3a7c7f42e414f1009d40111a3fd91a03acece224f95ce03e4c7695eb2",
+ "manifest_file_sha256": "a8e576a1df354648d1f695677e19c0b0aff1d71aadd83552f2451e71bac8b580",
+ "python_version": "3.11.13"
+}

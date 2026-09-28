@@ -1,4 +1,4 @@
-.PHONY: help install test lint publication-check format train tiers evaluate score weekly api build frontend dbt-deps dbt-dev dbt-state dbt-slim dbt-prod dbt-export dbt-docs dbt-lint
+.PHONY: help install test lint publication-check format train tiers evaluate score weekly api build frontend dbt-deps dbt-dev dbt-state dbt-slim dbt-prod dbt-export dbt-docs dbt-lint lab-build lab-check lab-verify lab-test lab-replay lab-golden lab-e2e lab-notes
 
 PY ?= .venv/bin/python
 
@@ -24,6 +24,14 @@ help:
 	@echo "dbt-export - export gold marts to artifacts/marts/*.parquet (DBT_TARGET=dev|prod)"
 	@echo "dbt-docs  - generate the static dbt docs site into dbt/target"
 	@echo "dbt-lint  - sqlfluff over the dbt project"
+	@echo "lab-build - export the Decision Lab bundle to artifacts/decision_lab and frontend-next/public/decision-lab"
+	@echo "lab-check - rebuild the bundle in a temp dir and compare with the committed one; check the golden fixtures"
+	@echo "lab-verify - verify the committed bundle's digests, schemas, and the public copy"
+	@echo "lab-test  - Decision Lab pytest (-k decision_lab) + frontend vitest"
+	@echo "lab-replay - re-validate and recompute a receipt: RECEIPT=receipt.json [ARGS=...]"
+	@echo "lab-golden - rewrite tests/fixtures/decision_lab/golden.json from the Python reference"
+	@echo "lab-e2e   - Playwright browser flow (installs chromium)"
+	@echo "lab-notes - write private review notes OUTSIDE the repo: CASE=<case id> [ARGS=...]"
 
 install:
 	uv venv --python 3.11 .venv
@@ -110,3 +118,36 @@ dbt-docs: dbt-deps
 
 dbt-lint:
 	.venv/bin/sqlfluff lint dbt/models dbt/tests dbt/macros
+
+# --- Decision Lab (ADR-0032/0033/0034): an offline bundle over the committed marts + artifacts ---
+LAB_OUT = artifacts/decision_lab
+LAB_PUBLIC = frontend-next/public/decision-lab
+RECEIPT ?= receipt.json
+
+lab-build:
+	$(PY) scripts/export_decision_lab.py --out $(LAB_OUT) --public-copy $(LAB_PUBLIC)
+
+lab-check:
+	@# Builds to a temp dir and compares; never rewrites the committed evidence.
+	$(PY) scripts/export_decision_lab.py --check --out $(LAB_OUT) --public-copy $(LAB_PUBLIC)
+	$(PY) -m ffai.decision_lab.golden --check
+
+lab-verify:
+	$(PY) scripts/export_decision_lab.py --verify --out $(LAB_OUT) --public-copy $(LAB_PUBLIC)
+
+lab-test:
+	$(PY) -m pytest tests -q -k decision_lab
+	cd frontend-next && npm test
+
+lab-replay:
+	$(PY) -m ffai.decision_lab.replay $(RECEIPT) --bundle $(LAB_OUT) $(ARGS)
+
+lab-golden:
+	$(PY) -m ffai.decision_lab.golden --write
+
+lab-e2e:
+	cd frontend-next && npx playwright install chromium && npm run test:e2e
+
+lab-notes:
+	@# Writes outside the repository (the script refuses a directory inside it or any worktree).
+	$(PY) scripts/lab_review_notes.py --case-id $(CASE) $(ARGS)

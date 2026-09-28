@@ -110,12 +110,44 @@ jobs:
           if [ "${{ inputs.full_refresh }}" = "true" ]; then FLAGS="--full-refresh"; fi
           dbt build --project-dir dbt --profiles-dir dbt --target prod --vars "$VARS" $FLAGS
           dbt run-operation export_gold --project-dir dbt --profiles-dir dbt --target prod
+      - name: Export the Decision Lab bundle (after gold export, before the commit)
+        # Rebuilds the offline Decision Lab bundle from the marts just exported plus the
+        # prediction files and evaluation artifacts (ADR-0032). The exporter stages and verifies
+        # both copies before replacing either destination, keeps the previous versions until the
+        # final verification passes, and rolls both back on a caught failure. Exit 1: failed,
+        # previous bundle and public copy re-established and verified (the site keeps the last
+        # valid decision inputs; artifacts/decision_lab/_last_attempt.json records the attempt and
+        # is committed with the artifacts). Exit 2: failed and the rollback could not be verified;
+        # the commit step below then restores both paths from the last commit instead of staging
+        # them. Either way an issue is opened and the artifact commit is not blocked.
+        id: lab
+        if: ${{ inputs.dry_run != true && (steps.outcome.outputs.action == 'PUBLISH' || steps.outcome.outputs.action == 'PROMOTE') }}
+        continue-on-error: true
+        run: |
+          set +e
+          python scripts/export_decision_lab.py --out artifacts/decision_lab --public-copy frontend-next/public/decision-lab
+          code=$?
+          echo "exit=$code" >> "$GITHUB_OUTPUT"
+          exit $code
       - name: Commit artifacts
         if: ${{ inputs.dry_run != true && steps.outcome.outputs.action != 'DRY_RUN' }}
         run: |
           git config user.name "weekly-job"
           git config user.email "weekly-job@users.noreply.github.com"
-          git add artifacts docs/MODEL_CARD.md
+          if [ "${{ steps.lab.outputs.exit }}" = "2" ]; then
+            # The exporter could not verify its rollback: put both bundle paths back to the last
+            # committed (published) version so the commit and the Space mirror carry only evidence
+            # that was already published, and never a partial copy.
+            echo "Decision Lab restoration not established: restoring both bundle paths from HEAD"
+            git checkout -- artifacts/decision_lab frontend-next/public/decision-lab
+            git clean -fdq -- artifacts/decision_lab frontend-next/public/decision-lab
+            rm -rf artifacts/decision_lab.build-* artifacts/decision_lab.previous-* \
+              frontend-next/public/decision-lab.build-* frontend-next/public/decision-lab.previous-*
+            python scripts/export_decision_lab.py --verify --out artifacts/decision_lab --public-copy frontend-next/public/decision-lab
+          fi
+          # Leftover .build-* / .previous-* siblings (an interrupted swap) are never staged.
+          git add -- artifacts docs/MODEL_CARD.md frontend-next/public/decision-lab \
+            ':(exclude)artifacts/decision_lab.*' ':(exclude)frontend-next/public/decision-lab.*'
           git diff --cached --quiet && echo "nothing to commit" && exit 0
           git commit -m "weekly: ${{ steps.outcome.outputs.season }} wk${{ steps.outcome.outputs.week }} ${{ steps.outcome.outputs.action }}"
           git push
@@ -151,6 +183,15 @@ jobs:
             --title "weekly: warehouse build failed for ${{ steps.outcome.outputs.season }} wk${{ steps.outcome.outputs.week }} (${{ steps.outcome.outputs.run_id }})" \
             --label "weekly-hold" \
             --body "dbt build --target prod (or export_gold) failed after scoring; nothing was committed. See the run log: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      - name: Open an issue if the Decision Lab export failed
+        if: ${{ steps.lab.outcome == 'failure' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create \
+            --title "weekly: Decision Lab export failed for ${{ steps.outcome.outputs.season }} wk${{ steps.outcome.outputs.week }} (${{ steps.outcome.outputs.run_id }})" \
+            --label "weekly-hold" \
+            --body "scripts/export_decision_lab.py exited ${{ steps.lab.outputs.exit }} after the gold export. Exit 1: the previously published bundle and public copy were re-established and verified; the attempt is recorded in artifacts/decision_lab/_last_attempt.json (committed with the artifacts). Exit 2: the rollback could not be verified, so the commit step restored both paths from the last commit and re-verified them before staging; inspect the run log for the diagnostics. See the run log: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
       - name: Open an issue on HOLD
         if: ${{ steps.outcome.outputs.action == 'HOLD' }}
         env:

@@ -1,0 +1,965 @@
+{
+ "cases": [
+  {
+   "alternatives": [
+    "SYN-A",
+    "SYN-B"
+   ],
+   "case_id": "syn-ambiguity-floor-relaxation",
+   "expected": {
+    "reason_codes": [
+     "gap_below_minimum",
+     "floor_below_minimum",
+     "baseline_disagrees"
+    ],
+    "recommended_player_id": null,
+    "status": "review"
+   },
+   "experiments": [
+    {
+     "expected": {
+      "recommended_player_id": null,
+      "status": "review"
+     },
+     "label": "relax floor to 5",
+     "parameters": {
+      "min_floor": 5.0
+     }
+    },
+    {
+     "expected": {
+      "recommended_player_id": "SYN-A",
+      "status": "recommend"
+     },
+     "label": "gap 0.3, floor 5",
+     "parameters": {
+      "min_floor": 5.0,
+      "min_projection_gap": 0.3
+     }
+    }
+   ],
+   "limitations": [
+    "availability_user_assumed",
+    "synthetic_evidence",
+    "floors_not_probabilities",
+    "outcomes_inspectable"
+   ],
+   "mode": "synthetic",
+   "outcome_snapshot_id": "syn-ambiguity-floor-relaxation",
+   "outcomes_available": true,
+   "overrides": {},
+   "parameters": {
+    "min_floor": 8.0,
+    "min_projection_gap": 0.5,
+    "model_only_exploration": false,
+    "require_independent_baseline": true
+   },
+   "selection": {
+    "criteria": "floor relaxation cannot bypass the ambiguity margin; outcomes A=8, B=16",
+    "method": "curated_synthetic",
+    "sealed_pattern": null
+   },
+   "setup": "Two running backs 0.4 points apart (14.0 vs 13.6) with floors 6.0 and 7.0. The minimum gap is 0.5 and a floor guardrail of 8 is on, so the comparison stays in review. Relaxing the floor to 5 changes nothing because the gap still fails; only lowering the minimum gap to 0.3 produces a recommendation, and the baseline prefers the other player.",
+   "slot": "RB",
+   "snapshot_id": "syn-ambiguity-floor-relaxation",
+   "source_row_refs": [],
+   "title": "Ambiguity: relaxing the floor guardrail does not resolve a small gap"
+  },
+  {
+   "alternatives": [
+    "SYN-A",
+    "SYN-B"
+   ],
+   "case_id": "syn-exact-tie",
+   "expected": {
+    "reason_codes": [
+     "projection_tie",
+     "floor_guardrail_disabled",
+     "baseline_disagrees"
+    ],
+    "recommended_player_id": null,
+    "status": "review"
+   },
+   "experiments": [],
+   "limitations": [
+    "availability_user_assumed",
+    "synthetic_evidence",
+    "floors_not_probabilities",
+    "outcomes_inspectable"
+   ],
+   "mode": "synthetic",
+   "outcome_snapshot_id": null,
+   "outcomes_available": false,
+   "overrides": {},
+   "parameters": {
+    "min_floor": null,
+    "min_projection_gap": 0.0,
+    "model_only_exploration": false,
+    "require_independent_baseline": true
+   },
+   "selection": {
+    "criteria": "|gap| <= tolerance produces review even at min gap 0",
+    "method": "curated_synthetic",
+    "sealed_pattern": null
+   },
+   "setup": "Two players project exactly 12.0. Even with the minimum gap set to 0 the policy answers review: a tie is not evidence, and the displayed order is by player id only.",
+   "slot": "WR",
+   "snapshot_id": "syn-exact-tie",
+   "source_row_refs": [],
+   "title": "Exact projection tie with a zero minimum gap"
+  },
+  {
+   "alternatives": [
+    "SYN-A",
+    "SYN-B"
+   ],
+   "case_id": "syn-threshold-equality",
+   "expected": {
+    "reason_codes": [
+     "recommend_highest_projection",
+     "gap_meets_minimum",
+     "floor_meets_minimum",
+     "baseline_agrees"
+    ],
+    "recommended_player_id": "SYN-A",
+    "status": "recommend"
+   },
+   "experiments": [],
+   "limitations": [
+    "availability_user_assumed",
+    "synthetic_evidence",
+    "floors_not_probabilities",
+    "outcomes_inspectable"
+   ],
+   "mode": "synthetic",
+   "outcome_snapshot_id": null,
+   "outcomes_available": false,
+   "overrides": {},
+   "parameters": {
+    "min_floor": 6.0,
+    "min_projection_gap": 0.4,
+    "model_only_exploration": false,
+    "require_independent_baseline": true
+   },
+   "selection": {
+    "criteria": "equality qualifies on the gap gate and the floor gate",
+    "method": "curated_synthetic",
+    "sealed_pattern": null
+   },
+   "setup": "The gap (0.4) equals the minimum gap and the leading floor (6.0) equals the floor guardrail; equality qualifies on both gates, so the leader is recommended.",
+   "slot": "RB",
+   "snapshot_id": "syn-threshold-equality",
+   "source_row_refs": [],
+   "title": "Gap and floor exactly at their thresholds"
+  },
+  {
+   "alternatives": [
+    "SYN-A",
+    "SYN-B",
+    "SYN-C"
+   ],
+   "case_id": "syn-missing-and-negative-outcomes",
+   "expected": {
+    "reason_codes": [
+     "recommend_highest_projection",
+     "gap_meets_minimum",
+     "floor_guardrail_disabled",
+     "baseline_agrees"
+    ],
+    "recommended_player_id": "SYN-A",
+    "status": "recommend"
+   },
+   "experiments": [],
+   "limitations": [
+    "availability_user_assumed",
+    "synthetic_evidence",
+    "floors_not_probabilities",
+    "outcomes_inspectable"
+   ],
+   "mode": "synthetic",
+   "outcome_snapshot_id": "syn-missing-and-negative-outcomes",
+   "outcomes_available": true,
+   "overrides": {},
+   "parameters": {
+    "min_floor": null,
+    "min_projection_gap": 0.5,
+    "model_only_exploration": false,
+    "require_independent_baseline": true
+   },
+   "selection": {
+    "criteria": "metrics eligibility with null, zero and negative actuals",
+    "method": "curated_synthetic",
+    "sealed_pattern": null
+   },
+   "setup": "Three tight ends with a clear leader. The outcome snapshot has one unobserved player, one zero and one negative score; zero and negative are valid observations, the missing one leaves the choice-set regret unavailable instead of imputing it.",
+   "slot": "TE",
+   "snapshot_id": "syn-missing-and-negative-outcomes",
+   "source_row_refs": [],
+   "title": "Missing, zero and negative outcomes"
+  },
+  {
+   "alternatives": [
+    "SYN-A",
+    "SYN-B",
+    "SYN-C"
+   ],
+   "case_id": "syn-slot-and-exclusion",
+   "expected": {
+    "reason_codes": [
+     "excluded_unavailable",
+     "excluded_slot_ineligible",
+     "insufficient_choice_set"
+    ],
+    "recommended_player_id": null,
+    "status": "review"
+   },
+   "experiments": [
+    {
+     "expected": {
+      "recommended_player_id": "SYN-A",
+      "status": "recommend"
+     },
+     "label": "remove the exclusion",
+     "overrides": {}
+    }
+   ],
+   "limitations": [
+    "availability_user_assumed",
+    "synthetic_evidence",
+    "floors_not_probabilities",
+    "outcomes_inspectable"
+   ],
+   "mode": "synthetic",
+   "outcome_snapshot_id": null,
+   "outcomes_available": false,
+   "overrides": {
+    "SYN-B": {
+     "availability": "unavailable",
+     "availability_basis": "user_excluded"
+    }
+   },
+   "parameters": {
+    "min_floor": null,
+    "min_projection_gap": 0.5,
+    "model_only_exploration": false,
+    "require_independent_baseline": true
+   },
+   "selection": {
+    "criteria": "slot eligibility and explicit exclusion shrink the comparable set",
+    "method": "curated_synthetic",
+    "sealed_pattern": null
+   },
+   "setup": "A quarterback is nominated for FLEX (slot-ineligible) and one running back is marked unavailable, leaving a single comparable alternative: review. Removing the exclusion restores a two-player comparison and a recommendation.",
+   "slot": "FLEX",
+   "snapshot_id": "syn-slot-and-exclusion",
+   "source_row_refs": [],
+   "title": "FLEX slot with an ineligible position and a user exclusion"
+  },
+  {
+   "alternatives": [
+    "SYN-A",
+    "SYN-B"
+   ],
+   "case_id": "syn-unknown-availability",
+   "expected": {
+    "reason_codes": [
+     "availability_unresolved",
+     "insufficient_choice_set"
+    ],
+    "recommended_player_id": null,
+    "status": "review"
+   },
+   "experiments": [
+    {
+     "expected": {
+      "recommended_player_id": "SYN-A",
+      "status": "recommend"
+     },
+     "label": "assume both available",
+     "overrides": {
+      "SYN-A": {
+       "availability": "assumed_available",
+       "availability_basis": "user_assumed"
+      },
+      "SYN-B": {
+       "availability": "assumed_available",
+       "availability_basis": "user_assumed"
+      }
+     }
+    }
+   ],
+   "limitations": [
+    "synthetic_evidence",
+    "floors_not_probabilities",
+    "outcomes_inspectable"
+   ],
+   "mode": "synthetic",
+   "outcome_snapshot_id": null,
+   "outcomes_available": false,
+   "overrides": {},
+   "parameters": {
+    "min_floor": null,
+    "min_projection_gap": 0.5,
+    "model_only_exploration": false,
+    "require_independent_baseline": true
+   },
+   "selection": {
+    "criteria": "unresolved availability is a review condition, not a default",
+    "method": "curated_synthetic",
+    "sealed_pattern": null
+   },
+   "setup": "Both players default to unknown availability (as published weekly rows do). The policy answers review until the user records an explicit assumption; assuming both available yields a recommendation with the user-assumed availability limitation.",
+   "slot": "WR",
+   "snapshot_id": "syn-unknown-availability",
+   "source_row_refs": [],
+   "title": "Unknown availability must be resolved first"
+  },
+  {
+   "alternatives": [
+    "SYN-A",
+    "SYN-B"
+   ],
+   "case_id": "syn-baseline-fallback",
+   "expected": {
+    "reason_codes": [
+     "baseline_unavailable",
+     "gap_meets_minimum",
+     "floor_guardrail_disabled"
+    ],
+    "recommended_player_id": null,
+    "status": "review"
+   },
+   "experiments": [
+    {
+     "expected": {
+      "recommended_player_id": "SYN-A",
+      "status": "recommend"
+     },
+     "label": "model-only exploration",
+     "parameters": {
+      "model_only_exploration": true
+     }
+    }
+   ],
+   "limitations": [
+    "availability_user_assumed",
+    "synthetic_evidence",
+    "floors_not_probabilities",
+    "outcomes_inspectable"
+   ],
+   "mode": "synthetic",
+   "outcome_snapshot_id": null,
+   "outcomes_available": false,
+   "overrides": {},
+   "parameters": {
+    "min_floor": null,
+    "min_projection_gap": 0.5,
+    "model_only_exploration": false,
+    "require_independent_baseline": true
+   },
+   "selection": {
+    "criteria": "a model-derived baseline is never presented as a baseline comparison",
+    "method": "curated_synthetic",
+    "sealed_pattern": null
+   },
+   "setup": "The leading player's baseline is the model's own prediction (fallback), so no independent comparator exists and the policy answers review. Model-only exploration proceeds and records that the baseline is not independent.",
+   "slot": "RB",
+   "snapshot_id": "syn-baseline-fallback",
+   "source_row_refs": [],
+   "title": "Leader without an independent baseline"
+  },
+  {
+   "alternatives": [
+    "SYN-A",
+    "SYN-B"
+   ],
+   "case_id": "syn-blocked-evidence",
+   "expected": {
+    "reason_codes": [
+     "evidence_blocked",
+     "gap_meets_minimum",
+     "floor_guardrail_disabled",
+     "baseline_agrees"
+    ],
+    "recommended_player_id": null,
+    "status": "hold"
+   },
+   "experiments": [
+    {
+     "expected": {
+      "recommended_player_id": null,
+      "status": "hold"
+     },
+     "label": "min gap 0",
+     "parameters": {
+      "min_projection_gap": 0.0
+     }
+    }
+   ],
+   "limitations": [
+    "availability_user_assumed",
+    "synthetic_evidence",
+    "floors_not_probabilities",
+    "outcomes_inspectable"
+   ],
+   "mode": "synthetic",
+   "outcome_snapshot_id": null,
+   "outcomes_available": false,
+   "overrides": {},
+   "parameters": {
+    "min_floor": null,
+    "min_projection_gap": 0.5,
+    "model_only_exploration": false,
+    "require_independent_baseline": true
+   },
+   "selection": {
+    "criteria": "HOLD precedence over every threshold",
+    "method": "curated_synthetic",
+    "sealed_pattern": null
+   },
+   "setup": "The snapshot carries a publication block. The policy holds, and setting the minimum gap to zero still holds: invalid evidence never becomes a weaker recommendation.",
+   "slot": "RB",
+   "snapshot_id": "syn-blocked-evidence",
+   "source_row_refs": [],
+   "title": "Blocked evidence cannot be unblocked by lowering thresholds"
+  },
+  {
+   "alternatives": [
+    "SYN-A"
+   ],
+   "case_id": "syn-one-option",
+   "expected": {
+    "reason_codes": [
+     "insufficient_choice_set"
+    ],
+    "recommended_player_id": null,
+    "status": "review"
+   },
+   "experiments": [],
+   "limitations": [
+    "availability_user_assumed",
+    "synthetic_evidence",
+    "floors_not_probabilities",
+    "outcomes_inspectable"
+   ],
+   "mode": "synthetic",
+   "outcome_snapshot_id": null,
+   "outcomes_available": false,
+   "overrides": {},
+   "parameters": {
+    "min_floor": null,
+    "min_projection_gap": 0.5,
+    "model_only_exploration": false,
+    "require_independent_baseline": true
+   },
+   "selection": {
+    "criteria": "choice set below the minimum",
+    "method": "curated_synthetic",
+    "sealed_pattern": null
+   },
+   "setup": "Only one player is nominated; a comparison needs at least two comparable alternatives.",
+   "slot": "TE",
+   "snapshot_id": "syn-one-option",
+   "source_row_refs": [],
+   "title": "A single alternative is not a comparison"
+  },
+  {
+   "alternatives": [
+    "SYN-A",
+    "SYN-B"
+   ],
+   "case_id": "syn-floor-missing",
+   "expected": {
+    "reason_codes": [
+     "gap_meets_minimum",
+     "floor_missing",
+     "baseline_agrees"
+    ],
+    "recommended_player_id": null,
+    "status": "review"
+   },
+   "experiments": [
+    {
+     "expected": {
+      "recommended_player_id": "SYN-A",
+      "status": "recommend"
+     },
+     "label": "disable the floor guardrail",
+     "parameters": {
+      "min_floor": null
+     }
+    }
+   ],
+   "limitations": [
+    "availability_user_assumed",
+    "synthetic_evidence",
+    "floors_not_probabilities",
+    "outcomes_inspectable"
+   ],
+   "mode": "synthetic",
+   "outcome_snapshot_id": null,
+   "outcomes_available": false,
+   "overrides": {},
+   "parameters": {
+    "min_floor": 5.0,
+    "min_projection_gap": 0.5,
+    "model_only_exploration": false,
+    "require_independent_baseline": true
+   },
+   "selection": {
+    "criteria": "a missing floor is a review condition only when the guardrail is on",
+    "method": "curated_synthetic",
+    "sealed_pattern": null
+   },
+   "setup": "The leading player has no model floor while a floor guardrail of 5 is enabled: review. Disabling the guardrail lets the projection order stand.",
+   "slot": "WR",
+   "snapshot_id": "syn-floor-missing",
+   "source_row_refs": [],
+   "title": "Leader without a floor while the guardrail is on"
+  },
+  {
+   "alternatives": [
+    "00-0039075",
+    "00-0036322",
+    "00-0038543",
+    "00-0034960"
+   ],
+   "case_id": "real-oos-2025-w02-wr-efa4e0",
+   "expected": {
+    "reason_codes": [
+     "recommend_highest_projection",
+     "gap_meets_minimum",
+     "floor_guardrail_disabled",
+     "baseline_disagrees"
+    ],
+    "recommended_player_id": "00-0039075",
+    "status": "recommend"
+   },
+   "experiments": [],
+   "limitations": [
+    "population_hindsight_conditioned",
+    "floors_not_probabilities",
+    "outcomes_inspectable"
+   ],
+   "mode": "historical_replay",
+   "outcome_snapshot_id": "oos-2025-w02-20260911-asof_v1-d333de20-rf",
+   "outcomes_available": true,
+   "overrides": {},
+   "parameters": {
+    "min_floor": null,
+    "min_projection_gap": 0.5,
+    "model_only_exploration": false,
+    "require_independent_baseline": true
+   },
+   "selection": {
+    "criteria": "out_of_sample_season: first recommend with baseline disagreement where the recommended player scored more (top-four projections per position and week, default parameters)",
+    "method": "deterministic_discovery",
+    "sealed_pattern": "model_wins"
+   },
+   "setup": "The four WR rows with the highest projections in this snapshot (ties by player id), default parameters; availability is the realized stats row (hindsight-conditioned population).",
+   "slot": "WR",
+   "snapshot_id": "oos-2025-w02-20260911-asof_v1-d333de20-rf",
+   "source_row_refs": [
+    "fct_player_week:00-0039075:2025:2:20260911-asof_v1-d333de20:rf",
+    "fct_player_week:00-0036322:2025:2:20260911-asof_v1-d333de20:rf",
+    "fct_player_week:00-0038543:2025:2:20260911-asof_v1-d333de20:rf",
+    "fct_player_week:00-0034960:2025:2:20260911-asof_v1-d333de20:rf"
+   ],
+   "title": "2025 week 2 · WR · four highest projections"
+  },
+  {
+   "alternatives": [
+    "00-0039139",
+    "00-0038542",
+    "00-0036223",
+    "00-0032764"
+   ],
+   "case_id": "real-oos-2025-w01-rb-bca017",
+   "expected": {
+    "reason_codes": [
+     "recommend_highest_projection",
+     "gap_meets_minimum",
+     "floor_guardrail_disabled",
+     "baseline_disagrees"
+    ],
+    "recommended_player_id": "00-0039139",
+    "status": "recommend"
+   },
+   "experiments": [],
+   "limitations": [
+    "population_hindsight_conditioned",
+    "floors_not_probabilities",
+    "outcomes_inspectable"
+   ],
+   "mode": "historical_replay",
+   "outcome_snapshot_id": "oos-2025-w01-20260911-asof_v1-d333de20-rf",
+   "outcomes_available": true,
+   "overrides": {},
+   "parameters": {
+    "min_floor": null,
+    "min_projection_gap": 0.5,
+    "model_only_exploration": false,
+    "require_independent_baseline": true
+   },
+   "selection": {
+    "criteria": "out_of_sample_season: first recommend with baseline disagreement where the baseline's player scored more (top-four projections per position and week, default parameters)",
+    "method": "deterministic_discovery",
+    "sealed_pattern": "baseline_wins"
+   },
+   "setup": "The four RB rows with the highest projections in this snapshot (ties by player id), default parameters; availability is the realized stats row (hindsight-conditioned population).",
+   "slot": "RB",
+   "snapshot_id": "oos-2025-w01-20260911-asof_v1-d333de20-rf",
+   "source_row_refs": [
+    "fct_player_week:00-0039139:2025:1:20260911-asof_v1-d333de20:rf",
+    "fct_player_week:00-0038542:2025:1:20260911-asof_v1-d333de20:rf",
+    "fct_player_week:00-0036223:2025:1:20260911-asof_v1-d333de20:rf",
+    "fct_player_week:00-0032764:2025:1:20260911-asof_v1-d333de20:rf"
+   ],
+   "title": "2025 week 1 · RB · four highest projections"
+  },
+  {
+   "alternatives": [
+    "00-0036358",
+    "00-0031381",
+    "00-0033040",
+    "00-0034837"
+   ],
+   "case_id": "real-frozen-2024-w01-wr-043738",
+   "expected": {
+    "reason_codes": [
+     "recommend_highest_projection",
+     "gap_meets_minimum",
+     "floor_guardrail_disabled",
+     "baseline_disagrees"
+    ],
+    "recommended_player_id": "00-0036358",
+    "status": "recommend"
+   },
+   "experiments": [],
+   "limitations": [
+    "population_hindsight_conditioned",
+    "floors_not_probabilities",
+    "outcomes_inspectable"
+   ],
+   "mode": "historical_replay",
+   "outcome_snapshot_id": "frozen-2024-w01-20260911-asof_v1-d333de20-rf",
+   "outcomes_available": true,
+   "overrides": {},
+   "parameters": {
+    "min_floor": null,
+    "min_projection_gap": 0.5,
+    "model_only_exploration": false,
+    "require_independent_baseline": true
+   },
+   "selection": {
+    "criteria": "frozen_test: first recommend with baseline disagreement where the recommended player scored more (top-four projections per position and week, default parameters)",
+    "method": "deterministic_discovery",
+    "sealed_pattern": "model_wins"
+   },
+   "setup": "The four WR rows with the highest projections in this snapshot (ties by player id), default parameters; availability is the realized stats row (hindsight-conditioned population).",
+   "slot": "WR",
+   "snapshot_id": "frozen-2024-w01-20260911-asof_v1-d333de20-rf",
+   "source_row_refs": [
+    "fct_player_week:00-0036358:2024:1:20260911-asof_v1-d333de20:rf",
+    "fct_player_week:00-0031381:2024:1:20260911-asof_v1-d333de20:rf",
+    "fct_player_week:00-0033040:2024:1:20260911-asof_v1-d333de20:rf",
+    "fct_player_week:00-0034837:2024:1:20260911-asof_v1-d333de20:rf"
+   ],
+   "title": "2024 week 1 · WR · four highest projections"
+  },
+  {
+   "alternatives": [
+    "00-0034796",
+    "00-0036945",
+    "00-0034857",
+    "00-0035228"
+   ],
+   "case_id": "real-frozen-2024-w01-qb-2b2f06",
+   "expected": {
+    "reason_codes": [
+     "recommend_highest_projection",
+     "gap_meets_minimum",
+     "floor_guardrail_disabled",
+     "baseline_disagrees"
+    ],
+    "recommended_player_id": "00-0034796",
+    "status": "recommend"
+   },
+   "experiments": [],
+   "limitations": [
+    "population_hindsight_conditioned",
+    "floors_not_probabilities",
+    "outcomes_inspectable"
+   ],
+   "mode": "historical_replay",
+   "outcome_snapshot_id": "frozen-2024-w01-20260911-asof_v1-d333de20-rf",
+   "outcomes_available": true,
+   "overrides": {},
+   "parameters": {
+    "min_floor": null,
+    "min_projection_gap": 0.5,
+    "model_only_exploration": false,
+    "require_independent_baseline": true
+   },
+   "selection": {
+    "criteria": "frozen_test: first recommend with baseline disagreement where the baseline's player scored more (top-four projections per position and week, default parameters)",
+    "method": "deterministic_discovery",
+    "sealed_pattern": "baseline_wins"
+   },
+   "setup": "The four QB rows with the highest projections in this snapshot (ties by player id), default parameters; availability is the realized stats row (hindsight-conditioned population).",
+   "slot": "QB",
+   "snapshot_id": "frozen-2024-w01-20260911-asof_v1-d333de20-rf",
+   "source_row_refs": [
+    "fct_player_week:00-0034796:2024:1:20260911-asof_v1-d333de20:rf",
+    "fct_player_week:00-0036945:2024:1:20260911-asof_v1-d333de20:rf",
+    "fct_player_week:00-0034857:2024:1:20260911-asof_v1-d333de20:rf",
+    "fct_player_week:00-0035228:2024:1:20260911-asof_v1-d333de20:rf"
+   ],
+   "title": "2024 week 1 · QB · four highest projections"
+  },
+  {
+   "alternatives": [
+    "00-0039918",
+    "00-0040691",
+    "00-0034857",
+    "00-0039150"
+   ],
+   "case_id": "real-weekly-2026-w02-qb-6710a9",
+   "expected": {
+    "reason_codes": [
+     "recommend_highest_projection",
+     "gap_meets_minimum",
+     "floor_guardrail_disabled",
+     "baseline_disagrees"
+    ],
+    "recommended_player_id": "00-0039918",
+    "status": "recommend"
+   },
+   "experiments": [],
+   "limitations": [
+    "availability_user_assumed",
+    "floors_not_probabilities",
+    "outcomes_inspectable"
+   ],
+   "mode": "historical_replay",
+   "outcome_snapshot_id": "weekly-2026-w02-20260911-asof_v1-d333de20-rf",
+   "outcomes_available": true,
+   "overrides": {
+    "00-0034857": {
+     "availability": "assumed_available",
+     "availability_basis": "user_assumed"
+    },
+    "00-0039150": {
+     "availability": "assumed_available",
+     "availability_basis": "user_assumed"
+    },
+    "00-0039918": {
+     "availability": "assumed_available",
+     "availability_basis": "user_assumed"
+    },
+    "00-0040691": {
+     "availability": "assumed_available",
+     "availability_basis": "user_assumed"
+    }
+   },
+   "parameters": {
+    "min_floor": null,
+    "min_projection_gap": 0.5,
+    "model_only_exploration": false,
+    "require_independent_baseline": true
+   },
+   "selection": {
+    "criteria": "weekly: first recommend with baseline disagreement and both outcomes observed (top-four projections per position and week, default parameters)",
+    "method": "deterministic_discovery",
+    "sealed_pattern": "baseline_wins"
+   },
+   "setup": "The four QB rows with the highest projections in this snapshot (ties by player id), default parameters; availability user-assumed for every alternative (weekly rows default to unknown).",
+   "slot": "QB",
+   "snapshot_id": "weekly-2026-w02-20260911-asof_v1-d333de20-rf",
+   "source_row_refs": [
+    "fct_player_week:00-0039918:2026:2:20260911-asof_v1-d333de20:rf",
+    "fct_player_week:00-0040691:2026:2:20260911-asof_v1-d333de20:rf",
+    "fct_player_week:00-0034857:2026:2:20260911-asof_v1-d333de20:rf",
+    "fct_player_week:00-0039150:2026:2:20260911-asof_v1-d333de20:rf"
+   ],
+   "title": "2026 week 2 · QB · four highest projections"
+  },
+  {
+   "alternatives": [
+    "00-0034796",
+    "00-0039910",
+    "00-0036355",
+    "00-0036389"
+   ],
+   "case_id": "real-oos-2025-w02-qb-20d8b2",
+   "expected": {
+    "reason_codes": [
+     "recommend_highest_projection",
+     "gap_meets_minimum",
+     "floor_guardrail_disabled",
+     "baseline_agrees"
+    ],
+    "recommended_player_id": "00-0034796",
+    "status": "recommend"
+   },
+   "experiments": [],
+   "limitations": [
+    "population_hindsight_conditioned",
+    "floors_not_probabilities",
+    "outcomes_inspectable"
+   ],
+   "mode": "historical_replay",
+   "outcome_snapshot_id": "oos-2025-w02-20260911-asof_v1-d333de20-rf",
+   "outcomes_available": true,
+   "overrides": {},
+   "parameters": {
+    "min_floor": null,
+    "min_projection_gap": 0.5,
+    "model_only_exploration": false,
+    "require_independent_baseline": true
+   },
+   "selection": {
+    "criteria": "out_of_sample_season: first recommend where the baseline prefers the same player (top-four projections per position and week, default parameters)",
+    "method": "deterministic_discovery",
+    "sealed_pattern": "agreement"
+   },
+   "setup": "The four QB rows with the highest projections in this snapshot (ties by player id), default parameters; availability is the realized stats row (hindsight-conditioned population).",
+   "slot": "QB",
+   "snapshot_id": "oos-2025-w02-20260911-asof_v1-d333de20-rf",
+   "source_row_refs": [
+    "fct_player_week:00-0034796:2025:2:20260911-asof_v1-d333de20:rf",
+    "fct_player_week:00-0039910:2025:2:20260911-asof_v1-d333de20:rf",
+    "fct_player_week:00-0036355:2025:2:20260911-asof_v1-d333de20:rf",
+    "fct_player_week:00-0036389:2025:2:20260911-asof_v1-d333de20:rf"
+   ],
+   "title": "2025 week 2 · QB · four highest projections"
+  },
+  {
+   "alternatives": [
+    "00-0034796",
+    "00-0039910",
+    "00-0034857",
+    "00-0039150"
+   ],
+   "case_id": "real-oos-2025-w01-qb-95cef7",
+   "expected": {
+    "reason_codes": [
+     "gap_below_minimum",
+     "floor_guardrail_disabled",
+     "baseline_disagrees"
+    ],
+    "recommended_player_id": null,
+    "status": "review"
+   },
+   "experiments": [],
+   "limitations": [
+    "population_hindsight_conditioned",
+    "floors_not_probabilities",
+    "outcomes_inspectable"
+   ],
+   "mode": "historical_replay",
+   "outcome_snapshot_id": "oos-2025-w01-20260911-asof_v1-d333de20-rf",
+   "outcomes_available": true,
+   "overrides": {},
+   "parameters": {
+    "min_floor": null,
+    "min_projection_gap": 0.5,
+    "model_only_exploration": false,
+    "require_independent_baseline": true
+   },
+   "selection": {
+    "criteria": "out_of_sample_season: first review caused by a projection gap below the minimum (top-four projections per position and week, default parameters)",
+    "method": "deterministic_discovery",
+    "sealed_pattern": "ambiguity"
+   },
+   "setup": "The four QB rows with the highest projections in this snapshot (ties by player id), default parameters; availability is the realized stats row (hindsight-conditioned population).",
+   "slot": "QB",
+   "snapshot_id": "oos-2025-w01-20260911-asof_v1-d333de20-rf",
+   "source_row_refs": [
+    "fct_player_week:00-0034796:2025:1:20260911-asof_v1-d333de20:rf",
+    "fct_player_week:00-0039910:2025:1:20260911-asof_v1-d333de20:rf",
+    "fct_player_week:00-0034857:2025:1:20260911-asof_v1-d333de20:rf",
+    "fct_player_week:00-0039150:2025:1:20260911-asof_v1-d333de20:rf"
+   ],
+   "title": "2025 week 1 · QB · four highest projections"
+  },
+  {
+   "alternatives": [
+    "00-0039139",
+    "00-0038134",
+    "00-0032764"
+   ],
+   "case_id": "real-weekly-2026-w03-rb-1ed3fb",
+   "expected": {
+    "reason_codes": [
+     "availability_unresolved",
+     "insufficient_choice_set"
+    ],
+    "recommended_player_id": null,
+    "status": "review"
+   },
+   "experiments": [
+    {
+     "expected": {
+      "recommended_player_id": "00-0039139",
+      "status": "recommend"
+     },
+     "label": "assume all available",
+     "overrides": {
+      "00-0032764": {
+       "availability": "assumed_available",
+       "availability_basis": "user_assumed"
+      },
+      "00-0038134": {
+       "availability": "assumed_available",
+       "availability_basis": "user_assumed"
+      },
+      "00-0039139": {
+       "availability": "assumed_available",
+       "availability_basis": "user_assumed"
+      }
+     }
+    }
+   ],
+   "limitations": [
+    "snapshot_not_game_day_verified",
+    "baseline_unreconciled",
+    "floors_not_probabilities",
+    "outcomes_inspectable"
+   ],
+   "mode": "published_weekly",
+   "outcome_snapshot_id": null,
+   "outcomes_available": false,
+   "overrides": {},
+   "parameters": {
+    "min_floor": null,
+    "min_projection_gap": 0.5,
+    "model_only_exploration": false,
+    "require_independent_baseline": true
+   },
+   "selection": {
+    "criteria": "published weekly snapshot: RB top-three projections, no overrides",
+    "method": "deterministic_discovery",
+    "sealed_pattern": null
+   },
+   "setup": "The three RB rows with the highest projections in the published weekly snapshot, no availability overrides: the policy asks for an explicit assumption first. The experiment assumes every alternative available. No outcomes exist yet.",
+   "slot": "RB",
+   "snapshot_id": "weekly-2026-w03-20260911-asof_v1-d333de20-rf",
+   "source_row_refs": [
+    "fct_player_week:00-0039139:2026:3:20260911-asof_v1-d333de20:rf",
+    "fct_player_week:00-0038134:2026:3:20260911-asof_v1-d333de20:rf",
+    "fct_player_week:00-0032764:2026:3:20260911-asof_v1-d333de20:rf"
+   ],
+   "title": "2026 week 3 · RB · three highest projections (published snapshot)"
+  }
+ ],
+ "notes": [
+  "Sealed patterns (selection.sealed_pattern) are stored in this static file and can be read by anyone; the reveal sequence in the lab is educational, not secure blinding.",
+  "Curated cases are chosen to illustrate specific policy behaviours and patterns; they are not an unbiased sample of model performance and support no aggregate claim.",
+  "Every expected block was computed by ffai.decision_lab.policy.evaluate on decision inputs built from the case's snapshot with receipts.build_decision_inputs; nothing is hand-typed.",
+  "Experiment semantics: experiment.parameters is merged onto the case parameters; experiment.overrides, when present, replaces the case overrides.",
+  "Unsupported scoring formats (for example half-PPR) cannot appear in the bundle because contracts.check_inputs_snapshot refuses non-PPR snapshots; that HOLD path is covered by the policy unit tests (tests/test_decision_lab_policy.py) and the golden fixtures instead."
+ ],
+ "policy_version": "1.0.0",
+ "schema_version": "decision_lab_cases/1.0"
+}

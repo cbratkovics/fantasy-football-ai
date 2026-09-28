@@ -12,6 +12,8 @@
 --   candidate from strictly earlier periods; falling back to the position's history under the
 --   same rule; falling back to the prediction itself. Frozen-test and out-of-sample files are
 --   one window each (from week 1 of their season); each weekly file is its own window.
+-- baseline_source: which step of that fallback chain produced baseline (player_history,
+--   position_history, prediction). 'prediction' means the row has no independent baseline.
 {% set target_scoring_format = var('target_scoring_format') %}
 
 with predictions as (
@@ -117,7 +119,13 @@ final as (
             when player_hist_cnt > 0 then player_hist_sum / player_hist_cnt
             when position_hist_cnt > 0 then position_hist_sum / position_hist_cnt
             else prediction
-        end as baseline
+        end as baseline,
+        -- the same fallback chain, named: which history the baseline came from
+        case
+            when player_hist_cnt > 0 then 'player_history'
+            when position_hist_cnt > 0 then 'position_history'
+            else 'prediction'
+        end as baseline_source
     from with_baseline
 )
 
@@ -155,5 +163,6 @@ select
     ) as interval_hit,
     cast(baseline as double) as baseline,
     cast(abs(actual - baseline) as double) as baseline_abs_error,
-    cast(case when actual is not null then abs(actual - baseline) <= 3 end as boolean) as baseline_within_3
+    cast(case when actual is not null then abs(actual - baseline) <= 3 end as boolean) as baseline_within_3,
+    cast(baseline_source as varchar) as baseline_source
 from final

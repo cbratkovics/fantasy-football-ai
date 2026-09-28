@@ -48,6 +48,15 @@ jobs:
         run: python scripts/check_publication.py
       - name: Tests (offline fixture; committed artifacts for the API tests)
         run: python -m pytest tests
+      - name: "Decision Lab: golden fixtures and bundle check"
+        # The golden fixtures pin the policy for the Python reference and the TypeScript mirror;
+        # --check rebuilds the bundle from the COMMITTED full-data marts and artifacts into a temp
+        # dir and compares it with artifacts/decision_lab and its public copy (never rewrites
+        # them); --verify re-reads the committed bundle fail-closed (ADR-0032).
+        run: |
+          python -m ffai.decision_lab.golden --check
+          python scripts/export_decision_lab.py --check --out artifacts/decision_lab --public-copy frontend-next/public/decision-lab
+          python scripts/export_decision_lab.py --verify --out artifacts/decision_lab --public-copy frontend-next/public/decision-lab
       - name: Import check for the server
         run: python -c "import ffai.serve.app; print('ffai.serve.app importable')"
 
@@ -112,6 +121,8 @@ jobs:
         # full_stats=false disables the baseline reconciliation, which needs the full nflverse
         # history; every other test, contract, unit test, snapshot, and the artifact reconciliation
         # run. --full-refresh keeps the incremental model deterministic on a restored file.
+        # The Decision Lab bundle check in the python job reconciles the COMMITTED full-data marts
+        # to the evaluation artifacts, which this fixture build cannot.
         run: |
           mkdir -p .duckdb
           if [ "$GITHUB_REF" != "refs/heads/main" ] && [ -f .dbt-state/manifest.json ] && [ -f .dbt-state/ffai_dev.duckdb ]; then
@@ -177,12 +188,21 @@ jobs:
           cache-dependency-path: frontend-next/package-lock.json
       - run: npm ci
       - run: npm run lint
+      - run: npm run typecheck
+      - name: Unit, parity, and component tests (vitest; parity reads the Python golden fixtures)
+        run: npm test
       - run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:7860
+      - name: Install the Playwright browser
+        run: npx playwright install --with-deps chromium
+      - name: Browser flow (Playwright; the e2e config starts `next start` itself)
+        run: npm run test:e2e
         env:
           NEXT_PUBLIC_API_URL: http://localhost:7860
       - name: Check generated frontend publication
         working-directory: .
-        run: python scripts/check_publication.py frontend-next/.next
+        run: python scripts/check_publication.py frontend-next/.next frontend-next/public/decision-lab
 
   deploy-space:
     # Manual only: "Run workflow" with deploy_space=true. Mirrors main to the Space with the same

@@ -91,6 +91,38 @@ By position, 2025 (model vs baseline MAE): QB 6.63 vs 7.08 · RB 4.54 vs 4.79 ·
 
 ---
 
+## Decision Lab
+
+`/decision-lab` turns the evidence above into one inspectable start/sit decision: nominate two to
+eight alternatives for a QB / RB / WR / TE / FLEX slot, see the PPR projections, the causal
+baseline, the model floor/ceiling, the data cutoff and the eligibility assumptions, write down a
+prediction, compute the recommendation, change one assumption and watch what moves, record a
+hypothetical replay or a self-reported real choice (or decline), reveal the observed outcomes
+separately, and export a replayable receipt that `python -m ffai.decision_lab.replay`
+re-validates. It runs from committed files only: `artifacts/decision_lab/` is exported from the
+gold marts and the prediction / evaluation artifacts by `scripts/export_decision_lab.py`,
+reconciled to the evaluation artifacts, digest-verified in the browser, and mirrored into the
+frontend build.
+
+* Policy: a small pure function with a versioned specification (`ffai/decision_lab/policy_spec.json`),
+  a Python reference and a TypeScript mirror that must agree on shared golden fixtures. Statuses
+  are `recommend` / `review` / `hold`; invalid evidence is a HOLD that no threshold can unblock;
+  a tie or a gap below the margin is a REVIEW that no floor relaxation can bypass.
+* Three labelled contexts: historical replay (recorded evaluations, hindsight-conditioned
+  population), published weekly snapshot (dated artifact, user-assumed availability), synthetic
+  sandbox (regression behaviour, never mixed with history).
+* Outcome metrics have their own eligibility and null reasons: chosen points, complete-choice-set
+  regret, points versus the baseline's choice, and a hypothetical model-versus-baseline comparison
+  that is never attributed to the user.
+* Receipts: `decision_id` is the digest of the canonical inputs; actions and outcomes are appended
+  events with their own ids; import replays the policy and rejects tampered results. Digests are
+  integrity checks, not signatures.
+
+Documentation: [docs/DECISION_LAB.md](docs/DECISION_LAB.md) · ADR-0032, ADR-0033, ADR-0034.
+Commands: `make lab-build`, `make lab-check`, `make lab-test`, `make lab-e2e`, `make lab-replay RECEIPT=…`.
+
+---
+
 ## How the numbers are earned
 
 | | |
@@ -224,11 +256,14 @@ Interactive docs at [`/docs`](https://cbratkovics-fantasy-football-ai.hf.space/d
 
 ```bash
 make install                    # uv venv, training deps, editable install (Python 3.11)
-make test                       # 68 tests, offline: committed 40-player fixture + committed artifacts
+make test                       # 461 tests (360 for the Decision Lab), offline: committed 40-player fixture + committed artifacts
 FFAI_TEST_DATA=full make test   # the same tests on the full 2019–2024 pull
 
 make api                        # FastAPI on :7860, loading committed artifacts
 make frontend                   # Next.js on :3000 (NEXT_PUBLIC_API_URL=http://localhost:7860)
+make lab-build                  # export artifacts/decision_lab from committed evidence + mirror into frontend-next/public
+make lab-check                  # rebuild into a temp dir and compare with the committed bundle (never rewrites it)
+make lab-test                   # Python lab tests + frontend unit / parity tests; make lab-e2e for the browser flow
 
 make train && make evaluate     # retrain → new versioned artifact → frozen-test evaluation + model card
 make evaluate ARGS="--kind out_of_sample_season --season 2025"

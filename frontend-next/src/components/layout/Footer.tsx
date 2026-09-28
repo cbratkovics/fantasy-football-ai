@@ -22,6 +22,7 @@ export function Footer() {
             <Link href={ROUTES.tiers}>Tiers</Link>
             <Link href={ROUTES.draft}>Draft board</Link>
             <Link href={ROUTES.startSit}>Start/Sit</Link>
+            <Link href={ROUTES.decisionLab}>Decision Lab</Link>
             <Link href={ROUTES.performance}>Evaluation</Link>
             <Link href={ROUTES.dataPlatform}>Data platform</Link>
           </div>

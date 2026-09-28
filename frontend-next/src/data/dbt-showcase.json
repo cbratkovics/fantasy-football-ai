@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceFingerprint": "6048b0333c8aeae1bdc74dce0fa849b4fda674e6cb8987e526bbf0dd45e20f1b",
+  "sourceFingerprint": "a8188cb6d429c9e6a716593a5608664f03eb994e88643078a2376d29fe28ac58",
   "inventory": {
     "executableModelNodes": 26,
     "logicalModelNames": 25,
@@ -1820,6 +1820,11 @@
           "name": "baseline_within_3",
           "data_type": "boolean",
           "description": "baseline_abs_error <= 3"
+        },
+        {
+          "name": "baseline_source",
+          "data_type": "varchar",
+          "description": "which history produced baseline: player_history (the player's earlier realised points), position_history (the position's, when the player has none), or prediction (the row's own prediction when neither exists; not an independent baseline)"
         }
       ],
       "upstream": [
@@ -1852,11 +1857,18 @@
               "expression": "actual is null or actual_source in ('stats', 'artifact')"
             }
           }
+        },
+        {
+          "dbt_utils.expression_is_true": {
+            "arguments": {
+              "expression": "baseline_source != 'prediction' or baseline = prediction"
+            }
+          }
         }
       ],
       "sqlPath": "dbt/models/gold/fct_player_week.sql",
       "yamlPath": "dbt/models/gold/_gold.yml",
-      "sqlExcerpt": "-- Grain: one row per (player_id, season, week, model_version, candidate): every recorded\n-- prediction next to what happened, with the error metrics and the causal baseline.\n--\n-- actual: realised PPR points from slv_actuals (rules macro over nflverse stats); when the\n--   stats row is not in the warehouse (CI fixture, or a player scored but absent from stats)\n--   the value recorded in the prediction artifact is used and actual_source says so. Where\n--   both exist they agree (tests/gold/assert_recorded_actuals_match_stats.sql).\n-- baseline: the evaluator's causal trailing mean (ffai.eval.evaluator.add_causal_baseline),\n--   reproduced in SQL (sums use fsum, DuckDB's exact-summation aggregate, because the evaluator\n--   takes means as exact rationals and an error of exactly 3.0 must land on the same side): the mean of the player's realised points over (a) stats rows strictly\n--   before the evaluation window started and (b) evaluated rows of the same window and\n--   candidate from strictly earlier periods; falling back to the position's history under the\n--   same rule; falling back to the prediction itself. Frozen-test and out-of-sample files are\n--   one window each (from week 1 of their season); each weekly file is its own window.\n{% set target_scoring_format = var('target_scoring_format') %}\n\nwith predictions as (\n    select * from {{ ref('slv_predictions') }}\n),\n\nactual_by_format as (\n    select\n        player_id,\n        period_key,",
+      "sqlExcerpt": "-- Grain: one row per (player_id, season, week, model_version, candidate): every recorded\n-- prediction next to what happened, with the error metrics and the causal baseline.\n--\n-- actual: realised PPR points from slv_actuals (rules macro over nflverse stats); when the\n--   stats row is not in the warehouse (CI fixture, or a player scored but absent from stats)\n--   the value recorded in the prediction artifact is used and actual_source says so. Where\n--   both exist they agree (tests/gold/assert_recorded_actuals_match_stats.sql).\n-- baseline: the evaluator's causal trailing mean (ffai.eval.evaluator.add_causal_baseline),\n--   reproduced in SQL (sums use fsum, DuckDB's exact-summation aggregate, because the evaluator\n--   takes means as exact rationals and an error of exactly 3.0 must land on the same side): the mean of the player's realised points over (a) stats rows strictly\n--   before the evaluation window started and (b) evaluated rows of the same window and\n--   candidate from strictly earlier periods; falling back to the position's history under the\n--   same rule; falling back to the prediction itself. Frozen-test and out-of-sample files are\n--   one window each (from week 1 of their season); each weekly file is its own window.\n-- baseline_source: which step of that fallback chain produced baseline (player_history,\n--   position_history, prediction). 'prediction' means the row has no independent baseline.\n{% set target_scoring_format = var('target_scoring_format') %}\n\nwith predictions as (\n    select * from {{ ref('slv_predictions') }}\n),\n\nactual_by_format as (\n    select",
       "exported": true,
       "consumer": "/marts/player_week/{player_id} and Player history"
     },

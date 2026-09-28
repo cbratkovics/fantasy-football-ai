@@ -1,0 +1,82 @@
+{
+  "policy_version": "1.0.0",
+  "spec_version": "decision_policy_spec/1.0",
+  "schema_versions": {
+    "inputs_snapshot": "inputs_snapshot/1.0",
+    "outcome_snapshot": "outcome_snapshot/1.0",
+    "decision_inputs": "decision_inputs/1.0",
+    "decision_result": "decision_result/1.0",
+    "outcome_metrics": "outcome_metrics/1.0",
+    "receipt": "decision_receipt/1.0",
+    "manifest": "decision_lab_manifest/1.0",
+    "cases": "decision_lab_cases/1.0"
+  },
+  "tolerance": 1e-6,
+  "canonical_number_decimals": 6,
+  "scoring_format": "ppr",
+  "slots": {
+    "QB": ["QB"],
+    "RB": ["RB"],
+    "WR": ["WR"],
+    "TE": ["TE"],
+    "FLEX": ["RB", "WR", "TE"]
+  },
+  "choice_set": { "min": 2, "max": 8 },
+  "parameters": {
+    "min_projection_gap": { "default": 0.5, "min": 0, "max": 50 },
+    "min_floor": { "default": null, "min": 0, "max": 60 },
+    "require_independent_baseline": { "default": true },
+    "model_only_exploration": { "default": false }
+  },
+  "modes": ["historical_replay", "published_weekly", "synthetic"],
+  "source_families": ["frozen_test", "out_of_sample_season", "weekly", "synthetic"],
+  "availability": {
+    "values": ["assumed_available", "unavailable", "unknown", "realized_stats_row"],
+    "bases": ["user_assumed", "user_excluded", "not_verified", "hindsight_stats_row", "synthetic"],
+    "comparable": ["assumed_available", "realized_stats_row"]
+  },
+  "baseline_provenance": ["player_history", "position_history", "model_prediction_fallback", "unknown"],
+  "independent_baseline_provenance": ["player_history", "position_history"],
+  "statuses": ["hold", "review", "recommend"],
+  "action_kinds": ["hypothetical_replay", "self_reported_real"],
+  "event_types": ["prediction_note", "action_recorded", "action_declined", "outcome_attached"],
+  "reasons": {
+    "evidence_corrupt": { "severity": "hold", "template": "Snapshot evidence failed its integrity check: {detail}." },
+    "evidence_blocked": { "severity": "hold", "template": "The snapshot carries an evidence block: {detail}." },
+    "scoring_format_unsupported": { "severity": "hold", "template": "Scoring format {value} is not supported; the lab compares PPR projections only." },
+    "slot_unsupported": { "severity": "hold", "template": "Slot {value} is not supported." },
+    "mixed_periods": { "severity": "hold", "template": "Alternatives come from different periods ({detail}); one decision covers one season and week." },
+    "mixed_model_versions": { "severity": "hold", "template": "Alternatives come from different model versions or candidates ({detail}); competing models are not extra players." },
+    "parameters_invalid": { "severity": "hold", "template": "Policy parameters are invalid: {detail}." },
+    "choice_set_too_large": { "severity": "hold", "template": "{count} alternatives were nominated; the maximum is {limit}." },
+    "duplicate_alternative": { "severity": "hold", "template": "Player {player_id} was nominated more than once." },
+    "excluded_unavailable": { "severity": "exclusion", "template": "{player} excluded: marked unavailable for this slot." },
+    "excluded_slot_ineligible": { "severity": "exclusion", "template": "{player} excluded: position {position} cannot fill the {slot} slot." },
+    "projection_missing": { "severity": "review", "template": "{players} have no finite PPR projection, so the comparison is incomplete." },
+    "availability_unresolved": { "severity": "review", "template": "Availability is not verified for {players}; record an explicit assumption before the comparison can proceed." },
+    "insufficient_choice_set": { "severity": "review", "template": "Only {count} comparable alternative(s) remain; a comparison needs at least {minimum}." },
+    "baseline_unavailable": { "severity": "review", "template": "No independent baseline for {players}; the policy requires one unless model-only exploration is enabled." },
+    "projection_tie": { "severity": "review", "template": "The leading projections tie at {value}; the order shown is by player id only, not evidence." },
+    "gap_below_minimum": { "severity": "review", "template": "The projection gap {gap} between {first} and {second} is below the minimum {threshold}." },
+    "floor_missing": { "severity": "review", "template": "{player} leads on projection but has no model floor while a floor guardrail of {threshold} is enabled." },
+    "floor_below_minimum": { "severity": "review", "template": "{player} leads on projection but its model floor {floor} is below the guardrail {threshold}." },
+    "recommend_highest_projection": { "severity": "info", "template": "{player} has the highest PPR projection ({value}), {gap} ahead of {second}, conditional on the recorded eligibility assumptions." },
+    "gap_meets_minimum": { "severity": "info", "template": "The projection gap {gap} meets the minimum {threshold}." },
+    "floor_meets_minimum": { "severity": "info", "template": "The leading floor {floor} meets the guardrail {threshold}." },
+    "floor_guardrail_disabled": { "severity": "info", "template": "No floor guardrail is enabled." },
+    "baseline_agrees": { "severity": "info", "template": "The causal trailing-mean baseline also prefers {player} ({value})." },
+    "baseline_disagrees": { "severity": "info", "template": "The causal trailing-mean baseline prefers {player} ({value}) instead; the baseline is a separate comparator, not the model." },
+    "baseline_tie": { "severity": "info", "template": "The baseline values tie between {players}; it expresses no preference." },
+    "baseline_not_independent": { "severity": "info", "template": "Model-only exploration: no independent baseline for {players}; nothing here is a baseline comparison." }
+  },
+  "limitations": {
+    "availability_user_assumed": "Availability of the alternatives is user-assumed, not independently verified (no game-lock, injury, or roster feed).",
+    "population_hindsight_conditioned": "Historical rows exist only for players who appear in realized stats; this is not a reconstructed pregame roster universe.",
+    "baseline_not_independent": "The baseline comparator is not independent of the model for at least one alternative.",
+    "baseline_unreconciled": "The baseline values for this snapshot have not been reconciled to an evaluation artifact.",
+    "floors_not_probabilities": "Floors and ceilings are position-level residual quantiles added to the projection (floor clipped at zero); they are not individualized probabilities or guaranteed bounds.",
+    "snapshot_not_game_day_verified": "A published weekly snapshot is a dated projection artifact; it is not current, live, or game-day verified.",
+    "synthetic_evidence": "Synthetic inputs are for boundary and regression checks only; they are never historical evidence.",
+    "outcomes_inspectable": "Outcome files are static public artifacts; the reveal sequence is educational, not secure blinding."
+  }
+}
