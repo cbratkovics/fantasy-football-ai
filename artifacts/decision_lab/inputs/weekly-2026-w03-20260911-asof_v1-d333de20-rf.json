@@ -1,10 +1,10 @@
 {
  "baseline": {
   "name": "causal_trailing_mean",
-  "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; no reference aggregate exists yet for this week (rolling_2026.json week 3), so the baseline values for this snapshot have not been reconciled to an evaluation artifact",
-  "provenance_basis": "population_rule_unreconciled",
-  "reconciled": null,
-  "reconciled_to": null
+  "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against rolling_2026.json week 3: matched",
+  "provenance_basis": "mart_column",
+  "reconciled": true,
+  "reconciled_to": "rolling_2026.json week 3"
  },
  "candidate_by_position": {
   "QB": "rf",
@@ -28,7 +28,7 @@
  },
  "feature_version": "asof_v1",
  "generated_at_utc": "2026-09-22T14:19:53+00:00",
- "mode": "published_weekly",
+ "mode": "historical_replay",
  "model_version": "20260911-asof_v1-d333de20",
  "population": {
   "conditioning": "scored_eligible_players",
@@ -41,7 +41,7 @@
  },
  "publication": {
   "action": "PUBLISH",
-  "note": "predictions/2026/week_03.json produced by run-20260922T141927Z (PUBLISH); manifest last_run at export: run-20260922T141927Z PUBLISH season 2026 week 3 at 2026-09-22T14:19:27+00:00",
+  "note": "predictions/2026/week_03.json produced by run-20260922T141927Z (PUBLISH); manifest last_run at export: run-20260929T161927Z PUBLISH season 2026 week 4 at 2026-09-29T16:19:27+00:00",
   "run_id": "run-20260922T141927Z",
   "status": "published"
  },
@@ -10840,33 +10840,39 @@
    {
     "path": "artifacts/marts/fct_player_week.parquet",
     "role": "mart",
-    "rows": 25266,
-    "sha256": "f790506c1cfea04d49f30406102a0392444da8064d9d69b665b1d9dee1d57657"
+    "rows": 25953,
+    "sha256": "a8e2d4ecc9c8d6eb5381c4a897eab71944fb77d2ff4569c00f61a0603d99ca25"
    },
    {
     "path": "artifacts/marts/_export_manifest.json",
     "role": "mart_export_manifest",
     "rows": null,
-    "sha256": "331781f879f2261a6e49fa6ec184f5536a4640daa1399cee85176384e35597d9"
+    "sha256": "5c714c4a6fafef8e10bf38a2021f14adc72e4d790b7c190016a4091c7e18fc79"
    },
    {
     "path": "artifacts/predictions/2026/week_03.json",
     "role": "predictions",
     "rows": 674,
-    "sha256": "75c89f53be8367075d3ef9acf3dcc72f2f099aab4dc65f85e2df9467af00a873"
+    "sha256": "c9c54eae62a3b78a8b5dee8fe9769f7d01950bd1dbf2367eebd13bf807e6898e"
    },
    {
     "path": "artifacts/runs/run-20260922T141927Z.json",
     "role": "run_log",
     "rows": null,
     "sha256": "78c3c694d775a3d6a6a0240446a30a7e5d0b4de25b8b624e6e026dc186dc0eb5"
+   },
+   {
+    "path": "artifacts/eval/rolling_2026.json",
+    "role": "rolling_eval",
+    "rows": null,
+    "sha256": "b54b1e4cf0930a25995940cc52c2ce2a450cc5c06cd5ff00360910de4ae55f64"
    }
   ],
   "mart": "fct_player_week",
   "mart_export": {
-   "code_commit": "ca8b3452ed83c72a09f2fdaae7663dfbc721d730",
-   "exported_at_utc": "2026-09-22T14:20:17+00:00",
-   "invocation_id": "9f1c8fcc-e763-4071-97eb-41172d133041",
+   "code_commit": "879c91380693d80efa7ef991a0d49c8298493517",
+   "exported_at_utc": "2026-09-29T16:20:16+00:00",
+   "invocation_id": "1f764179-37ff-4277-adee-450c67154ad9",
    "target": "prod"
   }
  },

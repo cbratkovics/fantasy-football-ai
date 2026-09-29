@@ -1,8 +1,8 @@
 {
  "baseline": {
   "name": "causal_trailing_mean",
-  "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
-  "provenance_basis": "population_rule_and_reconciliation",
+  "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf: matched",
+  "provenance_basis": "mart_column",
   "reconciled": true,
   "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
  },
@@ -4513,7 +4513,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 14.010629,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 13.862,
    "display_name": "Jake Haener",
@@ -4801,7 +4801,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 7.643315,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 11.197,
    "display_name": "Johnny Wilson",
@@ -4817,7 +4817,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 8.03132,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 12.444,
    "display_name": "Carson Steele",
@@ -4833,7 +4833,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 7.643315,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 19.945,
    "display_name": "Malik Nabers",
@@ -4849,7 +4849,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 5.575003,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 19.727,
    "display_name": "Brock Bowers",
@@ -4865,7 +4865,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 5.575003,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 9.495,
    "display_name": "Ja'Tavion Sanders",
@@ -4881,7 +4881,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 8.03132,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 19.171,
    "display_name": "Bucky Irving",
@@ -4897,7 +4897,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 8.03132,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 8.56,
    "display_name": "Isaac Guerendo",
@@ -4913,7 +4913,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 7.643315,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 9.296,
    "display_name": "Jacob Cowing",
@@ -4929,7 +4929,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 8.03132,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 12.663,
    "display_name": "Tyrone Tracy Jr.",
@@ -4945,7 +4945,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 7.643315,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 9.296,
    "display_name": "Jha'Quan Jackson",
@@ -4961,7 +4961,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 14.010629,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 22.565,
    "display_name": "Bo Nix",
@@ -4977,7 +4977,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 8.03132,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 8.56,
    "display_name": "Blake Corum",
@@ -4993,7 +4993,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 8.03132,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 8.56,
    "display_name": "Will Shipley",
@@ -5009,7 +5009,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 7.643315,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 9.296,
    "display_name": "Jordan Whittington",
@@ -5025,7 +5025,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 8.03132,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 11.214,
    "display_name": "Braelon Allen",
@@ -5041,7 +5041,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 7.643315,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 9.296,
    "display_name": "Anthony Gould",
@@ -5057,7 +5057,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 7.643315,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 13.185,
    "display_name": "Marvin Harrison Jr.",
@@ -5073,7 +5073,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 7.643315,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 14.682,
    "display_name": "Jalen McMillan",
@@ -5089,7 +5089,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 8.03132,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 12.248,
    "display_name": "Ray Davis",
@@ -5105,7 +5105,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 7.643315,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 15.272,
    "display_name": "Adonai Mitchell",
@@ -5121,7 +5121,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 7.643315,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 18.947,
    "display_name": "Brian Thomas Jr.",
@@ -5137,7 +5137,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 7.643315,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 20.14,
    "display_name": "Xavier Worthy",
@@ -5153,7 +5153,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 7.643315,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 17.81,
    "display_name": "Keon Coleman",
@@ -5169,7 +5169,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 7.643315,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 10.994,
    "display_name": "Ja'Lynn Polk",
@@ -5185,7 +5185,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 14.010629,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 35.102,
    "display_name": "Jayden Daniels",
@@ -5201,7 +5201,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 7.643315,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 21.342,
    "display_name": "Ladd McConkey",
@@ -5217,7 +5217,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 14.010629,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 18.849,
    "display_name": "Caleb Williams",
@@ -5233,7 +5233,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 7.643315,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 12.256,
    "display_name": "Rome Odunze",
@@ -5249,7 +5249,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 8.03132,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 12.042,
    "display_name": "Trey Benson",
@@ -5272,14 +5272,14 @@
    {
     "path": "artifacts/marts/fct_player_week.parquet",
     "role": "mart",
-    "rows": 25266,
-    "sha256": "f790506c1cfea04d49f30406102a0392444da8064d9d69b665b1d9dee1d57657"
+    "rows": 25953,
+    "sha256": "a8e2d4ecc9c8d6eb5381c4a897eab71944fb77d2ff4569c00f61a0603d99ca25"
    },
    {
     "path": "artifacts/marts/_export_manifest.json",
     "role": "mart_export_manifest",
     "rows": null,
-    "sha256": "331781f879f2261a6e49fa6ec184f5536a4640daa1399cee85176384e35597d9"
+    "sha256": "5c714c4a6fafef8e10bf38a2021f14adc72e4d790b7c190016a4091c7e18fc79"
    },
    {
     "path": "artifacts/eval/eval-20260911-20260911-asof_v1-d333de20-rf.json",
@@ -5296,9 +5296,9 @@
   ],
   "mart": "fct_player_week",
   "mart_export": {
-   "code_commit": "ca8b3452ed83c72a09f2fdaae7663dfbc721d730",
-   "exported_at_utc": "2026-09-22T14:20:17+00:00",
-   "invocation_id": "9f1c8fcc-e763-4071-97eb-41172d133041",
+   "code_commit": "879c91380693d80efa7ef991a0d49c8298493517",
+   "exported_at_utc": "2026-09-29T16:20:16+00:00",
+   "invocation_id": "1f764179-37ff-4277-adee-450c67154ad9",
    "target": "prod"
   }
  },

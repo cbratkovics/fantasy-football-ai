@@ -31,7 +31,8 @@
    "floor": 13.1,
    "ceiling": 32.62,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 17.46
   },
   {
    "player_id": "00-0039139",
@@ -42,7 +43,8 @@
    "floor": 15.75,
    "ceiling": 29.95,
    "receptions_estimate": 4.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 41.4
   },
   {
    "player_id": "00-0033873",
@@ -53,7 +55,8 @@
    "floor": 12.02,
    "ceiling": 31.55,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 15.94
   },
   {
    "player_id": "00-0037834",
@@ -64,7 +67,8 @@
    "floor": 11.35,
    "ceiling": 30.87,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 31.28
   },
   {
    "player_id": "00-0038134",
@@ -75,7 +79,8 @@
    "floor": 14.38,
    "ceiling": 28.58,
    "receptions_estimate": 4.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 21.3
   },
   {
    "player_id": "00-0039918",
@@ -86,7 +91,8 @@
    "floor": 11.07,
    "ceiling": 30.6,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039150",
@@ -97,7 +103,8 @@
    "floor": 9.69,
    "ceiling": 29.21,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 13.64
   },
   {
    "player_id": "00-0032764",
@@ -108,7 +115,8 @@
    "floor": 12.7,
    "ceiling": 26.9,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 21.9
   },
   {
    "player_id": "00-0033077",
@@ -119,7 +127,8 @@
    "floor": 9.06,
    "ceiling": 28.58,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 18.94
   },
   {
    "player_id": "00-0036389",
@@ -130,7 +139,8 @@
    "floor": 9.05,
    "ceiling": 28.58,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 12.62
   },
   {
    "player_id": "00-0040743",
@@ -141,7 +151,8 @@
    "floor": 8.97,
    "ceiling": 28.5,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 23.8
   },
   {
    "player_id": "00-0036223",
@@ -152,7 +163,8 @@
    "floor": 12.21,
    "ceiling": 26.41,
    "receptions_estimate": 3.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 9.2
   },
   {
    "player_id": "00-0038543",
@@ -163,7 +175,8 @@
    "floor": 11.25,
    "ceiling": 25.92,
    "receptions_estimate": 7.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 35.36
   },
   {
    "player_id": "00-0034796",
@@ -174,7 +187,8 @@
    "floor": 7.78,
    "ceiling": 27.3,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 20.44
   },
   {
    "player_id": "00-0026498",
@@ -185,7 +199,8 @@
    "floor": 7.75,
    "ceiling": 27.27,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 20.9
   },
   {
    "player_id": "00-0037239",
@@ -196,7 +211,8 @@
    "floor": 11.06,
    "ceiling": 25.73,
    "receptions_estimate": 8.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 19.7
   },
   {
    "player_id": "00-0036971",
@@ -207,7 +223,8 @@
    "floor": 7.56,
    "ceiling": 27.08,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 19.78
   },
   {
    "player_id": "00-0036275",
@@ -218,7 +235,8 @@
    "floor": 10.45,
    "ceiling": 24.65,
    "receptions_estimate": 2.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 10.8
   },
   {
    "player_id": "00-0036442",
@@ -229,7 +247,8 @@
    "floor": 6.98,
    "ceiling": 26.5,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 22.58
   },
   {
    "player_id": "00-0038120",
@@ -240,7 +259,8 @@
    "floor": 10.14,
    "ceiling": 24.34,
    "receptions_estimate": 3.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 8.5
   },
   {
    "player_id": "00-0033106",
@@ -251,7 +271,8 @@
    "floor": 6.86,
    "ceiling": 26.38,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 19.36
   },
   {
    "player_id": "00-0040122",
@@ -262,7 +283,8 @@
    "floor": 9.83,
    "ceiling": 24.03,
    "receptions_estimate": 4.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 12.3
   },
   {
    "player_id": "00-0033280",
@@ -273,7 +295,8 @@
    "floor": 9.77,
    "ceiling": 23.97,
    "receptions_estimate": 5.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 21.6
   },
   {
    "player_id": "00-0039851",
@@ -284,7 +307,8 @@
    "floor": 6.43,
    "ceiling": 25.96,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.76
   },
   {
    "player_id": "00-0039075",
@@ -295,7 +319,8 @@
    "floor": 9.71,
    "ceiling": 24.38,
    "receptions_estimate": 6.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036358",
@@ -306,7 +331,8 @@
    "floor": 9.55,
    "ceiling": 24.22,
    "receptions_estimate": 4.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 20.2
   },
   {
    "player_id": "00-0036322",
@@ -317,7 +343,8 @@
    "floor": 9.4,
    "ceiling": 24.07,
    "receptions_estimate": 6.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 5.2
   },
   {
    "player_id": "00-0038542",
@@ -328,7 +355,8 @@
    "floor": 9.24,
    "ceiling": 23.44,
    "receptions_estimate": 4.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 35.3
   },
   {
    "player_id": "00-0038128",
@@ -339,7 +367,8 @@
    "floor": 5.95,
    "ceiling": 25.48,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 10.0
   },
   {
    "player_id": "00-0036554",
@@ -350,7 +379,8 @@
    "floor": 9.24,
    "ceiling": 23.91,
    "receptions_estimate": 4.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040666",
@@ -361,7 +391,8 @@
    "floor": 9.19,
    "ceiling": 23.39,
    "receptions_estimate": 3.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 5.6
   },
   {
    "player_id": "00-0031588",
@@ -372,7 +403,8 @@
    "floor": 9.14,
    "ceiling": 23.81,
    "receptions_estimate": 4.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 7.3
   },
   {
    "player_id": "00-0036355",
@@ -383,7 +415,8 @@
    "floor": 5.8,
    "ceiling": 25.33,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 12.74
   },
   {
    "player_id": "00-0039040",
@@ -394,7 +427,8 @@
    "floor": 8.98,
    "ceiling": 23.18,
    "receptions_estimate": 3.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 1.7
   },
   {
    "player_id": "00-0039491",
@@ -405,7 +439,8 @@
    "floor": 8.81,
    "ceiling": 23.47,
    "receptions_estimate": 7.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.8
   },
   {
    "player_id": "00-0038597",
@@ -416,7 +451,8 @@
    "floor": 8.65,
    "ceiling": 22.85,
    "receptions_estimate": 4.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 8.9
   },
   {
    "player_id": "00-0039424",
@@ -427,7 +463,8 @@
    "floor": 8.37,
    "ceiling": 23.04,
    "receptions_estimate": 5.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 6.9
   },
   {
    "player_id": "00-0033537",
@@ -438,7 +475,8 @@
    "floor": 5.04,
    "ceiling": 24.56,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 20.26
   },
   {
    "player_id": "00-0037228",
@@ -449,7 +487,8 @@
    "floor": 8.19,
    "ceiling": 22.4,
    "receptions_estimate": 4.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 20.6
   },
   {
    "player_id": "00-0039732",
@@ -460,7 +499,8 @@
    "floor": 4.87,
    "ceiling": 24.39,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 24.14
   },
   {
    "player_id": "00-0029604",
@@ -471,7 +511,8 @@
    "floor": 4.78,
    "ceiling": 24.31,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 22.22
   },
   {
    "player_id": "00-0039910",
@@ -482,7 +523,8 @@
    "floor": 4.54,
    "ceiling": 24.07,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037744",
@@ -493,7 +535,8 @@
    "floor": 9.45,
    "ceiling": 20.77,
    "receptions_estimate": 8.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 16.5
   },
   {
    "player_id": "00-0036900",
@@ -504,7 +547,8 @@
    "floor": 7.63,
    "ceiling": 22.3,
    "receptions_estimate": 5.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 24.8
   },
   {
    "player_id": "00-0036912",
@@ -515,7 +559,8 @@
    "floor": 7.55,
    "ceiling": 22.22,
    "receptions_estimate": 5.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 12.5
   },
   {
    "player_id": "00-0038124",
@@ -526,7 +571,8 @@
    "floor": 7.52,
    "ceiling": 22.18,
    "receptions_estimate": 5.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 22.6
   },
   {
    "player_id": "00-0039163",
@@ -537,7 +583,8 @@
    "floor": 4.2,
    "ceiling": 23.72,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 11.68
   },
   {
    "player_id": "00-0036997",
@@ -548,7 +595,8 @@
    "floor": 7.44,
    "ceiling": 21.64,
    "receptions_estimate": 2.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 18.3
   },
   {
    "player_id": "00-0040691",
@@ -559,7 +607,8 @@
    "floor": 4.0,
    "ceiling": 23.52,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037248",
@@ -570,7 +619,8 @@
    "floor": 7.13,
    "ceiling": 21.33,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 19.4
   },
   {
    "player_id": "00-0023459",
@@ -581,7 +631,8 @@
    "floor": 3.85,
    "ceiling": 23.37,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 22.68
   },
   {
    "player_id": "00-0041037",
@@ -592,7 +643,8 @@
    "floor": 7.12,
    "ceiling": 21.79,
    "receptions_estimate": 3.5,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 8.1
   },
   {
    "player_id": "00-0036963",
@@ -603,7 +655,8 @@
    "floor": 7.07,
    "ceiling": 21.74,
    "receptions_estimate": 10.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 11.9
   },
   {
    "player_id": "00-0034383",
@@ -614,7 +667,8 @@
    "floor": 8.7,
    "ceiling": 20.02,
    "receptions_estimate": 6.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 6.0
   },
   {
    "player_id": "00-0033119",
@@ -625,7 +679,8 @@
    "floor": 3.7,
    "ceiling": 23.23,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 25.6
   },
   {
    "player_id": "00-0040676",
@@ -636,7 +691,8 @@
    "floor": 3.7,
    "ceiling": 23.22,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 9.44
   },
   {
    "player_id": "00-0039064",
@@ -647,7 +703,8 @@
    "floor": 6.97,
    "ceiling": 21.64,
    "receptions_estimate": 4.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 15.4
   },
   {
    "player_id": "00-0035704",
@@ -658,7 +715,8 @@
    "floor": 3.58,
    "ceiling": 23.11,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0034855",
@@ -669,7 +727,8 @@
    "floor": 3.57,
    "ceiling": 23.09,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 11.28
   },
   {
    "player_id": "00-0040715",
@@ -680,7 +739,8 @@
    "floor": 6.76,
    "ceiling": 20.96,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 13.0
   },
   {
    "player_id": "00-0039361",
@@ -691,7 +751,8 @@
    "floor": 6.7,
    "ceiling": 20.9,
    "receptions_estimate": 4.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 7.8
   },
   {
    "player_id": "00-0036264",
@@ -702,7 +763,8 @@
    "floor": 3.4,
    "ceiling": 22.92,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 18.48
   },
   {
    "player_id": "00-0036410",
@@ -713,7 +775,8 @@
    "floor": 6.6,
    "ceiling": 21.27,
    "receptions_estimate": 4.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 21.0
   },
   {
    "player_id": "00-0035676",
@@ -724,7 +787,8 @@
    "floor": 6.56,
    "ceiling": 21.23,
    "receptions_estimate": 5.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0030565",
@@ -735,7 +799,8 @@
    "floor": 3.24,
    "ceiling": 22.76,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 26.04
   },
   {
    "player_id": "00-0031381",
@@ -746,7 +811,8 @@
    "floor": 6.56,
    "ceiling": 21.22,
    "receptions_estimate": 5.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 20.7
   },
   {
    "player_id": "00-0040124",
@@ -757,7 +823,8 @@
    "floor": 6.21,
    "ceiling": 20.88,
    "receptions_estimate": 4.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.7
   },
   {
    "player_id": "00-0036555",
@@ -768,7 +835,8 @@
    "floor": 6.11,
    "ceiling": 20.32,
    "receptions_estimate": 2.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 15.0
   },
   {
    "player_id": "00-0038606",
@@ -779,7 +847,8 @@
    "floor": 6.13,
    "ceiling": 20.8,
    "receptions_estimate": 5.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 13.0
   },
   {
    "player_id": "00-0040730",
@@ -790,7 +859,8 @@
    "floor": 6.0,
    "ceiling": 20.2,
    "receptions_estimate": 3.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 10.7
   },
   {
    "player_id": "00-0039165",
@@ -801,7 +871,8 @@
    "floor": 5.89,
    "ceiling": 20.09,
    "receptions_estimate": 3.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0033293",
@@ -812,7 +883,8 @@
    "floor": 5.86,
    "ceiling": 20.06,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 14.2
   },
   {
    "player_id": "00-0030506",
@@ -823,7 +895,8 @@
    "floor": 7.53,
    "ceiling": 18.85,
    "receptions_estimate": 5.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 13.9
   },
   {
    "player_id": "00-0031408",
@@ -834,7 +907,8 @@
    "floor": 5.85,
    "ceiling": 20.52,
    "receptions_estimate": 3.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 12.4
   },
   {
    "player_id": "00-0037840",
@@ -845,7 +919,8 @@
    "floor": 5.82,
    "ceiling": 20.02,
    "receptions_estimate": 2.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 21.8
   },
   {
    "player_id": "00-0040734",
@@ -856,7 +931,8 @@
    "floor": 5.67,
    "ceiling": 19.87,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.9
   },
   {
    "player_id": "00-0036973",
@@ -867,7 +943,8 @@
    "floor": 5.61,
    "ceiling": 19.81,
    "receptions_estimate": 3.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 9.0
   },
   {
    "player_id": "00-0032950",
@@ -878,7 +955,8 @@
    "floor": 2.3,
    "ceiling": 21.82,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036875",
@@ -889,7 +967,8 @@
    "floor": 5.47,
    "ceiling": 19.67,
    "receptions_estimate": 2.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 6.8
   },
   {
    "player_id": "00-0035261",
@@ -900,7 +979,8 @@
    "floor": 5.46,
    "ceiling": 19.66,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 13.6
   },
   {
    "player_id": "00-0035640",
@@ -911,7 +991,8 @@
    "floor": 5.49,
    "ceiling": 20.16,
    "receptions_estimate": 4.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 12.1
   },
   {
    "player_id": "00-0039067",
@@ -922,7 +1003,8 @@
    "floor": 5.47,
    "ceiling": 20.14,
    "receptions_estimate": 4.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 15.8
   },
   {
    "player_id": "00-0040735",
@@ -933,7 +1015,8 @@
    "floor": 5.47,
    "ceiling": 20.14,
    "receptions_estimate": 3.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 19.8
   },
   {
    "player_id": "00-0040242",
@@ -944,7 +1027,8 @@
    "floor": 5.42,
    "ceiling": 19.62,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 5.3
   },
   {
    "player_id": "00-0035710",
@@ -955,7 +1039,8 @@
    "floor": 1.95,
    "ceiling": 21.48,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 7.9
   },
   {
    "player_id": "00-0035228",
@@ -966,7 +1051,8 @@
    "floor": 1.72,
    "ceiling": 21.24,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 10.42
   },
   {
    "player_id": "00-0039890",
@@ -977,7 +1063,8 @@
    "floor": 4.92,
    "ceiling": 19.59,
    "receptions_estimate": 3.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0022942",
@@ -988,7 +1075,8 @@
    "floor": 1.59,
    "ceiling": 21.12,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0032464",
@@ -999,7 +1087,8 @@
    "floor": 4.87,
    "ceiling": 19.54,
    "receptions_estimate": 5.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 21.0
   },
   {
    "player_id": "00-0036945",
@@ -1010,7 +1099,8 @@
    "floor": 1.54,
    "ceiling": 21.07,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037740",
@@ -1021,7 +1111,8 @@
    "floor": 4.73,
    "ceiling": 19.4,
    "receptions_estimate": 3.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 26.7
   },
   {
    "player_id": "00-0037838",
@@ -1032,7 +1123,8 @@
    "floor": 6.3,
    "ceiling": 17.62,
    "receptions_estimate": 5.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.3
   },
   {
    "player_id": "00-0032268",
@@ -1043,7 +1135,8 @@
    "floor": 1.24,
    "ceiling": 20.76,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 20.42
   },
   {
    "player_id": "00-0038559",
@@ -1054,7 +1147,8 @@
    "floor": 4.48,
    "ceiling": 19.14,
    "receptions_estimate": 4.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 25.9
   },
   {
    "player_id": "00-0039738",
@@ -1065,7 +1159,8 @@
    "floor": 4.42,
    "ceiling": 18.63,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.5
   },
   {
    "player_id": "00-0038933",
@@ -1076,7 +1171,8 @@
    "floor": 6.1,
    "ceiling": 17.42,
    "receptions_estimate": 5.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.8
   },
   {
    "player_id": "00-0041489",
@@ -1087,7 +1183,8 @@
    "floor": 4.44,
    "ceiling": 19.11,
    "receptions_estimate": 4.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 2.4
   },
   {
    "player_id": "00-0040719",
@@ -1098,7 +1195,8 @@
    "floor": 4.37,
    "ceiling": 18.57,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 17.0
   },
   {
    "player_id": "00-0039065",
@@ -1109,7 +1207,8 @@
    "floor": 6.05,
    "ceiling": 17.37,
    "receptions_estimate": 5.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 7.4
   },
   {
    "player_id": "00-0038997",
@@ -1120,7 +1219,8 @@
    "floor": 4.37,
    "ceiling": 19.04,
    "receptions_estimate": 4.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 12.7
   },
   {
    "player_id": "00-0041512",
@@ -1131,7 +1231,8 @@
    "floor": 4.23,
    "ceiling": 18.43,
    "receptions_estimate": 1.5,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 1.2
   },
   {
    "player_id": "00-0040784",
@@ -1142,7 +1243,8 @@
    "floor": 4.19,
    "ceiling": 18.39,
    "receptions_estimate": 4.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 9.9
   },
   {
    "player_id": "00-0038544",
@@ -1153,7 +1255,8 @@
    "floor": 4.17,
    "ceiling": 18.83,
    "receptions_estimate": 2.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 7.0
   },
   {
    "player_id": "00-0034829",
@@ -1164,7 +1267,8 @@
    "floor": 5.82,
    "ceiling": 17.14,
    "receptions_estimate": 3.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 12.7
   },
   {
    "player_id": "00-0038579",
@@ -1175,7 +1279,8 @@
    "floor": 0.77,
    "ceiling": 20.3,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0033553",
@@ -1186,7 +1291,8 @@
    "floor": 4.0,
    "ceiling": 18.2,
    "receptions_estimate": 2.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040667",
@@ -1197,7 +1303,8 @@
    "floor": 4.0,
    "ceiling": 18.67,
    "receptions_estimate": 3.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 21.0
   },
   {
    "player_id": "00-0038996",
@@ -1208,7 +1315,8 @@
    "floor": 5.65,
    "ceiling": 16.97,
    "receptions_estimate": 2.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 6.6
   },
   {
    "player_id": "00-0039917",
@@ -1219,7 +1327,8 @@
    "floor": 0.63,
    "ceiling": 20.16,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 14.04
   },
   {
    "player_id": "00-0033288",
@@ -1230,7 +1339,8 @@
    "floor": 5.6,
    "ceiling": 16.92,
    "receptions_estimate": 3.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 26.2
   },
   {
    "player_id": "00-0040236",
@@ -1241,7 +1351,8 @@
    "floor": 3.84,
    "ceiling": 18.04,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.1
   },
   {
    "player_id": "00-0036040",
@@ -1252,7 +1363,8 @@
    "floor": 5.52,
    "ceiling": 16.84,
    "receptions_estimate": 3.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 23.3
   },
   {
    "player_id": "00-0036613",
@@ -1263,7 +1375,8 @@
    "floor": 3.85,
    "ceiling": 18.52,
    "receptions_estimate": 3.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 6.4
   },
   {
    "player_id": "00-0038117",
@@ -1274,7 +1387,8 @@
    "floor": 3.72,
    "ceiling": 18.39,
    "receptions_estimate": 5.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 18.7
   },
   {
    "player_id": "00-0035659",
@@ -1285,7 +1399,8 @@
    "floor": 3.69,
    "ceiling": 18.36,
    "receptions_estimate": 2.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 19.7
   },
   {
    "player_id": "00-0037240",
@@ -1296,7 +1411,8 @@
    "floor": 3.61,
    "ceiling": 18.28,
    "receptions_estimate": 4.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 8.9
   },
   {
    "player_id": "00-0038618",
@@ -1307,7 +1423,8 @@
    "floor": 3.53,
    "ceiling": 18.2,
    "receptions_estimate": 3.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 8.5
   },
   {
    "player_id": "00-0033040",
@@ -1318,7 +1435,8 @@
    "floor": 3.52,
    "ceiling": 18.19,
    "receptions_estimate": 5.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039923",
@@ -1329,7 +1447,8 @@
    "floor": 0.11,
    "ceiling": 19.64,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038563",
@@ -1340,7 +1459,8 @@
    "floor": 3.38,
    "ceiling": 18.05,
    "receptions_estimate": 3.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 8.3
   },
   {
    "player_id": "00-0039337",
@@ -1351,7 +1471,8 @@
    "floor": 3.37,
    "ceiling": 18.04,
    "receptions_estimate": 3.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 7.6
   },
   {
    "player_id": "00-0035685",
@@ -1362,7 +1483,8 @@
    "floor": 3.28,
    "ceiling": 17.48,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 6.8
   },
   {
    "player_id": "00-0040663",
@@ -1373,7 +1495,8 @@
    "floor": 4.96,
    "ceiling": 16.28,
    "receptions_estimate": 3.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 24.1
   },
   {
    "player_id": "00-0037256",
@@ -1384,7 +1507,8 @@
    "floor": 3.23,
    "ceiling": 17.43,
    "receptions_estimate": 3.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 11.1
   },
   {
    "player_id": "00-0040202",
@@ -1395,7 +1519,8 @@
    "floor": 3.2,
    "ceiling": 17.4,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036919",
@@ -1406,7 +1531,8 @@
    "floor": 3.16,
    "ceiling": 17.36,
    "receptions_estimate": 4.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.0
   },
   {
    "player_id": "00-0041523",
@@ -1417,7 +1543,8 @@
    "floor": 3.2,
    "ceiling": 17.87,
    "receptions_estimate": 3.5,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0041040",
@@ -1428,7 +1555,8 @@
    "floor": 3.14,
    "ceiling": 17.81,
    "receptions_estimate": 3.5,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.5
   },
   {
    "player_id": "00-0033090",
@@ -1439,7 +1567,8 @@
    "floor": 4.73,
    "ceiling": 16.06,
    "receptions_estimate": 3.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 1.5
   },
   {
    "player_id": "00-0033906",
@@ -1450,7 +1579,8 @@
    "floor": 2.99,
    "ceiling": 17.19,
    "receptions_estimate": 3.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 5.1
   },
   {
    "player_id": "00-0039893",
@@ -1461,7 +1591,8 @@
    "floor": 3.03,
    "ceiling": 17.7,
    "receptions_estimate": 3.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 1.8
   },
   {
    "player_id": "00-0037664",
@@ -1472,7 +1603,8 @@
    "floor": 2.96,
    "ceiling": 17.63,
    "receptions_estimate": 3.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0034753",
@@ -1483,7 +1615,8 @@
    "floor": 4.62,
    "ceiling": 15.94,
    "receptions_estimate": 4.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 5.4
   },
   {
    "player_id": "00-0040583",
@@ -1494,7 +1627,8 @@
    "floor": 2.82,
    "ceiling": 17.02,
    "receptions_estimate": 2.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 9.1
   },
   {
    "player_id": "00-0034827",
@@ -1505,7 +1639,8 @@
    "floor": 2.82,
    "ceiling": 17.48,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 12.7
   },
   {
    "player_id": "00-0036550",
@@ -1516,7 +1651,8 @@
    "floor": 2.81,
    "ceiling": 17.48,
    "receptions_estimate": 2.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 5.7
   },
   {
    "player_id": "00-0041048",
@@ -1527,7 +1663,8 @@
    "floor": 2.79,
    "ceiling": 17.46,
    "receptions_estimate": 2.5,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 11.0
   },
   {
    "player_id": "00-0037238",
@@ -1538,7 +1675,8 @@
    "floor": 2.76,
    "ceiling": 17.43,
    "receptions_estimate": 3.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 28.4
   },
   {
    "player_id": "00-0039032",
@@ -1549,7 +1687,8 @@
    "floor": 2.67,
    "ceiling": 16.87,
    "receptions_estimate": 3.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.5
   },
   {
    "player_id": "00-0039919",
@@ -1560,7 +1699,8 @@
    "floor": 2.71,
    "ceiling": 17.38,
    "receptions_estimate": 2.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 7.4
   },
   {
    "player_id": "00-0040129",
@@ -1571,7 +1711,8 @@
    "floor": 2.55,
    "ceiling": 17.22,
    "receptions_estimate": 3.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 11.2
   },
   {
    "player_id": "00-0039916",
@@ -1582,7 +1723,8 @@
    "floor": 2.47,
    "ceiling": 17.14,
    "receptions_estimate": 4.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0041194",
@@ -1593,7 +1735,8 @@
    "floor": 0.0,
    "ceiling": 18.67,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039373",
@@ -1604,7 +1747,8 @@
    "floor": 2.38,
    "ceiling": 16.58,
    "receptions_estimate": 3.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0033662",
@@ -1615,7 +1759,8 @@
    "floor": 0.0,
    "ceiling": 18.61,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036898",
@@ -1626,7 +1771,8 @@
    "floor": 0.0,
    "ceiling": 18.59,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037247",
@@ -1637,7 +1783,8 @@
    "floor": 2.35,
    "ceiling": 17.02,
    "receptions_estimate": 3.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 15.2
   },
   {
    "player_id": "00-0041027",
@@ -1648,7 +1795,8 @@
    "floor": 2.32,
    "ceiling": 16.52,
    "receptions_estimate": 2.5,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 21.9
   },
   {
    "player_id": "00-0037525",
@@ -1659,7 +1807,8 @@
    "floor": 2.29,
    "ceiling": 16.5,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037261",
@@ -1670,7 +1819,8 @@
    "floor": 2.31,
    "ceiling": 16.98,
    "receptions_estimate": 4.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 1.6
   },
   {
    "player_id": "00-0033555",
@@ -1681,7 +1831,8 @@
    "floor": 2.28,
    "ceiling": 16.95,
    "receptions_estimate": 4.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 14.7
   },
   {
    "player_id": "00-0033307",
@@ -1692,7 +1843,8 @@
    "floor": 2.27,
    "ceiling": 16.94,
    "receptions_estimate": 3.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 4.2
   },
   {
    "player_id": "00-0034348",
@@ -1703,7 +1855,8 @@
    "floor": 2.27,
    "ceiling": 16.94,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 7.6
   },
   {
    "player_id": "00-0039915",
@@ -1714,7 +1867,8 @@
    "floor": 2.23,
    "ceiling": 16.9,
    "receptions_estimate": 3.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 10.6
   },
   {
    "player_id": "00-0041547",
@@ -1725,7 +1879,8 @@
    "floor": 2.2,
    "ceiling": 16.87,
    "receptions_estimate": 5.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 2.9
   },
   {
    "player_id": "00-0035719",
@@ -1736,7 +1891,8 @@
    "floor": 2.18,
    "ceiling": 16.85,
    "receptions_estimate": 3.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 15.4
   },
   {
    "player_id": "00-0038129",
@@ -1747,7 +1903,8 @@
    "floor": 3.83,
    "ceiling": 15.15,
    "receptions_estimate": 5.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 8.6
   },
   {
    "player_id": "00-0031503",
@@ -1758,7 +1915,8 @@
    "floor": 0.0,
    "ceiling": 18.35,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 6.12
   },
   {
    "player_id": "00-0036212",
@@ -1769,7 +1927,8 @@
    "floor": 0.0,
    "ceiling": 18.32,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038555",
@@ -1780,7 +1939,8 @@
    "floor": 2.07,
    "ceiling": 16.27,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": -0.5
   },
   {
    "player_id": "00-0033921",
@@ -1791,7 +1951,8 @@
    "floor": 2.1,
    "ceiling": 16.77,
    "receptions_estimate": 2.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 5.5
   },
   {
    "player_id": "00-0040234",
@@ -1802,7 +1963,8 @@
    "floor": 0.0,
    "ceiling": 18.28,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040170",
@@ -1813,7 +1975,8 @@
    "floor": 2.05,
    "ceiling": 16.72,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 2.1
   },
   {
    "player_id": "00-0040668",
@@ -1824,7 +1987,8 @@
    "floor": 0.0,
    "ceiling": 18.24,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0041438",
@@ -1835,7 +1999,8 @@
    "floor": 2.02,
    "ceiling": 16.69,
    "receptions_estimate": 3.5,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 11.8
   },
   {
    "player_id": "00-0041042",
@@ -1846,7 +2011,8 @@
    "floor": 2.0,
    "ceiling": 16.67,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.9
   },
   {
    "player_id": "00-0035229",
@@ -1857,7 +2023,8 @@
    "floor": 3.65,
    "ceiling": 14.97,
    "receptions_estimate": 2.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.1
   },
   {
    "player_id": "00-0040128",
@@ -1868,7 +2035,8 @@
    "floor": 3.54,
    "ceiling": 14.87,
    "receptions_estimate": 4.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 14.7
   },
   {
    "player_id": "00-0028118",
@@ -1879,7 +2047,8 @@
    "floor": 0.0,
    "ceiling": 18.07,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036894",
@@ -1890,7 +2059,8 @@
    "floor": 3.41,
    "ceiling": 14.74,
    "receptions_estimate": 4.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 5.1
   },
   {
    "player_id": "00-0039338",
@@ -1901,7 +2071,8 @@
    "floor": 3.41,
    "ceiling": 14.73,
    "receptions_estimate": 5.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 27.6
   },
   {
    "player_id": "00-0039894",
@@ -1912,7 +2083,8 @@
    "floor": 1.73,
    "ceiling": 16.4,
    "receptions_estimate": 2.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 4.0
   },
   {
    "player_id": "00-0039066",
@@ -1923,7 +2095,8 @@
    "floor": 3.31,
    "ceiling": 14.63,
    "receptions_estimate": 4.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 12.2
   },
   {
    "player_id": "00-0037263",
@@ -1934,7 +2107,8 @@
    "floor": 1.6,
    "ceiling": 15.8,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 4.9
   },
   {
    "player_id": "00-0030279",
@@ -1945,7 +2119,8 @@
    "floor": 1.54,
    "ceiling": 16.21,
    "receptions_estimate": 4.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 18.3
   },
   {
    "player_id": "00-0039410",
@@ -1956,7 +2131,8 @@
    "floor": 1.51,
    "ceiling": 16.18,
    "receptions_estimate": 4.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 4.2
   },
   {
    "player_id": "00-0032775",
@@ -1967,7 +2143,8 @@
    "floor": 1.43,
    "ceiling": 16.1,
    "receptions_estimate": 2.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036139",
@@ -1978,7 +2155,8 @@
    "floor": 1.36,
    "ceiling": 15.56,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040737",
@@ -1989,7 +2167,8 @@
    "floor": 3.06,
    "ceiling": 14.38,
    "receptions_estimate": 2.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 1.9
   },
   {
    "player_id": "00-0034844",
@@ -2000,7 +2179,8 @@
    "floor": 1.35,
    "ceiling": 15.55,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 9.0
   },
   {
    "player_id": "00-0036924",
@@ -2011,7 +2191,8 @@
    "floor": 1.33,
    "ceiling": 15.53,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040126",
@@ -2022,7 +2203,8 @@
    "floor": 2.97,
    "ceiling": 14.29,
    "receptions_estimate": 3.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 7.1
   },
   {
    "player_id": "00-0038393",
@@ -2033,7 +2215,8 @@
    "floor": 1.24,
    "ceiling": 15.91,
    "receptions_estimate": 2.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 5.2
   },
   {
    "player_id": "00-0038104",
@@ -2044,7 +2227,8 @@
    "floor": 1.22,
    "ceiling": 15.89,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 4.2
   },
   {
    "player_id": "00-0030061",
@@ -2055,7 +2239,8 @@
    "floor": 2.81,
    "ceiling": 14.14,
    "receptions_estimate": 5.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 1.9
   },
   {
    "player_id": "00-0035250",
@@ -2066,7 +2251,8 @@
    "floor": 1.02,
    "ceiling": 15.22,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0034960",
@@ -2077,7 +2263,8 @@
    "floor": 1.02,
    "ceiling": 15.69,
    "receptions_estimate": 2.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 19.4
   },
   {
    "player_id": "00-0037816",
@@ -2088,7 +2275,8 @@
    "floor": 1.0,
    "ceiling": 15.67,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 7.9
   },
   {
    "player_id": "00-0041052",
@@ -2099,7 +2287,8 @@
    "floor": 0.9,
    "ceiling": 15.1,
    "receptions_estimate": 0.5,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 1.7
   },
   {
    "player_id": "00-0038797",
@@ -2110,7 +2299,8 @@
    "floor": 0.89,
    "ceiling": 15.09,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 1.4
   },
   {
    "player_id": "00-0034351",
@@ -2121,7 +2311,8 @@
    "floor": 2.57,
    "ceiling": 13.89,
    "receptions_estimate": 2.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037746",
@@ -2132,7 +2323,8 @@
    "floor": 0.85,
    "ceiling": 15.05,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 11.0
   },
   {
    "player_id": "00-0039164",
@@ -2143,7 +2335,8 @@
    "floor": 0.0,
    "ceiling": 17.08,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038728",
@@ -2154,7 +2347,8 @@
    "floor": 0.81,
    "ceiling": 15.48,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.0
   },
   {
    "player_id": "00-0039880",
@@ -2165,7 +2359,8 @@
    "floor": 0.79,
    "ceiling": 15.46,
    "receptions_estimate": 3.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 11.1
   },
   {
    "player_id": "00-0041013",
@@ -2176,7 +2371,8 @@
    "floor": 0.72,
    "ceiling": 14.92,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 1.7
   },
   {
    "player_id": "00-0039901",
@@ -2187,7 +2383,8 @@
    "floor": 0.73,
    "ceiling": 15.4,
    "receptions_estimate": 3.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 4.7
   },
   {
    "player_id": "00-0040021",
@@ -2198,7 +2395,8 @@
    "floor": 0.67,
    "ceiling": 14.87,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036158",
@@ -2209,7 +2407,8 @@
    "floor": 0.65,
    "ceiling": 14.85,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 6.3
   },
   {
    "player_id": "00-0040727",
@@ -2220,7 +2419,8 @@
    "floor": 0.65,
    "ceiling": 15.32,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 13.6
   },
   {
    "player_id": "00-0038611",
@@ -2231,7 +2431,8 @@
    "floor": 0.57,
    "ceiling": 14.77,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 9.7
   },
   {
    "player_id": "00-0040586",
@@ -2242,7 +2443,8 @@
    "floor": 0.55,
    "ceiling": 14.75,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039811",
@@ -2253,7 +2455,8 @@
    "floor": 0.54,
    "ceiling": 14.74,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.8
   },
   {
    "player_id": "00-0034869",
@@ -2264,7 +2467,8 @@
    "floor": 0.0,
    "ceiling": 16.66,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 27.66
   },
   {
    "player_id": "00-0033699",
@@ -2275,7 +2479,8 @@
    "floor": 0.39,
    "ceiling": 14.59,
    "receptions_estimate": 2.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038935",
@@ -2286,7 +2491,8 @@
    "floor": 2.08,
    "ceiling": 13.4,
    "receptions_estimate": 3.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 6.2
   },
   {
    "player_id": "00-0039146",
@@ -2297,7 +2503,8 @@
    "floor": 0.37,
    "ceiling": 15.04,
    "receptions_estimate": 2.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036252",
@@ -2308,7 +2515,8 @@
    "floor": 0.37,
    "ceiling": 15.04,
    "receptions_estimate": 2.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.6
   },
   {
    "player_id": "00-0035535",
@@ -2319,7 +2527,8 @@
    "floor": 0.33,
    "ceiling": 15.0,
    "receptions_estimate": 2.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0035100",
@@ -2330,7 +2539,8 @@
    "floor": 0.0,
    "ceiling": 16.5,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038416",
@@ -2341,7 +2551,8 @@
    "floor": 0.0,
    "ceiling": 16.42,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038608",
@@ -2352,7 +2563,8 @@
    "floor": 0.21,
    "ceiling": 14.88,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 4.1
   },
   {
    "player_id": "00-0041496",
@@ -2363,7 +2575,8 @@
    "floor": 0.14,
    "ceiling": 14.34,
    "receptions_estimate": 1.5,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0033869",
@@ -2374,7 +2587,8 @@
    "floor": 0.0,
    "ceiling": 16.35,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039376",
@@ -2385,7 +2599,8 @@
    "floor": 0.0,
    "ceiling": 16.24,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0035537",
@@ -2396,7 +2611,8 @@
    "floor": 0.0,
    "ceiling": 14.12,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 9.0
   },
   {
    "player_id": "00-0031345",
@@ -2407,7 +2623,8 @@
    "floor": 0.0,
    "ceiling": 16.16,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0029263",
@@ -2418,7 +2635,8 @@
    "floor": 0.0,
    "ceiling": 16.14,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036309",
@@ -2429,7 +2647,8 @@
    "floor": 0.0,
    "ceiling": 14.6,
    "receptions_estimate": 2.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 4.9
   },
   {
    "player_id": "00-0036626",
@@ -2440,7 +2659,8 @@
    "floor": 0.0,
    "ceiling": 14.56,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0037112",
@@ -2451,7 +2671,8 @@
    "floor": 1.56,
    "ceiling": 12.88,
    "receptions_estimate": 2.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039451",
@@ -2462,7 +2683,8 @@
    "floor": 0.0,
    "ceiling": 14.54,
    "receptions_estimate": 4.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.1
   },
   {
    "player_id": "00-0037809",
@@ -2473,7 +2695,8 @@
    "floor": 1.46,
    "ceiling": 12.79,
    "receptions_estimate": 2.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0035700",
@@ -2484,7 +2707,8 @@
    "floor": 0.0,
    "ceiling": 13.93,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0035243",
@@ -2495,7 +2719,8 @@
    "floor": 0.0,
    "ceiling": 13.92,
    "receptions_estimate": 2.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039739",
@@ -2506,7 +2731,8 @@
    "floor": 0.0,
    "ceiling": 14.39,
    "receptions_estimate": 2.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 15.0
   },
   {
    "player_id": "00-0036970",
@@ -2517,7 +2743,8 @@
    "floor": 1.31,
    "ceiling": 12.64,
    "receptions_estimate": 2.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 1.5
   },
   {
    "player_id": "00-0041558",
@@ -2528,7 +2755,8 @@
    "floor": 1.31,
    "ceiling": 12.64,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 2.6
   },
   {
    "player_id": "00-0038041",
@@ -2539,7 +2767,8 @@
    "floor": 1.27,
    "ceiling": 12.59,
    "receptions_estimate": 2.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 9.3
   },
   {
    "player_id": "00-0040134",
@@ -2550,7 +2779,8 @@
    "floor": 0.0,
    "ceiling": 14.27,
    "receptions_estimate": 2.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 14.4
   },
   {
    "player_id": "00-0039344",
@@ -2561,7 +2791,8 @@
    "floor": 0.0,
    "ceiling": 13.75,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037252",
@@ -2572,7 +2803,8 @@
    "floor": 1.18,
    "ceiling": 12.5,
    "receptions_estimate": 2.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 10.5
   },
   {
    "player_id": "00-0037563",
@@ -2583,7 +2815,8 @@
    "floor": 0.0,
    "ceiling": 13.63,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039855",
@@ -2594,7 +2827,8 @@
    "floor": 0.0,
    "ceiling": 14.12,
    "receptions_estimate": 3.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0040138",
@@ -2605,7 +2839,8 @@
    "floor": 0.0,
    "ceiling": 14.12,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 4.5
   },
   {
    "player_id": "00-0040736",
@@ -2616,7 +2851,8 @@
    "floor": 1.11,
    "ceiling": 12.43,
    "receptions_estimate": 3.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0034837",
@@ -2627,7 +2863,8 @@
    "floor": 0.0,
    "ceiling": 14.08,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0037291",
@@ -2638,7 +2875,8 @@
    "floor": 0.0,
    "ceiling": 14.09,
    "receptions_estimate": 2.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 2.6
   },
   {
    "player_id": "00-0037545",
@@ -2649,7 +2887,8 @@
    "floor": 0.0,
    "ceiling": 14.06,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.4
   },
   {
    "player_id": "00-0037741",
@@ -2660,7 +2899,8 @@
    "floor": 0.0,
    "ceiling": 14.06,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 2.1
   },
   {
    "player_id": "00-0033526",
@@ -2671,7 +2911,8 @@
    "floor": 0.0,
    "ceiling": 13.55,
    "receptions_estimate": 2.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 2.4
   },
   {
    "player_id": "00-0026300",
@@ -2682,7 +2923,8 @@
    "floor": 0.0,
    "ceiling": 15.57,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038685",
@@ -2693,7 +2935,8 @@
    "floor": 0.0,
    "ceiling": 13.43,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 1.4
   },
   {
    "player_id": "00-0036259",
@@ -2704,7 +2947,8 @@
    "floor": 0.0,
    "ceiling": 13.93,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 1.1
   },
   {
    "player_id": "00-0036422",
@@ -2715,7 +2959,8 @@
    "floor": 0.91,
    "ceiling": 12.23,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0035264",
@@ -2726,7 +2971,8 @@
    "floor": 0.0,
    "ceiling": 15.45,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040729",
@@ -2737,7 +2983,8 @@
    "floor": 0.0,
    "ceiling": 13.85,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040237",
@@ -2748,7 +2995,8 @@
    "floor": 0.0,
    "ceiling": 13.79,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 1.8
   },
   {
    "player_id": "00-0040704",
@@ -2759,7 +3007,8 @@
    "floor": 0.0,
    "ceiling": 15.34,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039405",
@@ -2770,7 +3019,8 @@
    "floor": 0.0,
    "ceiling": 13.27,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0033943",
@@ -2781,7 +3031,8 @@
    "floor": 0.0,
    "ceiling": 13.74,
    "receptions_estimate": 3.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040669",
@@ -2792,7 +3043,8 @@
    "floor": 0.0,
    "ceiling": 13.7,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 9.6
   },
   {
    "player_id": "00-0038454",
@@ -2803,7 +3055,8 @@
    "floor": 0.0,
    "ceiling": 13.17,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 13.7
   },
   {
    "player_id": "00-0040206",
@@ -2814,7 +3067,8 @@
    "floor": 0.0,
    "ceiling": 15.22,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0033881",
@@ -2825,7 +3079,8 @@
    "floor": 0.64,
    "ceiling": 11.96,
    "receptions_estimate": 2.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0040311",
@@ -2836,7 +3091,8 @@
    "floor": 0.0,
    "ceiling": 13.65,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038551",
@@ -2847,7 +3103,8 @@
    "floor": 0.0,
    "ceiling": 13.14,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.9
   },
   {
    "player_id": "00-0031610",
@@ -2858,7 +3115,8 @@
    "floor": 0.61,
    "ceiling": 11.93,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 10.1
   },
   {
    "player_id": "00-0033885",
@@ -2869,7 +3127,8 @@
    "floor": 0.61,
    "ceiling": 11.93,
    "receptions_estimate": 2.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037013",
@@ -2880,7 +3139,8 @@
    "floor": 0.0,
    "ceiling": 15.16,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0041032",
@@ -2891,7 +3151,8 @@
    "floor": 0.6,
    "ceiling": 11.92,
    "receptions_estimate": 2.5,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 23.5
   },
   {
    "player_id": "00-0039398",
@@ -2902,7 +3163,8 @@
    "floor": 0.0,
    "ceiling": 15.1,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039794",
@@ -2913,7 +3175,8 @@
    "floor": 0.0,
    "ceiling": 12.97,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 4.7
   },
   {
    "player_id": "00-0038102",
@@ -2924,7 +3187,8 @@
    "floor": 0.0,
    "ceiling": 15.0,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0031237",
@@ -2935,7 +3199,8 @@
    "floor": 0.0,
    "ceiling": 14.99,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037197",
@@ -2946,7 +3211,8 @@
    "floor": 0.0,
    "ceiling": 12.93,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0032392",
@@ -2957,7 +3223,8 @@
    "floor": 0.42,
    "ceiling": 11.74,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 9.1
   },
   {
    "player_id": "00-0035644",
@@ -2968,7 +3235,8 @@
    "floor": 0.39,
    "ceiling": 11.71,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 19.3
   },
   {
    "player_id": "00-0035993",
@@ -2979,7 +3247,8 @@
    "floor": 0.0,
    "ceiling": 14.89,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039144",
@@ -2990,7 +3259,8 @@
    "floor": 0.3,
    "ceiling": 11.63,
    "receptions_estimate": 3.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0041067",
@@ -3001,7 +3271,8 @@
    "floor": 0.0,
    "ceiling": 13.32,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0026158",
@@ -3012,7 +3283,8 @@
    "floor": 0.0,
    "ceiling": 14.82,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0033891",
@@ -3023,7 +3295,8 @@
    "floor": 0.0,
    "ceiling": 13.27,
    "receptions_estimate": 2.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040398",
@@ -3034,7 +3307,8 @@
    "floor": 0.0,
    "ceiling": 14.81,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0035289",
@@ -3045,7 +3319,8 @@
    "floor": 0.0,
    "ceiling": 14.79,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039384",
@@ -3056,7 +3331,8 @@
    "floor": 0.0,
    "ceiling": 12.73,
    "receptions_estimate": 2.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.3
   },
   {
    "player_id": "00-0040466",
@@ -3067,7 +3343,8 @@
    "floor": 0.0,
    "ceiling": 12.7,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 9.1
   },
   {
    "player_id": "00-0037157",
@@ -3078,7 +3355,8 @@
    "floor": 0.0,
    "ceiling": 12.69,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039107",
@@ -3089,7 +3367,8 @@
    "floor": 0.0,
    "ceiling": 14.74,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0033949",
@@ -3100,7 +3379,8 @@
    "floor": 0.0,
    "ceiling": 14.73,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036244",
@@ -3111,7 +3391,8 @@
    "floor": 0.17,
    "ceiling": 11.5,
    "receptions_estimate": 2.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0040584",
@@ -3122,7 +3403,8 @@
    "floor": 0.18,
    "ceiling": 11.5,
    "receptions_estimate": 2.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.4
   },
   {
    "player_id": "00-0033246",
@@ -3133,7 +3415,8 @@
    "floor": 0.13,
    "ceiling": 11.45,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 1.4
   },
   {
    "player_id": "00-0037231",
@@ -3144,7 +3427,8 @@
    "floor": 0.0,
    "ceiling": 13.14,
    "receptions_estimate": 3.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0031236",
@@ -3155,7 +3439,8 @@
    "floor": 0.0,
    "ceiling": 13.11,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038400",
@@ -3166,7 +3451,8 @@
    "floor": 0.0,
    "ceiling": 14.65,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036849",
@@ -3177,7 +3463,8 @@
    "floor": 0.0,
    "ceiling": 13.09,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037005",
@@ -3188,7 +3475,8 @@
    "floor": 0.08,
    "ceiling": 11.41,
    "receptions_estimate": 2.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 7.1
   },
   {
    "player_id": "00-0038824",
@@ -3199,7 +3487,8 @@
    "floor": 0.0,
    "ceiling": 13.08,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.5
   },
   {
    "player_id": "00-0033908",
@@ -3210,7 +3499,8 @@
    "floor": 0.0,
    "ceiling": 13.06,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 14.6
   },
   {
    "player_id": "00-0036893",
@@ -3221,7 +3511,8 @@
    "floor": 0.0,
    "ceiling": 12.56,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 5.2
   },
   {
    "player_id": "00-0039342",
@@ -3232,7 +3523,8 @@
    "floor": 0.0,
    "ceiling": 13.05,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038558",
@@ -3243,7 +3535,8 @@
    "floor": 0.03,
    "ceiling": 11.36,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 9.7
   },
   {
    "player_id": "00-0039746",
@@ -3254,7 +3547,8 @@
    "floor": 0.0,
    "ceiling": 12.5,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 2.1
   },
   {
    "player_id": "00-0032398",
@@ -3265,7 +3559,8 @@
    "floor": 0.0,
    "ceiling": 13.0,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 7.4
   },
   {
    "player_id": "00-0037012",
@@ -3276,7 +3571,8 @@
    "floor": 0.0,
    "ceiling": 14.54,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036290",
@@ -3287,7 +3583,8 @@
    "floor": 0.0,
    "ceiling": 11.3,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0039847",
@@ -3298,7 +3595,8 @@
    "floor": 0.0,
    "ceiling": 11.3,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039299",
@@ -3309,7 +3607,8 @@
    "floor": 0.0,
    "ceiling": 12.46,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 10.8
   },
   {
    "player_id": "00-0039471",
@@ -3320,7 +3619,8 @@
    "floor": 0.0,
    "ceiling": 12.45,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037324",
@@ -3331,7 +3631,8 @@
    "floor": 0.0,
    "ceiling": 14.46,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040075",
@@ -3342,7 +3643,8 @@
    "floor": 0.0,
    "ceiling": 12.91,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0034272",
@@ -3353,7 +3655,8 @@
    "floor": 0.0,
    "ceiling": 12.89,
    "receptions_estimate": 3.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0034955",
@@ -3364,7 +3667,8 @@
    "floor": 0.0,
    "ceiling": 14.44,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038621",
@@ -3375,7 +3679,8 @@
    "floor": 0.0,
    "ceiling": 12.88,
    "receptions_estimate": 2.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 4.8
   },
   {
    "player_id": "00-0033923",
@@ -3386,7 +3691,8 @@
    "floor": 0.0,
    "ceiling": 12.36,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036988",
@@ -3397,7 +3703,8 @@
    "floor": 0.0,
    "ceiling": 12.85,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037015",
@@ -3408,7 +3715,8 @@
    "floor": 0.0,
    "ceiling": 11.16,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037085",
@@ -3419,7 +3727,8 @@
    "floor": 0.0,
    "ceiling": 12.33,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 2.4
   },
   {
    "player_id": "00-0036407",
@@ -3430,7 +3739,8 @@
    "floor": 0.0,
    "ceiling": 12.79,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036972",
@@ -3441,7 +3751,8 @@
    "floor": 0.0,
    "ceiling": 14.33,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039792",
@@ -3452,7 +3763,8 @@
    "floor": 0.0,
    "ceiling": 12.79,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0040130",
@@ -3463,7 +3775,8 @@
    "floor": 0.0,
    "ceiling": 12.77,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040867",
@@ -3474,7 +3787,8 @@
    "floor": 0.0,
    "ceiling": 12.77,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 5.9
   },
   {
    "player_id": "00-0036415",
@@ -3485,7 +3799,8 @@
    "floor": 0.0,
    "ceiling": 12.76,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037258",
@@ -3496,7 +3811,8 @@
    "floor": 0.0,
    "ceiling": 12.26,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040878",
@@ -3507,7 +3823,8 @@
    "floor": 0.0,
    "ceiling": 12.26,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 11.4
   },
   {
    "player_id": "00-0033110",
@@ -3518,7 +3835,8 @@
    "floor": 0.0,
    "ceiling": 11.07,
    "receptions_estimate": 2.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 20.2
   },
   {
    "player_id": "00-0036360",
@@ -3529,7 +3847,8 @@
    "floor": 0.0,
    "ceiling": 12.25,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038794",
@@ -3540,7 +3859,8 @@
    "floor": 0.0,
    "ceiling": 12.25,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036679",
@@ -3551,7 +3871,8 @@
    "floor": 0.0,
    "ceiling": 14.28,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0032951",
@@ -3562,7 +3883,8 @@
    "floor": 0.0,
    "ceiling": 12.71,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.0
   },
   {
    "player_id": "00-0037755",
@@ -3573,7 +3895,8 @@
    "floor": 0.0,
    "ceiling": 11.03,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.0
   },
   {
    "player_id": "00-0030035",
@@ -3584,7 +3907,8 @@
    "floor": 0.0,
    "ceiling": 12.71,
    "receptions_estimate": 3.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036328",
@@ -3595,7 +3919,8 @@
    "floor": 0.0,
    "ceiling": 12.18,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038994",
@@ -3606,7 +3931,8 @@
    "floor": 0.0,
    "ceiling": 12.68,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 20.0
   },
   {
    "player_id": "00-0038809",
@@ -3617,7 +3943,8 @@
    "floor": 0.0,
    "ceiling": 10.98,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039814",
@@ -3628,7 +3955,8 @@
    "floor": 0.0,
    "ceiling": 10.97,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040277",
@@ -3639,7 +3967,8 @@
    "floor": 0.0,
    "ceiling": 12.67,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0035249",
@@ -3650,7 +3979,8 @@
    "floor": 0.0,
    "ceiling": 10.97,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0040506",
@@ -3661,7 +3991,8 @@
    "floor": 0.0,
    "ceiling": 12.59,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 6.0
   },
   {
    "player_id": "00-0027973",
@@ -3672,7 +4003,8 @@
    "floor": 0.0,
    "ceiling": 14.1,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": -2.0
   },
   {
    "player_id": "00-0038619",
@@ -3683,7 +4015,8 @@
    "floor": 0.0,
    "ceiling": 12.55,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039884",
@@ -3694,7 +4027,8 @@
    "floor": 0.0,
    "ceiling": 12.54,
    "receptions_estimate": 1.5,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040494",
@@ -3705,7 +4039,8 @@
    "floor": 0.0,
    "ceiling": 14.08,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040648",
@@ -3716,7 +4051,8 @@
    "floor": 0.0,
    "ceiling": 12.52,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 7.8
   },
   {
    "player_id": "00-0037837",
@@ -3727,7 +4063,8 @@
    "floor": 0.0,
    "ceiling": 12.5,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039921",
@@ -3738,7 +4075,8 @@
    "floor": 0.0,
    "ceiling": 11.97,
    "receptions_estimate": 4.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039041",
@@ -3749,7 +4087,8 @@
    "floor": 0.0,
    "ceiling": 10.78,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 5.0
   },
   {
    "player_id": "00-0041550",
@@ -3760,7 +4099,8 @@
    "floor": 0.0,
    "ceiling": 12.46,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036423",
@@ -3771,7 +4111,8 @@
    "floor": 0.0,
    "ceiling": 10.76,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0034577",
@@ -3782,7 +4123,8 @@
    "floor": 0.0,
    "ceiling": 13.98,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039912",
@@ -3793,7 +4135,8 @@
    "floor": 0.0,
    "ceiling": 10.75,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0041096",
@@ -3804,7 +4147,8 @@
    "floor": 0.0,
    "ceiling": 11.92,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0032434",
@@ -3815,7 +4159,8 @@
    "floor": 0.0,
    "ceiling": 13.96,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0035631",
@@ -3826,7 +4171,8 @@
    "floor": 0.0,
    "ceiling": 10.71,
    "receptions_estimate": 2.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 1.0
   },
   {
    "player_id": "00-0039577",
@@ -3837,7 +4183,8 @@
    "floor": 0.0,
    "ceiling": 13.94,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037801",
@@ -3848,7 +4195,8 @@
    "floor": 0.0,
    "ceiling": 12.38,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 8.8
   },
   {
    "player_id": "00-0038582",
@@ -3859,7 +4207,8 @@
    "floor": 0.0,
    "ceiling": 13.91,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038705",
@@ -3870,7 +4219,8 @@
    "floor": 0.0,
    "ceiling": 11.86,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040646",
@@ -3881,7 +4231,8 @@
    "floor": 0.0,
    "ceiling": 12.36,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 2.1
   },
   {
    "player_id": "00-0038090",
@@ -3892,7 +4243,8 @@
    "floor": 0.0,
    "ceiling": 12.34,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 6.1
   },
   {
    "player_id": "00-0039793",
@@ -3903,7 +4255,8 @@
    "floor": 0.0,
    "ceiling": 10.65,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 11.9
   },
   {
    "player_id": "00-0040870",
@@ -3914,7 +4267,8 @@
    "floor": 0.0,
    "ceiling": 12.33,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0035891",
@@ -3925,7 +4279,8 @@
    "floor": 0.0,
    "ceiling": 12.32,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 7.4
   },
   {
    "player_id": "00-0035689",
@@ -3936,7 +4291,8 @@
    "floor": 0.0,
    "ceiling": 10.62,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 1.5
   },
   {
    "player_id": "00-0036841",
@@ -3947,7 +4303,8 @@
    "floor": 0.0,
    "ceiling": 12.3,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040184",
@@ -3958,7 +4315,8 @@
    "floor": 0.0,
    "ceiling": 12.3,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0033858",
@@ -3969,7 +4327,8 @@
    "floor": 0.0,
    "ceiling": 10.6,
    "receptions_estimate": 2.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.6
   },
   {
    "player_id": "00-0037098",
@@ -3980,7 +4339,8 @@
    "floor": 0.0,
    "ceiling": 12.29,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037348",
@@ -3991,7 +4351,8 @@
    "floor": 0.0,
    "ceiling": 10.6,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040352",
@@ -4002,7 +4363,8 @@
    "floor": 0.0,
    "ceiling": 12.25,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0034159",
@@ -4013,7 +4375,8 @@
    "floor": 0.0,
    "ceiling": 10.56,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040024",
@@ -4024,7 +4387,8 @@
    "floor": 0.0,
    "ceiling": 12.23,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0036628",
@@ -4035,7 +4399,8 @@
    "floor": 0.0,
    "ceiling": 10.52,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 1.9
   },
   {
    "player_id": "00-0036755",
@@ -4046,7 +4411,8 @@
    "floor": 0.0,
    "ceiling": 11.7,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040673",
@@ -4057,7 +4423,8 @@
    "floor": 0.0,
    "ceiling": 13.74,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038458",
@@ -4068,7 +4435,8 @@
    "floor": 0.0,
    "ceiling": 11.68,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037742",
@@ -4079,7 +4447,8 @@
    "floor": 0.0,
    "ceiling": 12.17,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 9.3
   },
   {
    "player_id": "00-0035208",
@@ -4090,7 +4459,8 @@
    "floor": 0.0,
    "ceiling": 12.15,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 2.9
   },
   {
    "player_id": "00-0041100",
@@ -4101,7 +4471,8 @@
    "floor": 0.0,
    "ceiling": 12.14,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 8.2
   },
   {
    "player_id": "00-0037276",
@@ -4112,7 +4483,8 @@
    "floor": 0.0,
    "ceiling": 11.63,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0034983",
@@ -4123,7 +4495,8 @@
    "floor": 0.0,
    "ceiling": 12.12,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0041436",
@@ -4134,7 +4507,8 @@
    "floor": 0.0,
    "ceiling": 11.62,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0038647",
@@ -4145,7 +4519,8 @@
    "floor": 0.0,
    "ceiling": 12.11,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0033217",
@@ -4156,7 +4531,8 @@
    "floor": 0.0,
    "ceiling": 10.41,
    "receptions_estimate": 2.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 2.6
   },
   {
    "player_id": "00-0034975",
@@ -4167,7 +4543,8 @@
    "floor": 0.0,
    "ceiling": 11.59,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.3
   },
   {
    "player_id": "00-0034365",
@@ -4178,7 +4555,8 @@
    "floor": 0.0,
    "ceiling": 10.39,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038658",
@@ -4189,7 +4567,8 @@
    "floor": 0.0,
    "ceiling": 13.62,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040189",
@@ -4200,7 +4579,8 @@
    "floor": 0.0,
    "ceiling": 10.4,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0036534",
@@ -4211,7 +4591,8 @@
    "floor": 0.0,
    "ceiling": 10.39,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039875",
@@ -4222,7 +4603,8 @@
    "floor": 0.0,
    "ceiling": 11.54,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036637",
@@ -4233,7 +4615,8 @@
    "floor": 0.0,
    "ceiling": 10.34,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 6.9
   },
   {
    "player_id": "00-0039874",
@@ -4244,7 +4627,8 @@
    "floor": 0.0,
    "ceiling": 11.49,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038115",
@@ -4255,7 +4639,8 @@
    "floor": 0.0,
    "ceiling": 10.27,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.6
   },
   {
    "player_id": "00-0036133",
@@ -4266,7 +4651,8 @@
    "floor": 0.0,
    "ceiling": 11.92,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040244",
@@ -4277,7 +4663,8 @@
    "floor": 0.0,
    "ceiling": 10.24,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037805",
@@ -4288,7 +4675,8 @@
    "floor": 0.0,
    "ceiling": 10.23,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 14.9
   },
   {
    "player_id": "00-0034775",
@@ -4299,7 +4687,8 @@
    "floor": 0.0,
    "ceiling": 11.89,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036842",
@@ -4310,7 +4699,8 @@
    "floor": 0.0,
    "ceiling": 11.38,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037557",
@@ -4321,7 +4711,8 @@
    "floor": 0.0,
    "ceiling": 11.38,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038547",
@@ -4332,7 +4723,8 @@
    "floor": 0.0,
    "ceiling": 10.2,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 1.9
   },
   {
    "player_id": "00-0033375",
@@ -4343,7 +4735,8 @@
    "floor": 0.0,
    "ceiling": 11.86,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040890",
@@ -4354,7 +4747,8 @@
    "floor": 0.0,
    "ceiling": 11.86,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036196",
@@ -4365,7 +4759,8 @@
    "floor": 0.0,
    "ceiling": 11.86,
    "receptions_estimate": 2.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038951",
@@ -4376,7 +4771,8 @@
    "floor": 0.0,
    "ceiling": 11.35,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0032104",
@@ -4387,7 +4783,8 @@
    "floor": 0.0,
    "ceiling": 11.34,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.2
   },
   {
    "player_id": "00-0040739",
@@ -4398,7 +4795,8 @@
    "floor": 0.0,
    "ceiling": 10.14,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0041326",
@@ -4409,7 +4807,8 @@
    "floor": 0.0,
    "ceiling": 11.31,
    "receptions_estimate": 0.5,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.5
   },
   {
    "player_id": "00-0040785",
@@ -4420,7 +4819,8 @@
    "floor": 0.0,
    "ceiling": 11.79,
    "receptions_estimate": 0.5,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 5.9
   },
   {
    "player_id": "00-0034418",
@@ -4431,7 +4831,8 @@
    "floor": 0.0,
    "ceiling": 11.78,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040547",
@@ -4442,7 +4843,8 @@
    "floor": 0.0,
    "ceiling": 11.28,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040886",
@@ -4453,7 +4855,8 @@
    "floor": 0.0,
    "ceiling": 11.28,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039868",
@@ -4464,7 +4867,8 @@
    "floor": 0.0,
    "ceiling": 11.77,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.1
   },
   {
    "player_id": "00-0035645",
@@ -4475,7 +4879,8 @@
    "floor": 0.0,
    "ceiling": 11.77,
    "receptions_estimate": 3.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0034981",
@@ -4486,7 +4891,8 @@
    "floor": 0.0,
    "ceiling": 10.04,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 8.7
   },
   {
    "player_id": "00-0040162",
@@ -4497,7 +4903,8 @@
    "floor": 0.0,
    "ceiling": 11.23,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039849",
@@ -4508,7 +4915,8 @@
    "floor": 0.0,
    "ceiling": 11.72,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 7.0
   },
   {
    "player_id": "00-0038679",
@@ -4519,7 +4927,8 @@
    "floor": 0.0,
    "ceiling": 11.7,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0041529",
@@ -4530,7 +4939,8 @@
    "floor": 0.0,
    "ceiling": 11.7,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 1.3
   },
   {
    "player_id": "00-0034521",
@@ -4541,7 +4951,8 @@
    "floor": 0.0,
    "ceiling": 11.68,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039074",
@@ -4552,7 +4963,8 @@
    "floor": 0.0,
    "ceiling": 10.0,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.9
   },
   {
    "player_id": "00-0040432",
@@ -4563,7 +4975,8 @@
    "floor": 0.0,
    "ceiling": 11.68,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040590",
@@ -4574,7 +4987,8 @@
    "floor": 0.0,
    "ceiling": 11.68,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 19.3
   },
   {
    "player_id": "00-0033357",
@@ -4585,7 +4999,8 @@
    "floor": 0.0,
    "ceiling": 9.98,
    "receptions_estimate": 2.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036427",
@@ -4596,7 +5011,8 @@
    "floor": 0.0,
    "ceiling": 11.66,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0035594",
@@ -4607,7 +5023,8 @@
    "floor": 0.0,
    "ceiling": 11.15,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0040067",
@@ -4618,7 +5035,8 @@
    "floor": 0.0,
    "ceiling": 11.14,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039530",
@@ -4629,7 +5047,8 @@
    "floor": 0.0,
    "ceiling": 9.95,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 2.9
   },
   {
    "player_id": "00-0035021",
@@ -4640,7 +5059,8 @@
    "floor": 0.0,
    "ceiling": 11.62,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0035359",
@@ -4651,7 +5071,8 @@
    "floor": 0.0,
    "ceiling": 11.6,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038359",
@@ -4662,7 +5083,8 @@
    "floor": 0.0,
    "ceiling": 11.58,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0040581",
@@ -4673,7 +5095,8 @@
    "floor": 0.0,
    "ceiling": 11.54,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0041044",
@@ -4684,7 +5107,8 @@
    "floor": 0.0,
    "ceiling": 11.54,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 1.7
   },
   {
    "player_id": "00-0038938",
@@ -4695,7 +5119,8 @@
    "floor": 0.0,
    "ceiling": 11.54,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039266",
@@ -4706,7 +5131,8 @@
    "floor": 0.0,
    "ceiling": 11.03,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039394",
@@ -4717,7 +5143,8 @@
    "floor": 0.0,
    "ceiling": 11.53,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040879",
@@ -4728,7 +5155,8 @@
    "floor": 0.0,
    "ceiling": 9.84,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 10.3
   },
   {
    "player_id": "00-0040894",
@@ -4739,7 +5167,8 @@
    "floor": 0.0,
    "ceiling": 11.53,
    "receptions_estimate": 0.5,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0035298",
@@ -4750,7 +5179,8 @@
    "floor": 0.0,
    "ceiling": 11.51,
    "receptions_estimate": 2.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039062",
@@ -4761,7 +5191,8 @@
    "floor": 0.0,
    "ceiling": 11.51,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040782",
@@ -4772,7 +5203,8 @@
    "floor": 0.0,
    "ceiling": 11.51,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040179",
@@ -4783,7 +5215,8 @@
    "floor": 0.0,
    "ceiling": 11.0,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036980",
@@ -4794,7 +5227,8 @@
    "floor": 0.0,
    "ceiling": 11.48,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040131",
@@ -4805,7 +5239,8 @@
    "floor": 0.0,
    "ceiling": 11.48,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 4.4
   },
   {
    "player_id": "00-0040177",
@@ -4816,7 +5251,8 @@
    "floor": 0.0,
    "ceiling": 10.96,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0035628",
@@ -4827,7 +5263,8 @@
    "floor": 0.0,
    "ceiling": 10.95,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039650",
@@ -4838,7 +5275,8 @@
    "floor": 0.0,
    "ceiling": 11.46,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039364",
@@ -4849,7 +5287,8 @@
    "floor": 0.0,
    "ceiling": 10.94,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 4.7
   },
   {
    "player_id": "00-0036906",
@@ -4860,7 +5299,8 @@
    "floor": 0.0,
    "ceiling": 10.93,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040388",
@@ -4871,7 +5311,8 @@
    "floor": 0.0,
    "ceiling": 11.43,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040556",
@@ -4882,7 +5323,8 @@
    "floor": 0.0,
    "ceiling": 10.93,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.7
   },
   {
    "player_id": "00-0038440",
@@ -4893,7 +5335,8 @@
    "floor": 0.0,
    "ceiling": 10.92,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036165",
@@ -4904,7 +5347,8 @@
    "floor": 0.0,
    "ceiling": 11.41,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039521",
@@ -4915,7 +5359,8 @@
    "floor": 0.0,
    "ceiling": 11.41,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039623",
@@ -4926,7 +5371,8 @@
    "floor": 0.0,
    "ceiling": 11.41,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0041472",
@@ -4937,7 +5383,8 @@
    "floor": 0.0,
    "ceiling": 9.73,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036567",
@@ -4948,7 +5395,8 @@
    "floor": 0.0,
    "ceiling": 10.9,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040142",
@@ -4959,7 +5407,8 @@
    "floor": 0.0,
    "ceiling": 10.9,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 2.6
   },
   {
    "player_id": "00-0040198",
@@ -4970,7 +5419,8 @@
    "floor": 0.0,
    "ceiling": 10.9,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 14.5
   },
   {
    "player_id": "00-0041525",
@@ -4981,7 +5431,8 @@
    "floor": 0.0,
    "ceiling": 11.4,
    "receptions_estimate": 0.5,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 10.7
   },
   {
    "player_id": "00-0037120",
@@ -4992,7 +5443,8 @@
    "floor": 0.0,
    "ceiling": 10.86,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 2.7
   },
   {
    "player_id": "00-0034407",
@@ -5003,7 +5455,8 @@
    "floor": 0.0,
    "ceiling": 11.34,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0034771",
@@ -5014,7 +5467,8 @@
    "floor": 0.0,
    "ceiling": 12.87,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0033854",
@@ -5025,7 +5479,8 @@
    "floor": 0.0,
    "ceiling": 10.8,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037004",
@@ -5036,7 +5491,8 @@
    "floor": 0.0,
    "ceiling": 9.6,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 1.5
   },
   {
    "player_id": "00-0038839",
@@ -5047,7 +5503,8 @@
    "floor": 0.0,
    "ceiling": 11.28,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0035639",
@@ -5058,7 +5515,8 @@
    "floor": 0.0,
    "ceiling": 11.27,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038040",
@@ -5069,7 +5527,8 @@
    "floor": 0.0,
    "ceiling": 10.75,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039359",
@@ -5080,7 +5539,8 @@
    "floor": 0.0,
    "ceiling": 9.57,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0034860",
@@ -5091,7 +5551,8 @@
    "floor": 0.0,
    "ceiling": 11.25,
    "receptions_estimate": 2.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036754",
@@ -5102,7 +5563,8 @@
    "floor": 0.0,
    "ceiling": 9.56,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 2.7
   },
   {
    "player_id": "00-0041524",
@@ -5113,7 +5575,8 @@
    "floor": 0.0,
    "ceiling": 9.56,
    "receptions_estimate": 0.5,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0035500",
@@ -5124,7 +5587,8 @@
    "floor": 0.0,
    "ceiling": 11.23,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0040039",
@@ -5135,7 +5599,8 @@
    "floor": 0.0,
    "ceiling": 10.73,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040194",
@@ -5146,7 +5611,8 @@
    "floor": 0.0,
    "ceiling": 9.55,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0035662",
@@ -5157,7 +5623,8 @@
    "floor": 0.0,
    "ceiling": 11.22,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037267",
@@ -5168,7 +5635,8 @@
    "floor": 0.0,
    "ceiling": 10.72,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0033857",
@@ -5179,7 +5647,8 @@
    "floor": 0.0,
    "ceiling": 11.21,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0034270",
@@ -5190,7 +5659,8 @@
    "floor": 0.0,
    "ceiling": 9.53,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0035406",
@@ -5201,7 +5671,8 @@
    "floor": 0.0,
    "ceiling": 11.2,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039355",
@@ -5212,7 +5683,8 @@
    "floor": 0.0,
    "ceiling": 11.2,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0040563",
@@ -5223,7 +5695,8 @@
    "floor": 0.0,
    "ceiling": 11.2,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 1.74
   },
   {
    "player_id": "00-0040568",
@@ -5234,7 +5707,8 @@
    "floor": 0.0,
    "ceiling": 10.7,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039737",
@@ -5245,7 +5719,8 @@
    "floor": 0.0,
    "ceiling": 9.5,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0041511",
@@ -5256,7 +5731,8 @@
    "floor": 0.0,
    "ceiling": 11.18,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036425",
@@ -5267,7 +5743,8 @@
    "floor": 0.0,
    "ceiling": 10.65,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.2
   },
   {
    "player_id": "00-0038488",
@@ -5278,7 +5755,8 @@
    "floor": 0.0,
    "ceiling": 10.65,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.0
   },
   {
    "player_id": "00-0038976",
@@ -5289,7 +5767,8 @@
    "floor": 0.0,
    "ceiling": 11.15,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0032385",
@@ -5300,7 +5779,8 @@
    "floor": 0.0,
    "ceiling": 11.15,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.3
   },
   {
    "player_id": "00-0038397",
@@ -5311,7 +5791,8 @@
    "floor": 0.0,
    "ceiling": 10.64,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039356",
@@ -5322,7 +5803,8 @@
    "floor": 0.0,
    "ceiling": 9.46,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038783",
@@ -5333,7 +5815,8 @@
    "floor": 0.0,
    "ceiling": 9.44,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 7.8
   },
   {
    "player_id": "00-0040628",
@@ -5344,7 +5827,8 @@
    "floor": 0.0,
    "ceiling": 9.44,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037086",
@@ -5355,7 +5839,8 @@
    "floor": 0.0,
    "ceiling": 9.43,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040172",
@@ -5366,7 +5851,8 @@
    "floor": 0.0,
    "ceiling": 11.11,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 8.0
   },
   {
    "player_id": "00-0040476",
@@ -5377,7 +5863,8 @@
    "floor": 0.0,
    "ceiling": 10.61,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0033282",
@@ -5388,7 +5875,8 @@
    "floor": 0.0,
    "ceiling": 11.11,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0033319",
@@ -5399,7 +5887,8 @@
    "floor": 0.0,
    "ceiling": 12.65,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0034386",
@@ -5410,7 +5899,8 @@
    "floor": 0.0,
    "ceiling": 11.11,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037539",
@@ -5421,7 +5911,8 @@
    "floor": 0.0,
    "ceiling": 9.42,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036862",
@@ -5432,7 +5923,8 @@
    "floor": 0.0,
    "ceiling": 11.09,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 9.3
   },
   {
    "player_id": "00-0040218",
@@ -5443,7 +5935,8 @@
    "floor": 0.0,
    "ceiling": 11.1,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0034487",
@@ -5454,7 +5947,8 @@
    "floor": 0.0,
    "ceiling": 11.08,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036527",
@@ -5465,7 +5959,8 @@
    "floor": 0.0,
    "ceiling": 11.08,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037091",
@@ -5476,7 +5971,8 @@
    "floor": 0.0,
    "ceiling": 11.08,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0037475",
@@ -5487,7 +5983,8 @@
    "floor": 0.0,
    "ceiling": 9.4,
    "receptions_estimate": 2.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039391",
@@ -5498,7 +5995,8 @@
    "floor": 0.0,
    "ceiling": 10.58,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.0
   },
   {
    "player_id": "00-0033455",
@@ -5509,7 +6007,8 @@
    "floor": 0.0,
    "ceiling": 9.39,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040187",
@@ -5520,7 +6019,8 @@
    "floor": 0.0,
    "ceiling": 9.39,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 6.6
   },
   {
    "player_id": "00-0040522",
@@ -5531,7 +6031,8 @@
    "floor": 0.0,
    "ceiling": 11.05,
    "receptions_estimate": 1.5,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039798",
@@ -5542,7 +6043,8 @@
    "floor": 0.0,
    "ceiling": 10.54,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0032211",
@@ -5553,7 +6055,8 @@
    "floor": 0.0,
    "ceiling": 11.03,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0034613",
@@ -5564,7 +6067,8 @@
    "floor": 0.0,
    "ceiling": 9.34,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.3
   },
   {
    "player_id": "00-0037306",
@@ -5575,7 +6079,8 @@
    "floor": 0.0,
    "ceiling": 9.34,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0035291",
@@ -5586,7 +6091,8 @@
    "floor": 0.0,
    "ceiling": 10.52,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0041395",
@@ -5597,7 +6103,8 @@
    "floor": 0.0,
    "ceiling": 9.34,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0033955",
@@ -5608,7 +6115,8 @@
    "floor": 0.0,
    "ceiling": 10.51,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036463",
@@ -5619,7 +6127,8 @@
    "floor": 0.0,
    "ceiling": 11.01,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 2.0
   },
   {
    "player_id": "00-0040705",
@@ -5630,7 +6139,8 @@
    "floor": 0.0,
    "ceiling": 11.01,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 1.3
   },
   {
    "player_id": "00-0036569",
@@ -5641,7 +6151,8 @@
    "floor": 0.0,
    "ceiling": 10.49,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0034791",
@@ -5652,7 +6163,8 @@
    "floor": 0.0,
    "ceiling": 10.47,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038710",
@@ -5663,7 +6175,8 @@
    "floor": 0.0,
    "ceiling": 9.28,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038720",
@@ -5674,7 +6187,8 @@
    "floor": 0.0,
    "ceiling": 9.29,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0034681",
@@ -5685,7 +6199,8 @@
    "floor": 0.0,
    "ceiling": 10.46,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038046",
@@ -5696,7 +6211,8 @@
    "floor": 0.0,
    "ceiling": 9.28,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0033591",
@@ -5707,7 +6223,8 @@
    "floor": 0.0,
    "ceiling": 10.96,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037614",
@@ -5718,7 +6235,8 @@
    "floor": 0.0,
    "ceiling": 10.93,
    "receptions_estimate": 2.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 9.9
   },
   {
    "player_id": "00-0040205",
@@ -5729,7 +6247,8 @@
    "floor": 0.0,
    "ceiling": 10.43,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038891",
@@ -5740,7 +6259,8 @@
    "floor": 0.0,
    "ceiling": 10.92,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036265",
@@ -5751,7 +6271,8 @@
    "floor": 0.0,
    "ceiling": 10.4,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 2.4
   },
   {
    "player_id": "00-0030564",
@@ -5762,7 +6283,8 @@
    "floor": 0.0,
    "ceiling": 10.89,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038738",
@@ -5773,7 +6295,8 @@
    "floor": 0.0,
    "ceiling": 10.38,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039379",
@@ -5784,7 +6307,8 @@
    "floor": 0.0,
    "ceiling": 10.88,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040406",
@@ -5795,7 +6319,8 @@
    "floor": 0.0,
    "ceiling": 10.88,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036187",
@@ -5806,7 +6331,8 @@
    "floor": 0.0,
    "ceiling": 10.37,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036984",
@@ -5817,7 +6343,8 @@
    "floor": 0.0,
    "ceiling": 10.37,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037093",
@@ -5828,7 +6355,8 @@
    "floor": 0.0,
    "ceiling": 10.86,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0038979",
@@ -5839,7 +6367,8 @@
    "floor": 0.0,
    "ceiling": 10.85,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0031687",
@@ -5850,7 +6379,8 @@
    "floor": 0.0,
    "ceiling": 10.34,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037666",
@@ -5861,7 +6391,8 @@
    "floor": 0.0,
    "ceiling": 10.84,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0041069",
@@ -5872,7 +6403,8 @@
    "floor": 0.0,
    "ceiling": 10.84,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 1.2
   },
   {
    "player_id": "00-0039796",
@@ -5883,7 +6415,8 @@
    "floor": 0.0,
    "ceiling": 10.31,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0036429",
@@ -5894,7 +6427,8 @@
    "floor": 0.0,
    "ceiling": 9.11,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040317",
@@ -5905,7 +6439,8 @@
    "floor": 0.0,
    "ceiling": 10.78,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040009",
@@ -5916,7 +6451,8 @@
    "floor": 0.0,
    "ceiling": 10.77,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0034054",
@@ -5927,7 +6463,8 @@
    "floor": 0.0,
    "ceiling": 10.76,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038465",
@@ -5938,7 +6475,8 @@
    "floor": 0.0,
    "ceiling": 10.75,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0041125",
@@ -5949,7 +6487,8 @@
    "floor": 0.0,
    "ceiling": 10.25,
    "receptions_estimate": 0.5,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 1.4
   },
   {
    "player_id": "00-0032688",
@@ -5960,7 +6499,8 @@
    "floor": 0.0,
    "ceiling": 10.71,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037282",
@@ -5971,7 +6511,8 @@
    "floor": 0.0,
    "ceiling": 9.03,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037317",
@@ -5982,7 +6523,8 @@
    "floor": 0.0,
    "ceiling": 9.01,
    "receptions_estimate": 0.5,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0038573",
@@ -5993,7 +6535,8 @@
    "floor": 0.0,
    "ceiling": 10.7,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0038953",
@@ -6004,7 +6547,8 @@
    "floor": 0.0,
    "ceiling": 10.7,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036959",
@@ -6015,7 +6559,8 @@
    "floor": 0.0,
    "ceiling": 10.67,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039751",
@@ -6026,7 +6571,8 @@
    "floor": 0.0,
    "ceiling": 10.66,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036590",
@@ -6037,7 +6583,8 @@
    "floor": 0.0,
    "ceiling": 8.96,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036876",
@@ -6048,7 +6595,8 @@
    "floor": 0.0,
    "ceiling": 8.96,
    "receptions_estimate": 1.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038496",
@@ -6059,7 +6607,8 @@
    "floor": 0.0,
    "ceiling": 10.61,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039050",
@@ -6070,7 +6619,8 @@
    "floor": 0.0,
    "ceiling": 8.92,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0035311",
@@ -6081,7 +6631,8 @@
    "floor": 0.0,
    "ceiling": 10.07,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0034367",
@@ -6092,7 +6643,8 @@
    "floor": 0.0,
    "ceiling": 10.02,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0033576",
@@ -6103,7 +6655,8 @@
    "floor": 0.0,
    "ceiling": 8.8,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 8.3
   },
   {
    "player_id": "00-0036630",
@@ -6114,7 +6667,8 @@
    "floor": 0.0,
    "ceiling": 10.49,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0034854",
@@ -6125,7 +6679,8 @@
    "floor": 0.0,
    "ceiling": 10.47,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0036332",
@@ -6136,7 +6691,8 @@
    "floor": 0.0,
    "ceiling": 8.79,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0034798",
@@ -6147,7 +6703,8 @@
    "floor": 0.0,
    "ceiling": 8.77,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0033757",
@@ -6158,7 +6715,8 @@
    "floor": 0.0,
    "ceiling": 8.76,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 1.2
   },
   {
    "player_id": "00-0037617",
@@ -6169,7 +6727,8 @@
    "floor": 0.0,
    "ceiling": 9.93,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0041041",
@@ -6180,7 +6739,8 @@
    "floor": 0.0,
    "ceiling": 8.74,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0033589",
@@ -6191,7 +6751,8 @@
    "floor": 0.0,
    "ceiling": 10.4,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0038394",
@@ -6202,7 +6763,8 @@
    "floor": 0.0,
    "ceiling": 8.72,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0035140",
@@ -6213,7 +6775,8 @@
    "floor": 0.0,
    "ceiling": 10.39,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038678",
@@ -6224,7 +6787,8 @@
    "floor": 0.0,
    "ceiling": 9.89,
    "receptions_estimate": 2.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038589",
@@ -6235,7 +6799,8 @@
    "floor": 0.0,
    "ceiling": 8.7,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039920",
@@ -6246,7 +6811,8 @@
    "floor": 0.0,
    "ceiling": 10.33,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0038640",
@@ -6257,7 +6823,8 @@
    "floor": 0.0,
    "ceiling": 10.32,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0037292",
@@ -6268,7 +6835,8 @@
    "floor": 0.0,
    "ceiling": 8.61,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0034419",
@@ -6279,7 +6847,8 @@
    "floor": 0.0,
    "ceiling": 10.29,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0036741",
@@ -6290,7 +6859,8 @@
    "floor": 0.0,
    "ceiling": 8.6,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0034867",
@@ -6301,7 +6871,8 @@
    "floor": 0.0,
    "ceiling": 10.24,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037277",
@@ -6312,7 +6883,8 @@
    "floor": 0.0,
    "ceiling": 8.55,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038492",
@@ -6323,7 +6895,8 @@
    "floor": 0.0,
    "ceiling": 10.22,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039631",
@@ -6334,7 +6907,8 @@
    "floor": 0.0,
    "ceiling": 8.53,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040259",
@@ -6345,7 +6919,8 @@
    "floor": 0.0,
    "ceiling": 10.21,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039686",
@@ -6356,7 +6931,8 @@
    "floor": 0.0,
    "ceiling": 8.5,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 1.2
   },
   {
    "player_id": "00-0040078",
@@ -6367,7 +6943,8 @@
    "floor": 0.0,
    "ceiling": 9.68,
    "receptions_estimate": 1.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 1.4
   },
   {
    "player_id": "00-0040238",
@@ -6378,7 +6955,8 @@
    "floor": 0.0,
    "ceiling": 9.68,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 2.9
   },
   {
    "player_id": "00-0037524",
@@ -6389,7 +6967,8 @@
    "floor": 0.0,
    "ceiling": 10.18,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039458",
@@ -6400,7 +6979,8 @@
    "floor": 0.0,
    "ceiling": 8.48,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037340",
@@ -6411,7 +6991,8 @@
    "floor": 0.0,
    "ceiling": 8.47,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040582",
@@ -6422,7 +7003,8 @@
    "floor": 0.0,
    "ceiling": 10.13,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039648",
@@ -6433,7 +7015,8 @@
    "floor": 0.0,
    "ceiling": 8.43,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036176",
@@ -6444,7 +7027,8 @@
    "floor": 0.0,
    "ceiling": 10.09,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040363",
@@ -6455,7 +7039,8 @@
    "floor": 0.0,
    "ceiling": 8.4,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0041104",
@@ -6466,7 +7051,8 @@
    "floor": 0.0,
    "ceiling": 9.56,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.1
   },
   {
    "player_id": "00-0041503",
@@ -6477,7 +7063,8 @@
    "floor": 0.0,
    "ceiling": 8.36,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0040081",
@@ -6488,7 +7075,8 @@
    "floor": 0.0,
    "ceiling": 8.31,
    "receptions_estimate": 1.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0039824",
@@ -6499,7 +7087,8 @@
    "floor": 0.0,
    "ceiling": 8.29,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036232",
@@ -6510,7 +7099,8 @@
    "floor": 0.0,
    "ceiling": 8.28,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036887",
@@ -6521,7 +7111,8 @@
    "floor": 0.0,
    "ceiling": 8.28,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0039021",
@@ -6532,7 +7123,8 @@
    "floor": 0.0,
    "ceiling": 9.45,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039757",
@@ -6543,7 +7135,8 @@
    "floor": 0.0,
    "ceiling": 9.44,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038752",
@@ -6554,7 +7147,8 @@
    "floor": 0.0,
    "ceiling": 9.92,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036414",
@@ -6565,7 +7159,8 @@
    "floor": 0.0,
    "ceiling": 9.41,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036497",
@@ -6576,7 +7171,8 @@
    "floor": 0.0,
    "ceiling": 9.92,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037654",
@@ -6587,7 +7183,8 @@
    "floor": 0.0,
    "ceiling": 8.23,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0041132",
@@ -6598,7 +7195,8 @@
    "floor": 0.0,
    "ceiling": 9.89,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037329",
@@ -6609,7 +7207,8 @@
    "floor": 0.0,
    "ceiling": 9.38,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037132",
@@ -6620,7 +7219,8 @@
    "floor": 0.0,
    "ceiling": 9.87,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0039754",
@@ -6631,7 +7231,8 @@
    "floor": 0.0,
    "ceiling": 8.17,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0035876",
@@ -6642,7 +7243,8 @@
    "floor": 0.0,
    "ceiling": 9.82,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038576",
@@ -6653,7 +7255,8 @@
    "floor": 0.0,
    "ceiling": 9.8,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040154",
@@ -6664,7 +7267,8 @@
    "floor": 0.0,
    "ceiling": 9.77,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0040164",
@@ -6675,7 +7279,8 @@
    "floor": 0.0,
    "ceiling": 9.68,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 3.1
   },
   {
    "player_id": "00-0038911",
@@ -6686,7 +7291,8 @@
    "floor": 0.0,
    "ceiling": 9.66,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040644",
@@ -6697,7 +7303,8 @@
    "floor": 0.0,
    "ceiling": 9.16,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037745",
@@ -6708,7 +7315,8 @@
    "floor": 0.0,
    "ceiling": 9.65,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036825",
@@ -6719,7 +7327,8 @@
    "floor": 0.0,
    "ceiling": 7.96,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0040534",
@@ -6730,7 +7339,8 @@
    "floor": 0.0,
    "ceiling": 9.64,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0039365",
@@ -6741,7 +7351,8 @@
    "floor": 0.0,
    "ceiling": 9.62,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0034928",
@@ -6752,7 +7363,8 @@
    "floor": 0.0,
    "ceiling": 9.61,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039603",
@@ -6763,7 +7375,8 @@
    "floor": 0.0,
    "ceiling": 9.1,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0041099",
@@ -6774,7 +7387,8 @@
    "floor": 0.0,
    "ceiling": 9.6,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0034073",
@@ -6785,7 +7399,8 @@
    "floor": 0.0,
    "ceiling": 7.89,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0035602",
@@ -6796,7 +7411,8 @@
    "floor": 0.0,
    "ceiling": 9.58,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036182",
@@ -6807,7 +7423,8 @@
    "floor": 0.0,
    "ceiling": 9.57,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038564",
@@ -6818,7 +7435,8 @@
    "floor": 0.0,
    "ceiling": 7.89,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0038643",
@@ -6829,7 +7447,8 @@
    "floor": 0.0,
    "ceiling": 7.89,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0038840",
@@ -6840,7 +7459,8 @@
    "floor": 0.0,
    "ceiling": 9.57,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 12.3
   },
   {
    "player_id": "00-0039518",
@@ -6851,7 +7471,8 @@
    "floor": 0.0,
    "ceiling": 7.89,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0041094",
@@ -6862,7 +7483,8 @@
    "floor": 0.0,
    "ceiling": 7.89,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0041131",
@@ -6873,7 +7495,8 @@
    "floor": 0.0,
    "ceiling": 7.89,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0040509",
@@ -6884,7 +7507,8 @@
    "floor": 0.0,
    "ceiling": 7.86,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0033439",
@@ -6895,7 +7519,8 @@
    "floor": 0.0,
    "ceiling": 7.84,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038396",
@@ -6906,7 +7531,8 @@
    "floor": 0.0,
    "ceiling": 9.03,
    "receptions_estimate": 0.67,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036331",
@@ -6917,7 +7543,8 @@
    "floor": 0.0,
    "ceiling": 9.47,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0036620",
@@ -6928,7 +7555,8 @@
    "floor": 0.0,
    "ceiling": 9.48,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0031763",
@@ -6939,7 +7567,8 @@
    "floor": 0.0,
    "ceiling": 9.46,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0033572",
@@ -6950,7 +7579,8 @@
    "floor": 0.0,
    "ceiling": 9.46,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0035544",
@@ -6961,7 +7591,8 @@
    "floor": 0.0,
    "ceiling": 9.47,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0038519",
@@ -6972,7 +7603,8 @@
    "floor": 0.0,
    "ceiling": 9.47,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0038740",
@@ -6983,7 +7615,8 @@
    "floor": 0.0,
    "ceiling": 9.46,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0039589",
@@ -6994,7 +7627,8 @@
    "floor": 0.0,
    "ceiling": 9.47,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0039710",
@@ -7005,7 +7639,8 @@
    "floor": 0.0,
    "ceiling": 9.46,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039816",
@@ -7016,7 +7651,8 @@
    "floor": 0.0,
    "ceiling": 9.46,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0040241",
@@ -7027,7 +7663,8 @@
    "floor": 0.0,
    "ceiling": 9.46,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040431",
@@ -7038,7 +7675,8 @@
    "floor": 0.0,
    "ceiling": 9.46,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040629",
@@ -7049,7 +7687,8 @@
    "floor": 0.0,
    "ceiling": 9.46,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0041397",
@@ -7060,7 +7699,8 @@
    "floor": 0.0,
    "ceiling": 9.47,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0040488",
@@ -7071,7 +7711,8 @@
    "floor": 0.0,
    "ceiling": 7.77,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037487",
@@ -7082,7 +7723,8 @@
    "floor": 0.0,
    "ceiling": 9.43,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038498",
@@ -7093,7 +7735,8 @@
    "floor": 0.0,
    "ceiling": 7.75,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0040429",
@@ -7104,7 +7747,8 @@
    "floor": 0.0,
    "ceiling": 8.9,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037031",
@@ -7115,7 +7759,8 @@
    "floor": 0.0,
    "ceiling": 7.7,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037311",
@@ -7126,7 +7771,8 @@
    "floor": 0.0,
    "ceiling": 7.7,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0038456",
@@ -7137,7 +7783,8 @@
    "floor": 0.0,
    "ceiling": 7.7,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038590",
@@ -7148,7 +7795,8 @@
    "floor": 0.0,
    "ceiling": 7.7,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038735",
@@ -7159,7 +7807,8 @@
    "floor": 0.0,
    "ceiling": 7.7,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039489",
@@ -7170,7 +7819,8 @@
    "floor": 0.0,
    "ceiling": 7.7,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0040225",
@@ -7181,7 +7831,8 @@
    "floor": 0.0,
    "ceiling": 7.7,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036646",
@@ -7192,7 +7843,8 @@
    "floor": 0.0,
    "ceiling": 9.35,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0037380",
@@ -7203,7 +7855,8 @@
    "floor": 0.0,
    "ceiling": 9.35,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040621",
@@ -7214,7 +7867,8 @@
    "floor": 0.0,
    "ceiling": 9.35,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040948",
@@ -7225,7 +7879,8 @@
    "floor": 0.0,
    "ceiling": 9.35,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 5.2
   },
   {
    "player_id": "00-0041051",
@@ -7236,7 +7891,8 @@
    "floor": 0.0,
    "ceiling": 9.35,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 1.1
   },
   {
    "player_id": "00-0040208",
@@ -7247,7 +7903,8 @@
    "floor": 0.0,
    "ceiling": 8.83,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0033376",
@@ -7258,7 +7915,8 @@
    "floor": 0.0,
    "ceiling": 8.77,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0024243",
@@ -7269,7 +7927,8 @@
    "floor": 0.0,
    "ceiling": 7.53,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0035567",
@@ -7280,7 +7939,8 @@
    "floor": 0.0,
    "ceiling": 8.71,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0039305",
@@ -7291,7 +7951,8 @@
    "floor": 0.0,
    "ceiling": 7.53,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038489",
@@ -7302,7 +7963,8 @@
    "floor": 0.0,
    "ceiling": 8.69,
    "receptions_estimate": 0.33,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0035956",
@@ -7313,7 +7975,8 @@
    "floor": 0.0,
    "ceiling": 7.45,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0037594",
@@ -7324,7 +7987,8 @@
    "floor": 0.0,
    "ceiling": 8.58,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0031484",
@@ -7335,7 +7999,8 @@
    "floor": 0.0,
    "ceiling": 7.25,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040058",
@@ -7346,7 +8011,8 @@
    "floor": 0.0,
    "ceiling": 7.18,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0035726",
@@ -7357,7 +8023,8 @@
    "floor": 0.0,
    "ceiling": 8.36,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0036950",
@@ -7368,7 +8035,8 @@
    "floor": 0.0,
    "ceiling": 8.36,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038409",
@@ -7379,7 +8047,8 @@
    "floor": 0.0,
    "ceiling": 8.36,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0039363",
@@ -7390,7 +8059,8 @@
    "floor": 0.0,
    "ceiling": 8.36,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0040649",
@@ -7401,7 +8071,8 @@
    "floor": 0.0,
    "ceiling": 8.36,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   },
   {
    "player_id": "00-0038896",
@@ -7412,7 +8083,8 @@
    "floor": 0.0,
    "ceiling": 8.24,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0039407",
@@ -7423,7 +8095,8 @@
    "floor": 0.0,
    "ceiling": 8.24,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": 0.0
   },
   {
    "player_id": "00-0041490",
@@ -7434,7 +8107,9 @@
    "floor": 0.0,
    "ceiling": 8.24,
    "receptions_estimate": 0.0,
-   "candidate": "rf"
+   "candidate": "rf",
+   "actual": null
   }
- ]
+ ],
+ "actuals_attached_at_utc": "2026-09-29T16:19:48+00:00"
 }

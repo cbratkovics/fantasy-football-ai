@@ -1,9 +1,9 @@
 {
- "built_at_utc": "2026-09-27T22:22:33+00:00",
- "code_revision": "94bb33bb06aa401647fdc2657a74d92d1c869609",
+ "built_at_utc": "2026-09-29T16:20:28+00:00",
+ "code_revision": "879c91380693d80efa7ef991a0d49c8298493517",
  "duckdb_version": "1.5.5",
  "exporter_version": "1.0.0",
- "manifest_content_sha256": "4cc0bed3a7c7f42e414f1009d40111a3fd91a03acece224f95ce03e4c7695eb2",
- "manifest_file_sha256": "a8e576a1df354648d1f695677e19c0b0aff1d71aadd83552f2451e71bac8b580",
- "python_version": "3.11.13"
+ "manifest_content_sha256": "f12d2d7cdfc0d11a41526bc17c370f220f73df7d91437a7b7d9d3c2759882b02",
+ "manifest_file_sha256": "c978a9d0a77ef5dcc7cba266a8055e7cf966ed22918a661d2e2e4dc3b4d8bbff",
+ "python_version": "3.11.16"
 }

@@ -3,9 +3,9 @@
   "observed": 301,
   "scored": 301
  },
- "inputs_content_sha256": "7a32f718c13a354b557afa9c046b961bd8aae2801b23270730f8da346325b35e",
+ "inputs_content_sha256": "78cdddfd766033a7c432a50b2482f653a6781c8fd952859de1a09fd0ce776b35",
  "model_version": "20260911-asof_v1-d333de20",
- "observed_at_utc": "2026-09-22T14:20:17+00:00",
+ "observed_at_utc": "2026-09-29T16:20:16+00:00",
  "rows": [
   {
    "actual": 25.66,
@@ -1522,14 +1522,14 @@
    {
     "path": "artifacts/marts/fct_player_week.parquet",
     "role": "mart",
-    "rows": 25266,
-    "sha256": "f790506c1cfea04d49f30406102a0392444da8064d9d69b665b1d9dee1d57657"
+    "rows": 25953,
+    "sha256": "a8e2d4ecc9c8d6eb5381c4a897eab71944fb77d2ff4569c00f61a0603d99ca25"
    },
    {
     "path": "artifacts/marts/_export_manifest.json",
     "role": "mart_export_manifest",
     "rows": null,
-    "sha256": "331781f879f2261a6e49fa6ec184f5536a4640daa1399cee85176384e35597d9"
+    "sha256": "5c714c4a6fafef8e10bf38a2021f14adc72e4d790b7c190016a4091c7e18fc79"
    }
   ],
   "mart": "fct_player_week"

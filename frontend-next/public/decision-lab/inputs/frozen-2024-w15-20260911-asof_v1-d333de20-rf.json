@@ -1,8 +1,8 @@
 {
  "baseline": {
   "name": "causal_trailing_mean",
-  "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
-  "provenance_basis": "population_rule_and_reconciliation",
+  "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf: matched",
+  "provenance_basis": "mart_column",
   "reconciled": true,
   "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
  },
@@ -3761,7 +3761,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 7.627196,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 12.823,
    "display_name": "Grant DuBose",
@@ -3777,7 +3777,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 7.627196,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 8.922,
    "display_name": "Nikko Remigio",
@@ -4705,7 +4705,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 8.011617,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 8.968,
    "display_name": "George Holani",
@@ -5041,7 +5041,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 5.581562,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 9.688,
    "display_name": "Cam Grandy",
@@ -5137,7 +5137,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 7.627196,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 8.922,
    "display_name": "Devontez Walker",
@@ -5185,7 +5185,7 @@
   {
    "availability_default": "realized_stats_row",
    "baseline": 8.011617,
-   "baseline_provenance": "player_history",
+   "baseline_provenance": "position_history",
    "candidate": "rf",
    "ceiling": 7.961,
    "display_name": "Rasheen Ali",
@@ -5560,14 +5560,14 @@
    {
     "path": "artifacts/marts/fct_player_week.parquet",
     "role": "mart",
-    "rows": 25266,
-    "sha256": "f790506c1cfea04d49f30406102a0392444da8064d9d69b665b1d9dee1d57657"
+    "rows": 25953,
+    "sha256": "a8e2d4ecc9c8d6eb5381c4a897eab71944fb77d2ff4569c00f61a0603d99ca25"
    },
    {
     "path": "artifacts/marts/_export_manifest.json",
     "role": "mart_export_manifest",
     "rows": null,
-    "sha256": "331781f879f2261a6e49fa6ec184f5536a4640daa1399cee85176384e35597d9"
+    "sha256": "5c714c4a6fafef8e10bf38a2021f14adc72e4d790b7c190016a4091c7e18fc79"
    },
    {
     "path": "artifacts/eval/eval-20260911-20260911-asof_v1-d333de20-rf.json",
@@ -5584,9 +5584,9 @@
   ],
   "mart": "fct_player_week",
   "mart_export": {
-   "code_commit": "ca8b3452ed83c72a09f2fdaae7663dfbc721d730",
-   "exported_at_utc": "2026-09-22T14:20:17+00:00",
-   "invocation_id": "9f1c8fcc-e763-4071-97eb-41172d133041",
+   "code_commit": "879c91380693d80efa7ef991a0d49c8298493517",
+   "exported_at_utc": "2026-09-29T16:20:16+00:00",
+   "invocation_id": "1f764179-37ff-4277-adee-450c67154ad9",
    "target": "prod"
   }
  },

@@ -1,13 +1,13 @@
 {
  "cases": {
-  "content_sha256": "a0ce3151f74fea03519d7a854dc5af8ea94956fa07f801fe78c4dab02f4f1567",
-  "file_sha256": "c286e2b12c9465bd63aa6e336fc993da7838d19d2a8656160b02267b77aeb065",
+  "content_sha256": "c0010ba46f53e761aad007d2bc6fe54e5f7ceaab0cf162b1ba42bf7dd174e7ac",
+  "file_sha256": "6873c3cfe5ab04cbee7890a8075a50e4ed606d6d177b5dfb1aadac1501f45380",
   "n_rows": 18,
   "path": "cases.json"
  },
  "code_revision": {
   "note": "revision that produced this export; the commit that later contains it may differ (compare with artifacts/marts/_export_manifest.json code_commit, which also predates its containing commit)",
-  "produced_at": "94bb33bb06aa401647fdc2657a74d92d1c869609"
+  "produced_at": "879c91380693d80efa7ef991a0d49c8298493517"
  },
  "digest_coverage": {
   "content_sha256": "SHA-256 of canonical_json(parsed document) (ffai/decision_lab/canonical.py: sorted keys, no whitespace, numbers rounded half-up at six decimals); independent of formatting.",
@@ -19,9 +19,9 @@
   "volatile": "_build.json and _last_attempt.json are outside every digest."
  },
  "exporter_version": "1.0.0",
- "latest_weekly_snapshot_id": "weekly-2026-w03-20260911-asof_v1-d333de20-rf",
+ "latest_weekly_snapshot_id": "weekly-2026-w04-20260911-asof_v1-d333de20-rf",
  "lineage": {
-  "baseline_provenance_method": "population_rule_and_reconciliation",
+  "baseline_provenance_method": "mart_column",
   "challenger_candidate_by_position": {
    "QB": "xgb",
    "RB": "xgb",
@@ -37,34 +37,34 @@
   },
   "data_through": {
    "season": 2026,
-   "week": 2
+   "week": 3
   },
   "feature_version": "asof_v1",
   "manifest_last_run": {
    "action": "PUBLISH",
-   "at_utc": "2026-09-22T14:19:27+00:00",
-   "run_id": "run-20260922T141927Z",
+   "at_utc": "2026-09-29T16:19:27+00:00",
+   "run_id": "run-20260929T161927Z",
    "season": 2026,
-   "week": 3
+   "week": 4
   },
   "mart_export": {
-   "code_commit": "ca8b3452ed83c72a09f2fdaae7663dfbc721d730",
-   "exported_at_utc": "2026-09-22T14:20:17+00:00",
-   "invocation_id": "9f1c8fcc-e763-4071-97eb-41172d133041",
+   "code_commit": "879c91380693d80efa7ef991a0d49c8298493517",
+   "exported_at_utc": "2026-09-29T16:20:16+00:00",
+   "invocation_id": "1f764179-37ff-4277-adee-450c67154ad9",
    "row_counts": {
     "dim_model_version": 1,
-    "dim_player": 1406,
-    "fct_decision_policy": 2400,
-    "fct_decision_policy_v2": 2400,
-    "fct_player_decisions": 25266,
-    "fct_player_week": 25266,
+    "dim_player": 1416,
+    "fct_decision_policy": 2432,
+    "fct_decision_policy_v2": 2432,
+    "fct_player_decisions": 25953,
+    "fct_player_week": 25953,
     "fct_tier_outcomes": 934,
-    "fct_weekly_eval": 370
+    "fct_weekly_eval": 375
    },
    "target": "prod"
   },
   "model_version": "20260911-asof_v1-d333de20",
-  "predictions_latest": "predictions/2026/week_03.json"
+  "predictions_latest": "predictions/2026/week_04.json"
  },
  "policy_spec": {
   "path": "ffai/decision_lab/policy_spec.json",
@@ -86,8 +86,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
    },
@@ -98,16 +98,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "ff8136d4453ad6b4cc73d98d5b3009c3bbb99b98b0030e0552a7bda8f520a467",
-    "file_sha256": "ffc96958e7c83ee270b21806c1df11c804de44ed98fb3ecac3c684277318cb26",
+    "content_sha256": "9ebc77ed5d727f7e29036da53ea712c3d677899852fadd57c54cb7f03d7169d5",
+    "file_sha256": "cfc26f611ae8b474ce2c886e60f2be14b33e647e7529d8d94e9ff9b1d164a644",
     "n_rows": 299,
     "path": "inputs/frozen-2024-w01-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "d095fc32de4649080c4fd77f611cd6408c5d076a09552a5f0d7f1bf203d59d75",
-    "file_sha256": "47a899ce5e58a4ba5a59b2e5efb917528ff576e174e98f01a36ff26eb48a4e51",
+    "content_sha256": "9489b5761a464d885c7789b46e0b91fa7749734d71e176193e352d73267e294a",
+    "file_sha256": "fb6a0e3eea33506370e399f74fc3209ba90d6f44edb161bd7ce2d14b598bbadf",
     "n_observed": 299,
     "n_rows": 299,
     "path": "outcomes/frozen-2024-w01-20260911-asof_v1-d333de20-rf.json"
@@ -188,8 +188,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
    },
@@ -200,16 +200,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "4d12f5b193fcca0d9159cb437332ff15bfede83a757b685041b64b9cbb643de6",
-    "file_sha256": "35e80f9de411a8f5f6bb04fc488b8fba120d439045cceacad51a457f6fbbda26",
+    "content_sha256": "b1c0edfa1fbdd31dedfb604d693cf2da38c6b7ca4725c5b2cbfbdcf3b9b66be1",
+    "file_sha256": "e5d37160182ae0cfc0a2b9c6354b80f40d0e273ba888aa72dd8e7bffc57dfb3c",
     "n_rows": 326,
     "path": "inputs/frozen-2024-w02-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "b74a464e35badc82451d25acc8f9ceb0d8eb7c0c3a6ed0f89f1f892abdc7f0f8",
-    "file_sha256": "516845d47e216118750102f7b75e6be3cfefce6a3aaae7635bb8ae9865e3d360",
+    "content_sha256": "9c4379e06738dc63e98bf299a2033ef0cdf13056836b754ecfbf1bf5a90cb490",
+    "file_sha256": "29d7d7ac5ec39f2aa8c0550f19f30bc58479764b3c49e5da901a84bfe422e9bb",
     "n_observed": 326,
     "n_rows": 326,
     "path": "outcomes/frozen-2024-w02-20260911-asof_v1-d333de20-rf.json"
@@ -290,8 +290,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
    },
@@ -302,16 +302,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "97d4fc73d2b212c842172567aa5f32d36a6dbba5ba1485d007e16ed6fa979131",
-    "file_sha256": "810a5127bfef3bf6bbf2a2119f9302a409136ca602b8c4d9c38398e7c2419f89",
+    "content_sha256": "5855ef4f914e18ef63f2f081edf614646a74e3a599a21c89d6b86bf7905b1f49",
+    "file_sha256": "a5b32d0989747ec2fede217c0c2f9b3fba27eed4d5655ef6c8d1b00904057d00",
     "n_rows": 345,
     "path": "inputs/frozen-2024-w03-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "81bb52d91c03bf8bce79345e6cb8f5e5c1260b4b28b1b2807e561ac4b2e912d1",
-    "file_sha256": "41aafc3cde065b98fc2f0f8f5fe1d6e1be387cc6cdd50734edc358ef4a9e46d8",
+    "content_sha256": "7967ce5cb05b230449011adbafc87303c68e068f048df658d33088c97c0acf7c",
+    "file_sha256": "4c065f2e0241a54a5dce03106c79bae1a47e13837dad3b2c53184da00ef70d01",
     "n_observed": 345,
     "n_rows": 345,
     "path": "outcomes/frozen-2024-w03-20260911-asof_v1-d333de20-rf.json"
@@ -392,8 +392,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
    },
@@ -404,16 +404,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "d6416068dee7ba1d4a70b5a9c0fe92b3231fc6fa5ddb55255d44da7f9c2599b3",
-    "file_sha256": "b917c8a175de8cffdba72e243b215e769a53d0026dca41231dd610c7667aaa80",
+    "content_sha256": "faf27b99f88b04c9967f560882d9248098ff2031792d56cf0eded8962b6d72c7",
+    "file_sha256": "3a7e7c81794661b415f0de3020c10b5685ddfa75d8f4b522094d7f7d0c6e5528",
     "n_rows": 333,
     "path": "inputs/frozen-2024-w04-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "e34029bbc71720ee6de1e94770960c686abd28c2a2096ece843137f7692e2401",
-    "file_sha256": "be45a60affc23f55056c5614eea081550d9a4091f81087da092213308b69d2f8",
+    "content_sha256": "429ba9e8095f634ce680df22e982f763d41e989d929c9675adebde675a2543b6",
+    "file_sha256": "b0fc688b9d3ce6f2297301916f55ac4f027c892d74242067c1b6955a82790f1d",
     "n_observed": 333,
     "n_rows": 333,
     "path": "outcomes/frozen-2024-w04-20260911-asof_v1-d333de20-rf.json"
@@ -494,8 +494,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
    },
@@ -506,16 +506,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "dc23c0d27b5a208a467093c1c2675b28417e88c121f702c40e1d2056b6f5c343",
-    "file_sha256": "673b2ec0746629fbbd840becb6b3cb1bb89580eec8caf27aeb26d07c39d1829b",
+    "content_sha256": "add066f1d31ebc578b58f27a2309ec2d94e64df31bbc2d018346f384c435e41f",
+    "file_sha256": "7b2f042b0a88bd851ece034eb5a54ece0e14ded99369cd4758c9c51f410ef5b4",
     "n_rows": 288,
     "path": "inputs/frozen-2024-w05-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "fc65a397c5929b9260b509feac9d1146d8ba99ddff53373c48abb378f46d80ca",
-    "file_sha256": "50ae14a7e6aad976354aba318d76fb7c98f17bd529613337c168a15c8f9cef3e",
+    "content_sha256": "75ee061f4eab375b79498aab50a5119f2c5eb0c816ea81bc4fd4b42ec4c8facf",
+    "file_sha256": "ce6aa34c4ac8a9ee4bd5d8b90e97a644eca53fcbebc3c975a7c9d73e38202deb",
     "n_observed": 288,
     "n_rows": 288,
     "path": "outcomes/frozen-2024-w05-20260911-asof_v1-d333de20-rf.json"
@@ -596,8 +596,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
    },
@@ -608,16 +608,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "710bdd0eb242426d6f85248e0d9543e2061a1d4a7c7d54894563b4875f491c0c",
-    "file_sha256": "27b03d2e64c2ca28030623e2df23cc5aa49807cc15c3afe97ad291a47d3b8775",
+    "content_sha256": "7ceee2c729e3b73ec1f90ae1f4704370188c77d08531adebf760faf6931d824a",
+    "file_sha256": "20dc0567836a52fd7667ba370d5975b50259782e99a84f584e066f54c0dcf24e",
     "n_rows": 289,
     "path": "inputs/frozen-2024-w06-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "339423e0e17de23ec6016a87940c99544cbc8e7ef4c3dd3167cddf7b07d82bb3",
-    "file_sha256": "b27d1d446f6f68df0c02d43e89e9a2161c744ed9cbf9e48fc564612f40f8dd13",
+    "content_sha256": "d3e0ab5cba2f1f5a493be5137ff8220a0145f7475a8adc6a80f90b408093a549",
+    "file_sha256": "975396ff5287e88441cf1163058aed41e16d508c404154c02d98bce34a1d5345",
     "n_observed": 289,
     "n_rows": 289,
     "path": "outcomes/frozen-2024-w06-20260911-asof_v1-d333de20-rf.json"
@@ -698,8 +698,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
    },
@@ -710,16 +710,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "dd4f0f274c2c49de19792893e467b874f13370b064ffbb5fa0ac7098dd987534",
-    "file_sha256": "ac42897321d7763fe2a8f2da4de6cf8d43b3cb5f355faa66efd7dd40dfc74b02",
+    "content_sha256": "77d051ba0abf4884e96c5121c997a9350cad498d1f013115e7b70aece6edbb06",
+    "file_sha256": "a986fc09ca7feca827d97bb8987c8c04d3ea684aca40b1475dc728d3467974de",
     "n_rows": 327,
     "path": "inputs/frozen-2024-w07-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "87b91e719fb338f8a0fbd6e71b1b7712952587a9b056ca9522cf2ba9f5ca624f",
-    "file_sha256": "949e4ddf287410ec399ce535b0e8437ca8c60ea01fba2749579eaf561a9b365f",
+    "content_sha256": "8ac178a9b3b2ab68d1094257e5f6eab4ef749170f8ff72201f439d760259728e",
+    "file_sha256": "db5c2befeb4b8018b3bf12a00d61ce2ba1e88dbdcc7c7031c6c12d22daaeee40",
     "n_observed": 327,
     "n_rows": 327,
     "path": "outcomes/frozen-2024-w07-20260911-asof_v1-d333de20-rf.json"
@@ -800,8 +800,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
    },
@@ -812,16 +812,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "ca4a8c097ad4b33de6654f70f0b8c1471deb5cd7d979acad2a8798283fea0a3e",
-    "file_sha256": "0e9ab2835a556fbc4e67874b0739152322dbb2b7b6429f78898538cfab93dec2",
+    "content_sha256": "05f76a192337ae72018f86e705670b1edf5bb7857a4f651bd40792045b0c5f9f",
+    "file_sha256": "0c19a612202326c597c50c258feb20dd0c1de74917d372a2970732af91364544",
     "n_rows": 349,
     "path": "inputs/frozen-2024-w08-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "22473f35b45656f2844d67d9d57ea987e0e35af62af841a1cd2d1a00af6dc685",
-    "file_sha256": "55944afc2765d49180219dcd762a40c82727b9dc1b1cba88696e8ae411f92d34",
+    "content_sha256": "1c387cdb82a27043e4f7da96011880ec58408e86d977760d23076636d86cc14d",
+    "file_sha256": "41f34736dc1c07d3072d986435e6ab5a4125bf6d411ceb37a0c5709d6ecc48fa",
     "n_observed": 349,
     "n_rows": 349,
     "path": "outcomes/frozen-2024-w08-20260911-asof_v1-d333de20-rf.json"
@@ -902,8 +902,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
    },
@@ -914,16 +914,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "7df9fb83419dbfd4fb35df07c0e6149f74880a1815ebf0b7d170713618938ecc",
-    "file_sha256": "f3b4d3d450814fe073eb0d7c8c572a7d9bc73af93e56224054a5c2579dab956d",
+    "content_sha256": "cdffaabf3b5a81454b3fda4679003b9c3634ea347c9eb9a21a6f8db650840b5f",
+    "file_sha256": "1a20aa5ddb5b77fdaa956d3d51bcdeab2fef056ce6763f00b5fa1cdc14047c56",
     "n_rows": 320,
     "path": "inputs/frozen-2024-w09-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "54503e5256888b963b07d94b3d91eeb691b038e2252f95afa9386262fb1d944b",
-    "file_sha256": "54f31acc572df82685c8047a84e562bbc84fa8c10830915d9beec5e1e467e205",
+    "content_sha256": "7f229cf5d10ed19485559654e074e59ab71faa876f20c4423f58f42059cd9f26",
+    "file_sha256": "bd2a87ce695c7bb0d6635b27d2afe1c71a2256289ce1d1c64e67b698bbc45cd1",
     "n_observed": 320,
     "n_rows": 320,
     "path": "outcomes/frozen-2024-w09-20260911-asof_v1-d333de20-rf.json"
@@ -1004,8 +1004,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
    },
@@ -1016,16 +1016,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "a820f6ea4e35535ffe8ef923df059524df19451f0f951c5751e9281ce86291fc",
-    "file_sha256": "105d459928479db4008384ae5436d67119b99d852d3e926ccf851887cef9adf3",
+    "content_sha256": "700fa5d5ea8ba017c54f1bc47b03d55d489169a4e302eed9b69f65c63e786aeb",
+    "file_sha256": "d829e3463c3a67cc79863662442a31d0840ce484ade3441edb5e77b06d3db82b",
     "n_rows": 291,
     "path": "inputs/frozen-2024-w10-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "73f4d0f5c97a089f81b5ef11aee720725f83a956eda724228538f84381da0321",
-    "file_sha256": "b29f94dbaa71c1897a2c40bf7f28872bb38e5ce0e3c63337937a9fad23273df9",
+    "content_sha256": "79b970b99c53a51182e1cce6dae2192e65f81a1ace2371e2183c3188e35db32f",
+    "file_sha256": "6d8d4452ab51a6294fc6bae636d3ab18eef781684f396cb4ae1574d2096eddcc",
     "n_observed": 291,
     "n_rows": 291,
     "path": "outcomes/frozen-2024-w10-20260911-asof_v1-d333de20-rf.json"
@@ -1106,8 +1106,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
    },
@@ -1118,16 +1118,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "1cfb4ac91b0a8045a54acc69ae48ac0da6c658ba91b802ace87164d78d7e0aa5",
-    "file_sha256": "a1f8f4029df507264abe62f8720c493ed7e3b0ae5630d0c518b3db4ff3a45e29",
+    "content_sha256": "d99275af42623e1820ed0c118613bc9e3a433965bc855554d4e7020ba40e73c9",
+    "file_sha256": "749eb5dcd9f1dc5518c43c4e88d2ead7705a5a51f570f0f8cc3877898d021343",
     "n_rows": 307,
     "path": "inputs/frozen-2024-w11-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "64624759f8351781faaece242f02303073fa36c8a551361cf5e2d93643ecea64",
-    "file_sha256": "e2e18148472f7f5eac1018487f46a2653b5e3a36792fc3963253b3421171a92d",
+    "content_sha256": "e334a0e72a7ffe064b53a5221f530e00442a76902d10478bce4d78305428f349",
+    "file_sha256": "ea116433fa4a5b1367beb96d5c2fc55150a74983def77c751e46afe4548e6890",
     "n_observed": 307,
     "n_rows": 307,
     "path": "outcomes/frozen-2024-w11-20260911-asof_v1-d333de20-rf.json"
@@ -1208,8 +1208,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
    },
@@ -1220,16 +1220,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "207dfe7357e10b7a9a1d87f74a9bfb289f55ca25b3f08f30577d70a94ba3b10e",
-    "file_sha256": "11ff8e386a381f9f38b2da4995fff2fdfdfc9550547ff7c04302133f6751c87a",
+    "content_sha256": "79b297512cdbe70aa285f95e72743c6116cd4d2c878df7e2319145538ca222d1",
+    "file_sha256": "c18b33f9767700bf96a87a5e2d3a2945d56ee0892577c403f53dcdfe475ed13d",
     "n_rows": 283,
     "path": "inputs/frozen-2024-w12-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "055e99ce0bb62807fe63d692eccb2a2b8ab3d97e05196c71c837a92f4729e9f0",
-    "file_sha256": "72a147fb155e5db238c6b935f5e594299a368554c386585a5ecdc34df3578518",
+    "content_sha256": "9ece5cc8245f56f6c171bbd5f37f96541426c42278e23872cd3e817fe493be30",
+    "file_sha256": "b9e73131b54cb7ddb19a964381e2f90a45fbbed75113eebc7a2db06e730b8159",
     "n_observed": 283,
     "n_rows": 283,
     "path": "outcomes/frozen-2024-w12-20260911-asof_v1-d333de20-rf.json"
@@ -1310,8 +1310,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
    },
@@ -1322,16 +1322,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "cfc01025f4d8d7b1e5adedd3281e15af7ba932fed365ac5377729e9207a0b754",
-    "file_sha256": "ad57b9a1f89459a411e2b5043e6bf3f1248bba56f605f4bd034c4b0a6d813874",
+    "content_sha256": "31b90baeda1f4e6ccb1acf9ac64a8d6efcc0bd082f1549e882e6edaec2039513",
+    "file_sha256": "b05f860b4f41b5dd4977a4dd06402d686740a0ffb207e3cc21de4908ab110502",
     "n_rows": 344,
     "path": "inputs/frozen-2024-w13-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "f630c99c6c6acdfd3438392a2e7a3b3747e60d094b09848cbe17918a5c42256c",
-    "file_sha256": "41b05f7de811aca9bfa4c20bf4e6ec19ca3840dae8d48328d66c828a1312601e",
+    "content_sha256": "50efe3aac18a1f09c3e519be92b28b52e6c688c630bd481499ff2e0fa61c0f23",
+    "file_sha256": "1b6327744ca0529d2e836d4c4317f82deb726dece82a3deb25491077fdc96a57",
     "n_observed": 344,
     "n_rows": 344,
     "path": "outcomes/frozen-2024-w13-20260911-asof_v1-d333de20-rf.json"
@@ -1412,8 +1412,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
    },
@@ -1424,16 +1424,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "1eceb2137af203d332b43f59841ed618acde21ecf161a4a44eb0df038faa1836",
-    "file_sha256": "62bd861f3dad8df6b530ef0b9083a5e7e14308ac265d8e960dd12616767ca9f3",
+    "content_sha256": "d2e8a7dd699d371be1989f4fde34fa511394616eaf0943f2dac6e9fee1ab3a5e",
+    "file_sha256": "3d4482e42dfc45d786d83582513d1678795d4d4a8ce0a0ef0fe3584d7d04daf5",
     "n_rows": 279,
     "path": "inputs/frozen-2024-w14-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "b7436a93d02bae5e0ddd941e1e707e1e0a86a746071b8dd45f044b930176da80",
-    "file_sha256": "f426e6e8804d5375ed74d553bdbc8d7b6cad564bf4bbbe718c9d0a21cb88e6c8",
+    "content_sha256": "4f21b89e28e09273641c73a1b64c5b096626d21df18eb7752e61eb58a0d8f010",
+    "file_sha256": "c667e3c91c70cc5f79a5c5c93a50d25e7bd069c333ebedc832badd15ce2940d3",
     "n_observed": 279,
     "n_rows": 279,
     "path": "outcomes/frozen-2024-w14-20260911-asof_v1-d333de20-rf.json"
@@ -1514,8 +1514,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
    },
@@ -1526,16 +1526,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "8987df8769b56efc5fc2afe1f94dfdfcadee91e26806a369a555586ee45e0b96",
-    "file_sha256": "b71feeca9aa7ded1b5fbb934d8d8b436fa54e096d9ae86f30969043406600341",
+    "content_sha256": "ef8f2ac3622b2a0c02cf9701b260b8770b6ebbc11345d86389041b337b75fe64",
+    "file_sha256": "c06df6fbf87881419954f307bec57da2ee33ce7c73c5aaae83ed6d0810ee754e",
     "n_rows": 344,
     "path": "inputs/frozen-2024-w15-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "ab3d1ea599a0717d4eb76f167a2a9ac24d1cc1c70e4ea74467f0be68eb1674e8",
-    "file_sha256": "21d617adee11772c159bf748ade790ebc9992465216a7b99dda28df9828e5062",
+    "content_sha256": "bff70abd91c26278b881687ef0a19b90de4a757103aa27e5990a8896b0346de7",
+    "file_sha256": "9b2b347f716b482c4d229a42bfff75f727b9d47f765f59d9b8d10163844c3cde",
     "n_observed": 344,
     "n_rows": 344,
     "path": "outcomes/frozen-2024-w15-20260911-asof_v1-d333de20-rf.json"
@@ -1616,8 +1616,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
    },
@@ -1628,16 +1628,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "5b09d9168cd3df07cad22addd9e7bd29fc09e94bf85bb737c7c14684c7c2a317",
-    "file_sha256": "93eea72097162d988b9e84f0ea0d503a21fa377bcc2ccdad112c0e54d0ce6364",
+    "content_sha256": "be65882948913f6dd91751f7f3daf0b306b36e2b4eb468cccfe53acbd798c01b",
+    "file_sha256": "96507e66ab12e4454b43fe14b3aae62c1895c30ce881a1c136b7b17e5d11e045",
     "n_rows": 336,
     "path": "inputs/frozen-2024-w16-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "d37ef689acd5949e18b3216d61f0fe82429612ecde4e3565c929c90d57ef0342",
-    "file_sha256": "02e36429f50955ad4b86e8a8b4ad1f74ca5f8ccd7e985495923aea4fed4467ab",
+    "content_sha256": "e204c3c39aef1fa7866d0d6c47a8cb080085812a122c3042ad3d30686b509795",
+    "file_sha256": "022a56e680f00ec456adf1f6c5eeeac784efe1020b959d81a7e067d6e4f7010d",
     "n_observed": 336,
     "n_rows": 336,
     "path": "outcomes/frozen-2024-w16-20260911-asof_v1-d333de20-rf.json"
@@ -1718,8 +1718,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
    },
@@ -1730,16 +1730,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "99a4052966f0969687641ab790a72ee024962b182817cf156c724ce03db49cf9",
-    "file_sha256": "466610160bd70fc9cf97e1a4c82d89dd7d72dc7732a6eea401839d7406092322",
+    "content_sha256": "789a05bb1493588cf501f83048b78eb26ac510762624402e9211428aeb2b4a0f",
+    "file_sha256": "fec590b7d273f0fa1bf6028be8fd1982fadccb7deb2be7279e0c7bc9cd96cbd6",
     "n_rows": 350,
     "path": "inputs/frozen-2024-w17-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "fa05ac624c0442a2672de0f7bafd912ecad5b68022e962def68c42b47eb0113f",
-    "file_sha256": "32d885c1c8340b05a5065c22098b848a29824ad64f4b7d29d8e6e9dc03855e0a",
+    "content_sha256": "3049ee404f0d45d880938a562eae8106fd4eb5fff0090f12f918368b2b702a7d",
+    "file_sha256": "da39aa778a8b22c9685ef42d2ad8945ff1b5ce8645761161a3f748dc4a198acb",
     "n_observed": 350,
     "n_rows": 350,
     "path": "outcomes/frozen-2024-w17-20260911-asof_v1-d333de20-rf.json"
@@ -1820,8 +1820,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf"
    },
@@ -1832,16 +1832,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "a51c2f3bbfbe0702fd8506c9126ce4e582c6bb05b99db589e12a94e0e998f922",
-    "file_sha256": "1656aafaa59a48d6d187ae0a1f0df97f471d39d1c766771f06818fea489323ae",
+    "content_sha256": "ba3df895f72bc81b36412c3caabdcc164a6faf33ee2080a91c2d5cba887110f0",
+    "file_sha256": "675cab2da8ef265798cd81702bbd5b7810fe5e821543c04033dbde4319db2171",
     "n_rows": 337,
     "path": "inputs/frozen-2024-w18-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "d995cfe8c066d9916de0c42553d372710eb9b8cd87125a1179d2f358c8977332",
-    "file_sha256": "6261cd4bedee5e2d57772cb7d8ce8269e9b14ecbb6fe5a8f0931e1ddd614434c",
+    "content_sha256": "16c1a618dfd142a15788a26b43a170ff6ad658259fe824c6a0d778d40212bc44",
+    "file_sha256": "053ff7219568100dadcd06a9d78dcbf7034b7e3c8e505c75d53fe54285ca76cb",
     "n_observed": 337,
     "n_rows": 337,
     "path": "outcomes/frozen-2024-w18-20260911-asof_v1-d333de20-rf.json"
@@ -1922,8 +1922,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf-oos2025: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
    },
@@ -1934,16 +1934,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "7a32f718c13a354b557afa9c046b961bd8aae2801b23270730f8da346325b35e",
-    "file_sha256": "8fac5336d6d227b3c68aaae69c1793ad915561b975145efc068823d093021cf5",
+    "content_sha256": "78cdddfd766033a7c432a50b2482f653a6781c8fd952859de1a09fd0ce776b35",
+    "file_sha256": "63be1d0279c0c8f215b8e47ef949b3aa9e5676e4902d7db0f62b5498faaa7781",
     "n_rows": 301,
     "path": "inputs/oos-2025-w01-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "8b821beaaa1c0826369c5d3ecb9ab2d8045c74dbe9ca759e77d75c1187d6075c",
-    "file_sha256": "95a22efb94fd9dad6c3628e4b001de0aff54b6eefefc225f7613522456fba6d8",
+    "content_sha256": "6ba20aa5e8f9344611585dd15a269d40779148b46d9f5c544e02972957efa0a2",
+    "file_sha256": "3f2eb3a95cca45902f11b90b82271700521e438e996a11dec64422de1bec12cc",
     "n_observed": 301,
     "n_rows": 301,
     "path": "outcomes/oos-2025-w01-20260911-asof_v1-d333de20-rf.json"
@@ -2024,8 +2024,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf-oos2025: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
    },
@@ -2036,16 +2036,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "a28f0828b82be4ac072f11a0ba67446c915aa77f58bc18f095b9dc80030e6c8b",
-    "file_sha256": "7b6bd2a01b276a74178e40bd9a156cf5fd8baa862dd4d01a4a1e6deff7fee382",
+    "content_sha256": "c65502fad8e72c83066f68009947d4a5b4e7255565e662d3bdf5972f2a3859cd",
+    "file_sha256": "b55051deb7ef65bdecdb6c27eb7f47118d2895280685d88e13ab496f23fe41fa",
     "n_rows": 339,
     "path": "inputs/oos-2025-w02-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "63fb07e1d8ff0b4b579360f488bbee75c7873d3cf1ec9a735c5086de8aa40b4b",
-    "file_sha256": "673fc3d60e7a0e77384ca729dbf5039f8abd4000181406ae2c7efbaefa528e64",
+    "content_sha256": "eb3d81f367372fe64df78d9a5e2fcb211ec0fdff561a8bc3b5cba5d3fa9ec668",
+    "file_sha256": "971baaba44d31be74d29481c22bb4c9660f67c0994c2cb6f3d278865ad77a95d",
     "n_observed": 339,
     "n_rows": 339,
     "path": "outcomes/oos-2025-w02-20260911-asof_v1-d333de20-rf.json"
@@ -2126,8 +2126,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf-oos2025: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
    },
@@ -2138,16 +2138,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "b7b46a2b5eb6644ebd71b1e042725262ec7669c1c7a07985d473f7e64d3c8ec1",
-    "file_sha256": "dfb1ed2d58f691e9a95c031c180a50cb68692ba09806e57182489f38bdaae147",
+    "content_sha256": "258603780daefe12c0d3be716420bb2ad929561cc6fa92f3c243a80f7b439261",
+    "file_sha256": "54e131c203cf0690f9ad9fd142d1f275d980308825665fa1bb43e0ec8864a920",
     "n_rows": 347,
     "path": "inputs/oos-2025-w03-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "c726e1faa6ecdafa0cb085ed369838b9f7a6558930418aa877125b5b9982b13f",
-    "file_sha256": "42500c01f546c5afac8f9429e377440d297c49549757d17ac2d883db28c55e41",
+    "content_sha256": "e94e6f84f524007be42f6c0864070e045e25c2e3e82c896b4d22b7b4a4e4e492",
+    "file_sha256": "065cb33355add90ba14a5c5e93bf9f9c744edc6433a287ad3d613000000fd993",
     "n_observed": 347,
     "n_rows": 347,
     "path": "outcomes/oos-2025-w03-20260911-asof_v1-d333de20-rf.json"
@@ -2228,8 +2228,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf-oos2025: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
    },
@@ -2240,16 +2240,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "2c85a85886a26cb8abbeb79b04af5cc507a7d22139f825f59d2e4479fb8f05e3",
-    "file_sha256": "e080996064ab60b3e7373e0afbdcc851a866defb16d6022e30dcea18c93a2892",
+    "content_sha256": "0655c41b1cee72e653104c318473494b7c293858dbb421570c5ca606ff08fb1c",
+    "file_sha256": "163567ce254cfb4f89c155978e91c95e98f4f1f39724a5e719925cd8579e8446",
     "n_rows": 352,
     "path": "inputs/oos-2025-w04-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "23467f2dd88b1a28dd687d016907f72b9936edf85133fcace3378e477906c359",
-    "file_sha256": "b024c72f57b28319a0c57cd47f0e1dd72005cde79d00e19c0f0d83fe62d883d5",
+    "content_sha256": "6b97f6d2d4d5fc653843bce900ffa3dda356dbc9878c504220073c7223836b5d",
+    "file_sha256": "aeb24ada09817ab0ea71b1fbf5056a0293c522c611a679dabf45e13f5e648139",
     "n_observed": 352,
     "n_rows": 352,
     "path": "outcomes/oos-2025-w04-20260911-asof_v1-d333de20-rf.json"
@@ -2330,8 +2330,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf-oos2025: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
    },
@@ -2342,16 +2342,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "b16772da966a9aef98d3931e54a858a8f80c4fd029c1aa64f472dfeffaadaf01",
-    "file_sha256": "4dff6d540e0241d3fd8fc829a4a16d8c165a8015f0c0f29852c797c510a8e424",
+    "content_sha256": "92acdd6cf8df002271914c0c1e9c8f80d8bf8fee44fe5b0b7cd30608f8b03ecb",
+    "file_sha256": "9dc75d7501989aef84eeea3f8f02d3e30ec949712bc1f8e436ae52bc2f3f8c0f",
     "n_rows": 311,
     "path": "inputs/oos-2025-w05-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "e1abc39e9754e1ed58c414e2203ca35be4e694416d6f17de954687d076b0c43f",
-    "file_sha256": "1d66f1a72e7a40398ad96f76bb3182e19b6fad68ff56821f3612e3d8a792892c",
+    "content_sha256": "34d5eb65edbcea0699a6eca7195c6445d32832039b2cd1d5a2be564dcb9eb6d0",
+    "file_sha256": "e18a501c1143d1c3105be2ce4563bf61a7bfdeac64e88e97727c2536423bef7b",
     "n_observed": 311,
     "n_rows": 311,
     "path": "outcomes/oos-2025-w05-20260911-asof_v1-d333de20-rf.json"
@@ -2432,8 +2432,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf-oos2025: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
    },
@@ -2444,16 +2444,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "a915e96b6a33c877a5ebcff52c296577788bc5544f7fd3c9ef40d953beb748b2",
-    "file_sha256": "2fa2a089248d9e86f91e823d662d10e1aeb8b9ff957845aebbfd842be3196bb9",
+    "content_sha256": "127ae3c7fd7227f2711f4cbd9256a50da10f2eb8ba6a120d51770ae922f210b2",
+    "file_sha256": "e907c1dce52330a1803145c9f01650504e08d9502b806eafb91455538d8d5c1a",
     "n_rows": 317,
     "path": "inputs/oos-2025-w06-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "4a26ec239a458c29ef6f0cda66c014a97eb41b7f66fa5b4255f4cf6da9205431",
-    "file_sha256": "05a42b32d5647216908bb558c821ba593df0d2aaeab4bc79b366315ef12a52b3",
+    "content_sha256": "3e8fe2e5b0d081c15edfe02dec73bc76f2374c4ec85ae47c57fa03d49322152c",
+    "file_sha256": "f7322f0ee5a54053a86b276fccab0f1278cd7dd7306df34a69cc4368206a934a",
     "n_observed": 317,
     "n_rows": 317,
     "path": "outcomes/oos-2025-w06-20260911-asof_v1-d333de20-rf.json"
@@ -2534,8 +2534,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf-oos2025: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
    },
@@ -2546,16 +2546,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "7dfd67dfad2781a8e579bc28f4925df03ad30efa53f61d3205feb1aed2e16337",
-    "file_sha256": "8c4a275e18ea29d0555db597839dd259061a024c22707894414fd5d85a67bb57",
+    "content_sha256": "b97809d8430ac7e47c04796b01303086533e88120a489ec01071611e01617c86",
+    "file_sha256": "194b5c475c5d90e3f9f45e8965073248f71f26539f891873836edccaaa18c2f1",
     "n_rows": 335,
     "path": "inputs/oos-2025-w07-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "ae8de8878f0e0aac6a742463ee383a367333c9acca24e811cf443485b9fadbcd",
-    "file_sha256": "a5945afae3ca8a2eff75b3c8f1e8b766d44c1f1b328471eaddb842d67253919f",
+    "content_sha256": "64309410b095d50bef8e6bb9c72c56d1ef6870d07aff9be35091220d9be5eb3e",
+    "file_sha256": "84779c5899fafc573b5ed9d9e62e55b5ca04118bf18337483f8fc3a2dff3f8f8",
     "n_observed": 335,
     "n_rows": 335,
     "path": "outcomes/oos-2025-w07-20260911-asof_v1-d333de20-rf.json"
@@ -2636,8 +2636,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf-oos2025: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
    },
@@ -2648,16 +2648,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "800daa07dd721affe2611efd97e9fbe0946dbfe0a78cbeb4aedd4c37ed96f592",
-    "file_sha256": "a2a4f35c79831dadacf9fcf421dd320aee5162c77b7a7f0293393a5a5d991aac",
+    "content_sha256": "9cc54d8ce9e35696b66174d87bae00ad291b83cc698c075e07d0f4161cef9e70",
+    "file_sha256": "364386582d15c85bd1d5cfc1f9351b3631ee82ff8dacd45fc470b7df50824364",
     "n_rows": 287,
     "path": "inputs/oos-2025-w08-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "e6d45eae24290b26784677763517cea65ab3dae6f48a066dc9528eab3fbdacd3",
-    "file_sha256": "a35e3616ed34fac1d4aeda095a81d6f598fb9f29c3e2a7565384576fa7748da7",
+    "content_sha256": "dd5d703e4dc4203e046d67f518c206a6b167a5780788ac6b393fe8d43683fad9",
+    "file_sha256": "5c50c7a5f141b60a1cba1597fee04467529c111f30cdd8b7056989fb953c4a43",
     "n_observed": 287,
     "n_rows": 287,
     "path": "outcomes/oos-2025-w08-20260911-asof_v1-d333de20-rf.json"
@@ -2738,8 +2738,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf-oos2025: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
    },
@@ -2750,16 +2750,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "2e8410ea7b17a067e17faa09444331cb312346b38f593736151e77feab1799b1",
-    "file_sha256": "abd6835d8d04513184bc00625c5913eb79e0b798d5f51af10eb11e37e35c6b92",
+    "content_sha256": "72a8f1eaa6f45805d091bf13935282d75a6a3434d4f9dec2753222556327a4f7",
+    "file_sha256": "28d0974c9e52e40a83ede71e61a82ecceef49e9a1da60bac43d31e8168a06748",
     "n_rows": 309,
     "path": "inputs/oos-2025-w09-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "eb6fbf6f93eec18103f726c6cec7265ae56a40e2c06e9e0e8efc0e959997b546",
-    "file_sha256": "5d17c9114c241763ce2c6810fe8bfa6203d0a6cc3d2064d6d84002e857f52102",
+    "content_sha256": "58842a0b457b9dd71ffd26fa00ef089d6b17bac7554350269f049de264772f7b",
+    "file_sha256": "9bcbc9f9bfaa8f6b21301a1785730f33a8f00ae4f5e42500222e7c3934008e07",
     "n_observed": 309,
     "n_rows": 309,
     "path": "outcomes/oos-2025-w09-20260911-asof_v1-d333de20-rf.json"
@@ -2840,8 +2840,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf-oos2025: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
    },
@@ -2852,16 +2852,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "375794f152591cc0e0a8eb369bd0f6cd415b833fdf808d7ae78f1cfe544c690d",
-    "file_sha256": "08e219bff05af4b88ed27808edc74acab8bc758d1dfda7399098abaed9eaf7a0",
+    "content_sha256": "63967c556ba5f382a5f705548e2468e0dace4939b7b9cae77caf4d37d3e667cb",
+    "file_sha256": "d9ccafe357c7e5b74b84015e48ba95da15a8bf676b195647a9b2e61147c13429",
     "n_rows": 310,
     "path": "inputs/oos-2025-w10-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "0d4fc92b55273ec201edfe7a53cf1e5a099b0df7f98d6e05b2de34855de57ae6",
-    "file_sha256": "2301de317e50d659cc4d97bf6bd6108b0fbea5be5b84ddf01c75b4c391dd0e57",
+    "content_sha256": "8b2fe860a16c603e351b3f01695fb63e6ead0b90b049e7f3bcea77318bf2fab0",
+    "file_sha256": "6019a3fe9dc64bfadfc55039e34ff7de5daf484d099b313b442a43caeabb4c64",
     "n_observed": 310,
     "n_rows": 310,
     "path": "outcomes/oos-2025-w10-20260911-asof_v1-d333de20-rf.json"
@@ -2942,8 +2942,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf-oos2025: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
    },
@@ -2954,16 +2954,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "490d35240e58c5aa73bce9647a762568c1e663f699d2ca329355213ce521dd95",
-    "file_sha256": "86aab300140e250bb549fce3da074cfef2c1aed21c535c3c3f0f63dcebb80d3f",
+    "content_sha256": "ad60f25981fb01ebb7d8d36baba9a346fd4c300ad109311ca54082f0be71b46f",
+    "file_sha256": "28e010f7e02a52a035642210c97c737e124dd80697beef38e08954f1de988493",
     "n_rows": 324,
     "path": "inputs/oos-2025-w11-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "ffec3b1ea26103926828d3d124263b455f6e7d0b0d3628dec038368cb51eb114",
-    "file_sha256": "9c91aff2dae0d0e15a8c473d583030de07be82e1326f3639896d35f92a0d328b",
+    "content_sha256": "774141ac2c7394f265e1b071f1dedd443d6e5bd638cb4cded1f01392123f0c58",
+    "file_sha256": "86352c12ad89b6571be8404e14d56d4ce190fc7fdb96b5f19dc808fe9892170b",
     "n_observed": 324,
     "n_rows": 324,
     "path": "outcomes/oos-2025-w11-20260911-asof_v1-d333de20-rf.json"
@@ -3044,8 +3044,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf-oos2025: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
    },
@@ -3056,16 +3056,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "28da6bdfcdeb42abb2ab58605244a546802dcf6473a04157b07f0aa5e3c43aa7",
-    "file_sha256": "a767d2cccb65eca097df18c3211d4ad67b073c670cfee000a9530ad187a8c0c0",
+    "content_sha256": "3392321ea5381c38f6ae7d8092f075954610c4c144bdd0f4fb1377626f7634ed",
+    "file_sha256": "566fee49c91efa0c68937fcc0311d43d133f1c2b8f1bd3a5358645d10190ebf8",
     "n_rows": 308,
     "path": "inputs/oos-2025-w12-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "9927606f4427d9a0f3ed7aa5e6ab4f9c68ceafbf8733e33651f9b838623484fb",
-    "file_sha256": "cca03143f4f15f0581bc81706b13134d362281912c7ebef59862c93e0443ab2b",
+    "content_sha256": "99feeeb929e32e2de573c1dd1ff18303423c036c540862398b0b58d3b9e97920",
+    "file_sha256": "50cce25f0ea93cca9a313987079e94c8c7986c7d2ba08141595a8b60204d66ad",
     "n_observed": 308,
     "n_rows": 308,
     "path": "outcomes/oos-2025-w12-20260911-asof_v1-d333de20-rf.json"
@@ -3146,8 +3146,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf-oos2025: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
    },
@@ -3158,16 +3158,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "6d7a465c05381f4f333f468971f1d40c422a770309351b42c0da9b79882895a6",
-    "file_sha256": "6ed3f07776319d3eef2fdb7fcc0ae47075bfa6dea795bccc27e0505d5240aecf",
+    "content_sha256": "a9e55f066957ae4017d90c8b1f1d4a6a31281096febd1abeec816f5c1f7a91d0",
+    "file_sha256": "b0703e17aecbeb63879dae14e6cfb8dec4301a36609dcc64623aad9d2a4f2f09",
     "n_rows": 349,
     "path": "inputs/oos-2025-w13-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "55cbd0aa6fa8b8c866a5ca2f3b590752cc0ecb686da43e2d6ee4d6baf5d907e0",
-    "file_sha256": "75fb3ecd3d51bc534fb9fd60f8c9ea110e1c32ca6dcd387280fd51bdde65d09e",
+    "content_sha256": "838bdb88817489ba7226d39e05ed27a155168669f5d5fb3a4c3bedd138915076",
+    "file_sha256": "f86c620e07d4e7bffa3bfe4dcb018313cdb38f4b3fecb7ae0cbadcd79bcaea2b",
     "n_observed": 349,
     "n_rows": 349,
     "path": "outcomes/oos-2025-w13-20260911-asof_v1-d333de20-rf.json"
@@ -3248,8 +3248,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf-oos2025: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
    },
@@ -3260,16 +3260,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "2f0c9b5e89767adeb5fd1119e143455c3e0acd00e6d654ba8d56785c3f3c7384",
-    "file_sha256": "9c6db8f3193b5583085847326c7673aad4207c71466ebe1296fd1e37f0b01e92",
+    "content_sha256": "9bbe0cab66e98cf40ed29cfdf64180e79f07325c67dc70c0b282137bd93955bd",
+    "file_sha256": "0de90ba1f391a7de39e196337f5b8ad6d57032167aa4a946770441a526ee1b36",
     "n_rows": 325,
     "path": "inputs/oos-2025-w14-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "fd91f0112bfb1f3f7d217d721554e098f3f91a048f8422d299d4e59311ba1b8c",
-    "file_sha256": "408ebd36b5c5598a196203505c8e9a113f3a0cf508703af098690844bbfeef8b",
+    "content_sha256": "091c9cb310548560139aa05752e91c9c6d2bc8b8c32876c2c57eb1908c800b96",
+    "file_sha256": "f483a1ba450f0819f4766495f8101874ecbed6c6d47e8e42ed638d92bb637243",
     "n_observed": 325,
     "n_rows": 325,
     "path": "outcomes/oos-2025-w14-20260911-asof_v1-d333de20-rf.json"
@@ -3350,8 +3350,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf-oos2025: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
    },
@@ -3362,16 +3362,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "49c643fdabb3c7ccc9a9b570dc07e6a6cfe80129fe23fb8466f00dccdf78825d",
-    "file_sha256": "d59df4695cbaf15496a5bd16b626c7be94ec4f4f42468aaa53c0dcd607778150",
+    "content_sha256": "a1b527c8d3cbab6640de31c10a7806cff0671ab29bb435de26ec5b7be77a35e2",
+    "file_sha256": "5bdea0a4605169bb8e4ef41a777de19ccc703576454a4a674ca4ded83d5d9fbd",
     "n_rows": 341,
     "path": "inputs/oos-2025-w15-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "1db809af8e87ec73410a9afa3cf05a8d783ce12eef3f92eba72a801d86b3e8d9",
-    "file_sha256": "f49447307588d4d5e2c13e9ea39318af76e7881a58a354bc7395c70583422aac",
+    "content_sha256": "7c688fd8d0d49569327c46dace7049ef7ebe37216027f5c55961cb2bec3c7956",
+    "file_sha256": "09d6004dd0497ea0299430745fdb77fe3e936db7d00983b6e5ce22ec8036aa60",
     "n_observed": 341,
     "n_rows": 341,
     "path": "outcomes/oos-2025-w15-20260911-asof_v1-d333de20-rf.json"
@@ -3452,8 +3452,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf-oos2025: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
    },
@@ -3464,16 +3464,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "194b395bfdfa7c6bac394b78fc8e4ac39737589629477c4874ebb29ca066ef05",
-    "file_sha256": "fd2bf045fb64502e0454d52f961659593b5c12f640a45f3fe8b51a97824c26a1",
+    "content_sha256": "231c4fe23927c2b028a28a8fda115bd1bfdc39d00fdf21a44ded0ab2881d61f6",
+    "file_sha256": "be7fe2e1235cba61fce95e2d038ae243a182ef505e7f4e23fc07c411423f9f0f",
     "n_rows": 362,
     "path": "inputs/oos-2025-w16-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "9d9875095587c71683844078ef34235615049ee12fabd9ebf35c0ab4afc0e4a9",
-    "file_sha256": "aae6c0c6682c42e51f48e21ef7184604c3a577229676a1bbfdb3636b11b9acaf",
+    "content_sha256": "6bb42d29fc0c0873905f275e390ba9e4214ff55a9aaca3c93eb0d6eff75eabc6",
+    "file_sha256": "299b1dd375ccb9d8535b34ecc75c51f31b5e34ec0923487d57683ccc696e2161",
     "n_observed": 362,
     "n_rows": 362,
     "path": "outcomes/oos-2025-w16-20260911-asof_v1-d333de20-rf.json"
@@ -3554,8 +3554,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf-oos2025: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
    },
@@ -3566,16 +3566,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "bad4796a7c03279506e7c95147aa4202b2f957f4e47c484d5cbb123c785bbdc0",
-    "file_sha256": "06ba1786a20f5fd5ed00d68388d0f6a0a66a3a24b63c31883de0927d74923d6a",
+    "content_sha256": "a81228b8e4204c463db4ed7a8c181c3612ae8dd943d77ed297cae80ecc971d10",
+    "file_sha256": "beb69c55a22837fee98cb34848c26cd1ad20c1243ac79bc8f1f5ba20b2112cdb",
     "n_rows": 353,
     "path": "inputs/oos-2025-w17-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "c503cabc7dc1f5cdc2ab44f4e768d94eb69afd6807c490183a1d8281982bc97d",
-    "file_sha256": "b7d62ef320bddc50850fd9de62ef6cc8fbe120733f026054ccebff455a3fcfe8",
+    "content_sha256": "a87becf30f41755d13960c1526b4e3dd72cba7b3ea4fa0494318ec9da7dcfa8c",
+    "file_sha256": "df9c1a6c4d2e97c5c5704992941daaeb69b0b5266160683cb1e2e0471b0937e1",
     "n_observed": 353,
     "n_rows": 353,
     "path": "outcomes/oos-2025-w17-20260911-asof_v1-d333de20-rf.json"
@@ -3656,8 +3656,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match eval-20260911-20260911-asof_v1-d333de20-rf-oos2025, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against eval-20260911-20260911-asof_v1-d333de20-rf-oos2025: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "eval-20260911-20260911-asof_v1-d333de20-rf-oos2025"
    },
@@ -3668,16 +3668,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "f00270106528a9879850d614dd8d88517c8f25b2ab578199734bf1719bf7cae4",
-    "file_sha256": "42d8aa6d05f8989a256bcf67b5c56ff51a7a55fd7147ed9e71cecc394a1ec8e8",
+    "content_sha256": "ab0900a1b0dd42f2bf6cec6334827d82e3b6051b20683f93e48f68f04a0a1280",
+    "file_sha256": "84c54671dac472e148f7ebaa58aa08e3301f31f47924c726d3ca10987b50b232",
     "n_rows": 344,
     "path": "inputs/oos-2025-w18-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "f4d29dd670c88a95ea98d1ed5bee2555d07c98497b64a75daf0ef740e1038f1b",
-    "file_sha256": "2d222e0c72989062a86164a0fa78fcbd7329e97a2a9eeac295f636004518bc32",
+    "content_sha256": "f2fe5ffa6751f9cc54a453ce490b59baab45fa076f3fd4c9fef71932515affce",
+    "file_sha256": "3eccac7b2136ba481364acca07a4b75ec1f504e166f5b95c32308285cd6777c5",
     "n_observed": 344,
     "n_rows": 344,
     "path": "outcomes/oos-2025-w18-20260911-asof_v1-d333de20-rf.json"
@@ -3758,8 +3758,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match rolling_2026.json week 1, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against rolling_2026.json week 1: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "rolling_2026.json week 1"
    },
@@ -3770,16 +3770,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "2291cb1882c31d9943292af6705f558c2902708d2f7368eeab2c7ef26ccc73cc",
-    "file_sha256": "e17f20d5e2fd8fe4aa95eb16c4627c7239bcb93065f674a6b461fc5d251f9779",
+    "content_sha256": "abf62b917c2837a1e618dacdc5e6e956120d1f3ffdb944ae605ae0c8fead5e3d",
+    "file_sha256": "fa901db11ef82c1b7002da07d87ee22b6da004ef4d03d2b3ec08968c16c96ae7",
     "n_rows": 610,
     "path": "inputs/weekly-2026-w01-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "70de222ce5d32a5ce0fe161a1f6da618103d99c7d9f1d0e777625f523a852c01",
-    "file_sha256": "749a0f1318e460345440adb4b3270887fb7446327556b968fa1fc20729adf289",
+    "content_sha256": "0e2d441416dd45b86e7331677e244f6982ebb993d256dcce5a50206c69168634",
+    "file_sha256": "628ebfac6b88b0dca383154de1136155e1d14bcf2ddf16ba9da85f1ef941d689",
     "n_observed": 307,
     "n_rows": 610,
     "path": "outcomes/weekly-2026-w01-20260911-asof_v1-d333de20-rf.json"
@@ -3820,8 +3820,8 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; the champion-candidate aggregates of the whole evaluation window (n exact, MAE and baseline MAE within 0.0001) match rolling_2026.json week 2, so every row's baseline is player history",
-    "provenance_basis": "population_rule_and_reconciliation",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against rolling_2026.json week 2: matched",
+    "provenance_basis": "mart_column",
     "reconciled": true,
     "reconciled_to": "rolling_2026.json week 2"
    },
@@ -3832,16 +3832,16 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "232a1c09f6f53875ccdeca4d33308da9ae3d5ac8fb7f2f06c42206f5e8672ff0",
-    "file_sha256": "4db63eeb808b95f9bfe3d030a0650914bd50e7005e0cf26db2f2dc591315a181",
+    "content_sha256": "8f35f42a8796175c7277e66a3565068552751869e37728827612288101116fa5",
+    "file_sha256": "004fabb9a9c2df3a420b8d145b6e805070f8370cf1ab6819792ab7577bd67712",
     "n_rows": 660,
     "path": "inputs/weekly-2026-w02-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "historical_replay",
    "model_version": "20260911-asof_v1-d333de20",
    "outcomes": {
-    "content_sha256": "9571b0072d463d84c44ac6587ebd7bc2d564bfa7fac83061b1d2964b84ab0836",
-    "file_sha256": "f7ff1d8a6b1a3292de91570875416a6bc769728c6d6ecf29fd4e4897c4ff00e0",
+    "content_sha256": "778d513fd9a4577054f2bbb038fbf9c7d8bcfb386b452ea219504aaf17ec7755",
+    "file_sha256": "8cae9e3205639ac217907fddaff4e9947178fdd306b87975cff99d252e24e675",
     "n_observed": 345,
     "n_rows": 660,
     "path": "outcomes/weekly-2026-w02-20260911-asof_v1-d333de20-rf.json"
@@ -3882,8 +3882,70 @@
   {
    "baseline": {
     "name": "causal_trailing_mean",
-    "note": "every mart row belongs to a player with at least one prior game (as-of HISTORY_FLAG), so the causal trailing mean has player history whenever the warehouse holds the full stats history; no reference aggregate exists yet for this week (rolling_2026.json week 3), so the baseline values for this snapshot have not been reconciled to an evaluation artifact",
-    "provenance_basis": "population_rule_unreconciled",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against rolling_2026.json week 3: matched",
+    "provenance_basis": "mart_column",
+    "reconciled": true,
+    "reconciled_to": "rolling_2026.json week 3"
+   },
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "inputs": {
+    "content_sha256": "dce249b4569604ab92155b5c8b7f8cc7540783714b54a29467bfe82fd28df3b5",
+    "file_sha256": "f1c251490c07f1eeb81ad76a8678b9389367ae672fd2ebda61861509422f5dab",
+    "n_rows": 674,
+    "path": "inputs/weekly-2026-w03-20260911-asof_v1-d333de20-rf.json"
+   },
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "outcomes": {
+    "content_sha256": "68d8b8baf68907edfa1a97909ecb104ff2c77da17614413b111054cc356b9947",
+    "file_sha256": "fcfd27af5dc75c9fe682a4c18ce26e861b26198ee36a28fd6b408f77172e8237",
+    "n_observed": 349,
+    "n_rows": 674,
+    "path": "outcomes/weekly-2026-w03-20260911-asof_v1-d333de20-rf.json"
+   },
+   "population": {
+    "conditioning": "scored_eligible_players",
+    "description": "every player with a stat row in this or the previous season and at least one prior game, scored regardless of roster status, injury, bye or availability",
+    "exclusions": [
+     "players without a stats row in this or the previous season",
+     "players without at least one prior game (no as-of history)"
+    ],
+    "n_rows": 674
+   },
+   "reconciliation": {
+    "expected": {
+     "ALL": {
+      "baseline_mae": 4.6363,
+      "mae": 4.5543,
+      "n": 349
+     }
+    },
+    "observed": {
+     "ALL": {
+      "baseline_mae": 4.636292521794204,
+      "mae": 4.55432664756447,
+      "n": 349
+     }
+    },
+    "reference": "rolling_2026.json week 3",
+    "status": "matched",
+    "tolerance": 0.0001
+   },
+   "season": 2026,
+   "snapshot_id": "weekly-2026-w03-20260911-asof_v1-d333de20-rf",
+   "source_family": "weekly",
+   "week": 3
+  },
+  {
+   "baseline": {
+    "name": "causal_trailing_mean",
+    "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against rolling_2026.json week 4: unavailable",
+    "provenance_basis": "mart_column",
     "reconciled": null,
     "reconciled_to": null
    },
@@ -3894,10 +3956,10 @@
     "WR": "rf"
    },
    "inputs": {
-    "content_sha256": "f8b533bbe25048d885b6237fd315b70d131da11651772ba4b1b1e4ee4d03f146",
-    "file_sha256": "9365e633d566b854f23c38a7bc0f86d6c0a6b19e5c149491445af598656cadae",
-    "n_rows": 674,
-    "path": "inputs/weekly-2026-w03-20260911-asof_v1-d333de20-rf.json"
+    "content_sha256": "2d17fb702928d10539200848e5468dae9af870e8529f40dca9ef9a66fb98bcce",
+    "file_sha256": "e356f899d39d2d1153b49569a1ebd59bd4006c374abbfa7dcfe978de4c813697",
+    "n_rows": 687,
+    "path": "inputs/weekly-2026-w04-20260911-asof_v1-d333de20-rf.json"
    },
    "mode": "published_weekly",
    "model_version": "20260911-asof_v1-d333de20",
@@ -3909,7 +3971,7 @@
      "players without a stats row in this or the previous season",
      "players without at least one prior game (no as-of history)"
     ],
-    "n_rows": 674
+    "n_rows": 687
    },
    "reconciliation": {
     "expected": null,
@@ -3918,14 +3980,14 @@
      "mae": null,
      "n": 0
     },
-    "reference": "rolling_2026.json week 3",
+    "reference": "rolling_2026.json week 4",
     "status": "unavailable",
     "tolerance": 0.0001
    },
    "season": 2026,
-   "snapshot_id": "weekly-2026-w03-20260911-asof_v1-d333de20-rf",
+   "snapshot_id": "weekly-2026-w04-20260911-asof_v1-d333de20-rf",
    "source_family": "weekly",
-   "week": 3
+   "week": 4
   },
   {
    "baseline": {
@@ -4307,25 +4369,25 @@
    "path": "artifacts/eval/rolling_2026.json",
    "role": "rolling_eval",
    "rows": null,
-   "sha256": "eb9402a6169ac0775136d1305a25c56f6c6aee7965a6dc305e8b899679ddb94d"
+   "sha256": "b54b1e4cf0930a25995940cc52c2ce2a450cc5c06cd5ff00360910de4ae55f64"
   },
   {
    "path": "artifacts/manifest.json",
    "role": "artifact_manifest",
    "rows": null,
-   "sha256": "5988ccff07ca7944b7fa32681d55a69ba369f9aaf6df7e85219eb3affd77741c"
+   "sha256": "a763a99db43e3924ffb83aec73b396ec1a1e6f81620b8f1347f402bd1a225acc"
   },
   {
    "path": "artifacts/marts/_export_manifest.json",
    "role": "mart_export_manifest",
    "rows": null,
-   "sha256": "331781f879f2261a6e49fa6ec184f5536a4640daa1399cee85176384e35597d9"
+   "sha256": "5c714c4a6fafef8e10bf38a2021f14adc72e4d790b7c190016a4091c7e18fc79"
   },
   {
    "path": "artifacts/marts/fct_player_week.parquet",
    "role": "mart",
-   "rows": 25266,
-   "sha256": "f790506c1cfea04d49f30406102a0392444da8064d9d69b665b1d9dee1d57657"
+   "rows": 25953,
+   "sha256": "a8e2d4ecc9c8d6eb5381c4a897eab71944fb77d2ff4569c00f61a0603d99ca25"
   },
   {
    "path": "artifacts/models/20260911-asof_v1-d333de20/metadata.json",
@@ -4361,7 +4423,13 @@
    "path": "artifacts/predictions/2026/week_03.json",
    "role": "predictions",
    "rows": 674,
-   "sha256": "75c89f53be8367075d3ef9acf3dcc72f2f099aab4dc65f85e2df9467af00a873"
+   "sha256": "c9c54eae62a3b78a8b5dee8fe9769f7d01950bd1dbf2367eebd13bf807e6898e"
+  },
+  {
+   "path": "artifacts/predictions/2026/week_04.json",
+   "role": "predictions",
+   "rows": 687,
+   "sha256": "95c7fabd576585e4942e08e12588401979509e805079dfdf405d6519339be3a7"
   },
   {
    "path": "artifacts/runs/run-20260914T231839Z.json",
@@ -4380,6 +4448,12 @@
    "role": "run_log",
    "rows": null,
    "sha256": "78c3c694d775a3d6a6a0240446a30a7e5d0b4de25b8b624e6e026dc186dc0eb5"
+  },
+  {
+   "path": "artifacts/runs/run-20260929T161927Z.json",
+   "role": "run_log",
+   "rows": null,
+   "sha256": "bdb531a8386e82f8fe48bc02a755f267fe6fac361595a5a635a3f937789aae8b"
   }
  ]
 }
