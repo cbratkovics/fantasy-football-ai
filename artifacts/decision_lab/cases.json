@@ -886,10 +886,10 @@
   {
    "alternatives": [
     "00-0039139",
-    "00-0038542",
-    "00-0038134"
+    "00-0038134",
+    "00-0038542"
    ],
-   "case_id": "real-weekly-2026-w04-rb-477255",
+   "case_id": "real-weekly-2026-w05-rb-477255",
    "expected": {
     "reason_codes": [
      "availability_unresolved",
@@ -944,13 +944,13 @@
    },
    "setup": "The three RB rows with the highest projections in the published weekly snapshot, no availability overrides: the policy asks for an explicit assumption first. The experiment assumes every alternative available. No outcomes exist yet.",
    "slot": "RB",
-   "snapshot_id": "weekly-2026-w04-20260911-asof_v1-d333de20-rf",
+   "snapshot_id": "weekly-2026-w05-20260911-asof_v1-d333de20-rf",
    "source_row_refs": [
-    "fct_player_week:00-0039139:2026:4:20260911-asof_v1-d333de20:rf",
-    "fct_player_week:00-0038542:2026:4:20260911-asof_v1-d333de20:rf",
-    "fct_player_week:00-0038134:2026:4:20260911-asof_v1-d333de20:rf"
+    "fct_player_week:00-0039139:2026:5:20260911-asof_v1-d333de20:rf",
+    "fct_player_week:00-0038134:2026:5:20260911-asof_v1-d333de20:rf",
+    "fct_player_week:00-0038542:2026:5:20260911-asof_v1-d333de20:rf"
    ],
-   "title": "2026 week 4 · RB · three highest projections (published snapshot)"
+   "title": "2026 week 5 · RB · three highest projections (published snapshot)"
   }
  ],
  "notes": [

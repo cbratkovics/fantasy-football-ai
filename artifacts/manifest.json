@@ -19,7 +19,7 @@
   },
   "data_through": {
     "season": 2026,
-    "week": 3
+    "week": 4
   },
   "eval_id": "eval-20260911-20260911-asof_v1-d333de20-rf",
   "evaluations": [
@@ -41,21 +41,21 @@
   "feature_version": "asof_v1",
   "last_run": {
     "action": "PUBLISH",
-    "at_utc": "2026-09-29T16:19:27+00:00",
+    "at_utc": "2026-10-06T16:28:44+00:00",
     "reasons": [
-      "drift warning on QB:passing_air_yards_L3_avg, QB:passing_yards_L3_avg, RB:fantasy_points_ppr_L1, TE:targets_L3_avg",
+      "drift warning on QB:passing_air_yards_L3_avg, QB:passing_yards_L3_avg, QB:passing_yards_L5_avg",
       "contracts ok, drift within limits",
-      "no promotion: fewer than 4 scored weeks available"
+      "no promotion: challenger won 1/4 recent weeks (needs 4/4)"
     ],
-    "run_id": "run-20260929T161927Z",
+    "run_id": "run-20261006T162844Z",
     "season": 2026,
-    "stats_rows": 41408,
-    "week": 4
+    "stats_rows": 41766,
+    "week": 5
   },
   "manifest_version": "1.0",
   "predictions": {
-    "latest": "predictions/2026/week_04.json"
+    "latest": "predictions/2026/week_05.json"
   },
   "tiers_version": "20260911-tiers_prevseason_v1-2024-mpc8",
-  "updated_at_utc": "2026-09-29T16:19:54+00:00"
+  "updated_at_utc": "2026-10-06T16:29:03+00:00"
 }

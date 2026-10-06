@@ -1,0 +1,136 @@
+{
+  "run_id": "run-20261006T162844Z",
+  "at_utc": "2026-10-06T16:28:44+00:00",
+  "dry_run": false,
+  "steps": [
+    {
+      "step": "season_week",
+      "season": 2026,
+      "week": 5
+    },
+    {
+      "step": "stats",
+      "loaded_rows": 41766,
+      "rows_before_target_week": 41766,
+      "dropped_partial_rows": 0
+    },
+    {
+      "step": "contracts",
+      "ok": true,
+      "failures": [],
+      "summary": {
+        "dbt": {
+          "elapsed_s": 6.140576362609863,
+          "invocation_id": "abf98179-a4ba-4ea1-bbe4-b4dc57800607",
+          "status_counts": {
+            "success": 14,
+            "pass": 66
+          },
+          "n_checks": 66,
+          "target": "prod",
+          "vars": {
+            "stats_path": "data/cache/player_stats_2019-2026_2026-10-06.parquet",
+            "target_season": 2026,
+            "target_week": 5,
+            "expected_season": 2026,
+            "expected_week": 4,
+            "prior_row_count": 41408
+          },
+          "returncode": 0
+        },
+        "rows": 41766,
+        "players": 1422,
+        "latest": [
+          2026,
+          4
+        ]
+      }
+    },
+    {
+      "step": "drift",
+      "status": "warn",
+      "window_weeks": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "positions": {
+        "QB": {
+          "status": "warn",
+          "median_monitored": 0.1832,
+          "flagged": [
+            "passing_air_yards_L3_avg",
+            "passing_yards_L3_avg",
+            "passing_yards_L5_avg"
+          ],
+          "severe": [],
+          "n": 142,
+          "reference_mode": "bucket"
+        },
+        "RB": {
+          "status": "ok",
+          "median_monitored": 0.0568,
+          "flagged": [],
+          "severe": [],
+          "n": 346,
+          "reference_mode": "bucket"
+        },
+        "WR": {
+          "status": "warn",
+          "median_monitored": 0.115,
+          "flagged": [],
+          "severe": [],
+          "n": 574,
+          "reference_mode": "bucket"
+        },
+        "TE": {
+          "status": "ok",
+          "median_monitored": 0.0631,
+          "flagged": [],
+          "severe": [],
+          "n": 301,
+          "reference_mode": "bucket"
+        }
+      },
+      "report": "drift/run-20261006T162844Z.json"
+    },
+    {
+      "step": "rolling_eval",
+      "week": 4,
+      "actuals_attached": 351,
+      "champion": {
+        "n": 351,
+        "mae": 4.3834,
+        "within_3_rate": 0.4786,
+        "baseline_mae": 4.6778
+      },
+      "challenger": {
+        "n": 351,
+        "mae": 4.5081,
+        "within_3_rate": 0.4815,
+        "baseline_mae": 4.6778
+      }
+    },
+    {
+      "step": "promotion_rule",
+      "promote": false,
+      "reason": "challenger won 1/4 recent weeks (needs 4/4)",
+      "weeks_scored": 4
+    },
+    {
+      "step": "score",
+      "week": 5,
+      "n": 694,
+      "model_version": "20260911-asof_v1-d333de20"
+    }
+  ],
+  "season": 2026,
+  "week": 5,
+  "action": "PUBLISH",
+  "reasons": [
+    "drift warning on QB:passing_air_yards_L3_avg, QB:passing_yards_L3_avg, QB:passing_yards_L5_avg",
+    "contracts ok, drift within limits",
+    "no promotion: challenger won 1/4 recent weeks (needs 4/4)"
+  ]
+}
