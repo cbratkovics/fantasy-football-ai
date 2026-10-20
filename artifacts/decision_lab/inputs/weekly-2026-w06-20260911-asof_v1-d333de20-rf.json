@@ -1,10 +1,10 @@
 {
  "baseline": {
   "name": "causal_trailing_mean",
-  "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against rolling_2026.json week 6: unavailable",
+  "note": "per-row provenance read from fct_player_week.baseline_source; aggregate reconciliation against rolling_2026.json week 6: matched",
   "provenance_basis": "mart_column",
-  "reconciled": null,
-  "reconciled_to": null
+  "reconciled": true,
+  "reconciled_to": "rolling_2026.json week 6"
  },
  "candidate_by_position": {
   "QB": "rf",
@@ -28,7 +28,7 @@
  },
  "feature_version": "asof_v1",
  "generated_at_utc": "2026-10-13T17:20:08+00:00",
- "mode": "published_weekly",
+ "mode": "historical_replay",
  "model_version": "20260911-asof_v1-d333de20",
  "population": {
   "conditioning": "scored_eligible_players",
@@ -41,7 +41,7 @@
  },
  "publication": {
   "action": "PUBLISH",
-  "note": "predictions/2026/week_06.json produced by run-20261013T171949Z (PUBLISH); manifest last_run at export: run-20261013T171949Z PUBLISH season 2026 week 6 at 2026-10-13T17:19:49+00:00",
+  "note": "predictions/2026/week_06.json produced by run-20261013T171949Z (PUBLISH); manifest last_run at export: run-20261020T143828Z PUBLISH season 2026 week 7 at 2026-10-20T14:38:28+00:00",
   "run_id": "run-20261013T171949Z",
   "status": "published"
  },
@@ -11272,33 +11272,39 @@
    {
     "path": "artifacts/marts/fct_player_week.parquet",
     "role": "mart",
-    "rows": 27348,
-    "sha256": "b34da87de1464d1b0aa68f2e32d9c07e7aff1c755c51e7e1f114fdc6bfede961"
+    "rows": 28052,
+    "sha256": "58d1511cd092de603249fcf9b2139891574e91d0e49bdd1e59ef98cbb7077b60"
    },
    {
     "path": "artifacts/marts/_export_manifest.json",
     "role": "mart_export_manifest",
     "rows": null,
-    "sha256": "f75cd2733b547aa3c198656bb76764f0b773a078f62b434ad31751738ab1ae11"
+    "sha256": "acea95d1a848b38cc72eee8ea718e240028f65c75251d6cb1599fc1ac3df2040"
    },
    {
     "path": "artifacts/predictions/2026/week_06.json",
     "role": "predictions",
     "rows": 701,
-    "sha256": "80d8ec9d8343321588a1b4649ef704167dc2b5cb4c36bbd54db1734394610880"
+    "sha256": "50ea0a94dd7e8477475e889053d9a6a1239174952c0b116cf87571180e92749a"
    },
    {
     "path": "artifacts/runs/run-20261013T171949Z.json",
     "role": "run_log",
     "rows": null,
     "sha256": "fd09f3f2d64bf5aae697b0fa4f743ac8d0cace3cbaa07335e4856c7c81e07386"
+   },
+   {
+    "path": "artifacts/eval/rolling_2026.json",
+    "role": "rolling_eval",
+    "rows": null,
+    "sha256": "6c15444d82d8407f1f3fd4f77b0fa8a5c324868f3be264981e9ff8b33e3b8d04"
    }
   ],
   "mart": "fct_player_week",
   "mart_export": {
-   "code_commit": "b03b6180ae621084f42b0b3c3592cc1ff3ded0ea",
-   "exported_at_utc": "2026-10-13T17:20:23+00:00",
-   "invocation_id": "8aa4b879-3172-4374-be2f-ea4fc2168bb8",
+   "code_commit": "fdee3a1d241e239cded2d79403f5f4f888337c77",
+   "exported_at_utc": "2026-10-20T14:39:13+00:00",
+   "invocation_id": "62b3d234-f58e-4d8e-8b8f-32948ebcda2c",
    "target": "prod"
   }
  },
