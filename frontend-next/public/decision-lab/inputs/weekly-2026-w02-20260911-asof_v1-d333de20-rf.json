@@ -41,7 +41,7 @@
  },
  "publication": {
   "action": "PUBLISH",
-  "note": "predictions/2026/week_02.json produced by run-20260915T143710Z (PUBLISH); manifest last_run at export: run-20261020T143828Z PUBLISH season 2026 week 7 at 2026-10-20T14:38:28+00:00",
+  "note": "predictions/2026/week_02.json produced by run-20260915T143710Z (PUBLISH); manifest last_run at export: run-20261027T154142Z PUBLISH season 2026 week 8 at 2026-10-27T15:41:42+00:00",
   "run_id": "run-20260915T143710Z",
   "status": "published"
  },
@@ -2176,7 +2176,7 @@
   },
   {
    "availability_default": "unknown",
-   "baseline": 3.739062,
+   "baseline": 3.739063,
    "baseline_provenance": "player_history",
    "candidate": "rf",
    "ceiling": 11.42,
@@ -10616,14 +10616,14 @@
    {
     "path": "artifacts/marts/fct_player_week.parquet",
     "role": "mart",
-    "rows": 28052,
-    "sha256": "58d1511cd092de603249fcf9b2139891574e91d0e49bdd1e59ef98cbb7077b60"
+    "rows": 28758,
+    "sha256": "23f4952bf8402eb2b80f5dd12cd183c44bcdf565aa1140f88aaed33d79c78d51"
    },
    {
     "path": "artifacts/marts/_export_manifest.json",
     "role": "mart_export_manifest",
     "rows": null,
-    "sha256": "acea95d1a848b38cc72eee8ea718e240028f65c75251d6cb1599fc1ac3df2040"
+    "sha256": "31d0abe0e4c4b973c98e3e64bf3a313d69cf535ce00d6d3d28de89824a580e92"
    },
    {
     "path": "artifacts/predictions/2026/week_02.json",
@@ -10641,14 +10641,14 @@
     "path": "artifacts/eval/rolling_2026.json",
     "role": "rolling_eval",
     "rows": null,
-    "sha256": "6c15444d82d8407f1f3fd4f77b0fa8a5c324868f3be264981e9ff8b33e3b8d04"
+    "sha256": "c464f839fc8010603bdd34002524155059de1a04063ab729b36dfe91a18d2ebe"
    }
   ],
   "mart": "fct_player_week",
   "mart_export": {
-   "code_commit": "fdee3a1d241e239cded2d79403f5f4f888337c77",
-   "exported_at_utc": "2026-10-20T14:39:13+00:00",
-   "invocation_id": "62b3d234-f58e-4d8e-8b8f-32948ebcda2c",
+   "code_commit": "c8229179dde238264a75a7843ae26c94718c76fd",
+   "exported_at_utc": "2026-10-27T15:42:21+00:00",
+   "invocation_id": "f92694ac-1d72-4173-b5aa-37a89843b262",
    "target": "prod"
   }
  },

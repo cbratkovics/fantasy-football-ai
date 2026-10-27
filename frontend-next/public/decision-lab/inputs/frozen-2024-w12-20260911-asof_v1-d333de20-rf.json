@@ -4584,14 +4584,14 @@
    {
     "path": "artifacts/marts/fct_player_week.parquet",
     "role": "mart",
-    "rows": 28052,
-    "sha256": "58d1511cd092de603249fcf9b2139891574e91d0e49bdd1e59ef98cbb7077b60"
+    "rows": 28758,
+    "sha256": "23f4952bf8402eb2b80f5dd12cd183c44bcdf565aa1140f88aaed33d79c78d51"
    },
    {
     "path": "artifacts/marts/_export_manifest.json",
     "role": "mart_export_manifest",
     "rows": null,
-    "sha256": "acea95d1a848b38cc72eee8ea718e240028f65c75251d6cb1599fc1ac3df2040"
+    "sha256": "31d0abe0e4c4b973c98e3e64bf3a313d69cf535ce00d6d3d28de89824a580e92"
    },
    {
     "path": "artifacts/eval/eval-20260911-20260911-asof_v1-d333de20-rf.json",
@@ -4608,9 +4608,9 @@
   ],
   "mart": "fct_player_week",
   "mart_export": {
-   "code_commit": "fdee3a1d241e239cded2d79403f5f4f888337c77",
-   "exported_at_utc": "2026-10-20T14:39:13+00:00",
-   "invocation_id": "62b3d234-f58e-4d8e-8b8f-32948ebcda2c",
+   "code_commit": "c8229179dde238264a75a7843ae26c94718c76fd",
+   "exported_at_utc": "2026-10-27T15:42:21+00:00",
+   "invocation_id": "f92694ac-1d72-4173-b5aa-37a89843b262",
    "target": "prod"
   }
  },

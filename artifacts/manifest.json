@@ -19,7 +19,7 @@
   },
   "data_through": {
     "season": 2026,
-    "week": 6
+    "week": 7
   },
   "eval_id": "eval-20260911-20260911-asof_v1-d333de20-rf",
   "evaluations": [
@@ -41,21 +41,21 @@
   "feature_version": "asof_v1",
   "last_run": {
     "action": "PUBLISH",
-    "at_utc": "2026-10-20T14:38:28+00:00",
+    "at_utc": "2026-10-27T15:41:42+00:00",
     "reasons": [
-      "drift warning on QB:passing_yards_L3_avg, QB:passing_yards_L5_avg, RB:fantasy_points_ppr_L1",
+      "drift warning on QB:passing_yards_L5_avg, RB:fantasy_points_ppr_L1",
       "contracts ok, drift within limits",
-      "no promotion: challenger won 2/4 recent weeks (needs 4/4)"
+      "no promotion: challenger won 1/4 recent weeks (needs 4/4)"
     ],
-    "run_id": "run-20261020T143828Z",
+    "run_id": "run-20261027T154142Z",
     "season": 2026,
-    "stats_rows": 42421,
-    "week": 7
+    "stats_rows": 42724,
+    "week": 8
   },
   "manifest_version": "1.0",
   "predictions": {
-    "latest": "predictions/2026/week_07.json"
+    "latest": "predictions/2026/week_08.json"
   },
   "tiers_version": "20260911-tiers_prevseason_v1-2024-mpc8",
-  "updated_at_utc": "2026-10-20T14:38:57+00:00"
+  "updated_at_utc": "2026-10-27T15:42:05+00:00"
 }
