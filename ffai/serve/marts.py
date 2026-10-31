@@ -129,6 +129,21 @@ class MartStore:
             return [r for r in rows if r["candidate"] == candidate]
         return [r for r in rows if r["candidate"] == candidate.get(r["position"])]
 
+    def actual_outcomes(
+        self, season: int, week: int, *, source: str = "weekly"
+    ) -> dict[str, list[dict[str, Any]]]:
+        """One source family at the requested period, retaining duplicates for validation."""
+        if "fct_player_week" not in self.tables:
+            return {}
+        rows = self._rows(
+            "select * from fct_player_week where season = ? and week = ? and source = ?",
+            [season, week, source],
+        )
+        grouped: dict[str, list[dict[str, Any]]] = {}
+        for row in rows:
+            grouped.setdefault(row["player_id"], []).append(row)
+        return grouped
+
     def decisions(
         self,
         *,

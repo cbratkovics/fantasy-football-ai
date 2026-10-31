@@ -1,0 +1,55 @@
+{
+  "source_commit": "3ddbb36dbf67f33c769c45645957aa92b690b457",
+  "note": "V1 receipts captured before Start/Sit foundation changes. Synthetic event times are test inputs, not claims about when a user acted. Evidence files are byte-for-byte copies of the original committed bundle; keep them paired and immutable.",
+  "examples": [
+    {
+      "label": "historical",
+      "snapshot_id": "oos-2025-w02-20260911-asof_v1-d333de20-rf",
+      "inputs": {
+        "path": "historical-inputs.json",
+        "sha256": "9f758854971dcb86a9e657ec92f14ae24082d8b89be2c7df922b74e251b9cabc"
+      },
+      "outcomes": {
+        "path": "historical-outcomes.json",
+        "sha256": "465099ccb5b47e6f75aa0d380193d126a5a48dba5866651f8a73d9f14bccd0dd"
+      },
+      "receipts": [
+        {
+          "path": "historical-receipt-0.json",
+          "decision_id": "61d316f6484c20341ab21da9e2b49036b0c40bad957cbf43abd5502005ddb961",
+          "result_sha256": "1cb9848a6d9dcc7205d27dd5fd53f63353298a19ce83e58a834d3ee8bea886f9",
+          "event_ids": []
+        },
+        {
+          "path": "historical-receipt-1.json",
+          "decision_id": "61d316f6484c20341ab21da9e2b49036b0c40bad957cbf43abd5502005ddb961",
+          "result_sha256": "1cb9848a6d9dcc7205d27dd5fd53f63353298a19ce83e58a834d3ee8bea886f9",
+          "event_ids": [
+            "f283a78546f9b16f0bf84fd47ba783dca300ac7dcec413d92b4e3bdde1292a72",
+            "9d813afd0cb81b23e9046490741dd4d4946cc7fc66ef03461624c67e12915a84"
+          ]
+        }
+      ]
+    },
+    {
+      "label": "synthetic",
+      "snapshot_id": "syn-ambiguity-floor-relaxation",
+      "inputs": {
+        "path": "synthetic-inputs.json",
+        "sha256": "178130c5273e2a3ea1140f8851cb0893264d881d78f1467620132b461b639083"
+      },
+      "outcomes": {
+        "path": "synthetic-outcomes.json",
+        "sha256": "a144f3ec6c4e101f50c640436120efe9eb7e731e659a9e0ad428f53d81524139"
+      },
+      "receipts": [
+        {
+          "path": "synthetic-receipt-0.json",
+          "decision_id": "17c89d0595a690ad3947c0868d51c5071b4241f11eab8b9afa7ebdf17b2b8c42",
+          "result_sha256": "56f48d7c11f20912733e9d2078a84da0f919a41fdb6e7a5623c2aa961ff3b22f",
+          "event_ids": []
+        }
+      ]
+    }
+  ]
+}

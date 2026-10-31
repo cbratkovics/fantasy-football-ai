@@ -47,7 +47,8 @@ jobs:
       - name: Check tracked publication content
         run: python scripts/check_publication.py
       - name: Tests (offline fixture; committed artifacts for the API tests)
-        run: python -m pytest tests
+        # Name each outcome so the three incremental-dbt bodies can be verified in PR logs.
+        run: python -m pytest tests -vv
       - name: "Decision Lab: golden fixtures and bundle check"
         # The golden fixtures pin the policy for the Python reference and the TypeScript mirror;
         # --check rebuilds the bundle from the COMMITTED full-data marts and artifacts into a temp

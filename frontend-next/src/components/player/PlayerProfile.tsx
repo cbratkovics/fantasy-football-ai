@@ -3,6 +3,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { getPlayer } from '@/lib/api/players'
 import { getPlayerWeek } from '@/lib/api/marts'
+import { ActualPoints } from '@/components/ui/ActualPoints'
 import { fmtInt, fmtNum, fmtUtc, shortHash } from '@/lib/format'
 import { PageShell } from '@/components/ui/PageShell'
 import { ErrorState, LoadingState } from '@/components/ui/States'
@@ -51,6 +52,7 @@ export function PlayerProfile({ playerId }: { playerId: string }) {
               ['Candidate', typeof week.candidate === 'string' ? week.candidate : 'champion per position'],
               ['Exported', `${fmtUtc(week.export.exported_at_utc)} · target ${week.export.target ?? '—'} · commit ${shortHash(week.export.code_commit)}`],
               ['Model', data?.model_version ?? '—'],
+              ['Scoring', 'PPR · ffai-nflverse-v1'],
             ]}
           />
 
@@ -65,7 +67,7 @@ export function PlayerProfile({ playerId }: { playerId: string }) {
                   <th className="px-4 py-3 text-right">Prediction</th>
                   <th className="px-4 py-3 text-right">Floor</th>
                   <th className="px-4 py-3 text-right">Ceiling</th>
-                  <th className="px-4 py-3 text-right">Actual</th>
+                  <th className="px-4 py-3 text-right">Actual (PPR)</th>
                   <th className="px-4 py-3 text-right">Error</th>
                   <th className="px-4 py-3 text-right">Baseline</th>
                   <th className="px-4 py-3">{withinLabel(BAND_1)}</th>
@@ -84,7 +86,7 @@ export function PlayerProfile({ playerId }: { playerId: string }) {
                       <td className="px-4 py-2.5 text-right text-[#52605d]">{fmtNum(row.prediction_floor, 1)}</td>
                       <td className="px-4 py-2.5 text-right text-[#52605d]">{fmtNum(row.prediction_ceiling, 1)}</td>
                       <td className="px-4 py-2.5 text-right">
-                        {row.actual === null ? <span className="text-[#8c9a96]">not scored</span> : fmtNum(row.actual, 1)}
+                        <ActualPoints actual={row.actual} source={row.actual_source} />
                         {row.actual_source === 'artifact' && <span className="ml-1 text-[9px] text-[#8c9a96]" title="actual recorded in the prediction artifact">†</span>}
                       </td>
                       <td className={`px-4 py-2.5 text-right ${err === null ? 'text-[#8c9a96]' : err < 0 ? 'text-ember' : 'text-moss'}`}>
@@ -103,7 +105,7 @@ export function PlayerProfile({ playerId }: { playerId: string }) {
             </table>
           </div>
           <p className="font-mono text-[9px] uppercase tracking-widest text-[#8c9a96]">
-            † actual taken from the prediction artifact where the stats row is not in the warehouse; the two agree wherever both exist.
+            PPR history and evaluation only. † Actual recorded in the prediction artifact where a stats row is absent. Residual-offset ranges are not guaranteed bounds.
           </p>
         </div>
       )}

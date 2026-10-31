@@ -69,6 +69,10 @@ export interface PredictionRecord {
   model_version: string
   candidate: string
   actual: number | null
+  /** Requested-format actual; optional metadata supports older API deployments. */
+  actual_scoring_format?: ScoringFormat
+  actual_source?: string | null
+  actual_null_reason?: string | null
 }
 
 export interface PredictionsResponse {
@@ -76,6 +80,8 @@ export interface PredictionsResponse {
   week: number
   scoring: ScoringFormat
   scoring_derivation: string
+  scoring_rules_id?: string
+  scoring_rules_description?: string
   interval_method: string
   model_version: string
   feature_version: string
@@ -92,6 +98,9 @@ export interface PlayerHistoryRow {
   floor: number | null
   ceiling: number | null
   actual: number | null
+  actual_scoring_format?: ScoringFormat
+  actual_source?: string | null
+  actual_null_reason?: string | null
   model_version: string | null
   source: HistorySource
 }

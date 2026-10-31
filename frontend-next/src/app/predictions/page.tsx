@@ -18,7 +18,7 @@ export default function PredictionsPage() {
           Point, floor, <em className="font-serif font-normal text-moss">ceiling.</em>
         </>
       }
-      lede="Every row below comes from the predictions file the weekly job last published. The scoring format is derived from the PPR target on the server; nothing is re-estimated in the browser."
+      lede="Browse published projections, not verified available players. Forecasts are trained on PPR; half-PPR and standard forecasts are derived estimates. Actuals use realized evidence under the requested scoring rules."
     >
       <PredictionsBoard />
     </PageShell>

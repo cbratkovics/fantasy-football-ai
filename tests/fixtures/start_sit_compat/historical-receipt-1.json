@@ -1,0 +1,438 @@
+{
+ "action": {
+  "action_id": "f283a78546f9b16f0bf84fd47ba783dca300ac7dcec413d92b4e3bdde1292a72",
+  "at_utc": "2026-10-31T18:31:00+00:00",
+  "chosen_player_id": "00-0036322",
+  "kind": "hypothetical_replay",
+  "note": null,
+  "state": "recorded"
+ },
+ "case_id": "real-oos-2025-w02-wr-efa4e0",
+ "created_at_utc": "2026-10-31T18:30:00+00:00",
+ "decision_id": "61d316f6484c20341ab21da9e2b49036b0c40bad957cbf43abd5502005ddb961",
+ "events": [
+  {
+   "at_utc": "2026-10-31T18:31:00+00:00",
+   "event_id": "f283a78546f9b16f0bf84fd47ba783dca300ac7dcec413d92b4e3bdde1292a72",
+   "event_type": "action_recorded",
+   "payload": {
+    "chosen_player_id": "00-0036322",
+    "kind": "hypothetical_replay",
+    "note": null
+   },
+   "seq": 1
+  },
+  {
+   "at_utc": "2026-10-31T18:32:00+00:00",
+   "event_id": "9d813afd0cb81b23e9046490741dd4d4946cc7fc66ef03461624c67e12915a84",
+   "event_type": "outcome_attached",
+   "payload": {
+    "metrics": {
+     "action_kind": "hypothetical_replay",
+     "action_state": "recorded",
+     "baseline_preferred_actual": 11.1,
+     "baseline_preferred_player_id": "00-0036322",
+     "best_in_choice_set": {
+      "actual": 27.6,
+      "player_id": "00-0039075"
+     },
+     "choice_set": [
+      "00-0034960",
+      "00-0036322",
+      "00-0038543",
+      "00-0039075"
+     ],
+     "choice_set_regret": 16.5,
+     "choice_set_regret_reason": null,
+     "chosen_actual_points": 11.1,
+     "chosen_actual_reason": null,
+     "chosen_player_id": "00-0036322",
+     "coverage": {
+      "choice_set_size": 4,
+      "missing": [],
+      "nominated": 4,
+      "observed": 4
+     },
+     "decision_id": "61d316f6484c20341ab21da9e2b49036b0c40bad957cbf43abd5502005ddb961",
+     "model_policy_vs_baseline_choice": 16.5,
+     "model_policy_vs_baseline_choice_reason": null,
+     "model_recommended_actual": 27.6,
+     "model_recommended_player_id": "00-0039075",
+     "notes": [
+      "A recommendation is not a recorded action; a recorded action is not proof it was carried out in a league.",
+      "Hypothetical replay outcomes are not measured product impact."
+     ],
+     "outcome_id": "94a0268b5a1bce114c39454bad85125410756aa4a845a028812adcf24ae37902",
+     "outcome_snapshot_id": "oos-2025-w02-20260911-asof_v1-d333de20-rf",
+     "per_alternative": [
+      {
+       "actual": 12.8,
+       "observed": true,
+       "player_id": "00-0034960"
+      },
+      {
+       "actual": 11.1,
+       "observed": true,
+       "player_id": "00-0036322"
+      },
+      {
+       "actual": 18.3,
+       "observed": true,
+       "player_id": "00-0038543"
+      },
+      {
+       "actual": 27.6,
+       "observed": true,
+       "player_id": "00-0039075"
+      }
+     ],
+     "points_vs_baseline_choice": 0.0,
+     "points_vs_baseline_choice_reason": null,
+     "schema_version": "outcome_metrics/1.0"
+    },
+    "outcome_id": "94a0268b5a1bce114c39454bad85125410756aa4a845a028812adcf24ae37902",
+    "outcome_snapshot_id": "oos-2025-w02-20260911-asof_v1-d333de20-rf"
+   },
+   "seq": 2
+  }
+ ],
+ "inputs": {
+  "alternatives": [
+   {
+    "availability": "realized_stats_row",
+    "availability_basis": "hindsight_stats_row",
+    "baseline": 12.085882,
+    "baseline_provenance": "player_history",
+    "candidate": "rf",
+    "ceiling": 24.6,
+    "display_name": "Jakobi Meyers",
+    "floor": 9.93,
+    "model_version": "20260911-asof_v1-d333de20",
+    "player_id": "00-0034960",
+    "position": "WR",
+    "projection": 16.527,
+    "season": 2025,
+    "source_row_ref": "fct_player_week:00-0034960:2025:2:20260911-asof_v1-d333de20:rf",
+    "team": "LV",
+    "week": 2
+   },
+   {
+    "availability": "realized_stats_row",
+    "availability_basis": "hindsight_stats_row",
+    "baseline": 19.33,
+    "baseline_provenance": "player_history",
+    "candidate": "rf",
+    "ceiling": 25.869,
+    "display_name": "Justin Jefferson",
+    "floor": 11.2,
+    "model_version": "20260911-asof_v1-d333de20",
+    "player_id": "00-0036322",
+    "position": "WR",
+    "projection": 17.796,
+    "season": 2025,
+    "source_row_ref": "fct_player_week:00-0036322:2025:2:20260911-asof_v1-d333de20:rf",
+    "team": "MIN",
+    "week": 2
+   },
+   {
+    "availability": "realized_stats_row",
+    "availability_basis": "hindsight_stats_row",
+    "baseline": 12.062857,
+    "baseline_provenance": "player_history",
+    "candidate": "rf",
+    "ceiling": 24.982,
+    "display_name": "Jaxon Smith-Njigba",
+    "floor": 10.312,
+    "model_version": "20260911-asof_v1-d333de20",
+    "player_id": "00-0038543",
+    "position": "WR",
+    "projection": 16.909,
+    "season": 2025,
+    "source_row_ref": "fct_player_week:00-0038543:2025:2:20260911-asof_v1-d333de20:rf",
+    "team": "SEA",
+    "week": 2
+   },
+   {
+    "availability": "realized_stats_row",
+    "availability_basis": "hindsight_stats_row",
+    "baseline": 18.213793,
+    "baseline_provenance": "player_history",
+    "candidate": "rf",
+    "ceiling": 27.849,
+    "display_name": "Puka Nacua",
+    "floor": 13.179,
+    "model_version": "20260911-asof_v1-d333de20",
+    "player_id": "00-0039075",
+    "position": "WR",
+    "projection": 19.776,
+    "season": 2025,
+    "source_row_ref": "fct_player_week:00-0039075:2025:2:20260911-asof_v1-d333de20:rf",
+    "team": "LA",
+    "week": 2
+   }
+  ],
+  "parameters": {
+   "min_floor": null,
+   "min_projection_gap": 0.5,
+   "model_only_exploration": false,
+   "require_independent_baseline": true
+  },
+  "policy_version": "1.0.0",
+  "schema_version": "decision_inputs/1.0",
+  "slot": "WR",
+  "snapshot": {
+   "baseline_reconciled": true,
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "data_cutoff": {
+    "season": 2025,
+    "week": 1
+   },
+   "evidence_detail": null,
+   "evidence_status": "verified",
+   "feature_version": "asof_v1",
+   "generated_at_utc": null,
+   "inputs_sha256": "2a5aad80e69f5460327245bf9caa3d41604f63f21903c4cac79023fe0b48f421",
+   "mode": "historical_replay",
+   "model_version": "20260911-asof_v1-d333de20",
+   "publication": {
+    "action": null,
+    "note": "retrospective evaluation artifact eval-20260911-20260911-asof_v1-d333de20-rf-oos2025",
+    "run_id": null,
+    "status": "recorded"
+   },
+   "scoring_format": "ppr",
+   "season": 2025,
+   "snapshot_id": "oos-2025-w02-20260911-asof_v1-d333de20-rf",
+   "source_family": "out_of_sample_season",
+   "week": 2
+  }
+ },
+ "outcome": {
+  "attached_at_utc": "2026-10-31T18:32:00+00:00",
+  "metrics": {
+   "action_kind": "hypothetical_replay",
+   "action_state": "recorded",
+   "baseline_preferred_actual": 11.1,
+   "baseline_preferred_player_id": "00-0036322",
+   "best_in_choice_set": {
+    "actual": 27.6,
+    "player_id": "00-0039075"
+   },
+   "choice_set": [
+    "00-0034960",
+    "00-0036322",
+    "00-0038543",
+    "00-0039075"
+   ],
+   "choice_set_regret": 16.5,
+   "choice_set_regret_reason": null,
+   "chosen_actual_points": 11.1,
+   "chosen_actual_reason": null,
+   "chosen_player_id": "00-0036322",
+   "coverage": {
+    "choice_set_size": 4,
+    "missing": [],
+    "nominated": 4,
+    "observed": 4
+   },
+   "decision_id": "61d316f6484c20341ab21da9e2b49036b0c40bad957cbf43abd5502005ddb961",
+   "model_policy_vs_baseline_choice": 16.5,
+   "model_policy_vs_baseline_choice_reason": null,
+   "model_recommended_actual": 27.6,
+   "model_recommended_player_id": "00-0039075",
+   "notes": [
+    "A recommendation is not a recorded action; a recorded action is not proof it was carried out in a league.",
+    "Hypothetical replay outcomes are not measured product impact."
+   ],
+   "outcome_id": "94a0268b5a1bce114c39454bad85125410756aa4a845a028812adcf24ae37902",
+   "outcome_snapshot_id": "oos-2025-w02-20260911-asof_v1-d333de20-rf",
+   "per_alternative": [
+    {
+     "actual": 12.8,
+     "observed": true,
+     "player_id": "00-0034960"
+    },
+    {
+     "actual": 11.1,
+     "observed": true,
+     "player_id": "00-0036322"
+    },
+    {
+     "actual": 18.3,
+     "observed": true,
+     "player_id": "00-0038543"
+    },
+    {
+     "actual": 27.6,
+     "observed": true,
+     "player_id": "00-0039075"
+    }
+   ],
+   "points_vs_baseline_choice": 0.0,
+   "points_vs_baseline_choice_reason": null,
+   "schema_version": "outcome_metrics/1.0"
+  },
+  "outcome_id": "94a0268b5a1bce114c39454bad85125410756aa4a845a028812adcf24ae37902",
+  "outcome_snapshot_id": "oos-2025-w02-20260911-asof_v1-d333de20-rf",
+  "state": "attached"
+ },
+ "parent_decision_id": null,
+ "prediction_note": null,
+ "result": {
+  "baseline": {
+   "agrees_with_model_leader": false,
+   "missing_for": [],
+   "preferred_player_id": "00-0036322",
+   "preferred_value": 19.33,
+   "provenance": {
+    "00-0034960": "player_history",
+    "00-0036322": "player_history",
+    "00-0038543": "player_history",
+    "00-0039075": "player_history"
+   },
+   "status": "available"
+  },
+  "counts": {
+   "comparable": 4,
+   "excluded": 0,
+   "nominated": 4
+  },
+  "decision_id": "61d316f6484c20341ab21da9e2b49036b0c40bad957cbf43abd5502005ddb961",
+  "explanation": [
+   "Puka Nacua (00-0039075) has the highest PPR projection (19.776), 1.98 ahead of Justin Jefferson (00-0036322), conditional on the recorded eligibility assumptions.",
+   "The projection gap 1.98 meets the minimum 0.5.",
+   "No floor guardrail is enabled.",
+   "The causal trailing-mean baseline prefers Justin Jefferson (00-0036322) (19.33) instead; the baseline is a separate comparator, not the model."
+  ],
+  "gates": {
+   "floor_checked": false,
+   "floor_ok": null,
+   "gap_ok": true,
+   "leading_floor": 13.179,
+   "min_floor": null,
+   "min_projection_gap": 0.5
+  },
+  "leading": {
+   "first": "00-0039075",
+   "gap": 1.98,
+   "second": "00-0036322"
+  },
+  "limitations": [
+   "population_hindsight_conditioned",
+   "floors_not_probabilities"
+  ],
+  "policy_version": "1.0.0",
+  "ranking": [
+   {
+    "availability": "realized_stats_row",
+    "availability_basis": "hindsight_stats_row",
+    "baseline": 12.085882,
+    "baseline_provenance": "player_history",
+    "ceiling": 24.6,
+    "comparable": true,
+    "display_name": "Jakobi Meyers",
+    "exclusion": null,
+    "floor": 9.93,
+    "player_id": "00-0034960",
+    "position": "WR",
+    "projection": 16.527,
+    "rank": 4,
+    "tied_with_next": false
+   },
+   {
+    "availability": "realized_stats_row",
+    "availability_basis": "hindsight_stats_row",
+    "baseline": 19.33,
+    "baseline_provenance": "player_history",
+    "ceiling": 25.869,
+    "comparable": true,
+    "display_name": "Justin Jefferson",
+    "exclusion": null,
+    "floor": 11.2,
+    "player_id": "00-0036322",
+    "position": "WR",
+    "projection": 17.796,
+    "rank": 2,
+    "tied_with_next": false
+   },
+   {
+    "availability": "realized_stats_row",
+    "availability_basis": "hindsight_stats_row",
+    "baseline": 12.062857,
+    "baseline_provenance": "player_history",
+    "ceiling": 24.982,
+    "comparable": true,
+    "display_name": "Jaxon Smith-Njigba",
+    "exclusion": null,
+    "floor": 10.312,
+    "player_id": "00-0038543",
+    "position": "WR",
+    "projection": 16.909,
+    "rank": 3,
+    "tied_with_next": false
+   },
+   {
+    "availability": "realized_stats_row",
+    "availability_basis": "hindsight_stats_row",
+    "baseline": 18.213793,
+    "baseline_provenance": "player_history",
+    "ceiling": 27.849,
+    "comparable": true,
+    "display_name": "Puka Nacua",
+    "exclusion": null,
+    "floor": 13.179,
+    "player_id": "00-0039075",
+    "position": "WR",
+    "projection": 19.776,
+    "rank": 1,
+    "tied_with_next": false
+   }
+  ],
+  "reasons": [
+   {
+    "code": "recommend_highest_projection",
+    "detail": {
+     "gap": 1.98,
+     "player": "Puka Nacua (00-0039075)",
+     "second": "Justin Jefferson (00-0036322)",
+     "value": 19.776
+    },
+    "severity": "info"
+   },
+   {
+    "code": "gap_meets_minimum",
+    "detail": {
+     "gap": 1.98,
+     "threshold": 0.5
+    },
+    "severity": "info"
+   },
+   {
+    "code": "floor_guardrail_disabled",
+    "detail": {},
+    "severity": "info"
+   },
+   {
+    "code": "baseline_disagrees",
+    "detail": {
+     "player": "Justin Jefferson (00-0036322)",
+     "value": 19.33
+    },
+    "severity": "info"
+   }
+  ],
+  "recommended_player_id": "00-0039075",
+  "schema_version": "decision_result/1.0",
+  "status": "recommend"
+ },
+ "result_sha256": "1cb9848a6d9dcc7205d27dd5fd53f63353298a19ce83e58a834d3ee8bea886f9",
+ "schema_version": "decision_receipt/1.0",
+ "trust": {
+  "note": "Digests support integrity checks against known evidence; they are not signatures and do not prove who acted or when. Local storage is editable and erasable; append-only is application behaviour, not a tamper-proof audit service."
+ }
+}

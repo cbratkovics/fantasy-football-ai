@@ -4,7 +4,7 @@ import { StartSitEngine } from '@/components/start-sit/StartSitEngine'
 
 export const metadata: Metadata = {
   title: 'Start/Sit | Win My League',
-  description: 'Compare two or more players from the latest published predictions: point estimate, floor, and ceiling side by side.',
+  description: 'Compare two to eight alternatives for one slot using verified PPR evidence and the Decision Lab policy.',
 }
 
 export default function StartSitPage() {
@@ -15,10 +15,10 @@ export default function StartSitPage() {
       eyebrow="Start/Sit · latest published week"
       title={
         <>
-          Compare the <em className="font-serif font-normal text-moss">whole interval.</em>
+          Compare one <em className="font-serif font-normal text-moss">starting slot.</em>
         </>
       }
-      lede="Pick any players from the latest predictions file. The recommendation is simply the higher point estimate; the floor and ceiling are shown so you can weigh the downside yourself."
+      lede="Nominate alternatives from one published weekly snapshot. The shared Decision Lab policy checks eligibility, availability assumptions, baseline evidence and the projection gap. Dated evidence does not establish game-day readiness."
     >
       <StartSitEngine />
     </PageShell>

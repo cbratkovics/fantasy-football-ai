@@ -1,0 +1,215 @@
+{
+  "schema_version": "context_snapshot/1.0",
+  "mode": "fixture",
+  "target": {
+    "season": 2026,
+    "season_type": "REG",
+    "week": 9,
+    "state": "target"
+  },
+  "requested_as_of_utc": "2026-10-31T13:00:00+00:00",
+  "observed_at_utc": "2026-10-31T18:28:18+00:00",
+  "forecast": {
+    "snapshot_id": null,
+    "sha256": null,
+    "season": null,
+    "week": null
+  },
+  "sources": {
+    "schedules": {
+      "source_id": "synthetic:schedules",
+      "sha256": "be2d150868071df69ea504eb404a4d8410bdb9723f11b90ba6ef492e2e4ef58c",
+      "state": "fixture",
+      "reasons": [
+        "fixture_not_live_verified"
+      ],
+      "provider_updated_at_utc": null,
+      "provider_time_note": "Provider publication time unknown",
+      "first_observed_at_utc": "2026-10-31T12:00:00+00:00",
+      "fetched_at_utc": "2026-10-31T12:00:00+00:00",
+      "effective_at_utc": null,
+      "coverage_complete": true,
+      "input_rows": 1,
+      "as_of_rows": 1,
+      "freshness_max_age_seconds": 86400,
+      "observed_weeks": [
+        9
+      ],
+      "target_rows": 1
+    },
+    "rosters": {
+      "source_id": "synthetic:rosters",
+      "sha256": "e15c36fab889ad51d940885e041a66a478b76474f067a62249c4b157f184d0eb",
+      "state": "fixture",
+      "reasons": [
+        "fixture_not_live_verified",
+        "target_period_coverage_unverified"
+      ],
+      "provider_updated_at_utc": null,
+      "provider_time_note": "Provider publication time unknown",
+      "first_observed_at_utc": "2026-10-31T12:00:00+00:00",
+      "fetched_at_utc": "2026-10-31T12:00:00+00:00",
+      "effective_at_utc": null,
+      "coverage_complete": true,
+      "input_rows": 4,
+      "as_of_rows": 4,
+      "freshness_max_age_seconds": 21600,
+      "observed_weeks": [
+        8
+      ],
+      "target_rows": 0
+    },
+    "injuries": {
+      "source_id": "synthetic:injuries",
+      "sha256": "551422f5af813a465198238e25a8d80c22f194b3a0c1aa193206b632dcb2a749",
+      "state": "fixture",
+      "reasons": [
+        "fixture_not_live_verified"
+      ],
+      "provider_updated_at_utc": null,
+      "provider_time_note": "Provider publication time unknown",
+      "first_observed_at_utc": "2026-10-31T12:00:00+00:00",
+      "fetched_at_utc": "2026-10-31T12:00:00+00:00",
+      "effective_at_utc": null,
+      "coverage_complete": false,
+      "input_rows": 2,
+      "as_of_rows": 2,
+      "freshness_max_age_seconds": 21600,
+      "observed_weeks": [
+        9
+      ],
+      "target_rows": 2
+    }
+  },
+  "players": [
+    {
+      "player_id": "bye",
+      "provider_id": "bye",
+      "name": "Bye Player",
+      "position": "TE",
+      "current_team": "C",
+      "identity_state": "resolved",
+      "roster_week": null,
+      "game": {
+        "game_id": null,
+        "opponent": null,
+        "kickoff_utc": null,
+        "state": "bye",
+        "schedule_revision": null
+      },
+      "forecast": {
+        "state": "missing_history",
+        "forecast_team": null
+      },
+      "availability": {
+        "state": "unknown",
+        "designation": null,
+        "basis": "no_provider_evidence"
+      },
+      "reasons": [
+        "availability_unverified",
+        "forecast_missing_history",
+        "known_bye"
+      ]
+    },
+    {
+      "player_id": "out",
+      "provider_id": "out",
+      "name": "Out Player",
+      "position": "WR",
+      "current_team": "A",
+      "identity_state": "resolved",
+      "roster_week": null,
+      "game": {
+        "game_id": "2026_09_A_B",
+        "opponent": "B",
+        "kickoff_utc": "2026-11-01T18:00:00+00:00",
+        "state": "scheduled",
+        "schedule_revision": null
+      },
+      "forecast": {
+        "state": "missing_history",
+        "forecast_team": null
+      },
+      "availability": {
+        "state": "unavailable",
+        "designation": "Out",
+        "basis": "provider_report"
+      },
+      "reasons": [
+        "forecast_missing_history"
+      ]
+    },
+    {
+      "player_id": "rookie",
+      "provider_id": "rookie",
+      "name": "Same Name",
+      "position": "WR",
+      "current_team": "A",
+      "identity_state": "resolved",
+      "roster_week": 8,
+      "game": {
+        "game_id": "2026_09_A_B",
+        "opponent": "B",
+        "kickoff_utc": "2026-11-01T18:00:00+00:00",
+        "state": "scheduled",
+        "schedule_revision": null
+      },
+      "forecast": {
+        "state": "missing_history",
+        "forecast_team": null
+      },
+      "availability": {
+        "state": "unknown",
+        "designation": null,
+        "basis": "no_provider_evidence"
+      },
+      "reasons": [
+        "availability_unverified",
+        "forecast_missing_history"
+      ]
+    },
+    {
+      "player_id": "traded",
+      "provider_id": "traded",
+      "name": "Same Name",
+      "position": "RB",
+      "current_team": "B",
+      "identity_state": "resolved",
+      "roster_week": 8,
+      "game": {
+        "game_id": "2026_09_A_B",
+        "opponent": "A",
+        "kickoff_utc": "2026-11-01T18:00:00+00:00",
+        "state": "scheduled",
+        "schedule_revision": null
+      },
+      "forecast": {
+        "state": "missing_history",
+        "forecast_team": null
+      },
+      "availability": {
+        "state": "questionable",
+        "designation": "Questionable",
+        "basis": "provider_report"
+      },
+      "reasons": [
+        "forecast_missing_history"
+      ]
+    }
+  ],
+  "unresolved_mappings": [],
+  "coverage": {
+    "roster_identities": 4,
+    "players": 4,
+    "unscored": 4,
+    "unresolved_identities": 0
+  },
+  "limitations": [
+    "Roster membership does not establish availability or fantasy ownership",
+    "Kickoff is a conservative deadline, not verified platform lock rules",
+    "Fetch age thresholds are assumptions; content update time may be unknown",
+    "Context is not persisted in v1 receipts"
+  ],
+  "context_snapshot_id": "39fddffa4da0bb6cac6b9e60b3e4b61da2e23a987856e7890ac042eaa97f5211"
+}
