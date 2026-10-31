@@ -110,10 +110,10 @@ export function PortfolioHome() {
             </div>
           </div>
 
-          <div className="decision-console" aria-label="Live floor policy over the latest published predictions">
+          <div className="decision-console" aria-label="Educational floor filter over published projections">
             <div className="console-top">
               <div>
-                <span className="live-dot" /> FLOOR POLICY
+                <span className="live-dot" /> EDUCATIONAL FILTER
               </div>
               <span>{preds.data ? `SEASON ${preds.data.season} · WEEK ${preds.data.week} · PPR` : 'FROM API'}</span>
             </div>
@@ -132,13 +132,13 @@ export function PortfolioHome() {
             {evaluation && <FoldBars folds={evaluation.rolling_origin.folds} />}
             <div className="threshold-control">
               <div>
-                <label htmlFor="floor-threshold">Minimum floor to start</label>
+                <label htmlFor="floor-threshold">Minimum floor to include</label>
                 <output>{activeThreshold} pts</output>
               </div>
               <input id="floor-threshold" type="range" min="0" max={maxFloor} value={activeThreshold} disabled={rows.length === 0} onChange={(event) => setThreshold(Number(event.target.value))} />
               <div className="range-labels">
                 <span>More candidates</span>
-                <span>Safer floors</span>
+                <span>Higher residual offsets</span>
               </div>
             </div>
             <div className="decision-list">
@@ -161,7 +161,7 @@ export function PortfolioHome() {
             </div>
             <p className="console-note">
               {rows.length > 0 ? `${approved.length} of ${rows.length} top projections clear the floor. ` : ''}
-              Live values from the API; MAE and fold bars come from evaluation artifact {evaluation?.eval_id ?? '…'}
+              Educational filter, not lineup advice. Published values from the API; MAE and fold bars come from evaluation artifact {evaluation?.eval_id ?? '…'}
               {evaluation ? ` (${evaluationLabel(evaluation)})` : ''}.
             </p>
           </div>

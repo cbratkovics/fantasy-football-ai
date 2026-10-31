@@ -1,0 +1,30 @@
+{
+ "coverage": {
+  "observed": 2,
+  "scored": 2
+ },
+ "inputs_content_sha256": "f566f8c3c8ccfb35fe581b3ed6b26d93cdf0229c7c1d394b88d2c65c9ac0fc38",
+ "model_version": "synthetic-model-v1",
+ "observed_at_utc": null,
+ "rows": [
+  {
+   "actual": 8.0,
+   "actual_source": "synthetic",
+   "player_id": "SYN-A"
+  },
+  {
+   "actual": 16.0,
+   "actual_source": "synthetic",
+   "player_id": "SYN-B"
+  }
+ ],
+ "schema_version": "outcome_snapshot/1.0",
+ "scoring_format": "ppr",
+ "season": 2099,
+ "snapshot_id": "syn-ambiguity-floor-relaxation",
+ "source": {
+  "files": [],
+  "mart": null
+ },
+ "week": 1
+}

@@ -46,7 +46,12 @@ class PredictionRecord(BaseModel):
     receptions_estimate: float
     model_version: str
     candidate: str
-    actual: float | None = Field(default=None, description="realised PPR points once attached")
+    actual: float | None = Field(
+        default=None, description="observed points in actual_scoring_format"
+    )
+    actual_scoring_format: ScoringFormat = "ppr"
+    actual_source: str | None = None
+    actual_null_reason: str | None = None
 
 
 class PredictionsResponse(BaseModel):
@@ -54,6 +59,8 @@ class PredictionsResponse(BaseModel):
     week: int
     scoring: ScoringFormat
     scoring_derivation: str
+    scoring_rules_id: str
+    scoring_rules_description: str
     interval_method: str
     model_version: str
     feature_version: str
@@ -70,6 +77,9 @@ class PlayerHistoryRow(BaseModel):
     floor: float | None = None
     ceiling: float | None = None
     actual: float | None
+    actual_scoring_format: ScoringFormat = "ppr"
+    actual_source: str | None = None
+    actual_null_reason: str | None = None
     model_version: str | None
     source: Literal["frozen_test", "out_of_sample_season", "weekly"]
 
@@ -82,6 +92,7 @@ class PlayerResponse(BaseModel):
     model_version: str
     feature_version: str
     generated_at_utc: str
+    scoring: ScoringFormat = "ppr"
     history: list[PlayerHistoryRow]
 
 
@@ -201,6 +212,7 @@ class PlayerWeekResponse(BaseModel):
     position: str | None
     candidate: str | dict[str, str] = Field(description="champion candidate filter applied")
     n: int
+    scoring: ScoringFormat = "ppr"
     rows: list[PlayerWeekRow]
 
 

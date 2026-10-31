@@ -14,10 +14,11 @@ interface ActionPanelProps {
   onRecord: (chosenPlayerId: string, kind: ActionKind, note: string | null) => void
   onDecline: (note: string | null) => void
   error: string | null
+  hypotheticalOnly?: boolean
 }
 
 /** Record the human choice for a computed decision. The recommendation is never preselected. */
-export function ActionPanel({ receipt, onRecord, onDecline, error }: ActionPanelProps) {
+export function ActionPanel({ receipt, onRecord, onDecline, error, hypotheticalOnly = false }: ActionPanelProps) {
   const [chosen, setChosen] = useState<string | null>(null)
   const [kind, setKind] = useState<ActionKind>('hypothetical_replay')
   const [note, setNote] = useState('')
@@ -89,7 +90,7 @@ export function ActionPanel({ receipt, onRecord, onDecline, error }: ActionPanel
               ['hypothetical_replay', COPY.hypothetical],
               ['self_reported_real', COPY.real],
             ] as Array<[ActionKind, string]>
-          ).map(([value, label]) => (
+          ).filter(([value]) => !hypotheticalOnly || value === 'hypothetical_replay').map(([value, label]) => (
             <span key={value} className="flex items-center gap-2">
               <input id={`kind-${value}`} data-testid={`kind-${value}`} type="radio" name="kind" value={value} checked={kind === value} onChange={() => setKind(value)} className={`h-4 w-4 border-[#bfc3bb] text-ink ${FOCUS}`} />
               <label htmlFor={`kind-${value}`}>{label}</label>

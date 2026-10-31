@@ -1,9 +1,31 @@
 import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { expect, test, type Page } from '@playwright/test'
+import type { CasesFile, InputsSnapshot, LabManifest } from '../src/lib/decision-lab/types'
 
 const ORIGIN = 'http://localhost:3100'
 const CASE = 'syn-ambiguity-floor-relaxation'
-const WEEKLY_CASE = 'real-weekly-2026-w03-rb-1ed3fb'
+// Weekly publication advances the case ID. Keep testing the published scenario without pinning
+// an expired week or changing the evidence. The case's stored experiment supplies its expected
+// recommendation; this browser test never calls the policy to manufacture its own expectation.
+const manifest = JSON.parse(readFileSync(resolve(process.cwd(), 'public/decision-lab/manifest.json'), 'utf8')) as LabManifest
+const cases = JSON.parse(readFileSync(resolve(process.cwd(), 'public/decision-lab/cases.json'), 'utf8')) as CasesFile
+const weeklyCase = cases.cases.find((c) => c.snapshot_id === manifest.latest_weekly_snapshot_id && c.mode === 'published_weekly')
+if (!weeklyCase || weeklyCase.expected.status !== 'review' || weeklyCase.outcomes_available ||
+    weeklyCase.expected.recommended_player_id !== null || Object.keys(weeklyCase.overrides).length !== 0 ||
+    !weeklyCase.expected.reason_codes.includes('availability_unresolved')) {
+  throw new Error('Published weekly case must retain the unknown-availability/no-outcomes test scenario')
+}
+const assumedExperiment = weeklyCase.experiments.find((e) => e.label === 'assume all available')
+if (!assumedExperiment || assumedExperiment.expected.status !== 'recommend' || !assumedExperiment.expected.recommended_player_id) {
+  throw new Error('Published weekly case must supply an independently recorded assume-all recommendation')
+}
+const WEEKLY_CASE = weeklyCase.case_id
+const weeklyEntry = manifest.snapshots.find((s) => s.snapshot_id === weeklyCase.snapshot_id)
+if (!weeklyEntry || weeklyEntry.outcomes !== null) throw new Error('Published weekly scenario must have no published outcomes')
+const weeklyInputs = JSON.parse(readFileSync(resolve(process.cwd(), 'public/decision-lab', weeklyEntry.inputs.path), 'utf8')) as InputsSnapshot
+const expectedStarter = weeklyInputs.rows.find((r) => r.player_id === assumedExperiment.expected.recommended_player_id)
+if (!expectedStarter) throw new Error('Published weekly expected starter must exist in its exact input snapshot')
 
 /** Abort and record every request that leaves the app's own origin. */
 async function isolate(page: Page): Promise<string[]> {
@@ -140,19 +162,23 @@ test('published weekly case: review on availability until every alternative is a
 
   const selects = page.locator('[data-testid^="avail-"]')
   const n = await selects.count()
-  expect(n).toBe(3)
+  expect(n).toBe(weeklyCase.alternatives.length)
   for (let i = 0; i < n; i += 1) {
     await selects.nth(i).selectOption('assumed_available')
   }
   await expect(page.getByTestId('stale-notice')).toBeVisible()
   await page.getByTestId('compute').click()
   await expect(status(page)).toHaveAttribute('data-status', 'recommend')
+  await expect(page.getByTestId('recommended-player')).toContainText(expectedStarter.player_id)
+  if (expectedStarter.display_name) await expect(page.getByTestId('recommended-player')).toContainText(expectedStarter.display_name)
   await expect(page.getByTestId('limitations').locator('[data-limitation="availability_user_assumed"]')).toBeVisible()
   await expect(page.getByTestId('limitations').locator('[data-limitation="snapshot_not_game_day_verified"]')).toBeVisible()
   await expect(page.getByTestId('changed-controls')).toHaveText('availability')
 
   // No outcomes are published for this snapshot.
-  await page.getByTestId('choose-00-0039139').check()
+  await expect(page.getByTestId('action-state')).toHaveCount(0)
+  await expect(page.getByTestId(`choose-${assumedExperiment.expected.recommended_player_id}`)).not.toBeChecked()
+  await page.getByTestId(`choose-${assumedExperiment.expected.recommended_player_id}`).check()
   await page.getByTestId('record-choice').click()
   await page.getByRole('button', { name: 'Outcomes', exact: true }).click()
   await page.getByTestId('reveal-outcomes').click()

@@ -1,0 +1,217 @@
+{
+ "action": {
+  "action_id": null,
+  "at_utc": null,
+  "chosen_player_id": null,
+  "kind": null,
+  "note": null,
+  "state": "not_recorded"
+ },
+ "case_id": "syn-ambiguity-floor-relaxation",
+ "created_at_utc": "2026-10-31T18:30:00+00:00",
+ "decision_id": "17c89d0595a690ad3947c0868d51c5071b4241f11eab8b9afa7ebdf17b2b8c42",
+ "events": [],
+ "inputs": {
+  "alternatives": [
+   {
+    "availability": "assumed_available",
+    "availability_basis": "user_assumed",
+    "baseline": 12.0,
+    "baseline_provenance": "player_history",
+    "candidate": "rf",
+    "ceiling": 22.0,
+    "display_name": "Synthetic A",
+    "floor": 6.0,
+    "model_version": "synthetic-model-v1",
+    "player_id": "SYN-A",
+    "position": "RB",
+    "projection": 14.0,
+    "season": 2099,
+    "source_row_ref": null,
+    "team": "SYN",
+    "week": 1
+   },
+   {
+    "availability": "assumed_available",
+    "availability_basis": "user_assumed",
+    "baseline": 13.0,
+    "baseline_provenance": "player_history",
+    "candidate": "rf",
+    "ceiling": 21.6,
+    "display_name": "Synthetic B",
+    "floor": 7.0,
+    "model_version": "synthetic-model-v1",
+    "player_id": "SYN-B",
+    "position": "RB",
+    "projection": 13.6,
+    "season": 2099,
+    "source_row_ref": null,
+    "team": "SYN",
+    "week": 1
+   }
+  ],
+  "parameters": {
+   "min_floor": 8.0,
+   "min_projection_gap": 0.5,
+   "model_only_exploration": false,
+   "require_independent_baseline": true
+  },
+  "policy_version": "1.0.0",
+  "schema_version": "decision_inputs/1.0",
+  "slot": "RB",
+  "snapshot": {
+   "baseline_reconciled": null,
+   "candidate_by_position": {
+    "QB": "rf",
+    "RB": "rf",
+    "TE": "rf",
+    "WR": "rf"
+   },
+   "data_cutoff": {
+    "season": 2098,
+    "week": 18
+   },
+   "evidence_detail": null,
+   "evidence_status": "verified",
+   "feature_version": null,
+   "generated_at_utc": null,
+   "inputs_sha256": "f566f8c3c8ccfb35fe581b3ed6b26d93cdf0229c7c1d394b88d2c65c9ac0fc38",
+   "mode": "synthetic",
+   "model_version": "synthetic-model-v1",
+   "publication": {
+    "action": null,
+    "note": "synthetic inputs for boundary and regression checks",
+    "run_id": null,
+    "status": "synthetic"
+   },
+   "scoring_format": "ppr",
+   "season": 2099,
+   "snapshot_id": "syn-ambiguity-floor-relaxation",
+   "source_family": "synthetic",
+   "week": 1
+  }
+ },
+ "outcome": {
+  "attached_at_utc": null,
+  "metrics": null,
+  "outcome_id": null,
+  "outcome_snapshot_id": null,
+  "state": "not_attached"
+ },
+ "parent_decision_id": null,
+ "prediction_note": null,
+ "result": {
+  "baseline": {
+   "agrees_with_model_leader": false,
+   "missing_for": [],
+   "preferred_player_id": "SYN-B",
+   "preferred_value": 13.0,
+   "provenance": {
+    "SYN-A": "player_history",
+    "SYN-B": "player_history"
+   },
+   "status": "available"
+  },
+  "counts": {
+   "comparable": 2,
+   "excluded": 0,
+   "nominated": 2
+  },
+  "decision_id": "17c89d0595a690ad3947c0868d51c5071b4241f11eab8b9afa7ebdf17b2b8c42",
+  "explanation": [
+   "The projection gap 0.4 between Synthetic A (SYN-A) and Synthetic B (SYN-B) is below the minimum 0.5.",
+   "Synthetic A (SYN-A) leads on projection but its model floor 6 is below the guardrail 8.",
+   "The causal trailing-mean baseline prefers Synthetic B (SYN-B) (13) instead; the baseline is a separate comparator, not the model."
+  ],
+  "gates": {
+   "floor_checked": true,
+   "floor_ok": false,
+   "gap_ok": false,
+   "leading_floor": 6.0,
+   "min_floor": 8.0,
+   "min_projection_gap": 0.5
+  },
+  "leading": {
+   "first": "SYN-A",
+   "gap": 0.4,
+   "second": "SYN-B"
+  },
+  "limitations": [
+   "availability_user_assumed",
+   "synthetic_evidence",
+   "floors_not_probabilities"
+  ],
+  "policy_version": "1.0.0",
+  "ranking": [
+   {
+    "availability": "assumed_available",
+    "availability_basis": "user_assumed",
+    "baseline": 12.0,
+    "baseline_provenance": "player_history",
+    "ceiling": 22.0,
+    "comparable": true,
+    "display_name": "Synthetic A",
+    "exclusion": null,
+    "floor": 6.0,
+    "player_id": "SYN-A",
+    "position": "RB",
+    "projection": 14.0,
+    "rank": 1,
+    "tied_with_next": false
+   },
+   {
+    "availability": "assumed_available",
+    "availability_basis": "user_assumed",
+    "baseline": 13.0,
+    "baseline_provenance": "player_history",
+    "ceiling": 21.6,
+    "comparable": true,
+    "display_name": "Synthetic B",
+    "exclusion": null,
+    "floor": 7.0,
+    "player_id": "SYN-B",
+    "position": "RB",
+    "projection": 13.6,
+    "rank": 2,
+    "tied_with_next": false
+   }
+  ],
+  "reasons": [
+   {
+    "code": "gap_below_minimum",
+    "detail": {
+     "first": "Synthetic A (SYN-A)",
+     "gap": 0.4,
+     "second": "Synthetic B (SYN-B)",
+     "threshold": 0.5
+    },
+    "severity": "review"
+   },
+   {
+    "code": "floor_below_minimum",
+    "detail": {
+     "floor": 6.0,
+     "player": "Synthetic A (SYN-A)",
+     "threshold": 8.0
+    },
+    "severity": "review"
+   },
+   {
+    "code": "baseline_disagrees",
+    "detail": {
+     "player": "Synthetic B (SYN-B)",
+     "value": 13.0
+    },
+    "severity": "info"
+   }
+  ],
+  "recommended_player_id": null,
+  "schema_version": "decision_result/1.0",
+  "status": "review"
+ },
+ "result_sha256": "56f48d7c11f20912733e9d2078a84da0f919a41fdb6e7a5623c2aa961ff3b22f",
+ "schema_version": "decision_receipt/1.0",
+ "trust": {
+  "note": "Digests support integrity checks against known evidence; they are not signatures and do not prove who acted or when. Local storage is editable and erasable; append-only is application behaviour, not a tamper-proof audit service."
+ }
+}

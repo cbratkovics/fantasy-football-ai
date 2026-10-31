@@ -30,6 +30,15 @@ from ffai.interfaces import TargetSpec
 ScoringFormat = Literal["standard", "half", "ppr"]
 FORMATS: tuple[ScoringFormat, ...] = ("standard", "half", "ppr")
 
+# Stable rules identity; the reception weight is identified separately by scoring format.
+RULES_ID = "ffai-nflverse-v1"
+RULES_DESCRIPTION = (
+    "Passing: 1 point/25 yards, 4/TD, -2/interception; rushing and receiving: "
+    "1 point/10 yards, 6/TD; receptions: standard 0, half-PPR 0.5, PPR 1; "
+    "2/two-point conversion, -2/fumble lost, 6/special-teams TD. No yardage bonuses. "
+    "Custom PPR league rules may differ."
+)
+
 
 @dataclass(frozen=True)
 class ScoringRules:

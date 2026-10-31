@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query'
 import { getLatestWeek, getPredictions } from '@/lib/api/players'
 import { POSITIONS, SCORING_FORMATS, type Position, type ScoringFormat } from '@/lib/api/types'
 import { fmtNum } from '@/lib/format'
+import { ActualPoints } from '@/components/ui/ActualPoints'
 import { Segmented, TextInput } from '@/components/ui/Controls'
 import { ErrorState, LoadingState, EmptyState } from '@/components/ui/States'
 import { Provenance, generatedLine } from '@/components/ui/Provenance'
@@ -85,7 +86,7 @@ export function PredictionsBoard() {
               ['Model', data.model_version],
               ['Features', data.feature_version],
               ['Data through', `season ${data.data_through.season} · week ${data.data_through.week}`],
-              ['Rows', `${data.n} (${data.scoring.toUpperCase()})`],
+              ['Published projections', `${data.n} (${data.scoring.toUpperCase()})`],
             ]}
             note={generatedLine(data.model_version, data.feature_version, data.data_through.season, data.data_through.week, data.generated_at_utc)}
           />
@@ -104,7 +105,7 @@ export function PredictionsBoard() {
                     <th className="px-4 py-3 text-right">Prediction</th>
                     <th className="px-4 py-3 text-right">Floor – Ceiling</th>
                     <th className="px-4 py-3">Range</th>
-                    <th className="px-4 py-3 text-right">Actual</th>
+                    <th className="px-4 py-3 text-right">Actual ({data.scoring.toUpperCase()})</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -127,7 +128,7 @@ export function PredictionsBoard() {
                         <td className="px-4 py-3">
                           <RangeBar floor={r.floor} prediction={r.prediction} ceiling={r.ceiling} max={max} />
                         </td>
-                        <td className="px-4 py-3 text-right font-mono text-xs">{r.actual === null ? <span className="text-[#8c9a96]">not scored</span> : fmtNum(r.actual, 1)}</td>
+                        <td className="px-4 py-3 text-right font-mono text-xs"><ActualPoints actual={r.actual} reason={r.actual_null_reason} source={r.actual_source} actualFormat={r.actual_scoring_format} expectedFormat={scoring} /></td>
                       </tr>
                     )
                   })}
@@ -139,11 +140,14 @@ export function PredictionsBoard() {
           <aside className="grid gap-4 border border-[#c5c7c0] bg-[#f8f7f2] p-5 text-xs leading-relaxed text-[#52605d] md:grid-cols-2">
             <div>
               <p className="font-mono text-[9px] font-bold uppercase tracking-widest text-moss">Scoring derivation</p>
-              <p className="mt-2">{data.scoring_derivation}</p>
+              <p className="mt-2">{data.scoring === 'ppr' ? 'PPR-trained forecast.' : 'Derived forecast estimate: a PPR-trained projection adjusted using estimated receptions. Scoring-rule reconciliation does not validate this forecast’s accuracy.'} {data.scoring_derivation}</p>
+              <p className="mt-2">Actuals use realized scoring evidence, never estimated receptions. Player history and evaluations use PPR.</p>
+              <p className="mt-2">{data.scoring_rules_description ?? 'Implemented rules: 1 point per 25 passing yards; 4 per passing TD; −2 per interception; 1 per 10 rushing/receiving yards; 6 per rushing/receiving TD; 2 per two-point conversion; −2 per lost fumble; 6 per special-teams TD. Receptions: PPR 1, half 0.5, standard 0. No bonuses.'}</p>
+              <p className="mt-1 font-mono text-[10px]">Rules: {data.scoring_rules_id ?? 'ffai-nflverse-v1'} · custom league settings may differ.</p>
             </div>
             <div>
               <p className="font-mono text-[9px] font-bold uppercase tracking-widest text-moss">Interval method</p>
-              <p className="mt-2">{data.interval_method}</p>
+              <p className="mt-2">{data.interval_method} These residual-offset ranges are not guaranteed bounds or a safe minimum score.</p>
             </div>
           </aside>
         </>

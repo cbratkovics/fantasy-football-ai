@@ -25,8 +25,11 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from ffai import __version__
 from ffai.config import ARTIFACTS_DIR, POSITIONS, cors_origins
+from ffai.context.snapshot import load_snapshot
 from ffai.models import registry
+from ffai.scoring import RULES_DESCRIPTION, RULES_ID
 from ffai.serve import marts, schemas
+from ffai.serve.actuals import resolve_actual
 
 log = logging.getLogger("ffai.serve")
 
@@ -182,6 +185,23 @@ def manifest() -> schemas.ManifestResponse:
     return schemas.ManifestResponse(manifest=_state().manifest)
 
 
+@app.get("/context")
+def context_snapshot() -> dict[str, Any]:
+    """Optional normalized companion; never fetch data or turn app health into readiness.
+
+    Operators explicitly export to artifacts/context/snapshot.json. Absence or malformed
+    optional context does not stop artifact-backed predictions or historical replay.
+    """
+    root = Path(os.environ.get("FFAI_ARTIFACTS_DIR", ARTIFACTS_DIR))
+    path = root / "context" / "snapshot.json"
+    if not path.exists():
+        raise HTTPException(404, {"reason": "context_unavailable"})
+    try:
+        return load_snapshot(path)
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        raise HTTPException(503, {"reason": "context_invalid"}) from exc
+
+
 @app.get("/predictions/{season}/{week}", response_model=schemas.PredictionsResponse)
 def predictions(
     season: int,
@@ -198,6 +218,7 @@ def predictions(
         raise HTTPException(422, f"position must be one of {POSITIONS}")
     w = _reception_weight(scoring)
     out = []
+    outcomes = s.marts.actual_outcomes(season, week) if s.marts else {}
     for r in payload["predictions"]:
         if position and r["position"] != position:
             continue
@@ -214,7 +235,7 @@ def predictions(
                 receptions_estimate=r["receptions_estimate"],
                 model_version=payload["model_version"],
                 candidate=r["candidate"],
-                actual=r.get("actual"),
+                **resolve_actual(r, scoring, outcomes=outcomes.get(r["player_id"], ())).fields(),
             )
         )
     out.sort(key=lambda r: (-r.prediction, r.player_id))
@@ -223,6 +244,8 @@ def predictions(
         week=week,
         scoring=scoring,
         scoring_derivation=payload["scoring"]["derivation"],
+        scoring_rules_id=RULES_ID,
+        scoring_rules_description=RULES_DESCRIPTION,
         interval_method=payload["scoring"]["interval"],
         model_version=payload["model_version"],
         feature_version=payload["feature_version"],
@@ -242,6 +265,9 @@ def player(player_id: str) -> schemas.PlayerResponse:
         sub = frame[frame["player_id"] == player_id]
         for r in sub.itertuples(index=False):
             name, team, position = r.player_display_name, r.team, r.position
+            observation = resolve_actual({"actual": r.actual}, "ppr").fields()
+            if observation["actual"] is not None:
+                observation["actual_source"] = f"{source}_predictions_ppr"
             rows.append(
                 schemas.PlayerHistoryRow(
                     season=int(r.season),
@@ -249,7 +275,7 @@ def player(player_id: str) -> schemas.PlayerResponse:
                     prediction=float(r.prediction),
                     floor=float(r.prediction_floor),
                     ceiling=float(r.prediction_ceiling),
-                    actual=float(r.actual),
+                    **observation,
                     model_version=s.model_version,
                     source=source,
                 )
@@ -258,6 +284,7 @@ def player(player_id: str) -> schemas.PlayerResponse:
         for r in payload["predictions"]:
             if r["player_id"] == player_id:
                 name, team, position = r.get("name"), r.get("team"), r["position"]
+                outcomes = s.marts.actual_outcomes(season, week) if s.marts else {}
                 rows.append(
                     schemas.PlayerHistoryRow(
                         season=season,
@@ -265,7 +292,7 @@ def player(player_id: str) -> schemas.PlayerResponse:
                         prediction=r["prediction"],
                         floor=r["floor"],
                         ceiling=r["ceiling"],
-                        actual=r.get("actual"),
+                        **resolve_actual(r, "ppr", outcomes=outcomes.get(player_id, ())).fields(),
                         model_version=payload["model_version"],
                         source="weekly",
                     )

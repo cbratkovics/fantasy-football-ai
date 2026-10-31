@@ -39,26 +39,53 @@ def _snapshots(manifest: dict) -> list[dict]:
 def test_reconciliation_statuses_on_committed_evidence(built):
     _, manifest = built
     real = _snapshots(manifest)
-    assert len(real) == 39
+    # Weekly publication advances independently of these tests. Require the exact source
+    # period set, rather than freezing the count/latest week at the original week-3 export.
+    with duckdb.connect() as con:
+        expected_periods = set(
+            con.execute(
+                "select distinct source, season, week from read_parquet(?) "
+                "where model_version = ? and candidate = 'rf'",
+                [str(MART), MODEL_VERSION],
+            ).fetchall()
+        )
+    assert {(s["source_family"], s["season"], s["week"]) for s in real} == expected_periods
+    assert len(real) == len(expected_periods)
+    predictions = [
+        json.loads(p.read_text()) for p in (ARTIFACTS / "predictions").glob("*/week_*.json")
+    ]
+    assert {(s["season"], s["week"]) for s in real if s["source_family"] == "weekly"} == {
+        (p["season"], p["week"]) for p in predictions
+    }
+    rolling = {}
+    for path in (ARTIFACTS / "eval").glob("rolling_*.json"):
+        doc = json.loads(path.read_text())
+        rolling.update({(doc["season"], w["week"]): w for w in doc["weeks"] if w.get("champion")})
     for s in real:
         rec = s["reconciliation"]
+        # Modern marts carry explicit per-row provenance; aggregate reconciliation is still
+        # required, but it must not erase the player-versus-position history distinction.
+        assert s["baseline"]["provenance_basis"] == "mart_column"
         if s["source_family"] in ("frozen_test", "out_of_sample_season"):
             assert rec["status"] == "matched", s["snapshot_id"]
-            assert s["baseline"]["provenance_basis"] == "population_rule_and_reconciliation"
             assert s["baseline"]["reconciled"] is True
             assert rec["reference"].startswith("eval-")
             assert set(rec["expected"]) == {"ALL", "QB", "RB", "WR", "TE"}
-        elif s["week"] in (1, 2):
+        elif (s["season"], s["week"]) in rolling:
             assert rec["status"] == "matched", s["snapshot_id"]
-            assert rec["reference"] == f"rolling_2026.json week {s['week']}"
+            assert rec["reference"] == f"rolling_{s['season']}.json week {s['week']}"
+            assert s["baseline"]["reconciled"] is True
             assert s["mode"] == "historical_replay"
         else:
             assert rec["status"] == "unavailable", s["snapshot_id"]
-            assert s["baseline"]["provenance_basis"] == "population_rule_unreconciled"
             assert s["baseline"]["reconciled"] is None
             assert s["mode"] == "published_weekly"
             assert s["outcomes"] is None
-    assert manifest["latest_weekly_snapshot_id"] == f"weekly-2026-w03-{MODEL_VERSION}-rf"
+    source_manifest = json.loads((ARTIFACTS / "manifest.json").read_text())
+    latest = json.loads((ARTIFACTS / source_manifest["predictions"]["latest"]).read_text())
+    assert manifest["latest_weekly_snapshot_id"] == (
+        f"weekly-{latest['season']}-w{latest['week']:02d}-{MODEL_VERSION}-rf"
+    )
     assert manifest["lineage"]["model_version"] == MODEL_VERSION
     assert manifest["lineage"]["feature_version"] == "asof_v1"
 
@@ -66,6 +93,22 @@ def test_reconciliation_statuses_on_committed_evidence(built):
 def test_champion_at_source_and_row_provenance(built):
     out, manifest = built
     b = bundle.load_bundle(out)
+    with duckdb.connect() as con:
+        # Compare every exported claim to the fact's own independently named branch. The
+        # position fallback is legitimate independent history, not fabricated player history.
+        provenance = {
+            (source, season, week, pid, candidate): branch
+            for source, season, week, pid, candidate, branch in con.execute(
+                "select source, season, week, player_id, candidate, baseline_source "
+                "from read_parquet(?) where model_version = ?",
+                [str(MART), MODEL_VERSION],
+            ).fetchall()
+        }
+    branch_names = {
+        "player_history": "player_history",
+        "position_history": "position_history",
+        "prediction": "model_prediction_fallback",
+    }
     for s in _snapshots(manifest):
         doc = b.inputs_snapshot(s["snapshot_id"])
         basis = "predictions_file" if s["source_family"] == "weekly" else "eval_artifact"
@@ -74,7 +117,11 @@ def test_champion_at_source_and_row_provenance(built):
             p: "rf" for p in ("QB", "RB", "WR", "TE")
         }
         assert {r["candidate"] for r in doc["rows"]} == {"rf"}
-        assert {r["baseline_provenance"] for r in doc["rows"]} == {"player_history"}
+        for r in doc["rows"]:
+            branch = provenance[
+                (s["source_family"], s["season"], s["week"], r["player_id"], r["candidate"])
+            ]
+            assert r["baseline_provenance"] == branch_names[branch]
         default = "unknown" if s["source_family"] == "weekly" else "realized_stats_row"
         assert {r["availability_default"] for r in doc["rows"]} == {default}
         assert {r["display_source"] for r in doc["rows"]} == {"prediction_source"}
@@ -209,7 +256,9 @@ def test_mismatched_mart_yields_unknown_baseline(tmp_path):
     # the oos window is shortened to four weeks (n differs) and its baseline is shifted by one
     # point (baseline MAE differs): both must be reported, never explained away
     sql = (
-        "select * replace (case when source = 'out_of_sample_season' then baseline + 1.0 "
+        # Exercise the legacy no-provenance schema deliberately. With the modern explicit
+        # baseline_source column, a mismatch does not make its recorded branch unknown.
+        "select * exclude (baseline_source) replace (case when source = 'out_of_sample_season' then baseline + 1.0 "
         "else baseline end as baseline) from read_parquet('{src}') "
         "where source = 'weekly' or (source = 'out_of_sample_season' and week <= 4)"
     )
@@ -222,7 +271,14 @@ def test_mismatched_mart_yields_unknown_baseline(tmp_path):
     assert not marker.exists(), "a successful build removes the failure marker"
     oos = [s for s in manifest["snapshots"] if s["source_family"] == "out_of_sample_season"]
     weekly = [s for s in manifest["snapshots"] if s["source_family"] == "weekly"]
-    assert len(oos) == 4 and len(weekly) == 3
+    assert {s["week"] for s in oos} == {1, 2, 3, 4}
+    expected_weekly = {
+        (p["season"], p["week"])
+        for path in (root / "predictions").glob("*/week_*.json")
+        for p in [json.loads(path.read_text())]
+    }
+    assert {(s["season"], s["week"]) for s in weekly} == expected_weekly
+    assert len(weekly) == len(expected_weekly)
     for s in oos:
         assert s["reconciliation"]["status"] == "mismatch"
         assert s["reconciliation"]["expected"]["ALL"]["n"] == 5914

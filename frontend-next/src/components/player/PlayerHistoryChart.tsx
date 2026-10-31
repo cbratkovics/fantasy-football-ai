@@ -38,9 +38,10 @@ export function PlayerHistoryChart({ history }: { history: PlayerWeekRow[] }) {
   const model = useMemo(() => {
     const rows = history
     const keys = rows.map((r) => `${r.season}·${r.week}`)
-    const values = rows.flatMap((r) => [r.prediction, r.actual ?? 0, r.prediction_ceiling ?? 0, r.prediction_floor ?? 0, r.baseline])
+    const values = rows.flatMap((r) => [r.prediction, r.actual, r.prediction_ceiling, r.prediction_floor, r.baseline])
+      .filter((v): v is number => v !== null && Number.isFinite(v))
     const x = scalePoint<string>().domain(keys).range([MARGIN.left, WIDTH - MARGIN.right]).padding(0.5)
-    const y = scaleLinear().domain([0, Math.max(1, ...values)]).nice().range([HEIGHT - MARGIN.bottom, MARGIN.top])
+    const y = scaleLinear().domain([Math.min(0, ...values), Math.max(1, ...values)]).nice().range([HEIGHT - MARGIN.bottom, MARGIN.top])
     const key = (r: PlayerWeekRow) => `${r.season}·${r.week}`
     const band = area<PlayerWeekRow>()
       .defined((r) => r.prediction_floor !== null && r.prediction_ceiling !== null)
@@ -84,7 +85,7 @@ export function PlayerHistoryChart({ history }: { history: PlayerWeekRow[] }) {
   return (
     <figure className="border border-[#c5c7c0] bg-white p-4">
       <figcaption className="mb-2 flex flex-wrap items-center justify-between gap-2">
-        <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-moss">Prediction vs actual · floor–ceiling band · causal baseline</span>
+        <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-moss">PPR prediction vs actual · residual-offset band · causal baseline</span>
         <span className="flex flex-wrap gap-4 font-mono text-[9px] uppercase tracking-widest text-[#61706c]">
           <span><i className="mr-1 inline-block h-2 w-4 bg-moss align-middle" />prediction</span>
           <span><i className="mr-1 inline-block h-2 w-4 bg-ember align-middle" />actual</span>
@@ -102,7 +103,7 @@ export function PlayerHistoryChart({ history }: { history: PlayerWeekRow[] }) {
         ))}
       </div>
       <div className="overflow-x-auto">
-        <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="h-auto w-full min-w-[560px]" role="img" aria-label="Weekly prediction versus actual points with the causal baseline">
+        <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="h-auto w-full min-w-[560px]" role="img" aria-label="Weekly PPR prediction versus actual points with the causal baseline">
           {model.ticks.map((t) => (
             <g key={t}>
               <line x1={MARGIN.left} x2={WIDTH - MARGIN.right} y1={model.y(t)} y2={model.y(t)} stroke="#e4e5dd" />

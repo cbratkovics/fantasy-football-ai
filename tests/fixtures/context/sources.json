@@ -1,0 +1,89 @@
+{
+  "synthetic": true,
+  "sources": {
+    "schedules": {
+      "source_id": "synthetic:schedules",
+      "state": "fixture",
+      "rows": [
+        {
+          "season": 2026,
+          "week": 9,
+          "game_type": "REG",
+          "game_id": "2026_09_A_B",
+          "home_team": "B",
+          "away_team": "A",
+          "gameday": "2026-11-01",
+          "gametime": "13:00",
+          "home_score": 42,
+          "away_score": 35
+        }
+      ],
+      "first_observed_at_utc": "2026-10-31T12:00:00+00:00",
+      "fetched_at_utc": "2026-10-31T12:00:00+00:00",
+      "provider_updated_at_utc": null,
+      "coverage_complete": true
+    },
+    "rosters": {
+      "source_id": "synthetic:rosters",
+      "state": "fixture",
+      "rows": [
+        {
+          "season": 2026,
+          "week": 8,
+          "gsis_id": "rookie",
+          "full_name": "Same Name",
+          "position": "WR",
+          "team": "A"
+        },
+        {
+          "season": 2026,
+          "week": 8,
+          "gsis_id": "traded",
+          "full_name": "Same Name",
+          "position": "RB",
+          "team": "B"
+        },
+        {
+          "season": 2026,
+          "gsis_id": "bye",
+          "full_name": "Bye Player",
+          "position": "TE",
+          "team": "C"
+        },
+        {
+          "season": 2026,
+          "gsis_id": "out",
+          "full_name": "Out Player",
+          "position": "WR",
+          "team": "A"
+        }
+      ],
+      "first_observed_at_utc": "2026-10-31T12:00:00+00:00",
+      "fetched_at_utc": "2026-10-31T12:00:00+00:00",
+      "provider_updated_at_utc": null,
+      "coverage_complete": true
+    },
+    "injuries": {
+      "source_id": "synthetic:injuries",
+      "state": "fixture",
+      "rows": [
+        {
+          "season": 2026,
+          "week": 9,
+          "gsis_id": "traded",
+          "report_status": "Questionable"
+        },
+        {
+          "season": 2026,
+          "week": 9,
+          "gsis_id": "out",
+          "report_status": "Out"
+        }
+      ],
+      "first_observed_at_utc": "2026-10-31T12:00:00+00:00",
+      "fetched_at_utc": "2026-10-31T12:00:00+00:00",
+      "provider_updated_at_utc": null,
+      "coverage_complete": false
+    }
+  }
+}
