@@ -91,6 +91,20 @@ export interface PredictionsResponse {
   predictions: PredictionRecord[]
 }
 
+export interface PredictionPeriod {
+  season: number
+  week: number
+  model_version: string
+  feature_version: string
+  generated_at_utc: string
+  n: number
+}
+
+export interface PredictionPeriodsResponse {
+  latest: PredictionPeriod | null
+  periods: PredictionPeriod[]
+}
+
 export interface PlayerHistoryRow {
   season: number
   week: number

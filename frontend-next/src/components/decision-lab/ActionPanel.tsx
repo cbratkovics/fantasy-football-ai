@@ -28,10 +28,10 @@ export function ActionPanel({ receipt, onRecord, onDecline, error, hypotheticalO
   if (action.state !== 'not_recorded') {
     const chosenRow = r.ranking.find((row) => row.player_id === action.chosen_player_id)
     return (
-      <Card title={COPY.title} id="action" testId="action-panel">
+      <Card title="Record a choice" id="action" testId="action-panel">
         <div role="status" aria-live="polite" data-testid="action-state" className="text-sm">
           <p className="font-semibold">{action.state === 'recorded' ? COPY.recorded : COPY.declined}</p>
-          <dl className="mt-2 grid gap-1 font-mono text-[11px] text-[#52605d] sm:grid-cols-2">
+          <dl className="mt-2 grid gap-1 font-mono text-sm text-[#52605d] sm:grid-cols-2">
             {action.state === 'recorded' && (
               <div>
                 <dt className="inline">{COPY.choose}: </dt>
@@ -55,7 +55,7 @@ export function ActionPanel({ receipt, onRecord, onDecline, error, hypotheticalO
               <dd className="inline">{fmtUtc(action.at_utc)}</dd>
             </div>
           </dl>
-          {action.note && <p className="mt-2 whitespace-pre-wrap break-words text-xs text-[#3b4a46]">{action.note}</p>}
+          {action.note && <p className="mt-2 whitespace-pre-wrap break-words text-sm text-[#3b4a46]">{action.note}</p>}
         </div>
       </Card>
     )
@@ -63,7 +63,7 @@ export function ActionPanel({ receipt, onRecord, onDecline, error, hypotheticalO
 
   const trimmedNote = note.trim() ? note.trim().slice(0, NOTE_MAX) : null
   return (
-    <Card title={COPY.title} id="action" testId="action-panel">
+    <Card title="Record a choice" id="action" testId="action-panel">
       <Help>{COPY.help}</Help>
       <fieldset className="mt-4">
         <MicroLabel as="legend">{COPY.choose}</MicroLabel>
@@ -72,10 +72,10 @@ export function ActionPanel({ receipt, onRecord, onDecline, error, hypotheticalO
             const id = `choose-${row.player_id}`
             const tag = row.exclusion ? `${COPY.excludedLabel}: ${row.exclusion}` : r.recommended_player_id === row.player_id ? COPY.recommendedLabel : COPY.notRecommended
             return (
-              <li key={row.player_id} className="flex items-center gap-3 p-2 text-xs">
+              <li key={row.player_id} className="flex items-center gap-3 p-2 text-sm">
                 <input id={id} data-testid={id} type="radio" name="chosen" value={row.player_id} checked={chosen === row.player_id} onChange={() => setChosen(row.player_id)} className={`h-4 w-4 border-[#bfc3bb] text-ink ${FOCUS}`} />
                 <label htmlFor={id}>
-                  <b>{row.display_name ?? row.player_id}</b> <span className="font-mono text-[10px] text-[#6e7875]">{row.player_id} · {tag}</span>
+                  <b>{row.display_name ?? row.player_id}</b> <span className="font-mono text-sm text-[#52605d]">{row.position} · {tag}</span>
                 </label>
               </li>
             )
@@ -84,7 +84,7 @@ export function ActionPanel({ receipt, onRecord, onDecline, error, hypotheticalO
       </fieldset>
       <fieldset className="mt-4">
         <MicroLabel as="legend">{COPY.kind}</MicroLabel>
-        <div className="mt-2 flex flex-wrap gap-4 text-xs">
+        <div className="mt-2 flex flex-wrap gap-4 text-sm">
           {(
             [
               ['hypothetical_replay', COPY.hypothetical],
@@ -100,7 +100,7 @@ export function ActionPanel({ receipt, onRecord, onDecline, error, hypotheticalO
       </fieldset>
       <div className="mt-4 flex flex-col gap-1">
         <MicroLabel htmlFor="action-note">{COPY.note}</MicroLabel>
-        <textarea id="action-note" value={note} maxLength={NOTE_MAX} rows={2} onChange={(e) => setNote(e.target.value)} className={`w-full border border-[#bfc3bb] bg-white p-2 text-xs ${FOCUS}`} />
+        <textarea id="action-note" value={note} maxLength={NOTE_MAX} rows={2} onChange={(e) => setNote(e.target.value)} className={`w-full border border-[#bfc3bb] bg-white p-2 text-sm ${FOCUS}`} />
         <Help>
           {note.length}/{NOTE_MAX}
         </Help>
@@ -114,10 +114,10 @@ export function ActionPanel({ receipt, onRecord, onDecline, error, hypotheticalO
       )}
       <div className="mt-4 flex flex-wrap gap-2">
         <Button tone="primary" data-testid="record-choice" disabled={chosen === null} onClick={() => chosen && onRecord(chosen, kind, trimmedNote)}>
-          {COPY.record}
+          {kind === 'hypothetical_replay' ? 'Save a hypothetical comparison' : 'Record my choice'}
         </Button>
         <Button data-testid="decline-choice" onClick={() => onDecline(trimmedNote)}>
-          {COPY.decline}
+          I decided not to choose
         </Button>
         {chosen === null && <Help>{COPY.needChoice}</Help>}
       </div>

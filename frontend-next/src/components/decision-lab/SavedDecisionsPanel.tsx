@@ -63,7 +63,7 @@ export function SavedDecisionsPanel({ loaded, onOpen, onAttach, onDelete, export
       {loaded.problems.length > 0 && (
         <div className="mt-3">
           <Alert title={COPY.problems} testId="storage-problems">
-            <ul className="list-disc pl-5 text-xs">
+            <ul className="list-disc pl-5 text-sm">
               {loaded.problems.map((p, i) => (
                 <li key={`${p.kind}-${i}`}>
                   {p.kind}
@@ -103,7 +103,7 @@ export function SavedDecisionsPanel({ loaded, onOpen, onAttach, onDelete, export
         </div>
       )}
       {report && (
-        <div className="mt-3 border border-[#d7d7d0] bg-white p-3 text-xs" data-testid="import-report" role="status" aria-live="polite">
+        <div className="mt-3 border border-[#d7d7d0] bg-white p-3 text-sm" data-testid="import-report" role="status" aria-live="polite">
           <p className="font-mono">
             {report.imported} {COPY.imported} · {report.duplicates} {COPY.duplicates} · {report.rejected.length} {COPY.rejected}
             {!report.persisted ? ` · not persisted${report.storage_error ? `: ${report.storage_error}` : ''}` : ''}
@@ -126,11 +126,11 @@ export function SavedDecisionsPanel({ loaded, onOpen, onAttach, onDelete, export
         </div>
       ) : (
         <div className="mt-3 overflow-x-auto">
-          <table className="table w-full min-w-[960px] text-left font-mono text-xs" data-testid="saved-table">
+          <table className="table w-full min-w-[960px] text-left font-mono text-sm" data-testid="saved-table">
             <thead className="bg-[#f8f7f2]">
               <tr>
                 {[COPY.columns.case, COPY.columns.snapshot, COPY.columns.slot, COPY.columns.status, COPY.columns.recommended, COPY.columns.action, COPY.columns.outcome, COPY.columns.created, COPY.columns.parent, ''].map((h, i) => (
-                  <th key={`${h}-${i}`} scope="col" className="border-b border-[#c5c7c0] px-2 py-2 text-[9px] font-bold uppercase tracking-widest text-[#5c6966]">
+                  <th key={`${h}-${i}`} scope="col" className="border-b border-[#c5c7c0] px-2 py-2 text-sm font-bold  text-[#5c6966]">
                     {h}
                   </th>
                 ))}
@@ -193,7 +193,7 @@ export function SavedDecisionsPanel({ loaded, onOpen, onAttach, onDelete, export
           </table>
         </div>
       )}
-      <p className="mt-4 text-[11px] leading-5 text-[#52605d]">{TRUST_NOTE}</p>
+      <p className="mt-4 text-sm leading-5 text-[#52605d]">{TRUST_NOTE}</p>
     </Expandable>
   )
 }

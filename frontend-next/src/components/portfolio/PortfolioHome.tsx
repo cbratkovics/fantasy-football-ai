@@ -75,23 +75,20 @@ export function PortfolioHome() {
         <section className="portfolio-hero">
           <div className="hero-copy">
             <div className="eyebrow">
-              <span /> Applied data science + analytics engineering
+              <span /> Fantasy football decisions
             </div>
             <h1>
-              Football predictions, backed by <em>inspectable data models.</em>
+              Your next lineup choice, <em>with evidence.</em>
             </h1>
             <p className="hero-lede">
-              Explore how raw statistics and model artifacts become tested player-week facts, versioned decision metrics, and useful football features.
+              Compare players for one starting slot, understand the points difference, and see what to check before choosing.
             </p>
             <div className="hero-actions">
-              <Link href={ROUTES.predictions} className="portfolio-button primary">
-                Open the predictions <ArrowRightIcon />
+              <Link href={ROUTES.startSit} className="portfolio-button primary">
+                Compare my players <ArrowRightIcon />
               </Link>
-              <Link href={ROUTES.performance} className="portfolio-button secondary">
-                Review evaluation
-              </Link>
-              <Link href={ROUTES.dataPlatform} className="portfolio-button secondary">
-                Explore the data platform
+              <Link href={ROUTES.predictions} className="portfolio-button secondary">
+                Browse player projections
               </Link>
             </div>
             <div className="hero-proof">

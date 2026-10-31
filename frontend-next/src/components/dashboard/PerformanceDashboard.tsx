@@ -1,414 +1,129 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { ChartBarIcon, CircleStackIcon, ScaleIcon, ShieldCheckIcon } from '@heroicons/react/24/outline'
-import { EVAL_KIND_EXPLANATION, EVAL_KIND_LABEL, evaluationLabel, getPerformance, sortEvaluations } from '@/lib/api/players'
-import type { MetricBlock, PerformanceArtifact } from '@/lib/api/types'
-import { fmtInt, fmtNum, fmtPct, fmtUtc, shortHash } from '@/lib/format'
-import { COHORTS, ENTITY_PERIOD, PROJECT, UNITS, withinKey, withinLabel } from '@/lib/project'
-import { PERFORMANCE_COPY } from '@/content/performance'
+import type { MetricBlock } from '@/lib/api/types'
+import { EVAL_KIND_EXPLANATION, evaluationLabel, getPerformance } from '@/lib/api/players'
+import { fmtInt, fmtNum, fmtUtc } from '@/lib/format'
+import { formatLocalDate, readPreference, writePreference } from '@/lib/presentation/display'
+import { EVALUATION_METRICS, METRIC_LABELS, METRIC_EXPLANATIONS, cohortMetrics, compareEvaluationMetric, displayMetric, metricValue, selectEvaluation, supportedEvaluations, type EvaluationMetric } from '@/lib/presentation/evaluation'
 import { ErrorState, LoadingState } from '@/components/ui/States'
 import { RollingOriginChart } from './RollingOriginChart'
 import { DecisionsPanel } from './DecisionsPanel'
 
-type Cohort = string
-type MetricKey = 'mae' | 'median_ae' | 'rmse' | 'within_3_rate' | 'within_5_rate'
-
-// Tolerance bands come from the project config (within_k); the artifact carries within_<k>_rate.
-const [BAND_1, BAND_2] = PROJECT.withinK
-const METRIC_KEYS: MetricKey[] = ['mae', 'median_ae', 'rmse', withinKey(BAND_1), withinKey(BAND_2)]
-const METRIC_LABEL: Record<MetricKey, string> = {
-  mae: 'MAE',
-  median_ae: 'Median AE',
-  rmse: 'RMSE',
-  [withinKey(BAND_1)]: withinLabel(BAND_1),
-  [withinKey(BAND_2)]: withinLabel(BAND_2),
-} as Record<MetricKey, string>
-const isRate = (k: MetricKey) => k.endsWith('_rate')
-const show = (k: MetricKey, v: number | undefined) => (isRate(k) ? fmtPct(v) : fmtNum(v, 2))
-
-interface CohortRow {
-  cohort: Cohort
-  model: MetricBlock
-  baseline: MetricBlock
-}
-
-function cohortRows(artifact: PerformanceArtifact): CohortRow[] {
-  const rows: CohortRow[] = [{ cohort: 'ALL', model: artifact.metrics, baseline: artifact.baseline }]
-  for (const c of COHORTS.slice(1)) {
-    const block = artifact.cohorts?.[c as keyof typeof artifact.cohorts]
-    if (block) rows.push({ cohort: c, model: block, baseline: block.baseline })
+const PREF_KEY = 'ffai.display.evaluation/1'
+const FOCUS = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#176e5a]'
+interface View { evaluationId: string | null; origin: 'query' | 'saved' | 'default' | 'user'; position: string; metric: EvaluationMetric; notice: string | null }
+function initialView(): View {
+  const query = new URLSearchParams(typeof window === 'undefined' ? '' : window.location.search)
+  const raw = readPreference(PREF_KEY)
+  const saved = raw && typeof raw === 'object' ? raw as Record<string, unknown> : {}
+  const explicit = query.get('evaluation') ?? query.get('eval')
+  const savedId = typeof saved.evaluationId === 'string' ? saved.evaluationId : null
+  const metric = query.get('metric') ?? saved.metric
+  const validMetric = EVALUATION_METRICS.includes(metric as EvaluationMetric)
+  return {
+    evaluationId: explicit ?? savedId, origin: explicit !== null ? 'query' : savedId !== null ? 'saved' : 'default',
+    position: query.get('position') ?? (typeof saved.position === 'string' ? saved.position : 'ALL'),
+    metric: validMetric ? metric as EvaluationMetric : 'mae',
+    notice: metric && !validMetric ? 'That saved or requested measure is unavailable. Average absolute error is shown.' : null,
   }
-  return rows
 }
 
+/** Presentation only: all measurements remain from one selected historical artifact. */
 export function PerformanceDashboard() {
   const perf = useQuery({ queryKey: ['performance'], queryFn: getPerformance })
-  const [metric, setMetric] = useState<MetricKey>('mae')
-  const [cohort, setCohort] = useState<Cohort>('ALL')
-  // Which artifact is shown. null = "not chosen yet", which resolves to the highest season.
-  const [evalId, setEvalId] = useState<string | null>(null)
+  const [view, setView] = useState<View>(initialView)
+  const evaluations = useMemo(() => supportedEvaluations(perf.data?.evaluations ?? []), [perf.data])
+  const selection = selectEvaluation(evaluations, view.evaluationId, view.origin)
+  const a = selection.artifact
+  const positions = a ? ['ALL', ...Object.keys(a.cohorts ?? {})] : ['ALL']
+  const position = positions.includes(view.position) ? view.position : view.origin === 'saved' ? 'ALL' : view.position
+  const selected = a ? cohortMetrics(a, position) : null
+  const comparison = compareEvaluationMetric(selected?.model, selected?.baseline, view.metric)
+  const within = compareEvaluationMetric(selected?.model, selected?.baseline, 'within_3_rate')
+  const positionLabel = position === 'ALL' ? 'All positions' : position
+  const notice = view.notice ?? selection.notice ?? (view.position !== position ? 'Your saved position group is unavailable. All positions are shown.' : null)
+  useEffect(() => {
+    if (selection.staleSaved && a) writePreference(PREF_KEY, { evaluationId: a.eval_id, position, metric: view.metric })
+  }, [selection.staleSaved, a, position, view.metric])
+  const update = (change: Partial<View>) => {
+    const next = { ...view, ...change, evaluationId: change.evaluationId ?? a?.eval_id ?? view.evaluationId, origin: a ? 'user' as const : view.origin, notice: null }
+    setView(next)
+    writePreference(PREF_KEY, { evaluationId: next.evaluationId, position: next.position, metric: next.metric })
+  }
+  if (perf.isPending) return <LoadingState label="Loading historical model results…" />
+  if (perf.isError) return <ErrorState error={perf.error} context="Historical evaluation data could not be loaded" />
+  if (!evaluations.length) return <section className="product-card"><h2 className="text-xl font-semibold">No complete historical evaluation is available</h2><p className="mt-2">Model results will appear when a supported season evaluation is published.</p><a href="/predictions" className={`mt-3 inline-flex min-h-[44px] items-center font-semibold text-[#145744] underline ${FOCUS}`}>Browse player projections</a></section>
 
-  const evaluations = useMemo(() => sortEvaluations(perf.data?.evaluations ?? []), [perf.data])
-  const a: PerformanceArtifact | undefined = evaluations.find((e) => e.eval_id === evalId) ?? evaluations[0]
-
-  const rows = useMemo(() => (a ? cohortRows(a) : []), [a])
-  const selected = rows.find((r) => r.cohort === cohort) ?? rows[0]
-  const chartRows = cohort === 'ALL' ? rows.filter((r) => r.cohort !== 'ALL') : rows.filter((r) => r.cohort === cohort)
-
-  return (
-    <>
-      <header className="evaluation-hero">
-        <div className="eyebrow">
-          <span /> {PERFORMANCE_COPY.heroEyebrow}
-        </div>
-        <div className="evaluation-title-row">
-          <h1>
-            {PERFORMANCE_COPY.heroTitle[0]}
-            <br />
-            <em>{PERFORMANCE_COPY.heroTitle[1]}</em>
-          </h1>
-          <div>
-            <p>{PERFORMANCE_COPY.heroLede}</p>
-            {a && (
-              <span>
-                {a.split.strategy.replace(/_/g, ' ').toUpperCase()} · {evaluationLabel(a).toUpperCase()} · FROM WEEK {a.split.test_start_week}
-              </span>
-            )}
+  return <div className="space-y-5" data-testid="performance-dashboard">
+    <section className="product-card" aria-label="Choose historical results">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+        <label className="col-span-2 grid min-w-0 gap-2 text-base font-medium sm:col-span-1" htmlFor="evaluation-period">Evaluation<select id="evaluation-period" className={`product-field min-h-[44px] min-w-0 w-full rounded-lg border border-[#c7ccc5] bg-white px-3 py-2 text-base ${FOCUS}`} value={a?.eval_id ?? ''} onChange={(e) => update({ evaluationId: e.target.value, origin: 'user' })}>{!a && <option value="">Choose an available evaluation</option>}{evaluations.map((e) => <option key={e.eval_id} value={e.eval_id}>{evaluationLabel(e)}</option>)}</select></label>
+        <label className="grid min-w-0 gap-2 text-base font-medium" htmlFor="evaluation-position">Position group<select id="evaluation-position" className={`product-field min-h-[44px] min-w-0 w-full rounded-lg border border-[#c7ccc5] bg-white px-3 py-2 text-base ${FOCUS}`} value={position} onChange={(e) => update({ position: e.target.value })}>{!positions.includes(position) && <option value={position}>{position} — unavailable</option>}{positions.map((p) => <option key={p} value={p}>{p === 'ALL' ? 'All positions' : p}</option>)}</select></label>
+        <label className="grid min-w-0 gap-2 text-base font-medium" htmlFor="evaluation-metric">Measure<select id="evaluation-metric" className={`product-field min-h-[44px] min-w-0 w-full rounded-lg border border-[#c7ccc5] bg-white px-3 py-2 text-base ${FOCUS}`} value={view.metric} onChange={(e) => update({ metric: e.target.value as EvaluationMetric })}>{EVALUATION_METRICS.map((m) => <option key={m} value={m}>{m === 'mae' ? 'Average miss' : m === 'median_ae' ? 'Median miss' : m === 'rmse' ? 'RMS error' : METRIC_LABELS[m]}</option>)}</select></label>
+      </div>
+      {notice && <p className="mt-3 text-sm text-[#4b5b54]" role="status">{notice}</p>}
+      {a && <p className="mt-3 text-sm text-[#4b5b54]">{a.season} historical season · {positionLabel} · Implemented PPR scoring</p>}
+    </section>
+    {!a && <section className="product-card" role="alert"><h2 className="text-xl font-semibold">Choose an available evaluation</h2><p className="mt-2">{selection.notice}</p><p className="mt-2 text-sm">Another evaluation was not silently substituted for the requested one.</p></section>}
+    {a && !selected && <section className="product-card" role="alert"><h2 className="text-xl font-semibold">This position group is unavailable</h2><p className="mt-2">Choose a position group above. No aggregate was substituted for your selection.</p></section>}
+    {a && selected && <>
+      <section className="product-card" aria-label="Selected evaluation finding" data-testid="evaluation-finding">
+        <p className="text-sm font-medium text-[#4b5b54]">{positionLabel} · {a.season} · {a.kind === 'frozen_test' ? 'Held-out test season' : 'Complete out-of-sample season'}</p>
+        <h2 className="mt-2 text-2xl font-semibold leading-snug text-[#173c30]">{view.metric === 'mae' ? 'Average miss' : METRIC_LABELS[view.metric]}: {displayMetric(comparison.model, view.metric)}{!view.metric.endsWith('_rate') && comparison.model !== null ? ' PPR points' : ''}</h2>
+        <p className="mt-3 max-w-4xl text-base leading-7">{comparison.state === 'unavailable' ? comparison.description : <>Compared with <strong>{displayMetric(comparison.baseline, view.metric)}{!view.metric.endsWith('_rate') ? ' PPR points' : ''}</strong> for the historical baseline. {comparison.description}</>}</p>
+        <div className="mt-6 grid gap-6 lg:grid-cols-[1.1fr_.9fr]">
+          <div><ComparisonBars model={comparison.model} baseline={comparison.baseline} metric={view.metric} /><p className="mt-3 text-sm leading-6 text-[#4b5b54]">{METRIC_EXPLANATIONS[view.metric]}</p></div>
+          <div className="grid gap-5 border-t border-[#d8ddd6] pt-5 sm:grid-cols-2 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
+            <div><h3 className="text-base font-medium">Within 3 PPR points</h3><p className="mt-2 text-2xl font-semibold tabular-nums">{displayMetric(within.model, 'within_3_rate')}</p><p className="mt-1 text-sm text-[#4b5b54]">Historical baseline: {displayMetric(within.baseline, 'within_3_rate')}</p><p className="mt-2 text-sm leading-6">A historical frequency, not the chance your next decision succeeds.</p></div>
+            <div><h3 className="text-base font-medium">Evaluated player-weeks</h3><p className="mt-2 text-2xl font-semibold tabular-nums">{fmtInt(selected.model.n)}</p><p className="mt-1 text-sm text-[#4b5b54]">{positionLabel}, {a.season} season</p><p className="mt-2 text-sm leading-6">Repeated observations of players, not unique users or lineup decisions.</p></div>
           </div>
         </div>
-      </header>
-
-      <section className="evaluation-dashboard" aria-label="Evaluation results">
-        {perf.isPending && <LoadingState label="Reading the evaluation artifact…" />}
-        {perf.isError && <ErrorState error={perf.error} context="GET /performance" />}
-
-        {a && selected && (
-          <>
-            <div className="evaluation-toolbar evaluation-selector">
-              <div>
-                <small>Evaluation</small>
-                <div role="tablist" aria-label="Evaluation season">
-                  {evaluations.map((e) => (
-                    <button
-                      key={e.eval_id}
-                      role="tab"
-                      aria-selected={e.eval_id === a.eval_id}
-                      className={e.eval_id === a.eval_id ? 'active' : ''}
-                      onClick={() => setEvalId(e.eval_id)}
-                    >
-                      {evaluationLabel(e)}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <p className="max-w-xl text-xs leading-relaxed text-[#52605d]">
-                <b className="text-ink">{evaluationLabel(a)}</b>: {EVAL_KIND_EXPLANATION[a.kind] ?? a.kind}.
-              </p>
-            </div>
-
-            <p className="mb-6 border border-ink bg-acid px-4 py-3 font-mono text-[11px] font-bold text-ink">
-              Every figure on this page is read from the committed evaluation artifact {a.eval_id}.
-            </p>
-
-            {evaluations.length > 1 && <EvaluationComparison evaluations={evaluations} activeId={a.eval_id} onSelect={setEvalId} />}
-
-            <div className="evaluation-kpis">
-              <article>
-                <div>
-                  <ScaleIcon />
-                  <span>MAE · {selected.cohort}</span>
-                </div>
-                <strong>{fmtNum(selected.model.mae, 2)}</strong>
-                <p>baseline {fmtNum(selected.baseline.mae, 2)} · {UNITS}</p>
-              </article>
-              <article>
-                <div>
-                  <ChartBarIcon />
-                  <span>Median AE · {selected.cohort}</span>
-                </div>
-                <strong>{fmtNum(selected.model.median_ae, 2)}</strong>
-                <p>baseline {fmtNum(selected.baseline.median_ae, 2)}</p>
-              </article>
-              <article>
-                <div>
-                  <ShieldCheckIcon />
-                  <span>{withinLabel(BAND_1)} · {selected.cohort}</span>
-                </div>
-                <strong>{fmtPct(selected.model[withinKey(BAND_1)])}</strong>
-                <p>baseline {fmtPct(selected.baseline[withinKey(BAND_1)])}</p>
-              </article>
-              <article>
-                <div>
-                  <CircleStackIcon />
-                  <span>Sample · {selected.cohort}</span>
-                </div>
-                <strong>{fmtInt(selected.model.n)}</strong>
-                <p>{ENTITY_PERIOD} rows in the {a.season} {EVAL_KIND_LABEL[a.kind] ?? a.kind}</p>
-              </article>
-            </div>
-
-            <div className="evaluation-toolbar">
-              <div>
-                <small>Measure</small>
-                <div role="group" aria-label="Evaluation measure">
-                  {METRIC_KEYS.map((k) => (
-                    <button key={k} className={metric === k ? 'active' : ''} onClick={() => setMetric(k)}>
-                      {METRIC_LABEL[k]}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <small>Cohort</small>
-                <div role="group" aria-label={`${PROJECT.cohort.name} cohort`}>
-                  {COHORTS.map((c) => (
-                    <button key={c} className={cohort === c ? 'active' : ''} onClick={() => setCohort(c)}>
-                      {c}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="evaluation-grid">
-              <article className="evaluation-card chart-card">
-                <div className="card-heading">
-                  <div>
-                    <small>01 / MODEL VS BASELINE</small>
-                    <h2>{METRIC_LABEL[metric]}</h2>
-                  </div>
-                  <span>HIGHER IS {isRate(metric) ? 'BETTER' : 'WORSE'}</span>
-                </div>
-                <PairedBars rows={chartRows} metric={metric} />
-                <p className="chart-note">
-                  <b>{METRIC_LABEL[metric]}</b> = <code>{a.metric_definitions[metric]}</code>. Dark bars are the champion ({a.rolling_origin.candidate}); light bars are the
-                  baseline ({a.baseline.name ?? 'baseline'}).
-                </p>
-              </article>
-
-              <article className="evaluation-card detail-card">
-                <div className="card-heading">
-                  <div>
-                    <small>02 / COHORT READOUT</small>
-                    <h2>All metrics, with baseline</h2>
-                  </div>
-                  <span>{rows.length} ROWS</span>
-                </div>
-                <div className="mt-6 overflow-x-auto">
-                  <table className="w-full min-w-[520px] text-left font-mono text-xs">
-                    <thead className="text-[9px] uppercase tracking-widest text-[#61706c]">
-                      <tr>
-                        <th className="py-2 pr-3">Cohort</th>
-                        <th className="py-2 pr-3 text-right">n</th>
-                        {METRIC_KEYS.map((k) => (
-                          <th key={k} className="py-2 pr-3 text-right">
-                            {METRIC_LABEL[k]}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {rows.map((r) => (
-                        <RowPair key={r.cohort} row={r} />
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </article>
-            </div>
-
-            <div className="method-grid">
-              <article>
-                <small>03 / ROLLING ORIGIN</small>
-                <h2>Refit before every scored week.</h2>
-                <p>{a.rolling_origin.strategy}</p>
-                <div className="callout">
-                  <span>!</span>
-                  <p>
-                    <b>Mean fold MAE {fmtNum(a.rolling_origin.mean_mae, 2)}</b> vs baseline {fmtNum(a.rolling_origin.mean_baseline_mae, 2)} across{' '}
-                    {a.rolling_origin.folds.length} folds for candidate {a.rolling_origin.candidate}.
-                  </p>
-                </div>
-                <RollingOriginChart key={a.eval_id} folds={a.rolling_origin.folds} label={evaluationLabel(a)} />
-                <div className="mt-4 max-h-64 overflow-auto border border-[#d1d3cd]">
-                  <table className="w-full text-left font-mono text-[11px]">
-                    <thead className="sticky top-0 bg-[#f8f7f2] text-[9px] uppercase tracking-widest text-[#61706c]">
-                      <tr>
-                        <th className="px-3 py-2">Season</th>
-                        <th className="px-3 py-2">Week</th>
-                        <th className="px-3 py-2 text-right">n</th>
-                        <th className="px-3 py-2 text-right">MAE</th>
-                        <th className="px-3 py-2 text-right">Baseline MAE</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {a.rolling_origin.folds.map((f) => (
-                        <tr key={`${f.season}-${f.week}`} className="border-t border-[#e4e5dd]">
-                          <td className="px-3 py-1.5">{f.season}</td>
-                          <td className="px-3 py-1.5">{f.week}</td>
-                          <td className="px-3 py-1.5 text-right">{fmtInt(f.n)}</td>
-                          <td className="px-3 py-1.5 text-right font-bold">{fmtNum(f.mae, 2)}</td>
-                          <td className="px-3 py-1.5 text-right">{fmtNum(f.baseline_mae, 2)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </article>
-              <article>
-                <small>04 / METRIC DEFINITIONS</small>
-                <h2>Verbatim from the artifact.</h2>
-                <ul>
-                  {Object.entries(a.metric_definitions).map(([k, v], i) => (
-                    <li key={k}>
-                      <span>{String(i + 1).padStart(2, '0')}</span>
-                      <div>
-                        <b>{k}</b>
-                        <p>{v}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </article>
-            </div>
-
-            <div className="method-grid">
-              <article>
-                <small>05 / PROVENANCE</small>
-                <h2>What was evaluated.</h2>
-                <ul>
-                  <li><span>ID</span><div><b>eval_id</b><p className="break-all">{a.eval_id}</p></div></li>
-                  <li><span>KD</span><div><b>kind / season</b><p>{a.kind} · {a.season} — {EVAL_KIND_EXPLANATION[a.kind] ?? a.kind}</p></div></li>
-                  <li><span>MV</span><div><b>model version</b><p>{a.model.version} · features {a.model.feature_version}</p></div></li>
-                  <li><span>CH</span><div><b>champion / challenger</b><p>{describeCandidates(a.model.candidate)} / {describeCandidates(a.model.challenger)}</p></div></li>
-                  <li><span>GT</span><div><b>code commit</b><p>{shortHash(a.code_commit)}</p></div></li>
-                  <li><span>IN</span><div><b>input</b><p className="break-all">{a.input.path} · sha256 {shortHash(a.input.sha256)} · {fmtInt(a.input.n_rows)} rows</p></div></li>
-                  <li><span>TS</span><div><b>trained / evaluated</b><p>{fmtUtc(a.model.trained_at_utc)} / {fmtUtc(a.generated_at_utc)}</p></div></li>
-                </ul>
-              </article>
-              <article>
-                <small>06 / HOW TO READ IT</small>
-                <h2>Compare to the baseline, not to zero.</h2>
-                <p>{PERFORMANCE_COPY.baselineReadout}</p>
-                <p>{PERFORMANCE_COPY.cohortReadout}</p>
-                {evaluations.length > 1 && (
-                  <p>
-                    Every evaluation listed above scores the same frozen model artifact ({a.model.version}); only the scored season and its role in model
-                    selection differ.
-                  </p>
-                )}
-                {a.policy_sweep.length === 0 && <p>The artifact&apos;s policy sweep is empty for this evaluation, so no threshold analysis is shown.</p>}
-              </article>
-            </div>
-            <DecisionsPanel seasons={Array.from(new Set(evaluations.map((e) => e.season))).sort()} />
-            <p className="evaluation-disclaimer">
-              {a.kind === 'frozen_test' ? 'Held-out' : 'Out-of-sample'} evaluation of a committed artifact. Not a guarantee of future performance. The
-              decisions panel reads gold marts exported by the weekly build.
-            </p>
-          </>
-        )}
+        <p className="mt-5 border-t border-[#d8ddd6] pt-4 text-sm leading-6 text-[#4b5b54]">Historical performance on this evaluated population does not establish current availability or lineup-win performance. This scores a frozen model, separate from the refit-by-week experiment below.</p>
       </section>
-    </>
-  )
+      <Disclosure title="Understand the historical baseline and this comparison">
+        <p>The historical baseline uses a causal trailing mean of the player&apos;s earlier recorded points, with a position-history fallback. A week&apos;s outcomes are added only after that week is scored. It is not a fixed last-three-games average.</p>
+        <p>{EVAL_KIND_EXPLANATION[a.kind]}. The values above come from the selected artifact&apos;s aggregate or exact position block; position averages are never pooled to invent an overall result.</p>
+        <p>{comparison.state === 'unavailable' ? 'The selected values are missing or refer to different sample sizes.' : view.metric.endsWith('_rate') ? comparison.description : comparison.relativeImprovement === null ? 'Relative error reduction is unavailable because the baseline denominator is zero.' : `Relative error ${comparison.relativeImprovement >= 0 ? 'reduction' : 'increase'}: ${Math.abs(comparison.relativeImprovement * 100).toFixed(1)}%, calculated from unrounded compatible values.`}</p>
+        <p>These are sample descriptions, not evidence of statistical significance, calibrated confidence, or a future guarantee.</p>
+      </Disclosure>
+      <Disclosure title="More results by position and season">
+        <p className="text-sm">Values belong to their named season and position group. Model and baseline rows use the same player-weeks.</p>
+        <div className="overflow-x-auto"><table className="w-full min-w-[650px] text-left text-sm tabular-nums"><caption className="mb-3 text-left text-base font-semibold">All measures · {a.season}</caption><thead><tr><th className="py-3 pr-4">Position / source</th><th className="px-3 text-right">Player-weeks</th>{EVALUATION_METRICS.map((m) => <th key={m} className="px-3 text-right">{METRIC_LABELS[m]}</th>)}</tr></thead><tbody>{['ALL', ...Object.keys(a.cohorts ?? {})].map((c) => { const blocks = cohortMetrics(a, c); return blocks ? <MetricRows key={c} cohort={c} model={blocks.model} baseline={blocks.baseline} /> : null })}</tbody></table></div>
+        {evaluations.length > 1 && <div className="overflow-x-auto"><table className="w-full min-w-[500px] text-left text-sm tabular-nums"><caption className="mb-3 text-left text-base font-semibold">Complete historical evaluations · all positions</caption><thead><tr><th className="py-3 pr-4">Evaluation</th><th className="px-3 text-right">Average miss</th><th className="px-3 text-right">Baseline miss</th><th className="px-3 text-right">Player-weeks</th></tr></thead><tbody>{evaluations.map((e) => <tr key={e.eval_id} className="border-t border-[#d8ddd6]"><td className="py-3 pr-4"><button className={`min-h-[44px] text-left font-medium text-[#145744] underline ${FOCUS}`} onClick={() => update({ evaluationId: e.eval_id, origin: 'user' })}>{evaluationLabel(e)}</button></td><td className="px-3 text-right">{displayMetric(metricValue(e.metrics, 'mae'), 'mae')}</td><td className="px-3 text-right">{displayMetric(metricValue(e.baseline, 'mae'), 'mae')}</td><td className="px-3 text-right">{fmtInt(e.metrics.n)}</td></tr>)}</tbody></table></div>}
+      </Disclosure>
+      <Disclosure title="Rolling-origin experiment: refit before each scored week">
+        <p>This experiment refits using only earlier weeks. Its fold averages are not pooled with the frozen-model results above.</p>
+        <p>Mean fold error: <strong>{fmtNum(a.rolling_origin.mean_mae, 2)} PPR points</strong>; baseline {fmtNum(a.rolling_origin.mean_baseline_mae, 2)} across {a.rolling_origin.folds.length} folds. These folds are for all positions and do not change with the position selector.</p>
+        <RollingOriginChart key={a.eval_id} folds={a.rolling_origin.folds} label={evaluationLabel(a)} />
+        <details><summary className={`cursor-pointer font-medium ${FOCUS}`}>View every scored fold</summary><div className="mt-3 max-h-80 overflow-auto"><table className="w-full min-w-[420px] text-left text-sm tabular-nums"><thead><tr><th className="py-3">Season / week</th><th className="text-right">Player-weeks</th><th className="text-right">Model error</th><th className="text-right">Baseline error</th></tr></thead><tbody>{a.rolling_origin.folds.map((f) => <tr key={`${f.season}-${f.week}`} className="border-t border-[#d8ddd6]"><td className="py-3">{f.season} · week {f.week}</td><td className="text-right">{fmtInt(f.n)}</td><td className="text-right">{fmtNum(f.mae, 2)}</td><td className="text-right">{fmtNum(f.baseline_mae, 2)}</td></tr>)}</tbody></table></div></details>
+      </Disclosure>
+      <Disclosure title="View methodology and source evidence">
+        <p>Evaluation generated {formatLocalDate(a.generated_at_utc)}. Exact UTC: {fmtUtc(a.generated_at_utc)}.</p>
+        <dl className="grid gap-4 text-sm sm:grid-cols-2"><Evidence label="Artifact ID" value={a.eval_id} /><Evidence label="Model / features" value={`${a.model.version} / ${a.model.feature_version}`} /><Evidence label="Input file" value={a.input.path} /><Evidence label="Input SHA-256" value={a.input.sha256} /><Evidence label="Code commit" value={a.code_commit} /><Evidence label="Split" value={`${a.split.strategy}; begins season ${a.split.test_start_season}, week ${a.split.test_start_week}`} /></dl>
+        <p>Model trained {formatLocalDate(a.model.trained_at_utc)}. The evaluation input contains {fmtInt(a.input.n_rows)} player-week rows; headline samples use the exact selected metric block.</p>
+        <h3 className="text-base font-semibold">Metric definitions from the artifact</h3><dl className="space-y-3 text-sm">{Object.entries(a.metric_definitions).map(([name, definition]) => <div key={name}><dt className="font-mono">{name}</dt><dd>{definition}</dd></div>)}</dl>
+        <p className="text-sm">Implemented PPR: 1/reception, passing yards /25, four-point passing TD, −2/interception, rushing/receiving yards /10, six-point rushing/receiving/special-teams TD, two-point conversion +2 and lost fumble −2. No yardage bonuses; custom league compatibility is unverified.</p>
+      </Disclosure>
+      <Disclosure title="Optional historical floor-filter experiment">
+        <p className="text-sm">A separate educational filter over historical outcomes, not a current lineup recommendation. Its own controls do not change the evaluation above.</p>
+        <DecisionsPanel seasons={Array.from(new Set(evaluations.map((e) => e.season))).sort()} />
+      </Disclosure>
+    </>}
+  </div>
 }
-
-/** Compact side-by-side of the headline figures per evaluation. Values only; the reader draws the comparison. */
-function EvaluationComparison({
-  evaluations,
-  activeId,
-  onSelect,
-}: {
-  evaluations: PerformanceArtifact[]
-  activeId: string
-  onSelect: (id: string) => void
-}) {
-  return (
-    <div className="mb-6 overflow-x-auto border border-[#bec2b8] bg-[#f8f7f2]">
-      <table className="w-full min-w-[560px] text-left font-mono text-xs">
-        <thead className="text-[9px] uppercase tracking-widest text-[#61706c]">
-          <tr>
-            <th className="px-4 py-2">Evaluation</th>
-            <th className="px-4 py-2 text-right">n</th>
-            <th className="px-4 py-2 text-right">MAE · ALL</th>
-            <th className="px-4 py-2 text-right">Baseline MAE</th>
-            <th className="px-4 py-2 text-right">{withinLabel(BAND_1)}</th>
-            <th className="px-4 py-2 text-right">Baseline ±{BAND_1}</th>
-            <th className="px-4 py-2 text-right">Folds</th>
-          </tr>
-        </thead>
-        <tbody>
-          {evaluations.map((e) => {
-            const active = e.eval_id === activeId
-            return (
-              <tr key={e.eval_id} className={`border-t border-[#d1d3cd] ${active ? 'bg-white font-bold' : 'text-[#52605d]'}`}>
-                <td className="px-4 py-2">
-                  <button type="button" className="text-left underline-offset-2 hover:underline" onClick={() => onSelect(e.eval_id)} aria-pressed={active}>
-                    {evaluationLabel(e)}
-                  </button>
-                </td>
-                <td className="px-4 py-2 text-right">{fmtInt(e.metrics.n)}</td>
-                <td className="px-4 py-2 text-right">{fmtNum(e.metrics.mae, 2)}</td>
-                <td className="px-4 py-2 text-right">{fmtNum(e.baseline.mae, 2)}</td>
-                <td className="px-4 py-2 text-right">{fmtPct(e.metrics[withinKey(BAND_1)])}</td>
-                <td className="px-4 py-2 text-right">{fmtPct(e.baseline[withinKey(BAND_1)])}</td>
-                <td className="px-4 py-2 text-right">{e.rolling_origin.folds.length}</td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
-    </div>
-  )
+function Disclosure({ title, children }: { title: string; children: React.ReactNode }) {
+  const [opened, setOpened] = useState(false)
+  return <details onToggle={(event) => { if (event.currentTarget.open) setOpened(true) }} className="product-details min-w-0 rounded-xl border border-[#c7ccc5] bg-white p-5"><summary className={`cursor-pointer text-base font-semibold ${FOCUS}`}>{title}</summary>{opened && <div className="mt-4 min-w-0 space-y-4 break-words text-base leading-7">{children}</div>}</details>
 }
-
-function describeCandidates(c: Record<string, string> | undefined) {
-  if (!c) return '—'
-  const values = Array.from(new Set(Object.values(c)))
-  return values.length === 1 ? values[0] : Object.entries(c).map(([k, v]) => `${k}:${v}`).join(' ')
+function Evidence({ label, value }: { label: string; value: string }) {
+  return <div className="min-w-0"><dt className="font-semibold">{label}</dt><dd className="mt-1 break-all font-mono">{value}</dd></div>
 }
-
-function RowPair({ row }: { row: CohortRow }) {
-  return (
-    <>
-      <tr className="border-t border-[#d1d3cd]">
-        <td className="py-2 pr-3 font-bold">{row.cohort}</td>
-        <td className="py-2 pr-3 text-right">{fmtInt(row.model.n)}</td>
-        {METRIC_KEYS.map((k) => (
-          <td key={k} className="py-2 pr-3 text-right font-bold">
-            {show(k, row.model[k])}
-          </td>
-        ))}
-      </tr>
-      <tr className="text-[#6e7976]">
-        <td className="pb-2 pr-3 text-[9px] uppercase tracking-widest">baseline</td>
-        <td className="pb-2 pr-3 text-right">{fmtInt(row.baseline.n)}</td>
-        {METRIC_KEYS.map((k) => (
-          <td key={k} className="pb-2 pr-3 text-right">
-            {show(k, row.baseline[k])}
-          </td>
-        ))}
-      </tr>
-    </>
-  )
+function MetricRows({ cohort, model, baseline }: { cohort: string; model: MetricBlock; baseline: MetricBlock }) {
+  return <>{([['Model', model], ['Historical baseline', baseline]] as const).map(([name, block]) => <tr key={name} className="border-t border-[#d8ddd6]"><th scope="row" className="py-3 pr-4 font-medium">{cohort === 'ALL' ? 'All positions' : cohort} · {name}</th><td className="px-3 text-right">{fmtInt(block.n)}</td>{EVALUATION_METRICS.map((m) => <td key={m} className="px-3 text-right">{displayMetric(metricValue(block, m), m)}</td>)}</tr>)}</>
 }
-
-function PairedBars({ rows, metric }: { rows: CohortRow[]; metric: MetricKey }) {
-  const values = rows.flatMap((r) => [r.model[metric], r.baseline[metric]])
-  const max = isRate(metric) ? 1 : Math.max(...values, 0.01) * 1.12
-  return (
-    <div className="bar-chart" role="img" aria-label={`${METRIC_LABEL[metric]} by cohort, model versus baseline`}>
-      {rows.map((r) => (
-        <div className="bar-column" key={r.cohort}>
-          <span>{show(metric, r.model[metric])}</span>
-          <div style={{ gap: 4 }}>
-            <i style={{ height: `${Math.max(2, (r.model[metric] / max) * 100)}%` }} title={`model ${show(metric, r.model[metric])}`} />
-            <i style={{ height: `${Math.max(2, (r.baseline[metric] / max) * 100)}%`, background: '#b9d3c8' }} title={`baseline ${show(metric, r.baseline[metric])}`} />
-          </div>
-          <b>{r.cohort}</b>
-        </div>
-      ))}
-    </div>
-  )
+function ComparisonBars({ model, baseline, metric }: { model: number | null; baseline: number | null; metric: EvaluationMetric }) {
+  const max = metric.endsWith('_rate') ? 1 : Math.max(model ?? 0, baseline ?? 0, 0.01) * 1.08
+  return <div className="space-y-4" aria-label={`${METRIC_LABELS[metric]} comparison`}>{([['Model', model, '#176e5a'], ['Historical baseline', baseline, '#647b6b']] as const).map(([name, value, color]) => <div key={name}><div className="mb-2 flex justify-between gap-3 text-base"><span className="font-medium">{name}</span><strong className="tabular-nums">{displayMetric(value, metric)}</strong></div><div className="h-3 overflow-hidden rounded-full bg-[#e6e9e2]" aria-hidden="true">{value !== null && <div className="h-full rounded-full" style={{ width: `${Math.max(0, Math.min(100, value / max * 100))}%`, backgroundColor: color }} />}</div></div>)}<p className="text-sm text-[#4b5b54]">{metric.endsWith('_rate') ? 'Higher is better. Shared scale: 0–100%.' : 'Lower is better. Both bars use the same scale from zero.'}</p></div>
 }

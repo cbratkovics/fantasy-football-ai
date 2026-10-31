@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { contentId } from '@/lib/decision-lab/canonical';
+import { formatLocalDate } from '@/lib/presentation/display';
+import { contextReason } from '@/lib/presentation/decision';
 import type { InputsSnapshot } from '@/lib/decision-lab/types';
 import { assessReadiness, parseContext, FRESHNESS_HOURS, type ContextSnapshot, type Readiness } from '@/lib/start-sit/readiness';
 
@@ -62,26 +64,22 @@ export default function ContextEvidence({ snapshot, playerIds, onStateChange }: 
     ? { ...priorAssessment, state: 'incompatible', reasons: ['context_invalid', ...priorAssessment.reasons] }
     : priorAssessment;
   useEffect(() => { onStateChange?.(assessment.state); }, [assessment.state, onStateChange]);
-  return <section aria-label="Current context assessment" className="rounded-xl border border-white/10 p-4 text-sm" data-testid="context-assessment">
-    <h2 className="font-semibold">Current actionability: {assessment.state}</h2>
-    <p>{problem || 'Context is separate from the dated policy comparison below.'}</p>
-    <p>League roster, actual lineup, and platform lock rules are unverified. A user assumption is never provider verification.</p>
-    <ul className="mt-2 list-disc pl-5">
-      {assessment.reasons.map((reason) => <li key={reason}>{reason.replace(/_/g, ' ')}</li>)}
-    </ul>
-    {['blocked', 'incompatible'].includes(assessment.state) && <p className="mt-2 font-semibold">Do not treat the dated policy suggestion as an actionable current lineup change. Assumptions cannot override invalid evidence, a known bye, unavailability, or passed deadline. Historical hypothetical exploration remains separate.</p>}
-    {assessment.players.map((p) => <p key={p.player_id} className="mt-2">
-      {p.name || p.player_id}: current team {p.current_team || 'unresolved'}; {p.game.state === 'bye' ? 'bye' : `opponent ${p.game.opponent || 'unknown'}`}; kickoff {p.game.kickoff_utc || 'unknown'}; status {p.availability.designation || p.availability.state}; forecast coverage {p.forecast.state.replace(/_/g, ' ')}.
-      {p.forecast.forecast_team && p.forecast.forecast_team !== p.current_team ? ` Forecast-era team: ${p.forecast.forecast_team}.` : ''}
-    </p>)}
-    {context && <details className="mt-2"><summary>Roster universe and model coverage for season {context.target.season}, week {context.target.week ?? 'unknown'}</summary>
-      <p>Roster identities are independent of published projections. Unscored identities below have no invented forecast and cannot enter a complete comparison.</p>
-      <ul>{context.players.filter((p) => p.forecast.state !== 'present').map((p) => <li key={p.player_id}>{p.name || p.player_id} ({p.player_id}) · {p.current_team || 'team unresolved'} · {p.forecast.state.replace(/_/g, ' ')}</li>)}</ul>
-    </details>}
-    <details className="mt-2"><summary>Context references and freshness assumptions</summary>
-      <p>Assessed at {now}. Context maximum age {FRESHNESS_HOURS.context} hours; schedule fetch {FRESHNESS_HOURS.schedules} hours; roster fetch {FRESHNESS_HOURS.rosters} hours; forecast {FRESHNESS_HOURS.forecast} hours. These are conservative assumptions, not provider guarantees. Kickoff is a conservative action deadline.</p>
-      <p className="break-all">Context ID: {context?.context_snapshot_id || 'none'}; forecast ID: {snapshot.snapshot_id}.</p>
-      {context && Object.entries(context.sources).map(([name, source]) => <p key={name}>{name}: {source.state}; content update {source.provider_updated_at_utc || 'unknown'}; first observed {source.first_observed_at_utc || 'unknown'}; fetched {source.fetched_at_utc || 'unknown'}; {source.reasons.join(', ')}.</p>)}
+  const blocked = ['blocked', 'incompatible'].includes(assessment.state);
+  const principal = [...assessment.reasons].sort((a, b) => {
+    const priority = (x: string) => ['kickoff_passed', 'known_bye', 'known_unavailable', 'context_invalid', 'forecast_context_reference_mismatch'].findIndex((prefix) => x.startsWith(prefix));
+    return (priority(a) < 0 ? 99 : priority(a)) - (priority(b) < 0 ? 99 : priority(b));
+  })[0];
+  return <section aria-label="Availability and context" className={blocked ? 'product-notice product-blocker' : 'product-notice'} data-testid="context-assessment" data-state={assessment.state}>
+    <h2 className="text-base font-semibold">{blocked ? 'Check before changing a lineup' : 'Availability is not verified'}</h2>
+    <p className="mt-1">{blocked ? contextReason(principal ?? '') : 'Use this as a dated comparison. Confirm player status and your league’s lineup rules before acting.'}</p>
+    {assessment.players.length > 0 && <ul className="mt-2 space-y-2">{assessment.players.map((p) => <li key={p.player_id}>{p.name || p.player_id}: {p.current_team || 'team unresolved'} · {p.game.state === 'bye' ? 'bye' : `vs ${p.game.opponent || 'unknown opponent'}`} · {p.game.kickoff_utc ? formatLocalDate(p.game.kickoff_utc) : 'kickoff unknown'} · {p.availability.designation || 'availability unknown'}</li>)}</ul>}
+    <details className="mt-3"><summary className="cursor-pointer font-semibold underline">Availability and source details</summary>
+      <p className="mt-2">{problem || 'Context is separate from the forecast comparison.'} User assumptions do not verify provider status, league membership, or lineup legality.</p>
+      <ul className="mt-2 list-disc pl-5">{assessment.reasons.map((reason) => <li key={reason}>{reason.replace(/_/g, ' ')}</li>)}</ul>
+      {context && <p className="mt-2">Source period: season {context.target.season}, week {context.target.week ?? 'unknown'}. Roster identities are independent of published projections. {context.players.filter((p) => p.forecast.state !== 'present').length} identities have missing model coverage; no forecasts are invented.</p>}
+      <p className="mt-2">Assessed at {now}. Assumed maximum ages: context {FRESHNESS_HOURS.context}h, schedule fetch {FRESHNESS_HOURS.schedules}h, roster fetch {FRESHNESS_HOURS.rosters}h, forecast {FRESHNESS_HOURS.forecast}h. These are operational assumptions, not provider guarantees. Kickoff is a conservative deadline, not a verified league lock.</p>
+      <p className="mt-2 break-all">Context ID: {context?.context_snapshot_id || 'none'}; forecast ID: {snapshot.snapshot_id}.</p>
+      {context && Object.entries(context.sources).map(([name, source]) => <p className="mt-2" key={name}>{name}: {source.state}; content update {source.provider_updated_at_utc || 'unknown'}; first observed {source.first_observed_at_utc || 'unknown'}; fetched {source.fetched_at_utc || 'unknown'}; {source.reasons.join(', ')}.</p>)}
     </details>
   </section>;
 }

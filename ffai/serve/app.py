@@ -202,6 +202,25 @@ def context_snapshot() -> dict[str, Any]:
         raise HTTPException(503, {"reason": "context_invalid"}) from exc
 
 
+@app.get("/prediction-periods", response_model=schemas.PredictionPeriodsResponse)
+def prediction_periods() -> schemas.PredictionPeriodsResponse:
+    """A read-only index over loaded files, independent of calendar and optional services."""
+    periods = [
+        schemas.PredictionPeriod(
+            season=season,
+            week=week,
+            model_version=payload["model_version"],
+            feature_version=payload["feature_version"],
+            generated_at_utc=payload["generated_at_utc"],
+            n=len(payload["predictions"]),
+        )
+        for (season, week), payload in sorted(_state().predictions.items(), reverse=True)
+    ]
+    return schemas.PredictionPeriodsResponse(
+        latest=periods[0] if periods else None, periods=periods
+    )
+
+
 @app.get("/predictions/{season}/{week}", response_model=schemas.PredictionsResponse)
 def predictions(
     season: int,

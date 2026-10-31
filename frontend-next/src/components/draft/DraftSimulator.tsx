@@ -5,10 +5,11 @@ import Link from 'next/link'
 import { useQueries } from '@tanstack/react-query'
 import { getTiers } from '@/lib/api/tiers'
 import { POSITIONS, type Position } from '@/lib/api/types'
-import { fmtNum, fmtPct } from '@/lib/format'
+import { fmtNum } from '@/lib/format'
 import { Segmented, TextInput } from '@/components/ui/Controls'
 import { ErrorState, LoadingState } from '@/components/ui/States'
-import { Provenance } from '@/components/ui/Provenance'
+import { tierPeriod } from '@/lib/presentation/tiers'
+import { formatLocalDate } from '@/lib/presentation/display'
 
 interface BoardPlayer {
   player_id: string
@@ -129,27 +130,31 @@ export function DraftSimulator() {
 
   const tiersMeta = queries[0].data
   const userRoster = rosterOf(userSlot)
+  const period = tiersMeta ? tierPeriod(tiersMeta) : null
+  const compatible = queries.every((q) => q.data?.season === tiersMeta?.season && q.data?.tier_version === tiersMeta?.tier_version)
+  if (!compatible) return <ErrorState error={new Error('Player groups do not belong to one compatible historical artifact.')} context="Historical draft exercise" />
 
   return (
     <div className="space-y-6">
-      {tiersMeta && (
-        <Provenance
-          items={[
-            ['Tier version', tiersMeta.tier_version],
-            ['Season', String(tiersMeta.season)],
-            ['Board size', `${board.length} players`],
-            ['Format', `${teams} teams · ${ROUNDS} rounds · snake`],
-          ]}
-          note={`Inputs: ${tiersMeta.inputs}`}
-        />
-      )}
+      {tiersMeta && period && <section className="product-card border-l-4 border-l-[#176e5a] p-5">
+        <h2 className="text-xl font-semibold">{period.targetSeason} historical exercise</h2>
+        <p className="mt-2 text-base leading-7">This board uses {period.inputSeason ?? 'prior-season'} production to group players for {period.targetSeason}. It is not a current draft ranking. Team labels are historical affiliations.</p>
+        <p className="mt-2 text-sm text-[#52605d]">{board.length} grouped players · {teams} simulated teams · {ROUNDS} rounds · snake order.</p>
+        <Link href="/predictions" className="mt-3 inline-flex min-h-[44px] items-center font-semibold underline underline-offset-4">View latest published projections →</Link>
+      </section>}
 
-      <div className="flex flex-col gap-4 border border-[#c5c7c0] bg-[#f8f7f2] p-5 lg:flex-row lg:flex-wrap lg:items-center lg:justify-between">
+      <details className="product-details"><summary>How this historical exercise works</summary><div className="space-y-3 pt-4 text-base leading-7">
+        <p>Simulated opponents choose by group number, then prior-season PPR points per game, subject to simple roster caps. Group numbers from different positions are not a calibrated cross-position ranking. No hidden strategy or current injury information is used.</p>
+        <p>Grouping assignment strength is how well an input profile fits its assigned mixture component. It is not a player&apos;s probability of success. The detailed strengths and historical evaluation remain available on <Link className="underline" href="/tiers">Historical player groups</Link>.</p>
+        {tiersMeta && <><p>Inputs: {tiersMeta.inputs}</p><p>Generated {formatLocalDate(tiersMeta.generated_at_utc)}. The generation date is separate from the target season.</p><p className="break-all font-mono text-sm">Artifact: {tiersMeta.tier_version}</p></>}
+      </div></details>
+
+      <div className="product-card flex flex-col gap-4 p-5 lg:flex-row lg:flex-wrap lg:items-center lg:justify-between">
         <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
           <Segmented label="Teams" options={TEAM_COUNTS} value={teamCount} onChange={(v) => { if (!started) { setTeamCount(v); setUserSlot(0) } }} />
           <div className="flex items-center gap-3">
-            <label htmlFor="slot" className="font-mono text-[9px] font-bold uppercase tracking-widest">Your slot</label>
-            <select id="slot" disabled={started} value={userSlot} onChange={(e) => setUserSlot(Number(e.target.value))} className="h-9 border border-[#bfc3bb] bg-white px-2 font-mono text-xs disabled:opacity-50">
+            <label htmlFor="slot" className="text-sm font-semibold">Your slot</label>
+            <select id="slot" disabled={started} value={userSlot} onChange={(e) => setUserSlot(Number(e.target.value))} className="product-field min-h-[44px] disabled:opacity-50">
               {Array.from({ length: teams }, (_, i) => (
                 <option key={i} value={i}>Pick {i + 1}</option>
               ))}
@@ -158,17 +163,17 @@ export function DraftSimulator() {
         </div>
         <div className="flex gap-3">
           {!started ? (
-            <button type="button" onClick={start} className="portfolio-button primary">Start draft</button>
+            <button type="button" onClick={start} className="product-button primary">Start historical exercise</button>
           ) : (
-            <button type="button" onClick={reset} className="portfolio-button secondary">Reset</button>
+            <button type="button" onClick={reset} className="product-button secondary">Reset exercise</button>
           )}
         </div>
       </div>
 
       {started && (
-        <div className="border border-ink bg-ink px-4 py-3 font-mono text-xs text-acid">
+        <div className="product-card border-l-4 border-l-[#176e5a] p-4 text-base">
           {complete
-            ? `Draft complete · ${picks.length} picks`
+            ? `Exercise complete · ${picks.length} picks`
             : onClock?.team === userSlot
               ? `You are on the clock · round ${onClock.round} · pick ${nextOverall} of ${totalPicks}`
               : `Waiting…`}
@@ -176,9 +181,9 @@ export function DraftSimulator() {
       )}
 
       <div className="grid gap-6 lg:grid-cols-[1.2fr_.8fr]">
-        <section className="border border-[#c5c7c0] bg-white">
+        <section className="product-card overflow-hidden bg-white">
           <header className="flex flex-col gap-3 border-b border-[#e4e5dd] bg-[#f8f7f2] p-4 sm:flex-row sm:items-center sm:justify-between">
-            <h2 className="font-mono text-xs font-bold uppercase tracking-widest">Available · {available.length}</h2>
+            <h2 className="text-lg font-semibold">Historical board · {available.length} remaining</h2>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <Segmented label="Pos" options={POSITION_FILTERS} value={filter} onChange={setFilter} />
               <div className="w-full sm:w-48"><TextInput placeholder="Search" value={search} onChange={(e) => setSearch(e.target.value)} aria-label="Search available players" /></div>
@@ -186,20 +191,19 @@ export function DraftSimulator() {
           </header>
           <ol className="max-h-[640px] divide-y divide-[#eeeee8] overflow-y-auto">
             {shown.map((p) => (
-              <li key={p.player_id} className="grid grid-cols-[auto_1fr_auto_auto] items-center gap-3 px-4 py-2 text-sm">
-                <span className="w-8 bg-sand px-1.5 py-0.5 text-center font-mono text-[10px] font-bold">T{p.tier}</span>
-                <div>
+              <li key={p.player_id} className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 text-base">
+                <span className="w-8 bg-sand px-1.5 py-0.5 text-center text-sm font-semibold">T{p.tier}</span>
+                <div className="min-w-0">
                   <Link href={`/player/${encodeURIComponent(p.player_id)}`} className="font-semibold hover:text-moss hover:underline">{p.name}</Link>
-                  <span className="ml-2 font-mono text-[10px] text-[#8c9a96]">{p.position} · {p.team}</span>
+                  <p className="mt-1 text-sm text-[#52605d]">{p.position} · {p.team} · {fmtNum(p.ppg_prev, 1)} prior-season PPR/game</p>
                 </div>
-                <span className="font-mono text-[10px] text-[#61706c]">{fmtNum(p.ppg_prev, 1)} ppg · {fmtPct(p.tier_probability, 0)}</span>
                 <button
                   type="button"
                   disabled={!started || complete || onClock?.team !== userSlot}
                   onClick={() => userPick(p)}
-                  className="border border-ink px-3 py-1 font-mono text-[10px] font-bold uppercase hover:bg-ink hover:text-acid disabled:cursor-not-allowed disabled:opacity-30"
+                  className="product-button min-h-[44px] disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  Draft
+                  Pick
                 </button>
               </li>
             ))}
@@ -208,31 +212,31 @@ export function DraftSimulator() {
         </section>
 
         <div className="space-y-6">
-          <section className="border border-[#c5c7c0] bg-white">
+          <section className="product-card overflow-hidden bg-white">
             <header className="border-b border-[#e4e5dd] bg-[#f8f7f2] px-4 py-3">
-              <h2 className="font-mono text-xs font-bold uppercase tracking-widest">Your roster · {userRoster.length}/{ROUNDS}</h2>
+              <h2 className="text-lg font-semibold">Your practice roster · {userRoster.length}/{ROUNDS}</h2>
             </header>
             <ul className="divide-y divide-[#eeeee8]">
               {userRoster.map((p) => (
                 <li key={p.player_id} className="flex items-center justify-between px-4 py-2 text-sm">
-                  <span><b>{p.name}</b> <span className="font-mono text-[10px] text-[#8c9a96]">{p.position} · {p.team}</span></span>
-                  <span className="font-mono text-[10px] text-[#61706c]">T{p.tier} · {fmtNum(p.ppg_prev, 1)}</span>
+                  <span><b>{p.name}</b> <span className="text-sm text-[#52605d]">{p.position} · {p.team}</span></span>
+                  <span className="text-sm text-[#52605d]">T{p.tier} · {fmtNum(p.ppg_prev, 1)}</span>
                 </li>
               ))}
               {userRoster.length === 0 && <li className="p-6 text-center text-sm text-[#6e7875]">No picks yet.</li>}
             </ul>
           </section>
 
-          <section className="border border-[#c5c7c0] bg-white">
+          <section className="product-card overflow-hidden bg-white">
             <header className="border-b border-[#e4e5dd] bg-[#f8f7f2] px-4 py-3">
-              <h2 className="font-mono text-xs font-bold uppercase tracking-widest">Draft log</h2>
+              <h2 className="text-lg font-semibold">Exercise picks</h2>
             </header>
             <ol className="max-h-80 divide-y divide-[#eeeee8] overflow-y-auto">
               {[...picks].reverse().map((p) => (
-                <li key={p.overall} className={`grid grid-cols-[48px_1fr_auto] items-center gap-3 px-4 py-1.5 text-xs ${p.team === userSlot ? 'bg-[#eef7e3]' : ''}`}>
-                  <span className="font-mono text-[10px] text-[#8c9a96]">{p.round}.{String(((p.overall - 1) % teams) + 1).padStart(2, '0')}</span>
-                  <span><b>{p.player.name}</b> <span className="font-mono text-[10px] text-[#8c9a96]">{p.player.position}</span></span>
-                  <span className="font-mono text-[10px] text-[#61706c]">{p.team === userSlot ? 'You' : `Team ${p.team + 1}`}</span>
+                <li key={p.overall} className={`grid grid-cols-[48px_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 text-sm ${p.team === userSlot ? 'bg-[#eef7e3]' : ''}`}>
+                  <span className="text-sm text-[#52605d]">{p.round}.{String(((p.overall - 1) % teams) + 1).padStart(2, '0')}</span>
+                  <span><b>{p.player.name}</b> <span className="text-sm text-[#52605d]">{p.player.position}</span></span>
+                  <span className="text-sm text-[#52605d]">{p.team === userSlot ? 'You' : `Team ${p.team + 1}`}</span>
                 </li>
               ))}
               {picks.length === 0 && <li className="p-6 text-center text-sm text-[#6e7875]">The log fills in once the draft starts.</li>}

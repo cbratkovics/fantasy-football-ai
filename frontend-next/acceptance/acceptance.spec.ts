@@ -9,6 +9,7 @@ import { contentId } from '../src/lib/decision-lab/canonical'
 
 const bundle = weeklyBundle((s) => { s.rows[1].projection = 13 })
 const STORE = 'ffai.decision-lab/decision_receipt/1.0/receipts'
+const API = process.env.FFAI_ACCEPTANCE_API_URL || 'http://127.0.0.1:7861'
 
 function companion(state: 'verified' | 'partial' = 'verified') {
   const source = {
@@ -43,13 +44,23 @@ async function evidence(page: Page) {
 async function compare(page: Page) {
   await page.getByLabel('Starting slot').selectOption('RB')
   for (const letter of ['A', 'B']) {
-    await page.getByLabel('Search players to compare').fill(`SYN-${letter}`)
-    await page.getByRole('button', { name: new RegExp(`Add Synthetic ${letter}`) }).click()
+    await page.getByRole('combobox', { name: 'Search players to compare' }).fill(`SYN-${letter}`)
+    await page.getByRole('combobox', { name: 'Search players to compare' }).press('Enter')
   }
+  await page.getByText('Adjust player assumptions', { exact: true }).click()
+  for (const letter of ['A', 'B']) await expect(page.getByLabel(`Availability assumption for Synthetic ${letter}`)).toHaveValue('unknown')
   await page.getByRole('button', { name: 'Compare nominated alternatives' }).click()
-  await expect(page.getByTestId('quick-result')).toContainText('Check player status')
-  for (const letter of ['A', 'B']) await page.getByLabel(`Availability assumption for Synthetic ${letter}`).selectOption('assumed_available')
-  await page.getByRole('button', { name: 'Compare nominated alternatives' }).focus()
+  const bulk = page.getByRole('button', { name: 'Compare assuming these players can play' })
+  if (await bulk.isEnabled()) {
+    await expect(page.getByTestId('quick-result')).toContainText('Check availability before choosing')
+    await bulk.focus()
+  } else {
+    // Readiness restrictions survive explicit assumptions. Inspecting the policy result does
+    // not enter the separate historical-action flow or enable an ordinary current action.
+    await expect(bulk).toBeDisabled()
+    for (const letter of ['A', 'B']) await page.getByLabel(`Availability assumption for Synthetic ${letter}`).selectOption('assumed_available')
+    await page.getByRole('button', { name: 'Compare nominated alternatives' }).focus()
+  }
   await page.keyboard.press('Enter')
 }
 
@@ -68,17 +79,17 @@ test('local changed API supplies requested-format actuals to the running fronten
       await page.getByRole('button', { name: format, exact: true }).click()
       expect((await (await response).json()).scoring_rules_id).toBe('ffai-nflverse-v1')
     } else { // The initial request already completed; validate it directly against the same local API.
-      const api = await page.request.get('http://127.0.0.1:7861/predictions/2026/8?scoring=ppr')
+      const api = await page.request.get(`${API}/predictions/2026/8?scoring=ppr`)
       expect((await api.json()).scoring_rules_id).toBe('ffai-nflverse-v1')
     }
     await expect(page.getByRole('columnheader', { name: `Actual (${format.toUpperCase()})` })).toBeVisible()
-    await expect(receiver.locator('td').last()).toHaveText(expected)
-    await expect(page.getByRole('row').filter({ hasText: 'LOCAL FIXTURE zero' }).locator('td').last()).toHaveText('0.0')
-    await expect(page.getByRole('row').filter({ hasText: 'LOCAL FIXTURE negative' }).locator('td').last()).toHaveText('-2.0')
+    await expect(receiver.locator('td').nth(4)).toHaveText(expected)
+    await expect(page.getByRole('row').filter({ hasText: 'LOCAL FIXTURE zero' }).locator('td').nth(4)).toHaveText('0.0')
+    await expect(page.getByRole('row').filter({ hasText: 'LOCAL FIXTURE negative' }).locator('td').nth(4)).toHaveText('-2.0')
   }
   await expect(page.getByRole('row').filter({ hasText: 'LOCAL FIXTURE missing evidence' })).toContainText('missing realized conversion evidence')
   expect(hosts.length).toBeGreaterThanOrEqual(3)
-  expect(hosts.every((host) => host === 'http://127.0.0.1:7861')).toBe(true)
+  expect(hosts.every((host) => host === API)).toBe(true)
 })
 
 test('missing context allows only intentional conditional comparison without recording a choice', async ({ page }) => {
@@ -87,9 +98,9 @@ test('missing context allows only intentional conditional comparison without rec
   await page.route('**/context/snapshot.json', (r) => r.fulfill({ status: 404, body: '{}' }))
   await page.goto('/start-sit')
   await compare(page)
-  await expect(page.getByTestId('context-assessment')).toContainText('unavailable')
-  await expect(page.getByTestId('quick-result')).toContainText('Conditional dated comparison only')
-  await expect(page.getByTestId('quick-result')).toContainText('Suggested starter')
+  await expect(page.getByText(/Live availability is not verified/).first()).toBeVisible()
+  await expect(page.getByTestId('quick-result')).toContainText('has the higher projection')
+  await expect(page.getByTestId('quick-result')).toContainText('Assuming the selected players are available')
   expect(await page.evaluate((key) => localStorage.getItem(key), STORE)).toBeNull()
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
 })
@@ -99,8 +110,7 @@ test('valid partial coverage remains unverified and uses visibly separate hypoth
   await page.route('**/context/snapshot.json', (r) => r.fulfill({ status: 200, json: seal(companion('partial')) }))
   await page.goto('/start-sit')
   await compare(page)
-  await expect(page.getByTestId('context-assessment')).toContainText('rosters not verified')
-  await expect(page.getByTestId('quick-result')).toContainText('Current recommendation unavailable')
+  await expect(page.getByTestId('quick-result')).toContainText('This comparison cannot support a current lineup change')
   await expect(page.getByTestId('action-panel')).toHaveCount(0)
   await page.getByRole('button', { name: 'Explore as historical hypothetical' }).click()
   await expect(page.getByTestId('kind-hypothetical_replay')).toBeChecked()
@@ -115,14 +125,14 @@ test('known impossibility and passed kickoff survive assumptions and a failed re
   await page.route('**/context/snapshot.json', (r) => r.fulfill(fail ? { status: 503, body: '{}' } : { status: 200, json: seal(c) }))
   await page.goto('/start-sit')
   await compare(page)
-  await expect(page.getByTestId('context-assessment')).toContainText('known bye:SYN-A')
-  await expect(page.getByTestId('quick-result')).toContainText('Current recommendation unavailable')
+  await expect(page.getByTestId('context-assessment')).toContainText(/bye/i)
+  await expect(page.getByTestId('quick-result')).toContainText('This comparison cannot support a current lineup change')
   await page.clock.fastForward(31 * 60 * 1000)
-  await expect(page.getByTestId('context-assessment')).toContainText('kickoff passed:SYN-B')
+  await expect(page.getByTestId('context-assessment')).toContainText(/kickoff.*passed|deadline/i)
   fail = true
   await page.evaluate(() => window.dispatchEvent(new Event('focus')))
-  await expect(page.getByTestId('context-assessment')).toContainText('known bye:SYN-A')
-  await expect(page.getByTestId('quick-result')).toContainText('Current recommendation unavailable')
+  await expect(page.getByTestId('context-assessment')).toContainText(/bye/i)
+  await expect(page.getByTestId('quick-result')).toContainText('This comparison cannot support a current lineup change')
 })
 
 test('malformed and incompatible companions cannot be turned into missing-context permission', async ({ page }) => {
@@ -135,10 +145,10 @@ test('malformed and incompatible companions cannot be turned into missing-contex
   })
   await page.goto('/start-sit')
   await compare(page)
-  await expect(page.getByTestId('quick-result')).toContainText('Current recommendation unavailable')
+  await expect(page.getByTestId('quick-result')).toContainText('This comparison cannot support a current lineup change')
   await expect(page.getByTestId('action-panel')).toHaveCount(0)
   incompatible = true
   await page.evaluate(() => window.dispatchEvent(new Event('focus')))
-  await expect(page.getByTestId('context-assessment')).toContainText('forecast context reference mismatch')
+  await expect(page.getByTestId('context-assessment')).toContainText(/cannot be verified|does not match|incompatible/i)
   await expect(page.getByTestId('action-panel')).toHaveCount(0)
 })

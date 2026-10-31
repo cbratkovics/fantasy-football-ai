@@ -12,7 +12,7 @@ export default defineConfig({
   reporter: 'list',
   outputDir: process.env.FFAI_ACCEPTANCE_OUTPUT || '/tmp/ffai-acceptance/browser-results',
   use: {
-    baseURL: 'http://localhost:3300',
+    baseURL: process.env.FFAI_ACCEPTANCE_FRONTEND_URL || 'http://localhost:3300',
     trace: 'retain-on-failure',
     launchOptions: process.env.FFAI_CHROMIUM_EXECUTABLE
       ? { executablePath: process.env.FFAI_CHROMIUM_EXECUTABLE } : {},
