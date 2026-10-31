@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { DECISION_LAB_COPY } from '@/content/decision-lab'
+import { formatPeriod } from '@/lib/presentation/display'
 import { SLOTS } from '@/lib/decision-lab/policy'
 import type { InputsSnapshot, ManifestSnapshot } from '@/lib/decision-lab/types'
 import { Alert, Button, Card, FOCUS, Help, MicroLabel, Notice } from './Bits'
@@ -20,7 +21,7 @@ interface NominationProps {
 }
 
 export function snapshotLabel(s: ManifestSnapshot): string {
-  return `${s.season} week ${String(s.week).padStart(2, '0')} · ${s.source_family} · ${s.model_version}`
+  return formatPeriod(s.season, s.week)
 }
 
 /** Snapshot, slot and alternative selection for a custom nomination (or edits to a case). */
@@ -33,9 +34,9 @@ export function Nomination({ draft, snapshots, snapshot, snapshotState, snapshot
   const full = draft.playerIds.length >= MAX_ALTERNATIVES
 
   return (
-    <Card title={COPY.title} id="nomination" testId="nomination">
+    <Card title="Choose players" id="nomination" testId="nomination">
       <div className="grid gap-4 md:grid-cols-2">
-        <div className="flex flex-col gap-1">
+        <div className="hidden flex-col gap-1 md:flex">
           <MicroLabel htmlFor="snapshot-select">{COPY.snapshot}</MicroLabel>
           <select
             id="snapshot-select"
@@ -43,16 +44,16 @@ export function Nomination({ draft, snapshots, snapshot, snapshotState, snapshot
             disabled={disabled}
             aria-describedby="snapshot-help"
             onChange={(e) => onChange({ ...draft, caseId: null, snapshotId: e.target.value || null, playerIds: [], overrides: {} })}
-            className={`h-10 w-full border border-[#bfc3bb] bg-white px-2 font-mono text-xs disabled:bg-sand ${FOCUS}`}
+            className={`min-h-[44px] w-full rounded-lg border border-[#bfc3bb] bg-white px-2 font-mono text-sm disabled:bg-sand ${FOCUS}`}
           >
-            <option value="">—</option>
+            <option value="">Choose a supported snapshot</option>
             {snapshots.map((s) => (
               <option key={s.snapshot_id} value={s.snapshot_id}>
                 {snapshotLabel(s)}
               </option>
             ))}
           </select>
-          <Help id="snapshot-help">{COPY.snapshotHelp}</Help>
+          <Help id="snapshot-help">Choose one of the periods available in this mode.</Help>
         </div>
         <fieldset className="flex flex-col gap-1">
           <MicroLabel as="legend">{COPY.slot}</MicroLabel>
@@ -65,7 +66,7 @@ export function Nomination({ draft, snapshots, snapshot, snapshotState, snapshot
                 aria-pressed={draft.slot === slot}
                 disabled={disabled}
                 onClick={() => onChange({ ...draft, slot })}
-                className={`min-w-[56px] flex-1 border-r border-[#bfc3bb] px-3 py-2 font-mono text-[10px] font-bold uppercase last:border-r-0 disabled:cursor-not-allowed ${draft.slot === slot ? 'bg-ink text-acid' : 'bg-white text-[#5c6966] hover:bg-sand'} ${FOCUS}`}
+                className={`min-h-[44px] min-w-[56px] flex-1 border-r border-[#bfc3bb] px-3 py-2 text-sm font-semibold last:border-r-0 disabled:cursor-not-allowed ${draft.slot === slot ? 'bg-[#173e35] text-white' : 'bg-white text-[#5c6966] hover:bg-sand'} ${FOCUS}`}
               >
                 {slot}
               </button>
@@ -76,7 +77,7 @@ export function Nomination({ draft, snapshots, snapshot, snapshotState, snapshot
       </div>
 
       {snapshotState === 'loading' && (
-        <div role="status" className="mt-4 font-mono text-[10px] uppercase tracking-widest text-[#61706c]">
+        <div role="status" className="mt-4 text-sm text-[#61706c]">
           {COPY.loadingSnapshot}
         </div>
       )}
@@ -84,7 +85,7 @@ export function Nomination({ draft, snapshots, snapshot, snapshotState, snapshot
         <div className="mt-4">
           <Alert title={DECISION_LAB_COPY.load.failedTitle} testId="snapshot-error">
             <p>{snapshotError}</p>
-            <p className="mt-2 text-xs text-[#6e7875]">{DECISION_LAB_COPY.load.failedBody}</p>
+            <p className="mt-2 text-sm text-[#52605d]">{DECISION_LAB_COPY.load.failedBody}</p>
           </Alert>
         </div>
       )}
@@ -101,18 +102,18 @@ export function Nomination({ draft, snapshots, snapshot, snapshotState, snapshot
                 disabled={disabled || full}
                 aria-describedby="player-search-help"
                 onChange={(e) => setQuery(e.target.value)}
-                className={`h-10 w-full border border-[#bfc3bb] bg-white px-3 font-mono text-xs disabled:bg-sand ${FOCUS}`}
+                className={`min-h-[44px] w-full rounded-lg border border-[#bfc3bb] bg-white px-3 font-mono text-sm disabled:bg-sand ${FOCUS}`}
               />
-              <Help id="player-search-help">{full ? COPY.full : COPY.searchHelp}</Help>
+              <Help id="player-search-help">{full ? COPY.full : 'Search names, player IDs or forecast team.'}</Help>
             </div>
             {!full && (
               <ul className="mt-2 max-h-64 divide-y divide-[#e3e3dc] overflow-y-auto border border-[#d7d7d0] bg-white" aria-label={COPY.search}>
-                {matches.length === 0 && <li className="p-3 text-xs text-[#6e7875]">{COPY.noMatches}</li>}
+                {matches.length === 0 && <li className="p-3 text-sm text-[#52605d]">{COPY.noMatches}</li>}
                 {matches.map((r) => (
-                  <li key={r.player_id} className="flex items-center justify-between gap-3 p-2 text-xs">
+                  <li key={r.player_id} className="flex items-center justify-between gap-3 p-2 text-sm">
                     <span>
                       <b>{r.display_name ?? r.player_id}</b>
-                      <span className="ml-2 font-mono text-[10px] text-[#6e7875]">
+                      <span className="ml-2 font-mono text-sm text-[#52605d]">
                         {r.position} · {r.team ?? '—'} · proj {num(r.projection)}
                       </span>
                     </span>
@@ -120,7 +121,7 @@ export function Nomination({ draft, snapshots, snapshot, snapshotState, snapshot
                       data-testid={`add-${r.player_id}`}
                       disabled={disabled}
                       aria-label={`${COPY.add} ${r.display_name ?? r.player_id}`}
-                      onClick={() => onChange({ ...draft, playerIds: [...draft.playerIds, r.player_id] })}
+                      onClick={() => { onChange({ ...draft, overrides: Object.fromEntries(Object.entries(draft.overrides).filter(([, value]) => value.availability === 'unavailable')), playerIds: [...draft.playerIds, r.player_id] }); setQuery('') }}
                     >
                       {COPY.add}
                     </Button>
@@ -142,10 +143,10 @@ export function Nomination({ draft, snapshots, snapshot, snapshotState, snapshot
                 {draft.playerIds.map((pid) => {
                   const r = rowsById[pid]
                   return (
-                    <li key={pid} className="flex items-center justify-between gap-3 p-2 text-xs">
+                    <li key={pid} className="flex items-center justify-between gap-3 p-2 text-sm">
                       <span>
                         <b>{r?.display_name ?? pid}</b>
-                        <span className="ml-2 font-mono text-[10px] text-[#6e7875]">
+                        <span className="ml-2 font-mono text-sm text-[#52605d]">
                           {r ? `${r.position} · ${r.team ?? '—'} · proj ${num(r.projection)}` : 'not in this snapshot'}
                         </span>
                       </span>
@@ -170,8 +171,10 @@ export function Nomination({ draft, snapshots, snapshot, snapshotState, snapshot
         </div>
       )}
 
+      <details className="product-details mt-4 md:hidden"><summary>Change evidence period</summary><label className="mt-3 block text-sm font-semibold" htmlFor="mobile-lab-period">Evidence period</label><select id="mobile-lab-period" value={draft.snapshotId ?? ''} disabled={disabled} onChange={(e) => onChange({ ...draft, caseId: null, snapshotId: e.target.value || null, playerIds: [], overrides: {} })} className={`mt-2 min-h-[44px] w-full rounded-lg border border-[#bfc3bb] bg-white px-3 text-sm ${FOCUS}`}><option value="">Choose a supported snapshot</option>{snapshots.map((s) => <option key={s.snapshot_id} value={s.snapshot_id}>{snapshotLabel(s)}</option>)}</select></details>
+
       {draft.mode === 'synthetic' && (
-        <div className="mt-5 flex items-start gap-3">
+        <details className="product-details mt-5"><summary>Developer/testing tools</summary><div className="mt-4 flex items-start gap-3">
           <input
             id="simulate-corrupt"
             type="checkbox"
@@ -185,7 +188,7 @@ export function Nomination({ draft, snapshots, snapshot, snapshotState, snapshot
             <MicroLabel htmlFor="simulate-corrupt">{COPY.simulateCorrupt}</MicroLabel>
             <Help id="simulate-corrupt-help">{COPY.simulateCorruptHelp}</Help>
           </div>
-        </div>
+        </div></details>
       )}
     </Card>
   )

@@ -18,12 +18,12 @@ export function Footer() {
         <nav aria-label="Footer navigation">
           <div>
             <small>Tools</small>
-            <Link href={ROUTES.predictions}>Predictions</Link>
-            <Link href={ROUTES.tiers}>Tiers</Link>
-            <Link href={ROUTES.draft}>Draft board</Link>
+            <Link href={ROUTES.predictions}>Player projections</Link>
+            <Link href={ROUTES.tiers}>Historical tiers</Link>
+            <Link href={ROUTES.draft}>Historical draft practice</Link>
             <Link href={ROUTES.startSit}>Start/Sit</Link>
             <Link href={ROUTES.decisionLab}>Decision Lab</Link>
-            <Link href={ROUTES.performance}>Evaluation</Link>
+            <Link href={ROUTES.performance}>Model results</Link>
             <Link href={ROUTES.dataPlatform}>Data platform</Link>
           </div>
           <div>

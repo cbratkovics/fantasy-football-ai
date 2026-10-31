@@ -4,9 +4,9 @@ import { statusLabel } from '@/lib/decision-lab/explain'
 import { DECISION_LAB_STATUS_ICON } from '@/content/decision-lab'
 
 const STYLES: Record<string, string> = {
-  recommend: 'bg-ink text-acid border-ink',
+  recommend: 'bg-[#173e35] text-white border-ink',
   review: 'bg-[#fff1ea] text-ink border-ember',
-  hold: 'bg-ember text-white border-ember',
+  hold: 'bg-[#7a352b] text-white border-[#7a352b]',
 }
 
 /** Status as text plus an icon shape; colour is never the only encoding. */
@@ -17,7 +17,7 @@ export function StatusPill({ status, size = 'md' }: { status: string; size?: 'sm
     <span
       data-testid="status-pill"
       data-status={status}
-      className={`inline-flex items-center gap-2 border font-mono font-bold uppercase tracking-widest ${size === 'sm' ? 'px-2 py-0.5 text-[9px]' : 'px-3 py-1.5 text-[11px]'} ${cls}`}
+      className={`inline-flex items-center gap-2 rounded-full border font-semibold  ${size === 'sm' ? 'px-2 py-0.5 text-sm' : 'px-3 py-1.5 text-sm'} ${cls}`}
     >
       {statusLabel(status)} <span aria-hidden="true">{icon}</span>
     </span>

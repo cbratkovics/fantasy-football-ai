@@ -12,13 +12,8 @@ export default function StartSitPage() {
     <PageShell
       wide
       crumb="Start/Sit"
-      eyebrow="Start/Sit · latest published week"
-      title={
-        <>
-          Compare one <em className="font-serif font-normal text-moss">starting slot.</em>
-        </>
-      }
-      lede="Nominate alternatives from one published weekly snapshot. The shared Decision Lab policy checks eligibility, availability assumptions, baseline evidence and the projection gap. Dated evidence does not establish game-day readiness."
+      title="Who should I start?"
+      lede="Compare your options for one slot, then check what matters before choosing."
     >
       <StartSitEngine />
     </PageShell>

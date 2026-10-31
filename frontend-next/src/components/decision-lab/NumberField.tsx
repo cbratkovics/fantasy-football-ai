@@ -37,11 +37,11 @@ export function NumberField({ id, label, help, value, onChange, min, max, step, 
         aria-describedby={`${id}-help${error ? ` ${id}-error` : ''}`}
         aria-invalid={error ? true : undefined}
         onChange={(e) => onChange(e.target.value)}
-        className={`h-10 w-full border bg-white px-3 font-mono text-xs text-ink disabled:bg-sand disabled:text-[#6e7875] ${error ? 'border-ember' : 'border-[#bfc3bb]'} ${FOCUS}`}
+        className={`min-h-[44px] w-full rounded-lg border bg-white px-3 font-mono text-sm text-ink disabled:bg-sand disabled:text-[#52605d] ${error ? 'border-ember' : 'border-[#bfc3bb]'} ${FOCUS}`}
       />
       <Help id={`${id}-help`}>{help}</Help>
       {error && (
-        <p id={`${id}-error`} role="alert" className="font-mono text-[10px] text-ember">
+        <p id={`${id}-error`} role="alert" className="font-mono text-sm text-ember">
           {error}
         </p>
       )}

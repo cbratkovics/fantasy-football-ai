@@ -70,6 +70,22 @@ class PredictionsResponse(BaseModel):
     predictions: list[PredictionRecord]
 
 
+class PredictionPeriod(BaseModel):
+    season: int
+    week: int
+    model_version: str
+    feature_version: str
+    generated_at_utc: str
+    n: int
+
+
+class PredictionPeriodsResponse(BaseModel):
+    """Only periods actually loaded from prediction artifacts; no inferred future weeks."""
+
+    latest: PredictionPeriod | None
+    periods: list[PredictionPeriod]
+
+
 class PlayerHistoryRow(BaseModel):
     season: int
     week: int

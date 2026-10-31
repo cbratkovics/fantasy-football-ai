@@ -28,9 +28,9 @@ function reasonText(code: string | null): string {
 function Metric({ label, value, reason, testId }: { label: string; value: number | null; reason: string | null; testId: string }) {
   return (
     <div className="bg-white p-3">
-      <dt className="font-mono text-[9px] uppercase tracking-widest text-[#6e7875]">{label}</dt>
+      <dt className="text-sm text-[#52605d]">{label}</dt>
       <dd className="mt-1 font-mono text-sm" data-testid={testId}>
-        {value === null ? <span className="text-xs text-[#52605d]">null — {reasonText(reason)}</span> : num(value)}
+        {value === null ? <span className="text-sm text-[#52605d]">Unavailable — {reasonText(reason)}</span> : num(value)}
       </dd>
     </div>
   )
@@ -45,40 +45,41 @@ export function OutcomeMetricsView({ receipt, metrics, labCase }: { receipt: Rec
   const sealed = labCase && labCase.case_id === receipt.case_id ? labCase.selection?.sealed_pattern ?? null : null
   return (
     <div data-testid="outcome-metrics">
-      <h3 className="font-mono text-[9px] font-bold uppercase tracking-widest text-[#5c6966]">{COPY.perAlternative}</h3>
-      <ul className="mt-2 divide-y divide-[#e3e3dc] border border-[#d7d7d0] bg-white font-mono text-xs">
+      <h3 className="text-sm font-semibold text-[#5c6966]">{COPY.perAlternative}</h3>
+      <ul className="mt-2 divide-y divide-[#e3e3dc] border border-[#d7d7d0] bg-white font-mono text-sm">
         {metrics.per_alternative.map((row) => (
           <li key={row.player_id} className="flex items-center justify-between gap-3 p-2" data-testid={`actual-${row.player_id}`}>
             <span>
-              {names[row.player_id] ?? row.player_id} <span className="text-[10px] text-[#8c9a96]">{row.player_id}</span>
+              {names[row.player_id] ?? row.player_id} <span className="text-sm text-[#8c9a96]">{row.player_id}</span>
             </span>
             <span>{row.observed ? num(row.actual) : COPY.notObserved}</span>
           </li>
         ))}
       </ul>
+      <p className="mt-4 text-sm text-[#52605d]">Points left behind compares the chosen score with the best observed score among the complete eligible choice set. Missing outcomes prevent that calculation; they are never filled with zero.</p>
       <dl className="mt-4 grid gap-px bg-[#d7d7d0] sm:grid-cols-2">
         <Metric label={COPY.chosen} value={metrics.chosen_actual_points} reason={metrics.chosen_actual_reason} testId="metric-chosen" />
-        <Metric label={COPY.regret} value={metrics.choice_set_regret} reason={metrics.choice_set_regret_reason} testId="metric-regret" />
+        <Metric label="Points left behind among these choices" value={metrics.choice_set_regret} reason={metrics.choice_set_regret_reason} testId="metric-regret" />
         <Metric label={COPY.vsBaseline} value={metrics.points_vs_baseline_choice} reason={metrics.points_vs_baseline_choice_reason} testId="metric-vs-baseline" />
         <Metric label={COPY.modelVsBaseline} value={metrics.model_policy_vs_baseline_choice} reason={metrics.model_policy_vs_baseline_choice_reason} testId="metric-model-vs-baseline" />
         <div className="bg-white p-3">
-          <dt className="font-mono text-[9px] uppercase tracking-widest text-[#6e7875]">{COPY.coverage}</dt>
-          <dd className="mt-1 font-mono text-xs" data-testid="metric-coverage">
+          <dt className="text-sm text-[#52605d]">{COPY.coverage}</dt>
+          <dd className="mt-1 font-mono text-sm" data-testid="metric-coverage">
             {metrics.coverage.observed} of {metrics.coverage.choice_set_size} comparable observed · {metrics.coverage.nominated} nominated
             {metrics.coverage.missing.length ? ` · missing: ${metrics.coverage.missing.map((pid) => names[pid] ?? pid).join(', ')}` : ''}
           </dd>
         </div>
         <div className="bg-white p-3">
-          <dt className="font-mono text-[9px] uppercase tracking-widest text-[#6e7875]">{COPY.bestInSet}</dt>
-          <dd className="mt-1 font-mono text-xs">{metrics.best_in_choice_set ? `${names[metrics.best_in_choice_set.player_id] ?? metrics.best_in_choice_set.player_id} · ${num(metrics.best_in_choice_set.actual)}` : '—'}</dd>
+          <dt className="text-sm text-[#52605d]">{COPY.bestInSet}</dt>
+          <dd className="mt-1 font-mono text-sm">{metrics.best_in_choice_set ? `${names[metrics.best_in_choice_set.player_id] ?? metrics.best_in_choice_set.player_id} · ${num(metrics.best_in_choice_set.actual)}` : '—'}</dd>
         </div>
       </dl>
       {sealed && (
-        <p className="mt-4 border border-[#c5c7c0] bg-white p-3 text-xs" data-testid="sealed-pattern">
+        <p className="mt-4 border border-[#c5c7c0] bg-white p-3 text-sm" data-testid="sealed-pattern">
           <b>{COPY.sealed}:</b> <code className="font-mono">{sealed}</code>
         </p>
       )}
-      <ul className="mt-4 space-y-1 text-[11px] leading-5 text-[#52605d]">
+      <ul className="mt-4 space-y-1 text-sm leading-5 text-[#52605d]">
         {metrics.notes.map((n) => (
           <li key={n}>{n}</li>
         ))}
@@ -102,7 +103,7 @@ export function OutcomePanel({ receipt, labCase, open, onToggle, state, onReveal
         </div>
       )}
       {state.status === 'loading' && (
-        <p role="status" className="mt-3 font-mono text-[10px] uppercase tracking-widest text-[#61706c]">
+        <p role="status" className="mt-3 text-sm text-[#61706c]">
           {COPY.loading}
         </p>
       )}
@@ -120,7 +121,7 @@ export function OutcomePanel({ receipt, labCase, open, onToggle, state, onReveal
       )}
       {attached && receipt && receipt.outcome.metrics && (
         <div className="mt-4">
-          <p className="font-mono text-[10px] text-[#5c6966]" data-testid="outcome-ids">
+          <p className="font-mono text-sm text-[#5c6966]" data-testid="outcome-ids">
             {COPY.idUnchanged}: <Hash value={receipt.decision_id} /> → <Hash value={receipt.decision_id} /> · {COPY.outcomeId} <Hash value={receipt.outcome.outcome_id} /> · {COPY.attachedAt} {fmtUtc(receipt.outcome.attached_at_utc)}
           </p>
           <div className="mt-3">

@@ -26,16 +26,16 @@ describe('optional context lifecycle', () => {
     vi.stubGlobal('fetch', fetcher);
     const onStateChange = vi.fn();
     await act(async () => { render(<ContextEvidence snapshot={snapshot} playerIds={['rookie']} onStateChange={onStateChange} />); });
-    expect(screen.getByRole('heading')).toHaveTextContent('conditional');
+    expect(screen.getByTestId('context-assessment')).toHaveAttribute('data-state', 'conditional');
     expect(onStateChange).toHaveBeenLastCalledWith('conditional');
     vi.setSystemTime(new Date('2026-11-01T19:00:00Z'));
     await act(async () => { vi.advanceTimersByTime(1000); });
     expect(screen.getByText('kickoff passed:rookie')).toBeInTheDocument();
-    expect(screen.getByRole('heading')).toHaveTextContent('blocked');
+    expect(screen.getByTestId('context-assessment')).toHaveAttribute('data-state', 'blocked');
     expect(fetcher).toHaveBeenCalledTimes(1);
     fetcher.mockResolvedValue({ ok: false });
     await act(async () => { window.dispatchEvent(new Event('focus')); });
-    expect(screen.getByRole('heading')).toHaveTextContent('blocked');
+    expect(screen.getByTestId('context-assessment')).toHaveAttribute('data-state', 'blocked');
     expect(screen.getByText('kickoff passed:rookie')).toBeInTheDocument();
     expect(fetcher).toHaveBeenCalledTimes(2);
   });
@@ -44,11 +44,11 @@ describe('optional context lifecycle', () => {
     vi.stubGlobal('fetch', fetcher);
     const onStateChange = vi.fn();
     await act(async () => { render(<ContextEvidence snapshot={snapshot} playerIds={['rookie']} onStateChange={onStateChange} />); });
-    expect(screen.getByRole('heading')).toHaveTextContent('incompatible');
+    expect(screen.getByTestId('context-assessment')).toHaveAttribute('data-state', 'incompatible');
     expect(onStateChange).toHaveBeenLastCalledWith('incompatible');
     fetcher.mockResolvedValue({ ok: false, status: 404 });
     await act(async () => { window.dispatchEvent(new Event('focus')); });
-    expect(screen.getByRole('heading')).toHaveTextContent('incompatible');
+    expect(screen.getByTestId('context-assessment')).toHaveAttribute('data-state', 'incompatible');
   });
   it('rechecks a changed forecast digest even when its snapshot ID is unchanged', async () => {
     const fetcher = vi.fn().mockResolvedValue({ ok: false });

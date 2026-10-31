@@ -1,20 +1,34 @@
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import { createMemoryFetch } from '@/lib/decision-lab/bundle'
 import { STORAGE_KEY, exportAll, loadReceipts } from '@/lib/decision-lab/storage'
-import { syntheticBundle, type SyntheticBundle } from '@/lib/decision-lab/__tests__/fixtures'
+import { weeklyBundle } from '@/lib/start-sit/__tests__/fixtures'
+import { contentId } from '@/lib/decision-lab/canonical'
+import { syntheticBundle, fileText, fileRef, type SyntheticBundle } from '@/lib/decision-lab/__tests__/fixtures'
 import { DecisionLabApp } from '../DecisionLabApp'
 
 const CASE_ID = 'syn-bundle-ambiguity'
 const NOW = () => '2026-01-01T00:00:00Z'
+function labWeeklyBundle() {
+  const b = weeklyBundle()
+  b.cases.cases = [] // These default tests exercise a weekly snapshot, not synthetic case links.
+  b.files['cases.json'] = fileText(b.cases)
+  b.manifest.cases = fileRef('cases.json', b.files['cases.json'], b.cases)
+  b.files['manifest.json'] = fileText(b.manifest)
+  return b
+}
 
 function mount(bundle: SyntheticBundle = syntheticBundle(), initialCaseId: string | null = null) {
   return render(<DecisionLabApp fetchImpl={createMemoryFetch(bundle.files)} now={NOW} initialCaseId={initialCaseId} />)
 }
 
 async function selectCaseAndWait(user: ReturnType<typeof userEvent.setup>) {
+  const mode = await screen.findByTestId('context-synthetic')
+  if (mode.getAttribute('aria-pressed') !== 'true') await user.click(mode)
+  const examples = screen.getByText('Choose an example').closest('details')!
+  if (!examples.open) await user.click(within(examples).getByText('Choose an example'))
   await user.click(await screen.findByTestId(`case-${CASE_ID}`))
   await waitFor(() => expect(screen.getByTestId('compute')).toBeEnabled())
 }
@@ -24,8 +38,13 @@ beforeEach(() => {
 })
 
 describe('DecisionLab container', () => {
-  it('loads the bundle, lists the case library and warns about the spec digest without blocking', async () => {
+  it('does not silently substitute synthetic examples when a weekly publication is missing', async () => {
+    const user = userEvent.setup()
     mount()
+    expect(await screen.findByTestId('selection-notice')).toHaveTextContent('No published weekly snapshot is available')
+    expect(screen.getByTestId('context-published_weekly')).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.queryByTestId(`case-${CASE_ID}`)).not.toBeInTheDocument()
+    await user.click(screen.getByTestId('context-synthetic'))
     expect(await screen.findByTestId(`case-${CASE_ID}`)).toBeInTheDocument()
     expect(screen.getByTestId('spec-warning')).toBeInTheDocument()
     expect(screen.getByTestId('decision-empty')).toBeInTheDocument()
@@ -171,7 +190,7 @@ describe('actions, receipts and outcomes', () => {
     expect(within(metrics).getByTestId('metric-chosen')).toHaveTextContent('16')
     expect(within(metrics).getByTestId('metric-regret')).toHaveTextContent('0')
     expect(within(metrics).getByTestId('metric-vs-baseline')).toHaveTextContent('0')
-    expect(within(metrics).getByTestId('metric-model-vs-baseline')).toHaveTextContent(/null — no model recommendation/)
+    expect(within(metrics).getByTestId('metric-model-vs-baseline')).toHaveTextContent(/Unavailable — no model recommendation/)
     const after = loadReceipts(window.localStorage).receipts[receipt.decision_id]
     expect(after.outcome.state).toBe('attached')
     expect(after.decision_id).toBe(receipt.decision_id)
@@ -200,6 +219,7 @@ describe('already-saved semantic decisions', () => {
     const user = userEvent.setup()
     const first = mount()
     await selectCaseAndWait(user)
+    await user.click(screen.getByText('Write down a prediction (optional)'))
     await user.type(screen.getByTestId('prediction-note'), 'first note')
     await user.click(screen.getByTestId('compute'))
     await user.click(screen.getByTestId('choose-SYN-B'))
@@ -213,6 +233,7 @@ describe('already-saved semantic decisions', () => {
     // A later session with a different clock and a different note reaches the same inputs.
     render(<DecisionLabApp fetchImpl={createMemoryFetch(syntheticBundle().files)} now={() => '2026-02-02T00:00:00Z'} />)
     await selectCaseAndWait(user)
+    await user.click(screen.getByText('Write down a prediction (optional)'))
     await user.type(screen.getByTestId('prediction-note'), 'second note')
     await user.click(screen.getByTestId('compute'))
     expect(screen.getByTestId('compute-message')).toHaveTextContent(/already saved/)
@@ -256,7 +277,7 @@ describe('import', () => {
     const tampered = JSON.stringify({ ...exported, receipts: [...exported.receipts, ...good.receipts] })
     window.localStorage.removeItem(STORAGE_KEY)
 
-    await user.click(screen.getByRole('button', { name: /Saved decisions/ }))
+    await user.click(screen.getAllByRole('button', { name: /Saved decisions/ })[0])
     const input = screen.getByTestId('import-file') as HTMLInputElement
     const file = new File([tampered], 'receipts.json', { type: 'application/json' })
     fireEvent.change(input, { target: { files: [file] } })
@@ -266,4 +287,90 @@ describe('import', () => {
     expect(screen.getByTestId('import-rejections')).toHaveTextContent(/result_replay: stored result differs from a fresh evaluation \(tampered or stale\)/)
     expect(Object.keys(loadReceipts(window.localStorage).receipts)).toHaveLength(1)
   })
+})
+
+
+describe('published defaults and validated selection precedence', () => {
+  it('loads the actual latest weekly evidence with FLEX and no invented players or availability', async () => {
+    const b = labWeeklyBundle()
+    render(<DecisionLabApp fetchImpl={createMemoryFetch(b.files)} now={NOW} />)
+    await waitFor(() => expect(screen.getByLabelText('Snapshot')).toHaveValue(b.inputs.snapshot_id))
+    expect(screen.getByTestId('context-published_weekly')).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByTestId('slot-FLEX')).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByTestId('compute')).toBeDisabled()
+    expect(screen.queryByTestId('availability-list')).not.toBeInTheDocument()
+    expect(screen.getByText('Advanced comparison settings').closest('details')).not.toHaveAttribute('open')
+    expect(screen.getByText('Choose an example').closest('details')).not.toHaveAttribute('open')
+    expect(Object.keys(loadReceipts().receipts)).toHaveLength(0)
+  })
+
+  it('valid explicit snapshot/IDs win over saved preferences and synchronize the visible mode', async () => {
+    const b = syntheticBundle()
+    localStorage.setItem('ffai.lab.preferences/2', JSON.stringify({ mode: 'published_weekly', snapshotId: 'obsolete', slot: 'QB', playerIds: ['other'] }))
+    render(<DecisionLabApp fetchImpl={createMemoryFetch(b.files)} now={NOW} initialSnapshotId={b.inputs.snapshot_id} initialPlayerIds={['SYN-A','SYN-B']} initialSlot="RB" />)
+    await waitFor(() => expect(screen.getByTestId('compute')).toBeEnabled())
+    expect(screen.getByTestId('context-synthetic')).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByTestId('nominated-list')).toHaveTextContent('Synthetic A')
+    expect(screen.getByTestId('nominated-list')).toHaveTextContent('Synthetic B')
+    expect(screen.getByTestId('slot-RB')).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByTestId('availability-list').querySelector('select')).toHaveValue('default')
+  })
+
+  it('explains invalid requested snapshots without substituting the latest or synthetic evidence', async () => {
+    const b = labWeeklyBundle()
+    render(<DecisionLabApp fetchImpl={createMemoryFetch(b.files)} initialSnapshotId="unknown" initialPlayerIds={['SYN-A','SYN-B']} />)
+    expect(await screen.findByTestId('selection-notice')).toHaveTextContent('Nothing was substituted')
+    expect(screen.getByLabelText('Snapshot')).toHaveValue('')
+    expect(screen.getByTestId('compute')).toBeDisabled()
+  })
+
+  it('restores only matching UI choices, not prior availability or recorded action intent', async () => {
+    const b = labWeeklyBundle()
+    localStorage.setItem('ffai.lab.preferences/2', JSON.stringify({ mode: 'published_weekly', snapshotId: b.inputs.snapshot_id, snapshotDigest: contentId(b.inputs), slot: 'RB', playerIds: ['SYN-A','SYN-B'], params: { minGap: '0.5', floorEnabled: false, minFloor: '', requireBaseline: true, modelOnly: false }, overrides: { 'SYN-A': { availability: 'assumed_available', availability_basis: 'user_assumed' } }, actionKind: 'self_reported_real' }))
+    render(<DecisionLabApp fetchImpl={createMemoryFetch(b.files)} now={NOW} />)
+    expect(await screen.findByTestId('selection-notice')).toHaveTextContent('Availability confirmations were not restored')
+    expect(screen.getByTestId('avail-SYN-A')).toHaveValue('default')
+    expect(Object.keys(loadReceipts().receipts)).toHaveLength(0)
+    expect(screen.queryByTestId('action-panel')).not.toBeInTheDocument()
+  })
+
+  it('keeps unavailable transferred players visible and blocks incomplete comparison', async () => {
+    const b = labWeeklyBundle()
+    render(<DecisionLabApp fetchImpl={createMemoryFetch(b.files)} initialSnapshotId={b.inputs.snapshot_id} initialPlayerIds={['SYN-A','not-in-bundle']} />)
+    expect(await screen.findByTestId('selection-notice')).toHaveTextContent('no reduced choice set was substituted')
+    expect(screen.getByTestId('nominated-list')).toHaveTextContent('not-in-bundle')
+    expect(screen.getByTestId('compute')).toBeDisabled()
+  })
+})
+
+
+it('late initial snapshot responses do not overwrite a user-selected mode or slot', async () => {
+  const user = userEvent.setup()
+  const b = labWeeklyBundle()
+  const memory = createMemoryFetch(b.files)
+  let release!: () => void
+  const gate = new Promise<void>((resolve) => { release = resolve })
+  render(<DecisionLabApp fetchImpl={async (url) => { if (url.includes('/inputs/')) await gate; return memory(url) }} now={NOW} />)
+  await waitFor(() => expect(screen.getByLabelText('Snapshot')).toHaveValue(b.inputs.snapshot_id))
+  await user.click(screen.getByTestId('context-synthetic'))
+  await user.click(screen.getByTestId('slot-WR'))
+  await act(async () => { release(); await Promise.resolve() })
+  expect(screen.getByTestId('context-synthetic')).toHaveAttribute('aria-pressed', 'true')
+  expect(screen.getByTestId('slot-WR')).toHaveAttribute('aria-pressed', 'true')
+  expect(screen.getByLabelText('Snapshot')).toHaveValue('')
+})
+
+it('equivalent query-array rerenders cannot cancel a pending explicit initialization', async () => {
+  const b = labWeeklyBundle()
+  const memory = createMemoryFetch(b.files)
+  let release!: () => void
+  let inputRequested = false
+  const gate = new Promise<void>((resolve) => { release = resolve })
+  const fetcher = async (url: string) => { if (url.includes('/inputs/')) { inputRequested = true; await gate } return memory(url) }
+  const view = render(<DecisionLabApp fetchImpl={fetcher} initialSnapshotId={b.inputs.snapshot_id} initialPlayerIds={['SYN-A','SYN-B']} />)
+  await waitFor(() => expect(inputRequested).toBe(true))
+  view.rerender(<DecisionLabApp fetchImpl={fetcher} initialSnapshotId={b.inputs.snapshot_id} initialPlayerIds={['SYN-A','SYN-B']} />)
+  await act(async () => { release(); await Promise.resolve() })
+  await waitFor(() => expect(screen.getByTestId('compute')).toBeEnabled())
+  expect(screen.getByTestId('nominated-list')).toHaveTextContent('Synthetic A')
 })

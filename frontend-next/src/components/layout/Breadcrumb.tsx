@@ -26,7 +26,7 @@ export function Breadcrumb({ items }: BreadcrumbProps) {
               {index === 0 ? (
                 <Link
                   href={item.href || '/'}
-                  className="text-gray-400 hover:text-gray-500"
+                  className="text-[#52645b] hover:text-[#174b3d]"
                 >
                   <HomeIcon className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
                   <span className="sr-only">{item.name}</span>
@@ -38,13 +38,13 @@ export function Breadcrumb({ items }: BreadcrumbProps) {
                     aria-hidden="true"
                   />
                   {item.current || !item.href ? (
-                    <span className="ml-2 text-sm font-medium text-gray-500" aria-current={item.current ? 'page' : undefined}>
+                    <span className="ml-2 text-sm font-medium text-[#52645b]" aria-current={item.current ? 'page' : undefined}>
                       {item.name}
                     </span>
                   ) : (
                     <Link
                       href={item.href}
-                      className="ml-2 text-sm font-medium text-gray-500 hover:text-gray-700"
+                      className="ml-2 text-sm font-medium text-[#52645b] hover:text-[#174b3d]"
                     >
                       {item.name}
                     </Link>

@@ -1,21 +1,16 @@
 import type { Metadata } from 'next'
 import { PerformanceDashboard } from '@/components/dashboard/PerformanceDashboard'
-import { Navigation } from '@/components/layout/Navigation'
-import { Footer } from '@/components/layout/Footer'
+import { PageShell } from '@/components/ui/PageShell'
 
 export const metadata: Metadata = {
-  title: 'Model Evaluation | Win My League Decision Lab',
+  title: 'Model results | Win My League Decision Lab',
   description: 'Held-out evaluation of the champion model against a causal baseline, read from the committed evaluation artifact.',
 }
 
 export default function PerformancePage() {
   return (
-    <div className="evaluation-shell">
-      <Navigation />
-      <main>
-        <PerformanceDashboard />
-      </main>
-      <Footer />
-    </div>
+    <PageShell title="How well did the projections perform?" crumb="Model results" lede="Compare historical model errors with a baseline built only from earlier results." wide>
+      <PerformanceDashboard />
+    </PageShell>
   )
 }

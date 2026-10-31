@@ -32,11 +32,11 @@ export function AlternativesTable({ receipt }: { receipt: Receipt }) {
     <Card title={COPY.title} id="alternatives" testId="alternatives-table">
       <Help>{COPY.help}</Help>
       <div className="mt-3 overflow-x-auto" data-testid="alternatives-scroll">
-        <table className="table w-full min-w-[840px] text-left font-mono text-xs">
+        <table className="table w-full min-w-[840px] text-left font-mono text-sm">
           <thead className="bg-[#f8f7f2]">
             <tr>
               {[COPY.rank, COPY.player, COPY.team, COPY.position, COPY.projection, COPY.floor, COPY.ceiling, COPY.baseline, COPY.availability, COPY.comparable, COPY.tie].map((h) => (
-                <th key={h} scope="col" className="border-b border-[#c5c7c0] px-2 py-2 text-[9px] font-bold uppercase tracking-widest text-[#5c6966]">
+                <th key={h} scope="col" className="border-b border-[#c5c7c0] px-2 py-2 text-sm font-bold  text-[#5c6966]">
                   {h}
                 </th>
               ))}
@@ -58,7 +58,7 @@ export function AlternativesTable({ receipt }: { receipt: Receipt }) {
                     ) : (
                       row.display_name ?? row.player_id
                     )}
-                    <span className="ml-2 text-[10px] text-[#8c9a96]">{row.player_id}</span>
+                    <span className="ml-2 text-sm text-[#8c9a96]">{row.player_id}</span>
                   </td>
                   <td className="px-2 py-2">{teams[row.player_id] ?? '—'}</td>
                   <td className="px-2 py-2">{row.position ?? '—'}</td>
@@ -70,7 +70,7 @@ export function AlternativesTable({ receipt }: { receipt: Receipt }) {
                   </td>
                   <td className="px-2 py-2">{num(row.ceiling)}</td>
                   <td className="px-2 py-2 whitespace-nowrap">
-                    {num(row.baseline)} <span className="text-[10px] text-[#8c9a96]">{row.baseline_provenance}</span>
+                    {num(row.baseline)} <span className="text-sm text-[#8c9a96]">{row.baseline_provenance}</span>
                   </td>
                   <td className="px-2 py-2">{describeAvailability(row.availability, row.availability_basis)}</td>
                   <td className="px-2 py-2">{row.comparable ? COPY.yes : COPY.no}</td>

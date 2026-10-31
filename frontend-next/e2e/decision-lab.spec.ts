@@ -3,7 +3,7 @@ import { resolve } from 'node:path'
 import { expect, test, type Page } from '@playwright/test'
 import type { CasesFile, InputsSnapshot, LabManifest } from '../src/lib/decision-lab/types'
 
-const ORIGIN = 'http://localhost:3100'
+const ORIGIN = process.env.FFAI_E2E_BASE_URL || 'http://localhost:3100'
 const CASE = 'syn-ambiguity-floor-relaxation'
 // Weekly publication advances the case ID. Keep testing the published scenario without pinning
 // an expired week or changing the evidence. The case's stored experiment supplies its expected
@@ -45,6 +45,12 @@ async function openCase(page: Page, caseId: string) {
   await expect(page.getByTestId('compute')).toBeEnabled()
 }
 
+async function disclose(page: Page, title: string) {
+  const summary = page.locator('summary').filter({ hasText: title })
+  const details = summary.locator('..')
+  if (!await details.evaluate((el) => (el as HTMLDetailsElement).open)) await summary.click()
+}
+
 function status(page: Page) {
   return page.getByTestId('decision-card').getByTestId('status-pill')
 }
@@ -60,6 +66,7 @@ test('full flow: review → floor relaxation → experiment → record → revea
   await expect(page.getByTestId('recommended-player')).toHaveText('No recommendation')
 
   // Relaxing the floor to 5 changes only the floor gate; the small gap keeps the review.
+  await disclose(page, 'Advanced comparison settings')
   const floor = page.locator('#min-floor')
   await floor.fill('5')
   await expect(page.getByTestId('stale-notice')).toBeVisible()
@@ -76,9 +83,11 @@ test('full flow: review → floor relaxation → experiment → record → revea
   await expect(page.getByTestId('diff-row-recommended')).toHaveCount(0)
 
   // The case experiment recomputes as a child decision.
+  await disclose(page, 'Try a case experiment')
   await page.getByTestId('experiment-gap 0.3, floor 5').click()
   await expect(status(page)).toHaveAttribute('data-status', 'recommend')
   await expect(page.getByTestId('recommended-player')).toContainText('Synthetic A')
+  await disclose(page, 'Why this result?')
   await expect(page.getByTestId('baseline-line')).toContainText('Baseline prefers Synthetic B')
   await expect(page.getByTestId('parent-id').locator('code')).toHaveCount(1)
   const decisionId = await page.getByTestId('decision-id').locator('code').getAttribute('title')
@@ -103,7 +112,7 @@ test('full flow: review → floor relaxation → experiment → record → revea
   await expect(page.getByTestId('decision-id').locator('code')).toHaveAttribute('title', decisionId as string)
 
   // Export, clear, import: the same decision id comes back.
-  await page.getByRole('button', { name: /Saved decisions/ }).click()
+  await page.getByRole('button', { name: /Saved decisions/ }).first().click()
   await expect(page.getByTestId(`saved-${decisionId}`)).toBeVisible()
   const downloadPromise = page.waitForEvent('download')
   await page.getByTestId('export-all').click()
@@ -124,7 +133,7 @@ test('full flow: review → floor relaxation → experiment → record → revea
 
   await page.reload()
   await expect(page.getByTestId('case-library')).toBeVisible()
-  await page.getByRole('button', { name: /Saved decisions/ }).click()
+  await page.getByRole('button', { name: /Saved decisions/ }).first().click()
   await expect(page.getByTestId(`saved-${decisionId}`)).toBeVisible()
   await expect(page.getByTestId(`saved-${decisionId}`)).toContainText('attached')
 
@@ -144,6 +153,7 @@ test('stale result: changing the slot or a parameter hides the recommendation un
   await expect(page.getByTestId('action-panel')).toHaveCount(0)
 
   await page.getByTestId('slot-RB').click()
+  await disclose(page, 'Advanced comparison settings')
   await page.locator('#min-gap').fill('3')
   await expect(page.getByTestId('decision-stale')).toBeVisible()
   await page.getByTestId('compute').click()
@@ -158,7 +168,9 @@ test('published weekly case: review on availability until every alternative is a
   await expect(page.getByTestId('context-published_weekly')).toHaveAttribute('aria-pressed', 'true')
   await page.getByTestId('compute').click()
   await expect(status(page)).toHaveAttribute('data-status', 'review')
+  await disclose(page, 'Why this result?')
   await expect(page.getByTestId('explanation')).toContainText('Availability is not verified')
+  await disclose(page, 'Adjust player assumptions')
 
   const selects = page.locator('[data-testid^="avail-"]')
   const n = await selects.count()
@@ -171,6 +183,7 @@ test('published weekly case: review on availability until every alternative is a
   await expect(status(page)).toHaveAttribute('data-status', 'recommend')
   await expect(page.getByTestId('recommended-player')).toContainText(expectedStarter.player_id)
   if (expectedStarter.display_name) await expect(page.getByTestId('recommended-player')).toContainText(expectedStarter.display_name)
+  await disclose(page, 'Why this result?')
   await expect(page.getByTestId('limitations').locator('[data-limitation="availability_user_assumed"]')).toBeVisible()
   await expect(page.getByTestId('limitations').locator('[data-limitation="snapshot_not_game_day_verified"]')).toBeVisible()
   await expect(page.getByTestId('changed-controls')).toHaveText('availability')
@@ -189,6 +202,12 @@ test('published weekly case: review on availability until every alternative is a
 test('keyboard: Tab reaches the first case, Enter selects it, Compute is keyboard operable', async ({ page }) => {
   const foreign = await isolate(page)
   await page.goto('/decision-lab')
+  await expect(page.getByTestId('context-published_weekly')).toHaveAttribute('aria-pressed', 'true')
+  await page.getByTestId('context-synthetic').focus()
+  await page.keyboard.press('Enter')
+  const examples = page.locator('summary').filter({ hasText: 'Choose an example' })
+  await examples.focus()
+  await page.keyboard.press('Enter')
   await expect(page.getByTestId('case-library')).toBeVisible()
 
   const focusedTestId = () => page.evaluate(() => (document.activeElement as HTMLElement | null)?.dataset.testid ?? '')
@@ -221,6 +240,7 @@ test('mobile viewport: no horizontal page scroll and the table scrolls inside it
   }
   await noOverflow()
   await page.getByTestId('compute').click()
+  await disclose(page, 'Compare every nominated player')
   await expect(page.getByTestId('alternatives-table')).toBeVisible()
   await noOverflow()
   const scroller = page.getByTestId('alternatives-scroll')

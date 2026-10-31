@@ -3,12 +3,12 @@ import './globals.css'
 import { Providers } from '@/components/providers'
 
 export const metadata: Metadata = {
-  title: 'Win My League · Applied Data Science Decision Lab',
+  title: 'Win My League · Fantasy Football Decision Lab',
   description:
     'Artifact-backed weekly fantasy football projections: as-of features, a versioned model, and an evaluation every figure traces back to.',
-  keywords: 'data science portfolio, machine learning, evaluation, fantasy football',
+  keywords: 'fantasy football, player projections, start sit, decision lab',
   openGraph: {
-    title: 'Win My League · Applied Data Science Decision Lab',
+    title: 'Win My League · Fantasy Football Decision Lab',
     description: 'Every figure is read from a committed evaluation artifact.',
   },
 }

@@ -51,7 +51,7 @@ export function AssumptionControls({ draft, snapshot, onChange, disabled, frozen
 
   return (
     <Card
-      title={COPY.title}
+      title="Assumptions and settings"
       id="assumptions"
       testId="assumption-controls"
       aside={
@@ -63,11 +63,12 @@ export function AssumptionControls({ draft, snapshot, onChange, disabled, frozen
       }
     >
       {frozen && (
-        <p role="status" className="mb-4 border border-dashed border-[#bfc3bb] bg-white p-3 text-xs text-[#52605d]" data-testid="frozen-note">
+        <p role="status" className="mb-4 border border-dashed border-[#bfc3bb] bg-white p-3 text-sm text-[#52605d]" data-testid="frozen-note">
           {COPY.frozen}
         </p>
       )}
-      <div className="grid gap-5 md:grid-cols-2">
+      <details className="product-details"><summary>Advanced comparison settings</summary>
+      <div className="mt-4 grid gap-5 md:grid-cols-2">
         <NumberField id="min-gap" label={COPY.minGap} help={COPY.minGapHelp} value={p.minGap} onChange={(v) => setParams({ minGap: v })} min={PARAM_SPEC.min_projection_gap.min as number} max={PARAM_SPEC.min_projection_gap.max as number} step={0.1} disabled={locked} />
         <div className="flex flex-col gap-3">
           <Checkbox id="floor-enabled" label={COPY.floorEnabled} help={COPY.minFloorHelp} checked={p.floorEnabled} disabled={locked} onChange={(v) => setParams({ floorEnabled: v, minFloor: v && p.minFloor === '' ? '0' : p.minFloor })} />
@@ -77,8 +78,9 @@ export function AssumptionControls({ draft, snapshot, onChange, disabled, frozen
         <Checkbox id="model-only" label={COPY.modelOnly} help={COPY.modelOnlyHelp} checked={p.modelOnly} disabled={locked} onChange={(v) => setParams({ modelOnly: v })} />
       </div>
 
+      </details>
       {snapshot && draft.playerIds.length > 0 && (
-        <fieldset className="mt-6">
+        <details className="product-details mt-4"><summary>Adjust player assumptions</summary><fieldset className="mt-4">
           <MicroLabel as="legend">{NCOPY.availability}</MicroLabel>
           <Help id="availability-help">{NCOPY.availabilityHelp}</Help>
           <ul className="mt-2 divide-y divide-[#e3e3dc] border border-[#d7d7d0] bg-white" data-testid="availability-list">
@@ -89,9 +91,9 @@ export function AssumptionControls({ draft, snapshot, onChange, disabled, frozen
               const defaultLabel = describeAvailability(row.availability_default, row.availability_default === 'unknown' ? 'not_verified' : row.availability_default === 'realized_stats_row' ? 'hindsight_stats_row' : row.availability_default === 'assumed_available' ? (snapshot.mode === 'synthetic' ? 'synthetic' : 'user_assumed') : 'user_excluded')
               const id = `avail-${pid}`
               return (
-                <li key={pid} className="grid gap-2 p-2 text-xs sm:grid-cols-[1fr_auto] sm:items-center">
+                <li key={pid} className="grid gap-2 p-2 text-sm sm:grid-cols-[1fr_auto] sm:items-center">
                   <label htmlFor={id} className="font-semibold">
-                    {row.display_name ?? pid} <span className="ml-1 font-mono text-[10px] font-normal text-[#6e7875]">{row.position}</span>
+                    {row.display_name ?? pid} <span className="ml-1 font-mono text-sm font-normal text-[#52605d]">{row.position}</span>
                   </label>
                   <select
                     id={id}
@@ -100,7 +102,7 @@ export function AssumptionControls({ draft, snapshot, onChange, disabled, frozen
                     disabled={locked}
                     aria-describedby="availability-help"
                     onChange={(e) => onChange(withAvailability(draft, pid, e.target.value as 'default' | 'assumed_available' | 'unavailable', row.availability_default))}
-                    className={`h-9 border border-[#bfc3bb] bg-white px-2 font-mono text-[11px] disabled:bg-sand ${FOCUS}`}
+                    className={`min-h-[44px] rounded-lg border border-[#bfc3bb] bg-white px-2 font-mono text-sm disabled:bg-sand ${FOCUS}`}
                   >
                     <option value="default">
                       {NCOPY.availabilityDefault}: {defaultLabel}
@@ -112,11 +114,11 @@ export function AssumptionControls({ draft, snapshot, onChange, disabled, frozen
               )
             })}
           </ul>
-        </fieldset>
+        </fieldset></details>
       )}
 
       {labCase && labCase.experiments.length > 0 && (
-        <div className="mt-6">
+        <details className="product-details mt-4"><summary>Try a case experiment</summary>
           <MicroLabel as="span">{COPY.experiments}</MicroLabel>
           <Help>{COPY.experimentsHelp}</Help>
           <ul className="mt-2 flex flex-wrap gap-2">
@@ -128,26 +130,26 @@ export function AssumptionControls({ draft, snapshot, onChange, disabled, frozen
               </li>
             ))}
           </ul>
-        </div>
+        </details>
       )}
 
       {diff && (
         <div className="mt-6 border border-[#c5c7c0] bg-white p-4" data-testid="what-changed" role="status" aria-live="polite">
-          <h3 className="font-mono text-[10px] font-bold uppercase tracking-widest text-moss">{DECISION_LAB_COPY.diff.title}</h3>
+          <h3 className="text-sm font-semibold text-moss">{DECISION_LAB_COPY.diff.title}</h3>
           <Help>{DECISION_LAB_COPY.diff.help}</Help>
-          <p className="mt-2 font-mono text-[10px] text-[#5c6966]">
+          <p className="mt-2 font-mono text-sm text-[#5c6966]">
             {DECISION_LAB_COPY.diff.controls}: <span data-testid="changed-controls">{diff.controls.length ? diff.controls.join(', ') : '—'}</span> · parent <Hash value={diff.parentId} />
           </p>
           {diff.rows.length === 0 ? (
-            <p className="mt-2 text-xs text-[#52605d]">{DECISION_LAB_COPY.diff.noneChanged}</p>
+            <p className="mt-2 text-sm text-[#52605d]">{DECISION_LAB_COPY.diff.noneChanged}</p>
           ) : (
             <div className="mt-2 overflow-x-auto">
-              <table className="w-full min-w-[420px] text-left font-mono text-xs">
+              <table className="w-full min-w-[420px] text-left font-mono text-sm">
                 <thead className="bg-[#f8f7f2]">
                   <tr>
-                    <th scope="col" className="px-2 py-1 text-[9px] uppercase tracking-widest text-[#5c6966]">Field</th>
-                    <th scope="col" className="px-2 py-1 text-[9px] uppercase tracking-widest text-[#5c6966]">Before</th>
-                    <th scope="col" className="px-2 py-1 text-[9px] uppercase tracking-widest text-[#5c6966]">After</th>
+                    <th scope="col" className="px-2 py-1 text-sm  text-[#5c6966]">Field</th>
+                    <th scope="col" className="px-2 py-1 text-sm  text-[#5c6966]">Before</th>
+                    <th scope="col" className="px-2 py-1 text-sm  text-[#5c6966]">After</th>
                   </tr>
                 </thead>
                 <tbody>

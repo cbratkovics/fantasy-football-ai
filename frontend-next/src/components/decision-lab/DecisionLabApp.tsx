@@ -18,6 +18,8 @@ import {
 } from '@/lib/decision-lab/bundle'
 import { experimentInputs } from '@/lib/decision-lab/cases'
 import { decisionId } from '@/lib/decision-lab/policy'
+import { contentId } from '@/lib/decision-lab/canonical'
+import { formatLocalDate, formatPeriod } from '@/lib/presentation/display'
 import { attachOutcome, buildDecisionInputs, declineAction, newReceipt, recordAction } from '@/lib/decision-lab/receipts'
 import SPEC_DIGEST from '@/lib/decision-lab/spec_digest.json'
 import { clearAll, deleteReceipt, exportAll, importReceipts, loadReceipts, saveReceipt, type ImportReport, type LoadedReceipts } from '@/lib/decision-lab/storage'
@@ -28,14 +30,17 @@ import { AssumptionControls, type DiffView } from './AssumptionControls'
 import { Alert, Button, Card, FOCUS, Help, MicroLabel, Notice } from './Bits'
 import { CaseLibrary } from './CaseLibrary'
 import { DecisionCard } from './DecisionCard'
-import { changedControls, diffResults, draftFromCase, draftFromExperiment, draftFromInputs, draftKey, emptyDraft, parseParams, type Draft } from './draft'
+import { changedControls, diffResults, draftFromCase, draftFromExperiment, draftFromInputs, draftKey, emptyDraft, defaultParamDraft, parseParams, SLOT_OPTIONS, type Draft } from './draft'
 import { EvidencePanel } from './EvidencePanel'
 import { Nomination } from './Nomination'
 import { OutcomePanel, type OutcomeUiState } from './OutcomePanel'
 import { SavedDecisionsPanel, type PanelMessage } from './SavedDecisionsPanel'
 
 const COPY = DECISION_LAB_COPY
-const MODES: Mode[] = ['historical_replay', 'published_weekly', 'synthetic']
+const MODES: Mode[] = ['published_weekly', 'historical_replay', 'synthetic']
+const MODE_NAMES: Record<Mode, string> = { published_weekly: 'Published week', historical_replay: 'Historical replay', synthetic: 'Synthetic examples' }
+const PREFERENCE_KEY = 'ffai.lab.preferences/2'
+const EMPTY_PLAYERS: string[] = []
 
 type BundleState = { status: 'loading' } | { status: 'error'; failure: BundleFailure } | { status: 'ready'; manifest: LabManifest; cases: CasesFile; spec: PolicySpecCheck }
 
@@ -49,6 +54,9 @@ interface Computed {
 
 export interface DecisionLabAppProps {
   initialCaseId?: string | null
+  initialSnapshotId?: string | null
+  initialPlayerIds?: string[]
+  initialSlot?: string | null
   /** Test seam: a same-origin `fetch` stand-in (see `createMemoryFetch`). */
   fetchImpl?: FetchLike
   baseUrl?: string
@@ -61,12 +69,15 @@ function errorText(e: unknown): string {
 }
 
 /** Container and state machine for the Decision Lab route. */
-export function DecisionLabApp({ initialCaseId = null, fetchImpl, baseUrl = DEFAULT_BASE_URL, now = () => new Date().toISOString() }: DecisionLabAppProps) {
+export function DecisionLabApp({ initialCaseId = null, initialSnapshotId = null, initialPlayerIds = EMPTY_PLAYERS, initialSlot = null, fetchImpl, baseUrl = DEFAULT_BASE_URL, now = () => new Date().toISOString() }: DecisionLabAppProps) {
   const opts = useMemo(() => ({ baseUrl, fetchImpl }), [baseUrl, fetchImpl])
   const [bundle, setBundle] = useState<BundleState>({ status: 'loading' })
   const [build, setBuild] = useState<Record<string, unknown> | null>(null)
-  const [draft, setDraft] = useState<Draft>(() => emptyDraft('synthetic'))
+  const [draft, setDraft] = useState<Draft>(() => ({ ...emptyDraft('published_weekly'), slot: 'FLEX' }))
   const [note, setNote] = useState('')
+  const [initialized, setInitialized] = useState(false)
+  const [selectionNotice, setSelectionNotice] = useState<string | null>(null)
+  const [initializationBlocked, setInitializationBlocked] = useState(false)
   const [computed, setComputed] = useState<Computed | null>(null)
   const [frozen, setFrozen] = useState(false)
   const [computeMessage, setComputeMessage] = useState<string | null>(null)
@@ -80,6 +91,7 @@ export function DecisionLabApp({ initialCaseId = null, fetchImpl, baseUrl = DEFA
   const inflightRef = useRef<Record<string, Promise<InputsLoad>>>({})
   const [, bump] = useState(0)
   const deepLinked = useRef(false)
+  const initialRequest = useRef({ initialCaseId, initialSnapshotId, initialPlayerIds: [...initialPlayerIds], initialSlot })
 
   const ensureSnapshot = useCallback(
     (manifest: LabManifest, sid: string): Promise<InputsLoad> => {
@@ -142,6 +154,8 @@ export function DecisionLabApp({ initialCaseId = null, fetchImpl, baseUrl = DEFA
   const labCase: LabCase | null = draft.caseId ? cases.find((c) => c.case_id === draft.caseId) ?? null : null
 
   const selectCase = useCallback((c: LabCase) => {
+    setSelectionNotice(null)
+    setInitializationBlocked(false)
     setDraft(draftFromCase(c))
     setNote('')
     setFrozen(false)
@@ -152,11 +166,62 @@ export function DecisionLabApp({ initialCaseId = null, fetchImpl, baseUrl = DEFA
   useEffect(() => {
     if (!ready || deepLinked.current) return
     deepLinked.current = true
-    if (initialCaseId) {
-      const c = ready.cases.cases.find((x) => x.case_id === initialCaseId)
-      if (c) selectCase(c)
+    const { initialCaseId, initialSnapshotId, initialPlayerIds, initialSlot } = initialRequest.current
+    let cancelled = false
+    const initialize = async () => {
+      let next = { ...emptyDraft('published_weekly'), slot: 'FLEX' }
+      let notice: string | null = null
+      let blocked = false
+      if (initialCaseId) {
+        const c = ready.cases.cases.find((x) => x.case_id === initialCaseId)
+        if (c) next = draftFromCase(c)
+        else { notice = 'The requested example is not in this evidence release. Choose a mode or a supported snapshot to continue; nothing was substituted.'; blocked = true }
+      } else if (initialSnapshotId) {
+        const requested = snapshotEntry(ready.manifest, initialSnapshotId)
+        if (!requested) { notice = 'The requested snapshot is unavailable in this release. Nothing was substituted.'; blocked = true }
+        else {
+          next = { ...emptyDraft(requested.mode), slot: initialSlot && SLOT_OPTIONS.includes(initialSlot as typeof SLOT_OPTIONS[number]) ? initialSlot : 'FLEX', snapshotId: requested.snapshot_id, playerIds: initialPlayerIds }
+          if (initialSlot && !SLOT_OPTIONS.includes(initialSlot as typeof SLOT_OPTIONS[number])) { notice = 'The requested starting slot is unsupported. Choose a supported slot explicitly to continue.'; blocked = true }
+          const loaded = await ensureSnapshot(ready.manifest, requested.snapshot_id)
+          if (!loaded.ok) { notice = `The requested evidence could not be verified: ${loaded.error}. Nothing was substituted.`; blocked = true }
+          else if (new Set(initialPlayerIds).size !== initialPlayerIds.length || initialPlayerIds.length > 8 || initialPlayerIds.some((id) => !loaded.snapshot.rows.some((r) => r.player_id === id))) {
+            notice = 'The transferred selection contains duplicate, missing, or more than eight players. Remove or reset those choices explicitly; no reduced choice set was substituted.'; blocked = true
+          }
+        }
+      } else if (initialPlayerIds.length > 0) {
+        notice = 'A transferred player selection needs an explicit evidence snapshot. Nothing was substituted.'
+        blocked = true
+      } else {
+        let preference: { mode: Mode; snapshotId: string; snapshotDigest: string; slot: string; playerIds: string[]; params: Draft['params'] } | null = null
+        try {
+          const raw = JSON.parse(localStorage.getItem(PREFERENCE_KEY) ?? 'null')
+          if (raw && MODES.includes(raw.mode) && typeof raw.snapshotId === 'string' && typeof raw.snapshotDigest === 'string' && SLOT_OPTIONS.includes(raw.slot) && Array.isArray(raw.playerIds) && raw.playerIds.length <= 8 && new Set(raw.playerIds).size === raw.playerIds.length && raw.playerIds.every((id: unknown) => typeof id === 'string') && raw.params && typeof raw.params.minGap === 'string' && typeof raw.params.minFloor === 'string' && typeof raw.params.floorEnabled === 'boolean' && typeof raw.params.requireBaseline === 'boolean' && typeof raw.params.modelOnly === 'boolean' && parseParams(raw.params).ok) preference = raw
+          else if (raw) notice = 'Saved display choices were no longer compatible and were cleared.'
+        } catch { notice = 'Saved display choices could not be read. The published-week defaults are shown.' }
+        if (preference) {
+          const savedEntry = snapshotEntry(ready.manifest, preference.snapshotId)
+          const loaded = savedEntry && savedEntry.mode === preference.mode ? await ensureSnapshot(ready.manifest, savedEntry.snapshot_id) : null
+          if (loaded?.ok && contentId(loaded.snapshot) === preference.snapshotDigest && preference.playerIds.every((id) => loaded.snapshot.rows.some((r) => r.player_id === id))) {
+            next = { ...emptyDraft(preference.mode), snapshotId: preference.snapshotId, slot: preference.slot, playerIds: preference.playerIds, params: preference.params }
+            notice = 'Restored your compatible display choices. Availability confirmations were not restored.'
+          } else notice = 'Saved display choices no longer match this evidence release and were cleared.'
+        }
+        if (!next.snapshotId) {
+          const latest = ready.manifest.latest_weekly_snapshot_id
+          const latestEntry = latest ? snapshotEntry(ready.manifest, latest) : null
+          if (latestEntry?.mode === 'published_weekly' && latestEntry.source_family === 'weekly') next.snapshotId = latestEntry.snapshot_id
+          else notice = 'No published weekly snapshot is available. Choose Historical replay or Synthetic examples explicitly.'
+        }
+      }
+      if (!initialCaseId && !initialSnapshotId && initialSlot) {
+        if (SLOT_OPTIONS.includes(initialSlot as typeof SLOT_OPTIONS[number])) next.slot = initialSlot
+        else { notice = 'The requested starting slot is unsupported. Choose a supported slot explicitly to continue.'; blocked = true }
+      }
+      if (!cancelled) { setDraft(next); setSelectionNotice(notice); setInitializationBlocked(blocked); setInitialized(true) }
     }
-  }, [ready, initialCaseId, selectCase])
+    void initialize()
+    return () => { cancelled = true }
+  }, [ready, ensureSnapshot])
 
   useEffect(() => {
     if (ready && draft.snapshotId && !cacheRef.current[draft.snapshotId]) void ensureSnapshot(ready.manifest, draft.snapshotId)
@@ -170,10 +235,14 @@ export function DecisionLabApp({ initialCaseId = null, fetchImpl, baseUrl = DEFA
   const contextSnapshots = ready
     ? ready.manifest.snapshots.filter((s) => s.mode === draft.mode).slice().sort((a, b) => b.season - a.season || b.week - a.week || (a.source_family < b.source_family ? -1 : 1))
     : []
+  useEffect(() => {
+    if (!initialized || !snapshot || initializationBlocked) return
+    try { localStorage.setItem(PREFERENCE_KEY, JSON.stringify({ mode: draft.mode, snapshotId: snapshot.snapshot_id, snapshotDigest: contentId(snapshot), slot: draft.slot, playerIds: draft.playerIds, params: draft.params })) } catch { /* Optional UI preferences never block comparisons. */ }
+  }, [initialized, snapshot, initializationBlocked, draft.mode, draft.slot, draft.playerIds, draft.params])
   const key = draftKey(draft)
   const stale = computed !== null && computed.key !== key
   const parsed = parseParams(draft.params)
-  const canCompute = ready !== null && snapshot !== null && draft.playerIds.length > 0 && parsed.ok && !frozen
+  const canCompute = ready !== null && snapshot !== null && draft.playerIds.length >= 2 && parsed.ok && !frozen && !initializationBlocked
   const current = computed && !stale ? computed.receipt : null
 
   const compute = (d: Draft, inputsOverride?: DecisionInputs) => {
@@ -354,21 +423,28 @@ export function DecisionLabApp({ initialCaseId = null, fetchImpl, baseUrl = DEFA
   }
 
   const changeDraft = (d: Draft) => {
-    if (d.snapshotId !== draft.snapshotId) setNote('')
+    if (d.snapshotId !== draft.snapshotId) { setNote(''); d = { ...d, overrides: {}, simulateCorrupt: false } }
+    else if (d.slot !== draft.slot || d.playerIds.join('|') !== draft.playerIds.join('|')) d = { ...d, overrides: Object.fromEntries(Object.entries(d.overrides).filter(([, value]) => value.availability === 'unavailable')) }
+    setInitializationBlocked(false)
+    setSelectionNotice(null)
     setDraft(d)
     setComputeMessage(null)
   }
   const changeMode = (mode: Mode) => {
     if (mode === draft.mode) return
-    setDraft(emptyDraft(mode))
+    const options = ready?.manifest.snapshots.filter((s) => s.mode === mode).slice().sort((a, b) => b.season - a.season || b.week - a.week || a.snapshot_id.localeCompare(b.snapshot_id)) ?? []
+    const first = mode === 'published_weekly' ? ready?.manifest.latest_weekly_snapshot_id ?? null : options[0]?.snapshot_id ?? null
+    setDraft({ ...emptyDraft(mode), slot: 'FLEX', snapshotId: first })
+    setSelectionNotice(null)
+    setInitializationBlocked(false)
     setNote('')
     setFrozen(false)
     setComputeMessage(null)
   }
 
-  if (bundle.status === 'loading') {
+  if (bundle.status === 'loading' || (bundle.status === 'ready' && !initialized)) {
     return (
-      <div role="status" className="border border-[#c5c7c0] bg-[#f8f7f2] p-8 font-mono text-xs uppercase tracking-widest text-[#61706c]">
+      <div role="status" className="border border-[#c5c7c0] bg-[#f8f7f2] p-8 font-mono text-xs  text-[#61706c]">
         <span className="mr-3 inline-block h-2 w-2 animate-pulse rounded-full bg-ember align-middle" />
         {COPY.load.loading}
       </div>
@@ -380,92 +456,56 @@ export function DecisionLabApp({ initialCaseId = null, fetchImpl, baseUrl = DEFA
         <p className="font-mono text-xs">
           {bundle.failure.kind}: {bundle.failure.error} — {bundle.failure.detail}
         </p>
-        <p className="mt-2 text-xs text-[#6e7875]">{COPY.load.failedBody}</p>
+        <p className="mt-2 text-xs text-[#52605d]">{COPY.load.failedBody}</p>
       </Alert>
     )
   }
   const spec = bundle.spec
   const noteLocked = frozen || (computed !== null && !stale)
 
+  const customSettings = JSON.stringify(draft.params) !== JSON.stringify(defaultParamDraft())
   return (
-    <div className="space-y-6">
-      {spec.matches !== true && (
-        <div role="status" data-testid="spec-warning" className="border border-ember bg-[#fff1ea] p-4 text-xs text-ink">
-          <p className="font-mono text-[10px] uppercase tracking-widest text-ember">policy specification</p>
-          <p className="mt-1">{spec.checked ? COPY.load.specMismatch : COPY.load.specUnchecked} {spec.warning ? `(${spec.warning})` : ''}</p>
-        </div>
-      )}
-
-      <div className="border border-[#c5c7c0] bg-[#f8f7f2] p-4 md:p-5">
-        <MicroLabel as="span">Context</MicroLabel>
-        <div role="group" aria-label="Evidence context" className="mt-2 flex flex-col border border-[#bfc3bb] sm:flex-row">
-          {MODES.map((mode) => (
-            <button
-              key={mode}
-              type="button"
-              data-testid={`context-${mode}`}
-              aria-pressed={draft.mode === mode}
-              onClick={() => changeMode(mode)}
-              className={`flex-1 border-b border-[#bfc3bb] px-3 py-2 text-left font-mono text-[10px] font-bold uppercase tracking-widest last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0 ${draft.mode === mode ? 'bg-ink text-acid' : 'bg-white text-[#5c6966] hover:bg-sand'} ${FOCUS}`}
-            >
-              {COPY.contexts[mode].label}
-            </button>
-          ))}
-        </div>
-        <p className="mt-3 text-xs leading-5 text-[#3b4a46]" data-testid="context-description">
-          <b>{COPY.contexts[draft.mode].label}.</b> {COPY.contexts[draft.mode].is} <span className="text-[#6e7875]">{COPY.contexts[draft.mode].isNot}</span>
-        </p>
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-[380px_minmax(0,1fr)]">
-        <div className="min-w-0 space-y-4">
-          <CaseLibrary cases={cases} selectedId={draft.caseId} onSelect={selectCase} />
-          <div className="border border-dashed border-[#bfc3bb] bg-[#f8f7f2] p-4">
-            <Button data-testid="custom-nomination" onClick={() => changeDraft({ ...emptyDraft(draft.mode) })}>
-              {COPY.library.custom}
-            </Button>
-            <Help>{COPY.library.customHelp}</Help>
+    <div className="space-y-5">
+      <section className="product-card space-y-4" aria-label="Decision mode">
+        <div className="flex flex-nowrap items-center justify-between gap-3 md:flex-wrap">
+          <label className="min-w-0 flex-1 md:hidden"><span className="sr-only">Comparison mode</span><select value={draft.mode} onChange={(e) => changeMode(e.target.value as Mode)} className={`min-h-[44px] w-full rounded-lg border border-[#bfc3bb] bg-white px-3 text-sm font-semibold ${FOCUS}`}>{MODES.map((mode) => <option key={mode} value={mode}>{MODE_NAMES[mode]}</option>)}</select></label>
+          <div role="group" aria-label="Evidence context" className="hidden flex-wrap gap-2 md:flex">
+            {MODES.map((mode) => <button key={mode} type="button" data-testid={`context-${mode}`} aria-pressed={draft.mode === mode} onClick={() => changeMode(mode)} className={`min-h-[44px] rounded-lg border px-4 py-2 text-sm font-semibold ${draft.mode === mode ? 'border-[#173e35] bg-[#173e35] text-white' : 'border-[#c5cec5] bg-white text-[#27473d]'} ${FOCUS}`}>{MODE_NAMES[mode]}</button>)}
           </div>
+          <Button onClick={() => { setPanels((p) => ({ ...p, saved: true })); document.getElementById('saved-decisions')?.scrollIntoView?.({ block: 'start' }) }} aria-label={`Saved decisions (${Object.keys(saved.receipts).length})`}><span className="md:hidden">Saved ({Object.keys(saved.receipts).length})</span><span className="hidden md:inline">Saved decisions ({Object.keys(saved.receipts).length})</span></Button>
         </div>
-
-        <div className="min-w-0 space-y-6">
+        <p className="text-sm leading-6 text-[#4f6259]" data-testid="context-description">
+          {draft.mode === 'published_weekly' ? 'Conditional PPR comparison; availability is unverified.' : draft.mode === 'historical_replay' ? 'Replay the original historical evidence, with hindsight-conditioned players.' : 'Artificial examples for learning, not real forecasts.'}
+        </p>
+        {snapshot && <p className="text-sm"><strong>{draft.mode === 'published_weekly' ? 'Latest published: ' : ''}{formatPeriod(snapshot.season, snapshot.week)}</strong> · PPR <span className="hidden md:inline">· Updated {formatLocalDate(snapshot.generated_at_utc)}</span></p>}
+        {selectionNotice && <Notice testId="selection-notice">{selectionNotice}<button type="button" className={`ml-2 underline ${FOCUS}`} onClick={() => { setDraft({ ...draft, playerIds: [], overrides: {} }); setSelectionNotice(null); setInitializationBlocked(false) }}>Reset selection</button></Notice>}
+      </section>
+      {spec.matches !== true && <div role="status" data-testid="spec-warning" className="rounded-lg border border-[#b68451] bg-[#fff7e9] p-4 text-sm">{spec.checked ? COPY.load.specMismatch : COPY.load.specUnchecked} {spec.warning ? `(${spec.warning})` : ''}</div>}
+      <p className="text-sm text-[#4f6259] md:hidden">Choose players → Compare → Record or reveal</p>
+      <ol aria-label="Exploration steps" className="hidden flex-wrap gap-x-6 gap-y-2 text-sm text-[#4f6259] md:flex"><li><b>1.</b> Choose players or an example</li><li><b>2.</b> Compare and understand the result</li><li><b>3.</b> Record a choice, then reveal available results</li></ol>
+      <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+        <div className="min-w-0 space-y-5">
           <Nomination draft={draft} snapshots={contextSnapshots} snapshot={snapshot} snapshotState={snapshotState} snapshotError={snapshotError} onChange={changeDraft} disabled={frozen} />
-
+          <div className="product-card space-y-4" data-testid="compute-card">
+            <Button tone="primary" data-testid="compute" disabled={!canCompute} onClick={() => compute(draft)}>{COPY.compute.button}</Button>
+            {!canCompute && !frozen && <Help>{!snapshot ? 'Choose a supported snapshot to begin.' : draft.playerIds.length < 2 ? 'Choose at least two players to make a useful comparison.' : !parsed.ok ? 'Check the advanced settings for an invalid value.' : 'Resolve the selection message before comparing.'}</Help>}
+            {stale && <p role="status" data-testid="stale-notice" className="text-sm text-[#805021]">{COPY.compute.stale}</p>}
+            {computeMessage && <Notice testId="compute-message">{computeMessage}</Notice>}
+            <details className="product-details"><summary>Write down a prediction (optional)</summary><label className="mt-3 block text-sm font-semibold" htmlFor="prediction-note">{COPY.note.label}</label><textarea id="prediction-note" data-testid="prediction-note" value={note} rows={2} disabled={noteLocked} aria-describedby="prediction-note-help" onChange={(e) => setNote(e.target.value)} className={`mt-2 min-h-20 w-full rounded-lg border border-[#bfc3bb] bg-white p-3 text-base disabled:bg-sand ${FOCUS}`} /><Help id="prediction-note-help">{noteLocked ? COPY.note.locked : COPY.note.help}</Help></details>
+          </div>
+          <details className="product-details" open={draft.caseId !== null}><summary>Choose an example</summary><div className="mt-4"><CaseLibrary cases={cases.filter((c) => c.mode === draft.mode)} selectedId={draft.caseId} onSelect={selectCase} /><Button data-testid="custom-nomination" className="mt-4" onClick={() => changeDraft({ ...emptyDraft(draft.mode), slot: draft.slot, snapshotId: draft.snapshotId })}>Choose my own players</Button><Help>Examples are listed by their stable case identifier, not by favorable results. They demonstrate policy behavior, not a performance sample.</Help></div></details>
           <AssumptionControls draft={draft} snapshot={snapshot} onChange={changeDraft} disabled={snapshot === null} frozen={frozen} onUnlock={() => setFrozen(false)} labCase={labCase} onApplyExperiment={applyExperiment} diff={computed && !stale ? computed.diff : null} />
-
-          <Card title="Compute" id="compute" testId="compute-card">
-            <div className="flex flex-col gap-1">
-              <MicroLabel htmlFor="prediction-note">{COPY.note.label}</MicroLabel>
-              <textarea id="prediction-note" data-testid="prediction-note" value={note} rows={2} disabled={noteLocked} aria-describedby="prediction-note-help" onChange={(e) => setNote(e.target.value)} className={`w-full border border-[#bfc3bb] bg-white p-2 text-xs disabled:bg-sand disabled:text-[#6e7875] ${FOCUS}`} />
-              <Help id="prediction-note-help">{noteLocked ? COPY.note.locked : COPY.note.help}</Help>
-            </div>
-            <div className="mt-4 flex flex-wrap items-center gap-3">
-              <Button tone="primary" data-testid="compute" disabled={!canCompute} onClick={() => compute(draft)}>
-                {COPY.compute.button}
-              </Button>
-              {stale && (
-                <span role="status" aria-live="polite" data-testid="stale-notice" className="font-mono text-[10px] uppercase tracking-widest text-ember">
-                  {COPY.compute.stale}
-                </span>
-              )}
-            </div>
-            {computeMessage && (
-              <div className="mt-3">
-                <Notice testId="compute-message">{computeMessage}</Notice>
-              </div>
-            )}
-          </Card>
-
-          <DecisionCard receipt={computed ? computed.receipt : null} stale={stale} saved={computed ? computed.saved : false} emptyMessage={COPY.compute.empty} />
-
-          {current && <AlternativesTable receipt={current} />}
+          {customSettings && <div className="flex items-center gap-3 text-sm"><strong>Custom settings</strong><Button onClick={() => changeDraft({ ...draft, params: defaultParamDraft() })}>Reset to default settings</Button></div>}
+        </div>
+        <div className="min-w-0 space-y-5">
+          <DecisionCard receipt={computed ? computed.receipt : null} stale={stale} saved={computed ? computed.saved : false} emptyMessage="Choose two or more players, then compare. Your result and the reasons for it will appear here." />
+          {current && <details className="product-details"><summary>Compare every nominated player</summary><div className="mt-4"><AlternativesTable receipt={current} /></div></details>}
           {current && <ActionPanel key={current.decision_id} receipt={current} onRecord={record} onDecline={decline} error={actionError} />}
-
           <OutcomePanel receipt={current} labCase={labCase} open={panels.outcomes} onToggle={() => setPanels((p) => ({ ...p, outcomes: !p.outcomes }))} state={outcomeState} onReveal={reveal} />
           <EvidencePanel manifest={bundle.manifest} entry={entry} snapshot={snapshot} receipt={current} specCheck={spec} build={build} open={panels.evidence} onToggle={() => setPanels((p) => ({ ...p, evidence: !p.evidence }))} />
-          <SavedDecisionsPanel loaded={saved} onOpen={openSaved} onAttach={attachSaved} onDelete={removeSaved} exportText={() => exportAll()} onImport={importText} onClear={clearSaved} report={importReport} message={savedMessage} open={panels.saved} onToggle={() => setPanels((p) => ({ ...p, saved: !p.saved }))} />
         </div>
       </div>
+      <div id="saved-decisions"><SavedDecisionsPanel loaded={saved} onOpen={openSaved} onAttach={attachSaved} onDelete={removeSaved} exportText={() => exportAll()} onImport={importText} onClear={clearSaved} report={importReport} message={savedMessage} open={panels.saved} onToggle={() => setPanels((p) => ({ ...p, saved: !p.saved }))} /></div>
     </div>
   )
 }

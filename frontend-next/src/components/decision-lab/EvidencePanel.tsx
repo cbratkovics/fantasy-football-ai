@@ -35,7 +35,7 @@ export function EvidencePanel({ manifest, entry, snapshot, receipt, specCheck, b
         <div className="space-y-4">
           <Dl
             items={[
-              [COPY.snapshot, <code key="s" className="font-mono text-[11px]">{snapshot.snapshot_id}</code>],
+              [COPY.snapshot, <code key="s" className="font-mono text-sm">{snapshot.snapshot_id}</code>],
               [COPY.mode, `${DECISION_LAB_COPY.contexts[snapshot.mode].label} (${snapshot.mode})`],
               [COPY.family, snapshot.source_family],
               [COPY.period, `${snapshot.season} / week ${snapshot.week}`],
@@ -49,14 +49,14 @@ export function EvidencePanel({ manifest, entry, snapshot, receipt, specCheck, b
               [COPY.coverage, entry.outcomes ? `${entry.outcomes.n_observed} observed of ${entry.outcomes.n_rows} rows (paired outcome file)` : 'no outcome file published'],
             ]}
           />
-          <div className="border border-[#d7d7d0] bg-white p-3 text-xs leading-5">
-            <p className="font-mono text-[9px] uppercase tracking-widest text-[#6e7875]">{COPY.population}</p>
+          <div className="border border-[#d7d7d0] bg-white p-3 text-sm leading-5">
+            <p className="text-sm text-[#52605d]">{COPY.population}</p>
             <p className="mt-1">
               <b>{snapshot.population.conditioning}</b> · {snapshot.population.n_rows} rows. {snapshot.population.description}
             </p>
             {snapshot.population.exclusions.length > 0 && (
               <>
-                <p className="mt-2 font-mono text-[9px] uppercase tracking-widest text-[#6e7875]">{COPY.exclusions}</p>
+                <p className="mt-2 text-sm text-[#52605d]">{COPY.exclusions}</p>
                 <ul className="mt-1 list-disc pl-5">
                   {snapshot.population.exclusions.map((e) => (
                     <li key={e}>{e}</li>
@@ -65,8 +65,8 @@ export function EvidencePanel({ manifest, entry, snapshot, receipt, specCheck, b
               </>
             )}
           </div>
-          <div className="border border-[#d7d7d0] bg-white p-3 text-xs leading-5">
-            <p className="font-mono text-[9px] uppercase tracking-widest text-[#6e7875]">{COPY.baseline}</p>
+          <div className="border border-[#d7d7d0] bg-white p-3 text-sm leading-5">
+            <p className="text-sm text-[#52605d]">{COPY.baseline}</p>
             <p className="mt-1">
               <b>{snapshot.baseline.name}</b> · provenance basis {snapshot.baseline.provenance_basis} · reconciled {snapshot.baseline.reconciled === null ? 'not applicable' : snapshot.baseline.reconciled ? 'yes' : 'no'}
               {snapshot.baseline.reconciled_to ? ` to ${snapshot.baseline.reconciled_to}` : ''}
@@ -74,21 +74,21 @@ export function EvidencePanel({ manifest, entry, snapshot, receipt, specCheck, b
             {snapshot.baseline.note && <p className="mt-1 text-[#52605d]">{snapshot.baseline.note}</p>}
             {entry.reconciliation && (
               <p className="mt-2">
-                <span className="font-mono text-[9px] uppercase tracking-widest text-[#6e7875]">{COPY.reconciliation}</span> {entry.reconciliation.status}
+                <span className="text-sm text-[#52605d]">{COPY.reconciliation}</span> {entry.reconciliation.status}
                 {entry.reconciliation.reference ? ` · reference ${entry.reconciliation.reference}` : ''}
                 {entry.reconciliation.tolerance !== null ? ` · tolerance ${entry.reconciliation.tolerance}` : ''}
               </p>
             )}
           </div>
-          <div className="border border-[#d7d7d0] bg-white p-3 text-xs leading-5">
-            <p className="font-mono text-[9px] uppercase tracking-widest text-[#6e7875]">{COPY.sources}</p>
+          <div className="border border-[#d7d7d0] bg-white p-3 text-sm leading-5">
+            <p className="text-sm text-[#52605d]">{COPY.sources}</p>
             {snapshot.source.files.length === 0 ? (
               <p className="mt-1 text-[#52605d]">none (synthetic)</p>
             ) : (
-              <ul className="mt-1 space-y-1 font-mono text-[11px]">
+              <ul className="mt-1 space-y-1 font-mono text-sm">
                 {snapshot.source.files.map((f) => (
                   <li key={`${f.role}-${f.path}`} className="break-all">
-                    <span className="text-[#6e7875]">{f.role}</span> {f.path} <Hash value={f.sha256} />
+                    <span className="text-[#52605d]">{f.role}</span> {f.path} <Hash value={f.sha256} />
                     {f.rows !== null && f.rows !== undefined ? ` · ${f.rows} rows` : ''}
                   </li>
                 ))}
@@ -109,7 +109,7 @@ export function EvidencePanel({ manifest, entry, snapshot, receipt, specCheck, b
               [COPY.build, build ? `built ${fmtUtc(str(build.built_at_utc))} · exporter ${str(build.exporter_version)} · python ${str(build.python_version)} · duckdb ${str(build.duckdb_version)}` : 'not available'],
             ]}
           />
-          <p className="border border-dashed border-[#bfc3bb] bg-white p-3 text-[11px] leading-5 text-[#52605d]">
+          <p className="border border-dashed border-[#bfc3bb] bg-white p-3 text-sm leading-5 text-[#52605d]">
             <b>{COPY.trust}.</b> {TRUST_NOTE}
           </p>
         </div>

@@ -8,6 +8,7 @@ import type {
   PlayerResponse,
   Position,
   PredictionsResponse,
+  PredictionPeriodsResponse,
   Root,
   ScoringFormat,
 } from './types'
@@ -30,6 +31,9 @@ export const getRoot = () => apiGet<Root>('/')
 export const getHealth = () => apiGet<Health>('/health')
 
 export const getManifest = () => apiGet<ManifestResponse>('/manifest')
+
+/** Loaded published files only; no speculative calendar requests. */
+export const getPredictionPeriods = () => apiGet<PredictionPeriodsResponse>('/prediction-periods')
 
 export async function getLatestWeek(): Promise<WeekRef> {
   const { manifest } = await getManifest()
