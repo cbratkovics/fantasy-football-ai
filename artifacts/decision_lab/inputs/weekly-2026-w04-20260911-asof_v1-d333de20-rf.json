@@ -41,7 +41,7 @@
  },
  "publication": {
   "action": "PUBLISH",
-  "note": "predictions/2026/week_04.json produced by run-20260929T161927Z (PUBLISH); manifest last_run at export: run-20261027T154142Z PUBLISH season 2026 week 8 at 2026-10-27T15:41:42+00:00",
+  "note": "predictions/2026/week_04.json produced by run-20260929T161927Z (PUBLISH); manifest last_run at export: run-20261103T172953Z PUBLISH season 2026 week 9 at 2026-11-03T17:29:53+00:00",
   "run_id": "run-20260929T161927Z",
   "status": "published"
  },
@@ -11048,14 +11048,14 @@
    {
     "path": "artifacts/marts/fct_player_week.parquet",
     "role": "mart",
-    "rows": 28758,
-    "sha256": "23f4952bf8402eb2b80f5dd12cd183c44bcdf565aa1140f88aaed33d79c78d51"
+    "rows": 29472,
+    "sha256": "40188b225bdd8f6ce08aa6db792adac0c5f099451bf57141018cdc3458d13f81"
    },
    {
     "path": "artifacts/marts/_export_manifest.json",
     "role": "mart_export_manifest",
     "rows": null,
-    "sha256": "31d0abe0e4c4b973c98e3e64bf3a313d69cf535ce00d6d3d28de89824a580e92"
+    "sha256": "e8bc5d3fcb37775d447f5c9b9e5850bba294897ba7c4fc189bb7c1974684e1b2"
    },
    {
     "path": "artifacts/predictions/2026/week_04.json",
@@ -11073,14 +11073,14 @@
     "path": "artifacts/eval/rolling_2026.json",
     "role": "rolling_eval",
     "rows": null,
-    "sha256": "c464f839fc8010603bdd34002524155059de1a04063ab729b36dfe91a18d2ebe"
+    "sha256": "263b2bd4f84723109de5f97dc9d1c3ac99e980d79ba4f0fb61ef6eadbcd9f1d7"
    }
   ],
   "mart": "fct_player_week",
   "mart_export": {
-   "code_commit": "c8229179dde238264a75a7843ae26c94718c76fd",
-   "exported_at_utc": "2026-10-27T15:42:21+00:00",
-   "invocation_id": "f92694ac-1d72-4173-b5aa-37a89843b262",
+   "code_commit": "303a883976c6a16ba3038fbbf2bc9d1a8258042d",
+   "exported_at_utc": "2026-11-03T17:30:37+00:00",
+   "invocation_id": "d8c7b41e-9076-448b-ba8e-0faaf5220c3e",
    "target": "prod"
   }
  },
