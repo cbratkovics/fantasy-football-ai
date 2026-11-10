@@ -885,11 +885,11 @@
   },
   {
    "alternatives": [
-    "00-0039139",
     "00-0033280",
-    "00-0037248"
+    "00-0039139",
+    "00-0039361"
    ],
-   "case_id": "real-weekly-2026-w09-rb-c01516",
+   "case_id": "real-weekly-2026-w10-rb-f8b0b5",
    "expected": {
     "reason_codes": [
      "availability_unresolved",
@@ -901,7 +901,7 @@
    "experiments": [
     {
      "expected": {
-      "recommended_player_id": "00-0039139",
+      "recommended_player_id": "00-0033280",
       "status": "recommend"
      },
      "label": "assume all available",
@@ -910,11 +910,11 @@
        "availability": "assumed_available",
        "availability_basis": "user_assumed"
       },
-      "00-0037248": {
+      "00-0039139": {
        "availability": "assumed_available",
        "availability_basis": "user_assumed"
       },
-      "00-0039139": {
+      "00-0039361": {
        "availability": "assumed_available",
        "availability_basis": "user_assumed"
       }
@@ -944,13 +944,13 @@
    },
    "setup": "The three RB rows with the highest projections in the published weekly snapshot, no availability overrides: the policy asks for an explicit assumption first. The experiment assumes every alternative available. No outcomes exist yet.",
    "slot": "RB",
-   "snapshot_id": "weekly-2026-w09-20260911-asof_v1-d333de20-rf",
+   "snapshot_id": "weekly-2026-w10-20260911-asof_v1-d333de20-rf",
    "source_row_refs": [
-    "fct_player_week:00-0039139:2026:9:20260911-asof_v1-d333de20:rf",
-    "fct_player_week:00-0033280:2026:9:20260911-asof_v1-d333de20:rf",
-    "fct_player_week:00-0037248:2026:9:20260911-asof_v1-d333de20:rf"
+    "fct_player_week:00-0033280:2026:10:20260911-asof_v1-d333de20:rf",
+    "fct_player_week:00-0039139:2026:10:20260911-asof_v1-d333de20:rf",
+    "fct_player_week:00-0039361:2026:10:20260911-asof_v1-d333de20:rf"
    ],
-   "title": "2026 week 9 · RB · three highest projections (published snapshot)"
+   "title": "2026 week 10 · RB · three highest projections (published snapshot)"
   }
  ],
  "notes": [

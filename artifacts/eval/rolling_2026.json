@@ -136,6 +136,23 @@
         "baseline_mae": 4.9808
       },
       "scored_at_utc": "2026-11-03T17:29:53+00:00"
+    },
+    {
+      "week": 9,
+      "n": 327,
+      "champion": {
+        "n": 327,
+        "mae": 4.247,
+        "within_3_rate": 0.5046,
+        "baseline_mae": 4.5233
+      },
+      "challenger": {
+        "n": 327,
+        "mae": 4.2538,
+        "within_3_rate": 0.5046,
+        "baseline_mae": 4.5233
+      },
+      "scored_at_utc": "2026-11-10T17:27:34+00:00"
     }
   ]
 }
