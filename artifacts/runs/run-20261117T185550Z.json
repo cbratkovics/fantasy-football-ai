@@ -1,0 +1,59 @@
+{
+  "run_id": "run-20261117T185550Z",
+  "at_utc": "2026-11-17T18:55:50+00:00",
+  "dry_run": false,
+  "steps": [
+    {
+      "step": "season_week",
+      "season": 2026,
+      "week": 11
+    },
+    {
+      "step": "stats",
+      "loaded_rows": 43688,
+      "rows_before_target_week": 43688,
+      "dropped_partial_rows": 0
+    },
+    {
+      "step": "contracts",
+      "ok": false,
+      "failures": [
+        "assert_recorded_actuals_match_stats: 2 failing row(s)"
+      ],
+      "summary": {
+        "dbt": {
+          "elapsed_s": 6.23820948600769,
+          "invocation_id": "f536189f-ebe2-458a-94ea-f7983b065c29",
+          "status_counts": {
+            "success": 14,
+            "pass": 65,
+            "fail": 1
+          },
+          "n_checks": 66,
+          "target": "prod",
+          "vars": {
+            "stats_path": "data/cache/player_stats_2019-2026_2026-11-17.parquet",
+            "target_season": 2026,
+            "target_week": 11,
+            "expected_season": 2026,
+            "expected_week": 10,
+            "prior_row_count": 43369
+          },
+          "returncode": 1
+        },
+        "rows": 43688,
+        "players": 1451,
+        "latest": [
+          2026,
+          10
+        ]
+      }
+    }
+  ],
+  "season": 2026,
+  "week": 11,
+  "action": "HOLD",
+  "reasons": [
+    "data contract failed: assert_recorded_actuals_match_stats: 2 failing row(s)"
+  ]
+}

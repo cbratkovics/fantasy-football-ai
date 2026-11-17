@@ -19,7 +19,7 @@
   },
   "data_through": {
     "season": 2026,
-    "week": 9
+    "week": 10
   },
   "eval_id": "eval-20260911-20260911-asof_v1-d333de20-rf",
   "evaluations": [
@@ -40,22 +40,20 @@
   ],
   "feature_version": "asof_v1",
   "last_run": {
-    "action": "PUBLISH",
-    "at_utc": "2026-11-10T17:27:34+00:00",
+    "action": "HOLD",
+    "at_utc": "2026-11-17T18:55:50+00:00",
     "reasons": [
-      "drift warning on RB:fantasy_points_ppr_L1",
-      "contracts ok, drift within limits",
-      "no promotion: challenger won 1/4 recent weeks (needs 4/4)"
+      "data contract failed: assert_recorded_actuals_match_stats: 2 failing row(s)"
     ],
-    "run_id": "run-20261110T172734Z",
+    "run_id": "run-20261117T185550Z",
     "season": 2026,
-    "stats_rows": 43369,
-    "week": 10
+    "stats_rows": 43688,
+    "week": 11
   },
   "manifest_version": "1.0",
   "predictions": {
     "latest": "predictions/2026/week_10.json"
   },
   "tiers_version": "20260911-tiers_prevseason_v1-2024-mpc8",
-  "updated_at_utc": "2026-11-10T17:28:01+00:00"
+  "updated_at_utc": "2026-11-17T18:56:02+00:00"
 }
